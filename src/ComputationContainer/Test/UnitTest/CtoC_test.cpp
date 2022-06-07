@@ -44,7 +44,7 @@ TEST(CtoC_Test, EXCHANGESHARE)
     auto a = share.mutable_address_id();
     a->set_share_id(share_id.getShareId());
     a->set_job_id(share_id.getJobId());
-    share.set_value(value);
+    share.set_byte(value);
     share.set_party_id(conf->party_id);
 
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
@@ -72,7 +72,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
         auto a = multiple_shares->mutable_address_id();
         a->set_share_id(share_ids[i].getShareId());
         a->set_job_id(share_ids[i].getJobId());
-        multiple_shares->set_value(values[i]);
+        multiple_shares->set_byte(values[i]);
     }
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")

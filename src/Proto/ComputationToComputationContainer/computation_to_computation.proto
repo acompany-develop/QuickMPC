@@ -27,7 +27,14 @@ message Address{
  * the message of share
 */
 message Share {
-    string value = 1; // the value of share
+    oneof value{
+        int32 num = 4;
+        int64 num64 = 5;
+        bytes byte = 6;
+        float f = 7;
+        double d = 8;
+        bool flag = 9;
+    }
     Address address_id = 2; // the id of share
     int32 party_id = 3; // the id of party(0, 1, 2)
 }
@@ -37,9 +44,16 @@ message Share {
 */
 message Shares {
     message Share{
-        string value = 1;
+        oneof value{
+            int32 num = 4;
+            int64 num64 = 5;
+            bytes byte = 6;
+            float f = 7;
+            double d = 8;
+            bool flag = 9;
+        }
         Address address_id = 2;
     }
-    repeated Share share_list = 1; // list of share
+    repeated Share share_list = 1;
     int32 party_id = 2;
 }

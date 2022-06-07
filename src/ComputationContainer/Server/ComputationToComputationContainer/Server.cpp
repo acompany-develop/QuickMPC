@@ -33,9 +33,41 @@ grpc::Status Server::ExchangeShare(
     //              share->party_id(),
     //              share->value());
     auto address = share->address_id();
-    shares[std::make_tuple(
-        share->party_id(), address.share_id(), address.job_id(), address.thread_id()
-    )] = share->value();
+    switch (share->value_case())
+    {
+        using cs = computationtocomputation::Share;
+        case (cs::ValueCase::kFlag):
+            shares[std::make_tuple(
+                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
+            )] = std::to_string(share->flag());
+            break;
+        case (cs::ValueCase::kNum):
+            shares[std::make_tuple(
+                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
+            )] = std::to_string(share->num());
+            break;
+        case (cs::ValueCase::kNum64):
+            shares[std::make_tuple(
+                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
+            )] = std::to_string(share->num64());
+            break;
+        case (cs::ValueCase::kF):
+            shares[std::make_tuple(
+                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
+            )] = std::to_string(share->f());
+            break;
+        case (cs::ValueCase::kD):
+            shares[std::make_tuple(
+                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
+            )] = std::to_string(share->d());
+            break;
+        case (cs::ValueCase::kByte):
+        case (cs::ValueCase::VALUE_NOT_SET):
+            shares[std::make_tuple(
+                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
+            )] = share->byte();
+            break;
+    }
     cond.notify_all();  // 通知
     return grpc::Status::OK;
 }
@@ -49,17 +81,49 @@ grpc::Status Server::ExchangeShares(
 {
     std::lock_guard<std::mutex> lock(mtx);  // mutex発動
 
+    using cs = computationtocomputation::Shares_Share;
     computationtocomputation::Shares multiple_shares;
     while (stream->Read(&multiple_shares))
     {
         int party_id = multiple_shares.party_id();
         for (int i = 0; i < multiple_shares.share_list_size(); i++)
         {
-            auto address_id = multiple_shares.share_list(i).address_id();
-            std::string value = multiple_shares.share_list(i).value();
-            shares[std::make_tuple(
-                party_id, address_id.share_id(), address_id.job_id(), address_id.thread_id()
-            )] = value;
+            auto share = multiple_shares.share_list(i);
+            auto address = share.address_id();
+            switch (share.value_case())
+            {
+                case (cs::ValueCase::kFlag):
+                    shares[std::make_tuple(
+                        party_id, address.share_id(), address.job_id(), address.thread_id()
+                    )] = std::to_string(share.flag());
+                    break;
+                case (cs::ValueCase::kNum):
+                    shares[std::make_tuple(
+                        party_id, address.share_id(), address.job_id(), address.thread_id()
+                    )] = std::to_string(share.num());
+                    break;
+                case (cs::ValueCase::kNum64):
+                    shares[std::make_tuple(
+                        party_id, address.share_id(), address.job_id(), address.thread_id()
+                    )] = std::to_string(share.num64());
+                    break;
+                case (cs::ValueCase::kF):
+                    shares[std::make_tuple(
+                        party_id, address.share_id(), address.job_id(), address.thread_id()
+                    )] = std::to_string(share.f());
+                    break;
+                case (cs::ValueCase::kD):
+                    shares[std::make_tuple(
+                        party_id, address.share_id(), address.job_id(), address.thread_id()
+                    )] = std::to_string(share.d());
+                    break;
+                case (cs::ValueCase::kByte):
+                case (cs::ValueCase::VALUE_NOT_SET):
+                    shares[std::make_tuple(
+                        party_id, address.share_id(), address.job_id(), address.thread_id()
+                    )] = share.byte();
+                    break;
+            }
         }
     }
 
