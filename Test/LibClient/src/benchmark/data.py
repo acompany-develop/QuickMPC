@@ -1,4 +1,5 @@
 import collections
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -142,3 +143,12 @@ def penguins(is_bitvector=False):
     return (train[:, :8], train[:, 8:],
             test[:, :8], test[:, 8:],
             schema[:8], schema[8:])
+
+
+def large_data(size: int):
+    schema: List[str] = ["id", "s1", "s2", "s3"]
+    data: List[List[str]] = [
+        [f"id{i}"] + [str((i*size + k) % 13) for k in range(3)]
+        for i in range(size)
+    ]
+    return qmpc.parse_csv_data([schema]+data)

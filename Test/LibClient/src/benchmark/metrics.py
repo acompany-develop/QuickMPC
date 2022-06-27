@@ -1,4 +1,5 @@
 import dataclasses
+import time
 
 import numpy as np
 from sklearn.metrics import (accuracy_score, confusion_matrix, f1_score,
@@ -44,3 +45,17 @@ class MetricsOutputer():
             self.table,
             headers=self.headers,
             tablefmt="grid"))
+
+
+@dataclasses.dataclass
+class PrintTime:
+
+    __start: float = dataclasses.field(init=False)
+
+    def __enter__(self):
+        self.__start = time.time()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        elapsed_time = time.time() - self.__start
+        print(f"{elapsed_time} ms")
