@@ -1078,7 +1078,7 @@ services:
       - type: bind
         source: ./LibClient/src
         target: /LibClient/src
-    command: ["/bin/bash", "-c", "pipenv run pytest -s -v -log-cli-level=DEBUG"]
+    command: ["/bin/bash", "-c", "pipenv run pytest src/tests -s -v -log-cli-level=DEBUG"]
     network_mode: "host"
     depends_on:
       dev_mc1:

@@ -3,7 +3,6 @@ import csv
 import json
 
 import pytest
-
 from utils import qmpc
 
 
