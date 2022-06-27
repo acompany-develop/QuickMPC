@@ -27,7 +27,7 @@ def get_data_id():
 @pytest.mark.parametrize(
     ("size"),
     [
-        (5),
+        (1000000),
     ]
 )
 def test_mean(size: int, get_data_id):
@@ -37,7 +37,7 @@ def test_mean(size: int, get_data_id):
     table = [[data_id], [], [1]]
     inp = [2, 3, 4]
     with PrintTime():
-        res = get_result(qmpc.mean(table, inp))
+        res = get_result(qmpc.mean(table, inp), limit=1000)
     assert(res["is_ok"])
 
     # 正しく計算されたか確認
@@ -50,7 +50,7 @@ def test_mean(size: int, get_data_id):
 @pytest.mark.parametrize(
     ("size"),
     [
-        (5),
+        (1000000),
     ]
 )
 def test_sum(size: int, get_data_id):
@@ -60,7 +60,7 @@ def test_sum(size: int, get_data_id):
     table = [[data_id], [], [1]]
     inp = [2, 3, 4]
     with PrintTime():
-        res = get_result(qmpc.sum(table, inp))
+        res = get_result(qmpc.sum(table, inp), limit=1000)
     assert(res["is_ok"])
 
     # 正しく計算されたか確認
@@ -73,7 +73,7 @@ def test_sum(size: int, get_data_id):
 @pytest.mark.parametrize(
     ("size"),
     [
-        (5),
+        (1000000),
     ]
 )
 def test_variance(size: int, get_data_id):
@@ -83,7 +83,7 @@ def test_variance(size: int, get_data_id):
     table = [[data_id], [], [1]]
     inp = [2, 3, 4]
     with PrintTime():
-        res = get_result(qmpc.variance(table, inp))
+        res = get_result(qmpc.variance(table, inp), limit=1000)
     assert(res["is_ok"])
 
     # 正しく計算されたか確認
@@ -96,7 +96,7 @@ def test_variance(size: int, get_data_id):
 @pytest.mark.parametrize(
     ("size"),
     [
-        (5)
+        (1000000)
     ]
 )
 def test_correl(size: int, get_data_id):
@@ -106,7 +106,7 @@ def test_correl(size: int, get_data_id):
     table = [[data_id], [], [1]]
     inp = ([2, 3], [4])
     with PrintTime():
-        res = get_result(qmpc.correl(table, inp))
+        res = get_result(qmpc.correl(table, inp), limit=1000)
     assert(res["is_ok"])
 
     # 正しく計算されたか確認
