@@ -24,87 +24,87 @@ def get_data_id():
     return lambda size: get(size)
 
 
+bench_size = [
+    (5),
+    (500),
+    (50000),
+    (5000000),
+]
+
+
 @pytest.mark.parametrize(
-    ("size"),
-    [
-        (1000000),
-    ]
+    ("size"), bench_size
 )
 def test_mean(size: int, get_data_id):
-    data_id, secrets, _ = get_data_id(size)
+    data_id, secrets, schema = get_data_id(size)
+    schema_size: int = len(schema)
 
     # table情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
-    inp = [2, 3, 4]
+    inp = [i+1 for i in range(schema_size)]
     with PrintTime():
         res = get_result(qmpc.mean(table, inp), limit=1000)
     assert(res["is_ok"])
 
     # 正しく計算されたか確認
-    secrets_np = np.array(secrets)[:, 1:4]
+    secrets_np = np.array(secrets)
     true_val = np.add.reduce(secrets_np) / len(secrets)
     for x, y in zip(res["results"], true_val):
         assert(math.isclose(x, y, abs_tol=0.1))
 
 
 @pytest.mark.parametrize(
-    ("size"),
-    [
-        (1000000),
-    ]
+    ("size"), bench_size
 )
 def test_sum(size: int, get_data_id):
-    data_id, secrets, _ = get_data_id(size)
+    data_id, secrets, schema = get_data_id(size)
+    schema_size: int = len(schema)
 
     # table情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
-    inp = [2, 3, 4]
+    inp = [i+1 for i in range(schema_size)]
     with PrintTime():
         res = get_result(qmpc.sum(table, inp), limit=1000)
     assert(res["is_ok"])
 
     # 正しく計算されたか確認
-    secrets_np = np.array(secrets)[:, 1:4]
+    secrets_np = np.array(secrets)
     true_val = np.add.reduce(secrets_np)
     for x, y in zip(res["results"], true_val):
         assert(math.isclose(x, y, abs_tol=0.1))
 
 
 @pytest.mark.parametrize(
-    ("size"),
-    [
-        (1000000),
-    ]
+    ("size"), bench_size
 )
 def test_variance(size: int, get_data_id):
-    data_id, secrets, _ = get_data_id(size)
+    data_id, secrets, schema = get_data_id(size)
+    schema_size: int = len(schema)
 
     # table情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
-    inp = [2, 3, 4]
+    inp = [i+1 for i in range(schema_size)]
     with PrintTime():
         res = get_result(qmpc.variance(table, inp), limit=1000)
     assert(res["is_ok"])
 
     # 正しく計算されたか確認
-    secrets_np = np.array(secrets)[:, 1:4]
+    secrets_np = np.array(secrets)
     true_val = np.var(secrets_np, axis=0)
     for x, y in zip(res["results"], true_val):
         assert(math.isclose(x, y, abs_tol=0.1))
 
 
 @pytest.mark.parametrize(
-    ("size"),
-    [
-        (1000000)
-    ]
+    ("size"), bench_size
 )
 def test_correl(size: int, get_data_id):
-    data_id, secrets, _ = get_data_id(size)
+    data_id, secrets, schema = get_data_id(size)
+    schema_size: int = len(schema)
 
     # takle情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
-    inp = ([2, 3], [4])
+    inp = ([i+1 for i in range(schema_size)], [schema_size])
     with PrintTime():
         res = get_result(qmpc.correl(table, inp), limit=1000)
     assert(res["is_ok"])
@@ -112,6 +112,6 @@ def test_correl(size: int, get_data_id):
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)
     correl_matrix = np.corrcoef(secrets_np.transpose())
-    true_val = correl_matrix[1:3, 3].transpose()
+    true_val = correl_matrix[:schema_size-1, schema_size-1].transpose()
     for x, y in zip(res["results"][0], true_val):
         assert(math.isclose(x, y, abs_tol=0.1))

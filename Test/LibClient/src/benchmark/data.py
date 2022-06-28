@@ -146,9 +146,12 @@ def penguins(is_bitvector=False):
 
 
 def large_data(size: int):
-    schema: List[str] = ["id", "s1", "s2", "s3"]
+    schema_size: int = 10
+    schema: List[str] = [f"s{i}" for i in range(schema_size)]
+
+    mod = 47
     data: List[List[str]] = [
-        [f"id{i}"] + [str((i*size + k) % 13) for k in range(3)]
+        [str(((i*size + k) % mod)/mod)for k in range(schema_size)]
         for i in range(size)
     ]
     return qmpc.parse_csv_data([schema]+data)
