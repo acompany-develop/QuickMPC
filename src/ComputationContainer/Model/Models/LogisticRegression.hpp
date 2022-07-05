@@ -1,13 +1,12 @@
 #pragma once
 
+#include "Client/ComputationToDbGate/Client.hpp"
+#include "ConfigParse/ConfigParse.hpp"
+#include "Math/Math.hpp"
 #include "Model/ModelBase.hpp"
 #include "Model/Models/LinearRegression.hpp"
-
-#include "ConfigParse/ConfigParse.hpp"
-#include "Share/Networking.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Client/ComputationToDbGate/Client.hpp"
-#include "Math/Math.hpp"
+#include "Share/Networking.hpp"
 
 namespace qmpc::Model
 {

@@ -1,9 +1,10 @@
 #pragma once
-#include <vector>
-#include <memory>
 #include <iostream>
-#include "Share/Share.hpp"
+#include <memory>
+#include <vector>
+
 #include "OptInterface.hpp"
+#include "Share/Share.hpp"
 namespace qmpc::Optimizer
 {
 /*

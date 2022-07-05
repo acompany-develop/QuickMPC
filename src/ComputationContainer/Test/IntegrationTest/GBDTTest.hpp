@@ -1,13 +1,13 @@
 #pragma once
 
-#include <vector>
 #include <iomanip>
-#include "gtest/gtest.h"
+#include <vector>
+
+#include "GBDT/SGBM.hpp"
 #include "GBDT/SID3.hpp"
 #include "GBDT/SID3Regression.hpp"
-#include "GBDT/SGBM.hpp"
-
 #include "LogHeader/Logger.hpp"
+#include "gtest/gtest.h"
 
 auto bitVecCreater = [](const std::vector<std::vector<int>> &data)
 {

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <vector>
 #include <string>
-#include "Share/Share.hpp"
-#include "Client/ComputationToDbGate/ValueTable.hpp"
-#include "Client/ComputationToDbGate/Client.hpp"
-#include "Job/JobStatus.hpp"
+#include <vector>
 
+#include "Client/ComputationToDbGate/Client.hpp"
+#include "Client/ComputationToDbGate/ValueTable.hpp"
+#include "Job/JobStatus.hpp"
+#include "Share/Share.hpp"
 #include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
 
 namespace qmpc::Model

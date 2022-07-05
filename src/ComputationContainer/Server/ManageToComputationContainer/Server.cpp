@@ -1,20 +1,18 @@
 #include "Server.hpp"
 
-#include <thread>
 #include <deque>
 #include <iostream>
 #include <string>
+#include <thread>
 
-#include "unistd.h"
-
-#include "Job/JobManager.hpp"
-#include "Model/ModelManager.hpp"
 #include "Client/ComputationToDbGate/Client.hpp"
-#include "Share/Share.hpp"
 #include "ConfigParse/ConfigParse.hpp"
-#include "Server/ComputationToComputationContainerForJob/Server.hpp"
-
+#include "Job/JobManager.hpp"
 #include "LogHeader/Logger.hpp"
+#include "Model/ModelManager.hpp"
+#include "Server/ComputationToComputationContainerForJob/Server.hpp"
+#include "Share/Share.hpp"
+#include "unistd.h"
 
 namespace qmpc::ManageToComputation
 {

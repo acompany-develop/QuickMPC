@@ -8,18 +8,18 @@
 
 namespace AnyToDb
 {
-    class Client
-    {
-        const std::string host;
-        const std::shared_ptr<grpc::Channel> channel;
-        const std::unique_ptr<anytodbgate::AnyToDbGate::Stub> stub_;
-        static std::shared_ptr<grpc::Channel> connect();
-        bool reconnect() const;
+class Client
+{
+    const std::string host;
+    const std::shared_ptr<grpc::Channel> channel;
+    const std::unique_ptr<anytodbgate::AnyToDbGate::Stub> stub_;
+    static std::shared_ptr<grpc::Channel> connect();
+    bool reconnect() const;
 
-    public:
-        Client() = delete;
-        Client(const std::string &);
+public:
+    Client() = delete;
+    Client(const std::string &);
 
-        std::string executeQuery(const std::string &) const;
-    };
-} // namespace AnyToDb
+    std::string executeQuery(const std::string &) const;
+};
+}  // namespace AnyToDb

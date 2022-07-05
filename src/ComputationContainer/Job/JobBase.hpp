@@ -1,17 +1,17 @@
 #pragma once
 
-#include <vector>
-#include <map>
 #include <atomic>
 #include <list>
-#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
-#include "Share/Share.hpp"
+#include <map>
+#include <vector>
+
 #include "Client/ComputationToDbGate/Client.hpp"
 #include "Client/ComputationToDbGate/ValueTable.hpp"
-#include "JobStatus.hpp"
 #include "JobParameter.hpp"
-
+#include "JobStatus.hpp"
 #include "LogHeader/Logger.hpp"
+#include "Share/Share.hpp"
+#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
 
 namespace qmpc::Job
 {

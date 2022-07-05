@@ -2,8 +2,8 @@
 
 #include <list>
 
-#include "Job/JobBase.hpp"
 #include "ConfigParse/ConfigParse.hpp"
+#include "Job/JobBase.hpp"
 #include "Share/Matrix.hpp"
 
 namespace qmpc::Job

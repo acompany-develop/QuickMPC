@@ -1,7 +1,8 @@
 #pragma once
-#include <vector>
-#include "Share.hpp"
 #include <Eigen/Core>
+#include <vector>
+
+#include "Share.hpp"
 
 // 自作クラスでEigenの行列を扱うための各種宣言
 // 参考1: https://eigen.tuxfamily.org/dox/TopicCustomizing_CustomScalar.html

@@ -1,19 +1,20 @@
-#include "gtest/gtest.h"
-#include <string>
-#include <vector>
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
 #include <grpcpp/client_context.h>
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
 #include <unistd.h>
-#include <thread>
-#include "external/Proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "ConfigParse/ConfigParse.hpp"
-#include "Share/AddressId.hpp"
 
+#include <string>
+#include <thread>
+#include <vector>
+
+#include "ConfigParse/ConfigParse.hpp"
 #include "LogHeader/Logger.hpp"
+#include "Server/ComputationToComputationContainer/Server.hpp"
+#include "Share/AddressId.hpp"
+#include "external/Proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
+#include "gtest/gtest.h"
 
 void runServer(std::string endpoint)
 {

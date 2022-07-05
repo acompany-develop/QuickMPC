@@ -1,5 +1,6 @@
 
 #include "Compare.hpp"
+
 #include "ConfigParse/ConfigParse.hpp"
 #include "LogHeader/Logger.hpp"
 

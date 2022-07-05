@@ -1,11 +1,11 @@
 #pragma once
-#include <vector>
-#include <random>
-#include "gtest/gtest.h"
-#include "Math/Math.hpp"
 #include <cmath>
+#include <random>
+#include <vector>
 
 #include "LogHeader/Logger.hpp"
+#include "Math/Math.hpp"
+#include "gtest/gtest.h"
 
 TEST(MathTest, Smean)
 {

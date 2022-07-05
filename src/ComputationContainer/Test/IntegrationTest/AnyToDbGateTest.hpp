@@ -1,16 +1,13 @@
 #pragma once
 
-#include "gtest/gtest.h"
-
-#include <vector>
 #include <string>
-
-#include "nlohmann/json.hpp"
+#include <vector>
 
 #include "Client/AnyToDb/Client.hpp"
 #include "Client/AnyToDb/N1QL.hpp"
-
 #include "LogHeader/Logger.hpp"
+#include "gtest/gtest.h"
+#include "nlohmann/json.hpp"
 
 // N1QLのによるクエリ文字列
 const auto insert_query_string = std::string(

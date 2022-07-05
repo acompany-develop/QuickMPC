@@ -2,9 +2,9 @@
 
 #include <list>
 
-#include "Share/Share.hpp"
-#include "Math/Math.hpp"
 #include "Job/JobBase.hpp"
+#include "Math/Math.hpp"
+#include "Share/Share.hpp"
 
 namespace qmpc::Job
 {
