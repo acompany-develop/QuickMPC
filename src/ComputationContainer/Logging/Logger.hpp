@@ -4,6 +4,7 @@
 #include <boost/stacktrace.hpp>
 #include <ctime>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 #include <variant>
 
