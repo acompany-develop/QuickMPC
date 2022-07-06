@@ -50,6 +50,7 @@ class MetricsOutputer():
 @dataclasses.dataclass
 class PrintTime:
 
+    __name: str
     __start: float = dataclasses.field(init=False)
 
     def __enter__(self):
@@ -58,4 +59,4 @@ class PrintTime:
 
     def __exit__(self, exc_type, exc_value, traceback):
         elapsed_time = time.time() - self.__start
-        print(f"{elapsed_time} ms")
+        print(f"{self.__name}: {elapsed_time} ms")

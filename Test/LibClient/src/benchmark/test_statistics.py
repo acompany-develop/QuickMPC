@@ -16,7 +16,7 @@ def get_data_id():
         if size in val:
             return val[size]
         secrets, schema = large_data(size)
-        with PrintTime():
+        with PrintTime("send_share"):
             res = qmpc.send_share(secrets, schema)
         assert(res["is_ok"])
         data_id: str = res["data_id"]
@@ -26,7 +26,9 @@ def get_data_id():
 
 
 bench_size = [
-    (5000000),
+    (5),
+    (50),
+    (500),
 ]
 
 
@@ -40,7 +42,7 @@ def test_mean(size: int, get_data_id):
     # table情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
     inp = [i+1 for i in range(schema_size)]
-    with PrintTime():
+    with PrintTime("mean"):
         res = get_result(qmpc.mean(table, inp), limit=10000)
     assert(res["is_ok"])
 
@@ -61,7 +63,7 @@ def test_sum(size: int, get_data_id):
     # table情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
     inp = [i+1 for i in range(schema_size)]
-    with PrintTime():
+    with PrintTime("sum"):
         res = get_result(qmpc.sum(table, inp), limit=10000)
     assert(res["is_ok"])
 
@@ -82,7 +84,7 @@ def test_variance(size: int, get_data_id):
     # table情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
     inp = [i+1 for i in range(schema_size)]
-    with PrintTime():
+    with PrintTime("variance"):
         res = get_result(qmpc.variance(table, inp), limit=10000)
     assert(res["is_ok"])
 
@@ -103,7 +105,7 @@ def test_correl(size: int, get_data_id):
     # takle情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
     inp = ([i+1 for i in range(schema_size)], [schema_size])
-    with PrintTime():
+    with PrintTime("correl"):
         res = get_result(qmpc.correl(table, inp), limit=10000)
     assert(res["is_ok"])
 
