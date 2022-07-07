@@ -12,6 +12,7 @@ cc_library(
         "@Proto//ComputationToComputationContainerForJob:computation_to_computation_for_job_cc_grpc",
         "//Job:jobManager",
         "//LogHeader:logger",
+        "//Server/Helper:helper",
     ],
     visibility = ["//visibility:public"],
 )

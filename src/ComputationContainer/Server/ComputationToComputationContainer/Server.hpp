@@ -20,6 +20,7 @@
 #include "Client/Helper/Helper.hpp"
 #include "LogHeader/Logger.hpp"
 #include "Logging/Logger.hpp"
+#include "Server/Helper/Helper.hpp"
 #include "external/Proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
 #include "unistd.h"
 namespace qmpc::ComputationToComputation

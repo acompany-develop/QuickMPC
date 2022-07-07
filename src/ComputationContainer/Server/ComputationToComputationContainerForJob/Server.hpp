@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "Client/Helper/Helper.hpp"
+#include "Server/Helper/Helper.hpp"
 #include "external/Proto/ComputationToComputationContainerForJob/computation_to_computation_for_job.grpc.pb.h"
 #include "unistd.h"
 

@@ -13,6 +13,7 @@ cc_library(
         "//Client/ComputationToComputationContainer:client",
         "//LogHeader:logger",
         "//Logging:log",
+        "//Server/Helper:helper",
     ],
     visibility = ["//visibility:public"],
 )
