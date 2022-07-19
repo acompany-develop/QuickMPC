@@ -14,7 +14,7 @@ service LibcToManage {
     rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}                          // シェアの削除リクエスト
     rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                   // スキーマ取得リクエスト
     rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
-    rpc GetComputationResult(GetComputationResultRequest) returns (GetComputationResultResponse) {}  // 計算結果取得リクエスト
+    rpc GetComputationResult(GetComputationResultRequest) returns (stream GetComputationResultResponse) {}  // 計算結果取得リクエスト
     rpc SendModelParam(SendModelParamRequest) returns (SendModelParamResponse) {}                    // モデルパラメータ送信リクエスト
     rpc Predict(PredictRequest) returns (PredictResponse) {}                                         // モデル値予測リクエスト
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
