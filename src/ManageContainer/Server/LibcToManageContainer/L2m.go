@@ -213,7 +213,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 }
 
 // DBGateから計算結果を得る
-func (s *server) GetComputationResult(ctx context.Context, in *pb.GetComputationResultRequest) (*pb.GetComputationResultResponse, error) {
+func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream pb.LibcToManage_GetComputationResultServer) error {
 	AppLogger.Info("Get Computation Result;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 
@@ -222,34 +222,43 @@ func (s *server) GetComputationResult(ctx context.Context, in *pb.GetComputation
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetComputationResultResponse{
+		stream.Send(&pb.GetComputationResultResponse{
 			Message: errToken.Error(),
 			IsOk:    false,
-		}, errToken
+		})
+		return errToken
 	}
-	computationResult, err := s.m2dbclient.GetComputationResult(JobUUID)
+
+	computationResults, err := s.m2dbclient.GetComputationResult(JobUUID)
 
 	if err != nil {
-		return &pb.GetComputationResultResponse{
+		stream.Send(&pb.GetComputationResultResponse{
 			Message: "Internal Server Error",
 			IsOk:    false,
-			Result:  ""}, err
+			Result:  "",
+		})
+		return err
 	}
 
-	resultBytes, err := json.Marshal(computationResult.Result)
-	if err != nil {
-		return &pb.GetComputationResultResponse{
-			Message: "Internal Server Error",
-			IsOk:    false,
-			Result:  ""}, err
-	}
+	for _, result := range computationResults {
+		resultBytes, err := json.Marshal(result.Result)
+		if err != nil {
+			stream.Send(&pb.GetComputationResultResponse{
+				Message: "Internal Server Error",
+				IsOk:    false,
+				Result:  "",
+			})
+			return err
+		}
 
-	return &pb.GetComputationResultResponse{
-		Message: "ok",
-		IsOk:    true,
-		Status:  pb_types.JobStatus(computationResult.Status),
-		Result:  string(resultBytes),
-	}, nil
+		stream.Send(&pb.GetComputationResultResponse{
+			Message: "ok",
+			IsOk:    true,
+			Status:  pb_types.JobStatus(result.Status),
+			Result:  string(resultBytes),
+		})
+	}
+	return nil
 }
 
 func (s *server) SendModelParam(ctx context.Context, in *pb.SendModelParamRequest) (*pb.SendModelParamResponse, error) {

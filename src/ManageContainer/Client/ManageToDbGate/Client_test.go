@@ -19,8 +19,12 @@ func (s *server) ExecuteQuery(in *pb.ExecuteQueryRequest, stream pb.AnyToDbGate_
 	AppLogger.Infof("Received: %v", in.GetQuery())
 	if strings.Contains(in.GetQuery(), "existID") {
 		stream.Send(&pb.ExecuteQueryResponse{
-			Result:  "[{\"data_id\":\"existID\",\"meta\":{\"piece_id\":1,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":[\"1\",\"2\",\"3\"]}]",
+			Result:  "[{\"data_id\":\"existID\",\"meta\":{\"piece_id\":1,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":[\"1\",\"2\",\"3\"]},",
 			PieceId: int32(1),
+		})
+		stream.Send(&pb.ExecuteQueryResponse{
+			Result:  "{\"data_id\":\"existID\",\"meta\":{\"piece_id\":2,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":[\"4\",\"5\",\"6\"]}]",
+			PieceId: int32(2),
 		})
 	} else {
 		stream.Send(&pb.ExecuteQueryResponse{

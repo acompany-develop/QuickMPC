@@ -30,7 +30,7 @@ type M2DbClient interface {
 	InsertShares(string, []string, int32, string, string) error
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
-	GetComputationResult(string) (*ComputationResult, error)
+	GetComputationResult(string) ([]*ComputationResult, error)
 	InsertModelParams(string, string) error
 	GetDataList() (string, error)
 }
@@ -301,7 +301,7 @@ func (c Client) getSchema(conn *grpc.ClientConn, dataID string) ([]string, error
 }
 
 // DBGから計算結果を得る
-func (c Client) GetComputationResult(jobUUID string) (*ComputationResult, error) {
+func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, error) {
 	conn, err := connect()
 	if err != nil {
 		return nil, err
@@ -311,7 +311,7 @@ func (c Client) GetComputationResult(jobUUID string) (*ComputationResult, error)
 }
 
 // (conn)から計算結果を得る
-func (c Client) getComputationResult(conn *grpc.ClientConn, jobUUID string) (*ComputationResult, error) {
+func (c Client) getComputationResult(conn *grpc.ClientConn, jobUUID string) ([]*ComputationResult, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 	// TODO: dbのスキーマを変更
@@ -322,17 +322,17 @@ func (c Client) getComputationResult(conn *grpc.ClientConn, jobUUID string) (*Co
 		return nil, err
 	}
 
-	var computationResults []ComputationResult
+	var computationResults []*ComputationResult
 	err = json.Unmarshal([]byte(response), &computationResults)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(computationResults) != 1 {
+	if len(computationResults) == 0 {
 		return nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
 	}
 
-	return &computationResults[0], nil
+	return computationResults, nil
 }
 
 type Params struct {

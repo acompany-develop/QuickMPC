@@ -2,6 +2,8 @@ package l2mserver
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"testing"
 
 	m2dg "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDbGate"
@@ -25,8 +27,8 @@ func (localDbGate) DeleteShares([]string) error {
 func (localDbGate) GetSchema(string) ([]string, error) {
 	return []string{"attr1"}, nil
 }
-func (localDbGate) GetComputationResult(string) (*m2dg.ComputationResult, error) {
-	return &m2dg.ComputationResult{Result: "result"}, nil
+func (localDbGate) GetComputationResult(string) ([]*m2dg.ComputationResult, error) {
+	return []*m2dg.ComputationResult{{Result: "result"}, {Result: "result"}}, nil
 }
 func (localDbGate) InsertModelParams(string, string) error {
 	return nil
@@ -108,15 +110,26 @@ func TestGetComputationResult(t *testing.T) {
 	defer conn.Close()
 	client := pb.NewLibcToManageClient(conn)
 
-	result, err := client.GetComputationResult(context.Background(), &pb.GetComputationResultRequest{
-		JobUuid: "id", Token: "token"})
+	stream, err := client.GetComputationResult(context.Background(), &pb.GetComputationResultRequest{JobUuid: "id", Token: "token"})
 
 	if err != nil {
 		t.Fatal(err)
 	}
-	res := result.GetResult()
-	if res != `"result"` {
-		t.Fatal("GetComputationResult Failed")
+
+	for {
+		reply, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		res := reply.GetResult()
+		ac := `"result"`
+		if res != ac {
+			t.Fatal(fmt.Sprintf("GetComputationResult Failed. getResult() must be %s, but response is %s", ac, res))
+		}
 	}
 }
 
