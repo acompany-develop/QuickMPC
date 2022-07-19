@@ -72,6 +72,9 @@ void Client::registerJob(const std::string &job_uuid, const int &status) const
     nlohmann::json data_json;
     data_json["job_uuid"] = job_uuid;
     data_json["status"] = status;
+    nlohmann::json meta;
+    meta["piece_id"] = 1;
+    data_json["meta"] = meta;
     const std::string data_str = data_json.dump();
 
     const auto values = AnyToDb::N1QLValue(data_str);

@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include <map>
 #include "nlohmann/json.hpp"
 #include "Client/ComputationToDbGate/Client.hpp"
 #include "Client/AnyToDb/Client.hpp"
@@ -6,9 +7,12 @@
 
 TEST(ComputationToDbGateTest, PieceIdTest)
 {
-    // dataを3回分けて送信
+    // 全て削除
     auto any_to_db = AnyToDb::Client("sharedb");
     auto n1ql = AnyToDb::N1QL("share");
+    any_to_db.executeQuery(n1ql.delete_order(1000000));
+
+    // dataを3回分けて送信
     std::vector<std::vector<std::vector<std::string>>> data = {
         {{"1", "2"}, {"3", "4"}}, {{"5", "6"}, {"7", "8"}}, {{"9", "10"}}};
     nlohmann::json data_json;
@@ -36,8 +40,11 @@ TEST(ComputationToDbGateTest, PieceIdTest)
 
 TEST(ComputationToDbGateTest, StreamTest)
 {
+    // 全て削除
     auto any_to_db = AnyToDb::Client("sharedb");
     auto n1ql = AnyToDb::N1QL("share");
+    any_to_db.executeQuery(n1ql.delete_order(1000000));
+
     std::vector<std::vector<std::vector<std::string>>> data;
     data.reserve(500);
     for (int i = 0; i < 500; i++)
@@ -86,7 +93,7 @@ TEST(ComputationToDbGateTest, StreamTest)
 
     EXPECT_EQ(true_data, read_data);
     // 全て削除
-    // any_to_db.executeQuery(n1ql.delete_order(1000000));
+    any_to_db.executeQuery(n1ql.delete_order(1000000));
 }
 
 TEST(ComputationToDbGateTest, ReadModelParamJsoneTest)
@@ -109,4 +116,76 @@ TEST(ComputationToDbGateTest, ReadModelParamJsoneTest)
     EXPECT_EQ(read_data, data);
 
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+}
+
+TEST(ComputationToDbGateTest, RregisterJobTest)
+{
+    // setting
+    auto any_to_db = AnyToDb::Client("sharedb");
+    const auto n1ql = AnyToDb::N1QL("result");
+    const std::string job_uuid = "register_job_test_id";
+    int status = 1;
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+
+    // データ送信
+    auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
+    cc_to_db->registerJob(job_uuid, status);
+
+    // readして比較
+    auto res = any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+    auto res_json = nlohmann::json::parse(res)[0];
+    EXPECT_EQ(res_json["status"], status);
+    EXPECT_EQ(res_json["job_uuid"], job_uuid);
+}
+
+TEST(ComputationToDbGateTest, WriteComputationResultTest)
+{
+    // setting
+    auto any_to_db = AnyToDb::Client("sharedb");
+    const auto n1ql = AnyToDb::N1QL("result");
+    const std::vector<std::vector<std::string>> data = {{"12", "15", "21"}};
+    const std::string job_uuid = "write_computation_result_id";
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+
+    // データ送信
+    auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
+    cc_to_db->registerJob(job_uuid, 1);
+    cc_to_db->writeComputationResult(job_uuid, data);
+
+    // readして比較
+    auto res = any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+    std::string read_data = nlohmann::json::parse(res)[0]["result"];
+    const auto data_str = "[[\"12\",\"15\",\"21\"]]";
+    EXPECT_EQ(read_data, data_str);
+}
+
+TEST(ComputationToDbGateTest, PieceWriteComputationResultTest)
+{
+    // setting
+    auto any_to_db = AnyToDb::Client("sharedb");
+    const auto n1ql = AnyToDb::N1QL("result");
+    const std::vector<std::vector<std::string>> data = {{"12", "15", "21"}};
+    const std::string job_uuid = "piece_write_computation_result_id";
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+
+    // 5byteずつデータ送信
+    auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
+    cc_to_db->registerJob(job_uuid, 1);
+    cc_to_db->writeComputationResult(job_uuid, data, 5);
+
+    // readしてpiece_id順に結合して比較
+    auto res = any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+    std::string read_data = "";
+    std::map<int, std::string> mp;
+    for (const auto r : nlohmann::json::parse(res))
+    {
+        mp.emplace(r["meta"]["piece_id"], r["result"]);
+    }
+    for (const auto& [_, s] : mp)
+    {
+        static_cast<void>(_);  // NOTE: unused warningを消すため
+        read_data += s;
+    }
+    const auto data_str = "[[\"12\",\"15\",\"21\"]]";
+    EXPECT_EQ(read_data, data_str);
 }
