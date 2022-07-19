@@ -32,8 +32,9 @@ public:
 
     // resultの保存
     template <class T>
-    void writeComputationResult(const std::string &job_uuid, const T &results, int piece_size = 5)
-        const
+    void writeComputationResult(
+        const std::string &job_uuid, const T &results, int piece_size = 1000000
+    ) const
     {
         const nlohmann::json data_json = results;
         const std::string data_str = data_json.dump();
