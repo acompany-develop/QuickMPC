@@ -18,11 +18,15 @@ import (
 // 同一IDに対する同時処理を防ぐためのもの
 var ls = utils.NewLockSet()
 
+type MetaResult struct {
+	PieceID int32 `json:"piece_id"`
+}
 type ComputationResult struct {
 	ID      string      `json:"id"`
 	JobUUID string      `json:"job_uuid"`
 	Status  int32       `json:"status"`
 	Result  interface{} `json:"result"`
+	Meta    MetaResult  `json:"meta"`
 }
 
 type Client struct{}

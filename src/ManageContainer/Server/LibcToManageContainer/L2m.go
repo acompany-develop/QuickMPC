@@ -256,6 +256,7 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 			IsOk:    true,
 			Status:  pb_types.JobStatus(result.Status),
 			Result:  string(resultBytes),
+			PieceId: result.Meta.PieceID,
 		})
 	}
 	return nil

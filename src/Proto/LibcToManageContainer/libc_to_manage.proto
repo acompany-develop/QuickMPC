@@ -117,6 +117,7 @@ message GetComputationResultResponse {
     bool is_ok = 2;
     string result = 3;
     pb_common_types.JobStatus status = 4;
+    int32 piece_id = 5;
 }
 
 /**
