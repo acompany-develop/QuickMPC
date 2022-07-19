@@ -150,7 +150,7 @@ TEST(ComputationToDbGateTest, WriteComputationResultTest)
     // データ送信
     auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
     cc_to_db->registerJob(job_uuid, 1);
-    cc_to_db->writeComputationResult(job_uuid, data);
+    cc_to_db->writeComputationResult(job_uuid, data, 1000000);
 
     // readして比較
     auto res = any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));

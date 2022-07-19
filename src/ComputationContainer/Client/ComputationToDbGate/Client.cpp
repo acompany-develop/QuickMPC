@@ -87,7 +87,7 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
 {
     auto n1ql = AnyToDb::N1QL("result");
     const std::string query =
-        n1ql.update({"job_uuid", job_uuid}, {"status", std::to_string(status)});
+        n1ql.update({"job_uuid", job_uuid}, std::pair<std::string, int>{"status", status});
 
     client_share.executeQuery(query);
 }

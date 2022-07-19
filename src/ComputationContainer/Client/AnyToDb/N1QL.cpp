@@ -40,15 +40,6 @@ auto N1QL::bulkinsert(const std::vector<N1QLValue> &datas) const -> std::string
     return clause.insert(values) + clause.returning();
 }
 
-auto N1QL::update(
-    const std::pair<std::string, std::string> &cond,
-    const std::pair<std::string, std::string> &path_expr
-) const -> std::string
-{
-    return clause.update(path_expr.first, path_expr.second) + clause.where(cond.first, cond.second)
-           + clause.returning();
-}
-
 auto N1QL::select() const -> std::string { return clause.select(); }
 
 auto N1QL::select_id(const std::string &id_name, const std::string &id) const -> std::string
@@ -77,6 +68,10 @@ auto N1QL::N1QLClause::insert(const std::string &value) const -> std::string
 auto N1QL::N1QLClause::update(const std::string &path, const std::string &expr) const -> std::string
 {
     return "UPDATE `" + bucket + "` x SET x." + path + " = \'" + expr + "\' ";
+}
+auto N1QL::N1QLClause::update(const std::string &path, int expr) const -> std::string
+{
+    return "UPDATE `" + bucket + "` x SET x." + path + " = " + std::to_string(expr) + " ";
 }
 
 auto N1QL::N1QLClause::select() const -> std::string

@@ -32,16 +32,17 @@ public:
 
     // resultの保存
     template <class T>
-    void writeComputationResult(
-        const std::string &job_uuid, const T &results, int piece_size = 1000000
-    ) const
+    void writeComputationResult(const std::string &job_uuid, const T &results, int piece_size = 5)
+        const
     {
         const nlohmann::json data_json = results;
         const std::string data_str = data_json.dump();
 
         const auto n1ql = AnyToDb::N1QL("result");
-        const std::string query =
-            n1ql.update({"job_uuid", job_uuid}, {"result", data_str.substr(0, piece_size)});
+        const std::string query = n1ql.update(
+            {"job_uuid", job_uuid},
+            std::pair<std::string, std::string>{"result", data_str.substr(0, piece_size)}
+        );
         client_share.executeQuery(query);
 
         for (size_t left = piece_size; left < data_str.size(); left += piece_size)
