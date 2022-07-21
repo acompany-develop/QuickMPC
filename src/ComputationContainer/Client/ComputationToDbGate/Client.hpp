@@ -46,6 +46,8 @@ public:
         );
         client_share.executeQuery(query);
 
+        // 巨大なデータはpieceに分割して保存する
+        // 1-piece目以外はstatusが不要なので最低限でinsertする
         for (size_t left = piece_size; left < data_str.size(); left += piece_size)
         {
             const auto piece_str = data_str.substr(left, piece_size);
