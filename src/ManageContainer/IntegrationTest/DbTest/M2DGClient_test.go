@@ -177,14 +177,14 @@ func testGetComputationResult(t *testing.T, dataID string) {
 		t.Error("insert result failed: " + err.Error())
 	}
 
-	var computationResult *m2db.ComputationResult
+	var computationResult []*m2db.ComputationResult
 	computationResult, err = client.GetComputationResult(dataID)
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
 	}
 
-	resultBytes, err := json.Marshal(computationResult.Result)
+	resultBytes, err := json.Marshal(computationResult[0].Result)
 
 	if err != nil {
 		t.Error("json.Marshal failed: " + err.Error())
