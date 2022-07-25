@@ -105,8 +105,8 @@ TEST(ComputationToDbGateTest, ReadModelParamTest)
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
 
     // read用データ送信
-    nlohmann::json data = std::vector<std::string>{"1", "2", "3"};
-    auto data_dump = data.dump();
+    auto data = std::vector<std::string>{"1", "2", "3"};
+    auto data_dump = nlohmann::json(data).dump();
     nlohmann::json data_json{
         {"job_uuid", job_uuid}, {"result", data_dump}, {"meta", {"piece_id", 1}}};
     std::string data_str = data_json.dump();
@@ -115,7 +115,7 @@ TEST(ComputationToDbGateTest, ReadModelParamTest)
     // readして比較
     auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
     auto read_data = cc_to_db->readModelparamJson(job_uuid);
-    EXPECT_EQ(read_data, data_dump);
+    EXPECT_EQ(read_data, data);
 
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
 }
@@ -129,8 +129,8 @@ TEST(ComputationToDbGateTest, ReadModelParamPieceTest)
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
 
     // 2つに分割してread用データ送信
-    nlohmann::json data = std::vector<std::string>{"1", "2", "3"};
-    auto data_dump = data.dump();
+    auto data = std::vector<std::string>{"1", "2", "3"};
+    auto data_dump = nlohmann::json(data).dump();
     auto s1 = data_dump.substr(0, 5);
     auto s2 = data_dump.substr(5);
 
@@ -144,8 +144,8 @@ TEST(ComputationToDbGateTest, ReadModelParamPieceTest)
 
     // readして比較
     auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
-    auto read_data = cc_to_db->readModelparamJson(job_uuid);
-    EXPECT_EQ(read_data, data_dump);
+    auto read_data = cc_to_db->readModelparam(job_uuid);
+    EXPECT_EQ(read_data, data);
 
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
 }
@@ -169,7 +169,7 @@ TEST(ComputationToDbGateTest, ReadModelParamJsonTest)
     // readして比較
     auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
     auto read_data = cc_to_db->readModelparamJson(job_uuid);
-    EXPECT_EQ(read_data, data_dump);
+    EXPECT_EQ(read_data, data);
 
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
 }
@@ -186,7 +186,7 @@ TEST(ComputationToDbGateTest, ReadModelParamJsonPieceTest)
     nlohmann::json data{{"val1", "2"}, {"to", {{"val2", "5"}, {"val3", "7"}}}};
     auto data_dump = data.dump();
     auto s1 = data_dump.substr(0, 10);
-    auto s2 = data_dump.substr(5);
+    auto s2 = data_dump.substr(10);
 
     nlohmann::json data_json1{{"job_uuid", job_uuid}, {"result", s1}, {"meta", {"piece_id", 1}}};
     std::string data_str1 = data_json1.dump();
@@ -199,7 +199,7 @@ TEST(ComputationToDbGateTest, ReadModelParamJsonPieceTest)
     // readして比較
     auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
     auto read_data = cc_to_db->readModelparamJson(job_uuid);
-    EXPECT_EQ(read_data, data_dump);
+    EXPECT_EQ(read_data, data);
 
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
 }

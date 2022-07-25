@@ -51,9 +51,16 @@ std::vector<std::string> Client::readModelparam(const std::string &job_uuid) con
     auto n1ql = AnyToDb::N1QL("result");
     auto response = client_share.executeQuery(n1ql.select_id("job_uuid", job_uuid));
     auto response_json = nlohmann::json::parse(response);
+    std::string result_str = "";
+    for (const auto &res : response_json)
+    {
+        result_str += res["result"];
+    }
+
+    auto result_json = nlohmann::json::parse(result_str);
     std::vector<std::string> ret;
-    ret.reserve(response_json[0]["result"].size());
-    for (const auto &val : response_json[0]["result"])
+    ret.reserve(result_json.size());
+    for (const auto &val : result_json)
     {
         ret.emplace_back(val);
     }
@@ -64,7 +71,14 @@ nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
     auto n1ql = AnyToDb::N1QL("result");
     auto response = client_share.executeQuery(n1ql.select_id("job_uuid", job_uuid));
     auto response_json = nlohmann::json::parse(response);
-    return response_json[0]["result"];
+    std::string result_str = "";
+    for (const auto &res : response_json)
+    {
+        result_str += res["result"];
+    }
+
+    auto ret = nlohmann::json::parse(result_str);
+    return ret;
 }
 
 void Client::registerJob(const std::string &job_uuid, const int &status) const
