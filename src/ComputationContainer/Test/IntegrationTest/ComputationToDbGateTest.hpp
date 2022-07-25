@@ -96,7 +96,61 @@ TEST(ComputationToDbGateTest, StreamTest)
     any_to_db.executeQuery(n1ql.delete_order(1000000));
 }
 
-TEST(ComputationToDbGateTest, ReadModelParamJsoneTest)
+TEST(ComputationToDbGateTest, ReadModelParamTest)
+{
+    // setting
+    auto any_to_db = AnyToDb::Client("sharedb");
+    auto n1ql = AnyToDb::N1QL("result");
+    auto job_uuid = "read_test_id";
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+
+    // read用データ送信
+    nlohmann::json data = std::vector<std::string>{"1", "2", "3"};
+    auto data_dump = data.dump();
+    nlohmann::json data_json{
+        {"job_uuid", job_uuid}, {"result", data_dump}, {"meta", {"piece_id", 1}}};
+    std::string data_str = data_json.dump();
+    any_to_db.executeQuery(n1ql.insert(data_str));
+
+    // readして比較
+    auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
+    auto read_data = cc_to_db->readModelparamJson(job_uuid);
+    EXPECT_EQ(read_data, data_dump);
+
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+}
+
+TEST(ComputationToDbGateTest, ReadModelParamPieceTest)
+{
+    // setting
+    auto any_to_db = AnyToDb::Client("sharedb");
+    auto n1ql = AnyToDb::N1QL("result");
+    auto job_uuid = "read_test_id";
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+
+    // 2つに分割してread用データ送信
+    nlohmann::json data = std::vector<std::string>{"1", "2", "3"};
+    auto data_dump = data.dump();
+    auto s1 = data_dump.substr(0, 5);
+    auto s2 = data_dump.substr(5);
+
+    nlohmann::json data_json1{{"job_uuid", job_uuid}, {"result", s1}, {"meta", {"piece_id", 1}}};
+    std::string data_str1 = data_json1.dump();
+    any_to_db.executeQuery(n1ql.insert(data_str1));
+
+    nlohmann::json data_json2{{"job_uuid", job_uuid}, {"result", s2}, {"meta", {"piece_id", 2}}};
+    std::string data_str2 = data_json2.dump();
+    any_to_db.executeQuery(n1ql.insert(data_str2));
+
+    // readして比較
+    auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
+    auto read_data = cc_to_db->readModelparamJson(job_uuid);
+    EXPECT_EQ(read_data, data_dump);
+
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+}
+
+TEST(ComputationToDbGateTest, ReadModelParamJsonTest)
 {
     // setting
     auto any_to_db = AnyToDb::Client("sharedb");
@@ -106,14 +160,46 @@ TEST(ComputationToDbGateTest, ReadModelParamJsoneTest)
 
     // read用データ送信
     nlohmann::json data{{"val1", "2"}, {"to", {{"val2", "5"}, {"val3", "7"}}}};
-    nlohmann::json data_json{{"job_uuid", job_uuid}, {"result", data}};
+    auto data_dump = data.dump();
+    nlohmann::json data_json{
+        {"job_uuid", job_uuid}, {"result", data_dump}, {"meta", {"piece_id", 1}}};
     std::string data_str = data_json.dump();
     any_to_db.executeQuery(n1ql.insert(data_str));
 
     // readして比較
     auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
     auto read_data = cc_to_db->readModelparamJson(job_uuid);
-    EXPECT_EQ(read_data, data);
+    EXPECT_EQ(read_data, data_dump);
+
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+}
+
+TEST(ComputationToDbGateTest, ReadModelParamJsonPieceTest)
+{
+    // setting
+    auto any_to_db = AnyToDb::Client("sharedb");
+    auto n1ql = AnyToDb::N1QL("result");
+    auto job_uuid = "read_json_test_id";
+    any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
+
+    // 2つに分割してread用データ送信
+    nlohmann::json data{{"val1", "2"}, {"to", {{"val2", "5"}, {"val3", "7"}}}};
+    auto data_dump = data.dump();
+    auto s1 = data_dump.substr(0, 10);
+    auto s2 = data_dump.substr(5);
+
+    nlohmann::json data_json1{{"job_uuid", job_uuid}, {"result", s1}, {"meta", {"piece_id", 1}}};
+    std::string data_str1 = data_json1.dump();
+    any_to_db.executeQuery(n1ql.insert(data_str1));
+
+    nlohmann::json data_json2{{"job_uuid", job_uuid}, {"result", s2}, {"meta", {"piece_id", 2}}};
+    std::string data_str2 = data_json2.dump();
+    any_to_db.executeQuery(n1ql.insert(data_str2));
+
+    // readして比較
+    auto cc_to_db = qmpc::ComputationToDbGate::Client::getInstance();
+    auto read_data = cc_to_db->readModelparamJson(job_uuid);
+    EXPECT_EQ(read_data, data_dump);
 
     any_to_db.executeQuery(n1ql.delete_id("job_uuid", job_uuid));
 }
