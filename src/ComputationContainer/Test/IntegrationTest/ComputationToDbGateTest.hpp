@@ -107,8 +107,8 @@ TEST(ComputationToDbGateTest, ReadModelParamTest)
     // read用データ送信
     auto data = std::vector<std::string>{"1", "2", "3"};
     auto data_dump = nlohmann::json(data).dump();
-    nlohmann::json data_json{
-        {"job_uuid", job_uuid}, {"result", data_dump}, {"meta", {"piece_id", 1}}};
+    auto meta = nlohmann::json{{"piece_id", 1}};
+    nlohmann::json data_json{{"job_uuid", job_uuid}, {"result", data_dump}, {"meta", meta}};
     std::string data_str = data_json.dump();
     any_to_db.executeQuery(n1ql.insert(data_str));
 
@@ -134,11 +134,13 @@ TEST(ComputationToDbGateTest, ReadModelParamPieceTest)
     auto s1 = data_dump.substr(0, 5);
     auto s2 = data_dump.substr(5);
 
-    nlohmann::json data_json1{{"job_uuid", job_uuid}, {"result", s1}, {"meta", {"piece_id", 1}}};
+    auto meta1 = nlohmann::json{{"piece_id", 1}};
+    nlohmann::json data_json1{{"job_uuid", job_uuid}, {"result", s1}, {"meta", meta1}};
     std::string data_str1 = data_json1.dump();
     any_to_db.executeQuery(n1ql.insert(data_str1));
 
-    nlohmann::json data_json2{{"job_uuid", job_uuid}, {"result", s2}, {"meta", {"piece_id", 2}}};
+    auto meta2 = nlohmann::json{{"piece_id", 2}};
+    nlohmann::json data_json2{{"job_uuid", job_uuid}, {"result", s2}, {"meta", meta2}};
     std::string data_str2 = data_json2.dump();
     any_to_db.executeQuery(n1ql.insert(data_str2));
 
@@ -161,8 +163,8 @@ TEST(ComputationToDbGateTest, ReadModelParamJsonTest)
     // read用データ送信
     nlohmann::json data{{"val1", "2"}, {"to", {{"val2", "5"}, {"val3", "7"}}}};
     auto data_dump = data.dump();
-    nlohmann::json data_json{
-        {"job_uuid", job_uuid}, {"result", data_dump}, {"meta", {"piece_id", 1}}};
+    auto meta = nlohmann::json{{"piece_id", 1}};
+    nlohmann::json data_json{{"job_uuid", job_uuid}, {"result", data_dump}, {"meta", meta}};
     std::string data_str = data_json.dump();
     any_to_db.executeQuery(n1ql.insert(data_str));
 
@@ -188,11 +190,13 @@ TEST(ComputationToDbGateTest, ReadModelParamJsonPieceTest)
     auto s1 = data_dump.substr(0, 10);
     auto s2 = data_dump.substr(10);
 
-    nlohmann::json data_json1{{"job_uuid", job_uuid}, {"result", s1}, {"meta", {"piece_id", 1}}};
+    auto meta1 = nlohmann::json{{"piece_id", 1}};
+    nlohmann::json data_json1{{"job_uuid", job_uuid}, {"result", s1}, {"meta", meta1}};
     std::string data_str1 = data_json1.dump();
     any_to_db.executeQuery(n1ql.insert(data_str1));
 
-    nlohmann::json data_json2{{"job_uuid", job_uuid}, {"result", s2}, {"meta", {"piece_id", 2}}};
+    auto meta2 = nlohmann::json{{"piece_id", 2}};
+    nlohmann::json data_json2{{"job_uuid", job_uuid}, {"result", s2}, {"meta", meta2}};
     std::string data_str2 = data_json2.dump();
     any_to_db.executeQuery(n1ql.insert(data_str2));
 

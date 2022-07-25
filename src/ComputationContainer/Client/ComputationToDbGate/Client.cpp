@@ -51,12 +51,21 @@ std::vector<std::string> Client::readModelparam(const std::string &job_uuid) con
     auto n1ql = AnyToDb::N1QL("result");
     auto response = client_share.executeQuery(n1ql.select_id("job_uuid", job_uuid));
     auto response_json = nlohmann::json::parse(response);
-    std::string result_str = "";
+
+    // piece順に連結する
+    std::map<int, std::string> piece_map;
     for (const auto &res : response_json)
     {
-        result_str += res["result"];
+        piece_map.emplace(res["meta"]["piece_id"], res["result"]);
+    }
+    std::string result_str = "";
+    for (const auto &[_, result] : piece_map)
+    {
+        static_cast<void>(_);  // NOTE: unused warningを消すため
+        result_str += result;
     }
 
+    // parseして値を返す
     auto result_json = nlohmann::json::parse(result_str);
     std::vector<std::string> ret;
     ret.reserve(result_json.size());
@@ -71,12 +80,21 @@ nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
     auto n1ql = AnyToDb::N1QL("result");
     auto response = client_share.executeQuery(n1ql.select_id("job_uuid", job_uuid));
     auto response_json = nlohmann::json::parse(response);
-    std::string result_str = "";
+
+    // piece順に連結する
+    std::map<int, std::string> piece_map;
     for (const auto &res : response_json)
     {
-        result_str += res["result"];
+        piece_map.emplace(res["meta"]["piece_id"], res["result"]);
+    }
+    std::string result_str = "";
+    for (const auto &[_, result] : piece_map)
+    {
+        static_cast<void>(_);  // NOTE: unused warningを消すため
+        result_str += result;
     }
 
+    // parseして値を返す
     auto ret = nlohmann::json::parse(result_str);
     return ret;
 }
