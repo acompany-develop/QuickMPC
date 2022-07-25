@@ -22,11 +22,11 @@ type MetaResult struct {
 	PieceID int32 `json:"piece_id"`
 }
 type ComputationResult struct {
-	ID      string      `json:"id"`
-	JobUUID string      `json:"job_uuid"`
-	Status  int32       `json:"status"`
-	Result  interface{} `json:"result"`
-	Meta    MetaResult  `json:"meta"`
+	ID      string     `json:"id"`
+	JobUUID string     `json:"job_uuid"`
+	Status  int32      `json:"status"`
+	Result  string     `json:"result"`
+	Meta    MetaResult `json:"meta"`
 }
 
 type Client struct{}
@@ -35,7 +35,7 @@ type M2DbClient interface {
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
 	GetComputationResult(string) ([]*ComputationResult, error)
-	InsertModelParams(string, string) error
+	InsertModelParams(string, string, int32) error
 	GetDataList() (string, error)
 }
 
@@ -339,23 +339,18 @@ func (c Client) getComputationResult(conn *grpc.ClientConn, jobUUID string) ([]*
 	return computationResults, nil
 }
 
-type Params struct {
-	JobUUID string      `json:"job_uuid"`
-	Result  interface{} `json:"result"`
-}
-
 // DBGにモデルパラメータを送信する
-func (c Client) InsertModelParams(jobUUID string, params string) error {
+func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) error {
 	conn, err := connect()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
-	return c.insertModelParams(conn, jobUUID, params)
+	return c.insertModelParams(conn, jobUUID, params, pieceId)
 }
 
 // (conn)にモデルパラメータを送信する
-func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params string) error {
+func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params string, pieceId int32) error {
 	cnt, err := c.count(conn, "job_uuid", jobUUID, "result")
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
@@ -366,15 +361,12 @@ func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params 
 		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
 	}
 
-	var paramsJSON interface{}
-	err = json.Unmarshal([]byte(params), &paramsJSON)
-	if err != nil {
-		return err
-	}
-
-	saveParams := Params{
+	saveParams := ComputationResult{
 		JobUUID: jobUUID,
-		Result:  paramsJSON,
+		Meta: MetaResult{
+			PieceID: pieceId,
+		},
+		Result: params,
 	}
 
 	bytes, err := json.Marshal(saveParams)

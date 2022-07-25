@@ -19,11 +19,11 @@ func (s *server) ExecuteQuery(in *pb.ExecuteQueryRequest, stream pb.AnyToDbGate_
 	AppLogger.Infof("Received: %v", in.GetQuery())
 	if strings.Contains(in.GetQuery(), "existID") {
 		stream.Send(&pb.ExecuteQueryResponse{
-			Result:  "[{\"data_id\":\"existID\",\"meta\":{\"piece_id\":1,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":[\"1\",\"2\",\"3\"]},",
+			Result:  "[{\"data_id\":\"existID\",\"meta\":{\"piece_id\":1,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\"},",
 			PieceId: int32(1),
 		})
 		stream.Send(&pb.ExecuteQueryResponse{
-			Result:  "{\"data_id\":\"existID\",\"meta\":{\"piece_id\":2,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":[\"4\",\"5\",\"6\"]}]",
+			Result:  "{\"data_id\":\"existID\",\"meta\":{\"piece_id\":2,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":\"[\\\"4\\\",\\\"5\\\",\\\"6\\\"]\"}]",
 			PieceId: int32(2),
 		})
 	} else {
@@ -142,7 +142,8 @@ func TestInsertModelParams(t *testing.T) {
 	// モデルパラメータ送信
 	const jobUUID string = "notExistID"
 	const params string = "[\"1\",\"2\",\"3\"]"
-	err := client.insertModelParams(conn, jobUUID, params)
+	const pieceId int32 = 1
+	err := client.insertModelParams(conn, jobUUID, params, pieceId)
 	if err != nil {
 		t.Error("insert model parameters faild: " + err.Error())
 	}
@@ -156,7 +157,8 @@ func TestInsertModelParamsDuplicate(t *testing.T) {
 	// モデルパラメータ送信
 	const jobUUID string = "existID"
 	const params string = "[\"1\",\"2\",\"3\"]"
-	err := client.insertModelParams(conn, jobUUID, params)
+	const pieceId int32 = 1
+	err := client.insertModelParams(conn, jobUUID, params, pieceId)
 	if err == nil {
 		t.Error("insert duplicate model parameters success error")
 	}
