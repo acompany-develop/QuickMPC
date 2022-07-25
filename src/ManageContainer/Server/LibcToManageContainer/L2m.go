@@ -265,10 +265,12 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 func (s *server) SendModelParam(ctx context.Context, in *pb.SendModelParamRequest) (*pb.SendModelParamResponse, error) {
 	AppLogger.Info("Send Model Parameters;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
+	AppLogger.Info("pieceId: " + strconv.Itoa(int(in.GetPieceId())))
 
 	jobUUID := in.GetJobUuid()
 	params := in.GetParams()
 	token := in.GetToken()
+	pieceId := in.GetPieceId()
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
@@ -278,7 +280,7 @@ func (s *server) SendModelParam(ctx context.Context, in *pb.SendModelParamReques
 		}, errToken
 	}
 
-	err := s.m2dbclient.InsertModelParams(jobUUID, params)
+	err := s.m2dbclient.InsertModelParams(jobUUID, params, pieceId)
 	if err != nil {
 		AppLogger.Error(err)
 		return &pb.SendModelParamResponse{
