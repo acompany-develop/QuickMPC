@@ -24,7 +24,7 @@ func (localDbGate) GetSchema(string) ([]string, error) {
 func (localDbGate) GetComputationResult(string) ([]*m2db.ComputationResult, error) {
 	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil
 }
-func (localDbGate) InsertModelParams(string, string) error {
+func (localDbGate) InsertModelParams(string, string, int32) error {
 	return nil
 }
 func (localDbGate) GetDataList() (string, error) {
