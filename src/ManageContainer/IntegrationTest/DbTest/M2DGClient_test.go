@@ -320,6 +320,41 @@ func TestInsertModelParamsParallel(t *testing.T) {
 	wg.Wait()
 }
 
+// piece分割されたmodel paramが正常にinsertされるか
+func TestInsertModelParamsPiece(t *testing.T) {
+	jobUUID := "testInsertModelParamsPiece"
+	uft.DeleteId(t, jobUUID)
+	client := m2db.Client{}
+
+	// params送信
+	params := fmt.Sprintf("[\"1\",\"2\",\"3\"]")
+	err := client.InsertModelParams(jobUUID, params, 1)
+	if err != nil {
+		t.Error("insert model params1 faild: " + err.Error())
+	}
+
+	err = client.InsertModelParams(jobUUID, params, 2)
+	if err != nil {
+		t.Error("insert model params1 faild: " + err.Error())
+	}
+
+	// paramを取り出して比較
+	response, _ := m2db.ExecuteQuery(conn, delete_query("result", "job_uuid", jobUUID))
+
+	var deleteResult []m2db.ComputationResult
+	err = json.Unmarshal([]byte(response), &deleteResult)
+	if err != nil {
+		t.Error("json parses faild: " + err.Error())
+	}
+
+	for _, res := range deleteResult {
+		if res.Result != params {
+			t.Error("insert model params test faild: " + err.Error())
+		}
+	}
+	uft.DeleteId(t, jobUUID)
+}
+
 func testInsertPiece(t *testing.T, dataID string, pieces []int) {
 	uft.DeleteId(t, dataID)
 	client := m2db.Client{}

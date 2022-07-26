@@ -146,10 +146,19 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 	return c.insertShares(conn, dataID, schema, pieceID, shares, sent_at)
 }
 
-func (c Client) existPieceID(conn *grpc.ClientConn, dataID string, pieceID int32) (bool, error) {
-	ls.Lock(dataID)
-	defer ls.Unlock(dataID)
-	query := fmt.Sprintf("SELECT x.meta, meta().id FROM `share` x WHERE x.data_id = '%s';", dataID)
+func (c Client) existPieceID(conn *grpc.ClientConn, bucket string, ID string, pieceID int32) (bool, error) {
+	var idName string
+	if bucket == "share" {
+		idName = "data_id"
+	} else if bucket == "result" {
+		idName = "job_uuid"
+	} else {
+		return false, nil
+	}
+
+	ls.Lock(ID)
+	defer ls.Unlock(ID)
+	query := fmt.Sprintf("SELECT x.meta, meta().id FROM `%s` x WHERE x.%s= '%s';", bucket, idName, ID)
 	resJson, err := ExecuteQuery(conn, query)
 
 	var res []Share
@@ -168,7 +177,7 @@ func (c Client) existPieceID(conn *grpc.ClientConn, dataID string, pieceID int32
 // (conn)にシェアを送信する
 func (c Client) insertShares(conn *grpc.ClientConn, dataID string, schema []string, pieceID int32, shares string, sent_at string) error {
 	// 重複チェック
-	exist, err := c.existPieceID(conn, dataID, pieceID)
+	exist, err := c.existPieceID(conn, "share", dataID, pieceID)
 	if err != nil {
 		return err
 	}
@@ -352,13 +361,12 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 
 // (conn)にモデルパラメータを送信する
 func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params string, pieceId int32) error {
-	cnt, err := c.count(conn, "job_uuid", jobUUID, "result")
-	ls.Lock(jobUUID)
-	defer ls.Unlock(jobUUID)
+	// 重複チェック
+	exist, err := c.existPieceID(conn, "result", jobUUID, pieceId)
 	if err != nil {
 		return err
 	}
-	if cnt > 0 {
+	if exist {
 		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
 	}
 
