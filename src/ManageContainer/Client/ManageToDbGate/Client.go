@@ -12,6 +12,7 @@ import (
 
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/AnyToDbGate"
+	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 	"google.golang.org/grpc"
 )
 
@@ -367,6 +368,7 @@ func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params 
 			PieceID: pieceId,
 		},
 		Result: params,
+		Status: int32(pb_types.JobStatus_COMPLETED),
 	}
 
 	bytes, err := json.Marshal(saveParams)
