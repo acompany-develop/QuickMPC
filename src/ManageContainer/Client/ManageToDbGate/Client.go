@@ -153,7 +153,8 @@ func (c Client) existPieceID(conn *grpc.ClientConn, bucket string, ID string, pi
 	} else if bucket == "result" {
 		idName = "job_uuid"
 	} else {
-		return false, nil
+		err := fmt.Errorf("'bucket' must be `share` or `result`. %s is not found.", bucket)
+		return false, err
 	}
 
 	ls.Lock(ID)

@@ -327,13 +327,14 @@ func TestInsertModelParamsPiece(t *testing.T) {
 	client := m2db.Client{}
 
 	// params送信
-	params := fmt.Sprintf("[\"1\",\"2\",\"3\"]")
-	err := client.InsertModelParams(jobUUID, params, 1)
+	params1 := fmt.Sprintf("[\"1\",\"2\",\"3\"]")
+	err := client.InsertModelParams(jobUUID, params1, 1)
 	if err != nil {
 		t.Error("insert model params1 faild: " + err.Error())
 	}
 
-	err = client.InsertModelParams(jobUUID, params, 2)
+	params2 := fmt.Sprintf("[\"4\",\"5\",\"6\"]")
+	err = client.InsertModelParams(jobUUID, params2, 2)
 	if err != nil {
 		t.Error("insert model params1 faild: " + err.Error())
 	}
@@ -347,10 +348,11 @@ func TestInsertModelParamsPiece(t *testing.T) {
 		t.Error("json parses faild: " + err.Error())
 	}
 
-	for _, res := range deleteResult {
-		if res.Result != params {
-			t.Error("insert model params test faild: " + err.Error())
-		}
+	if deleteResult[0].Result != params1 {
+		t.Error("insert model params test faild: " + err.Error())
+	}
+	if deleteResult[1].Result != params2 {
+		t.Error("insert model params test faild: " + err.Error())
 	}
 	uft.DeleteId(t, jobUUID)
 }
