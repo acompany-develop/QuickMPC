@@ -348,11 +348,17 @@ func TestInsertModelParamsPiece(t *testing.T) {
 		t.Error("json parses faild: " + err.Error())
 	}
 
-	if deleteResult[0].Result != params1 {
-		t.Error("insert model params test faild: " + err.Error())
-	}
-	if deleteResult[1].Result != params2 {
-		t.Error("insert model params test faild: " + err.Error())
+	for _, res := range deleteResult {
+		resultParams := res.Result
+		var correctParams string
+		if res.Meta.PieceID == 1 {
+			correctParams = params1
+		} else {
+			correctParams = params2
+		}
+		if resultParams != correctParams {
+			t.Error("insert model params test faild: " + err.Error())
+		}
 	}
 	uft.DeleteId(t, jobUUID)
 }
