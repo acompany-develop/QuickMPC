@@ -1,0 +1,2 @@
+CREATE PRIMARY INDEX `#primary` ON `result` USING GSI WITH {"defer_build": true};
+BUILD INDEX ON `result` (`#primary`);

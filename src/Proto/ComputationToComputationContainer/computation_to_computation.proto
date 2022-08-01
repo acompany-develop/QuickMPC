@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package computationtocomputation;
+
+// 引数無しにする際に使用
+import "google/protobuf/empty.proto";
+
+/**
+ * ComputationToComputation service
+*/
+service ComputationToComputation {
+    // send share to another computation container
+    rpc ExchangeShare(Share) returns(google.protobuf.Empty) {}
+    rpc ExchangeShares(stream Shares) returns(google.protobuf.Empty) {}
+}
+/**
+ share_id : share_id
+ job_id : job_id_number
+ thread_id : thread_id_number
+*/
+message Address{
+    int32 share_id = 1;
+    uint32 job_id = 2;
+    int32 thread_id = 3;
+}
+/**
+ * the message of share
+*/
+message Share {
+    string value = 1; // the value of share
+    Address address_id = 2; // the id of share
+    int32 party_id = 3; // the id of party(0, 1, 2)
+}
+
+/**
+ * the message of shares
+*/
+message Shares {
+    message Share{
+        string value = 1;
+        Address address_id = 2;
+    }
+    repeated Share share_list = 1; // list of share
+    int32 party_id = 2;
+}

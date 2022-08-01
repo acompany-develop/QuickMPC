@@ -1,0 +1,3 @@
+build --cxxopt=-std=c++17 --cxxopt=-Wall --cxxopt=-O2 --output_filter='^//((?!(external):).)*$'  --cxxopt=-lboost_stacktrace_addr2line --cxxopt=-DBOOST_STACKTRACE_LINK --cxxopt=-DBOOST_STACKTRACE_USE_ADDR2LINE  --cxxopt=-g --cxxopt=-ldl
+
+build:debug --cxxopt=-std=c++17 --cxxopt=-Wall --cxxopt=-O2 --output_filter='^//((?!(external):).)*$' --cxxopt=-lboost_stacktrace_addr2line --cxxopt=-DDEBUG --cxxopt=-DBOOST_STACKTRACE_LINK --cxxopt=-DBOOST_STACKTRACE_USE_ADDR2LINE --cxxopt=-g --cxxopt=-ldl

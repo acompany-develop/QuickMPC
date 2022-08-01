@@ -1,0 +1,18 @@
+{
+    "appcode": "",
+    "depcfg": {
+    },
+    "appname": "",
+    "settings": {
+        "dcp_stream_boundary": "everything",
+        "deadline_timeout": 62,
+        "deployment_status": true,
+        "description": "",
+        "execution_timeout": 60,
+        "log_level": "DEBUG",
+        "n1ql_consistency": "none",
+        "processing_status": true,
+        "user_prefix": "eventing",
+        "worker_count": 1
+    }
+}

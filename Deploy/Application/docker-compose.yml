@@ -1,0 +1,384 @@
+x-aws-vpc: ${AWS_VPC}
+x-aws-cluster: ${AWS_ECS_CLUSTER}
+x-aws-loadbalancer: ${AWS_ELB}
+
+version: "3.3"
+services:
+  computation_container:
+    container_name: computation_container
+    image: ${IMAGE_URI}/cc:${IMAGE_TAG}
+    ports:
+      - target: 50020
+        published: 50020
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+      - target: 51020
+        published: 51020
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+      - target: 50010
+        published: 50010
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+    env_file:
+      - ./Config/Party${PARTY_ID}/ComputationContainer/.env
+    depends_on:
+      dbgate_container:
+        condition: service_healthy
+    command: ["/bin/ash", "-c", "printenv && bazel-bin/computation_container"]
+    healthcheck:
+      test:
+        - CMD
+        - /bin/sh
+        - -c
+        - |-
+          /bin/grpc_health_probe -addr=:50010 &&
+          /bin/grpc_health_probe -addr=:50020 &&
+          /bin/grpc_health_probe -addr=:51020
+      interval: 5s  # ECS では interval を 5s 以上に設定する必要がある
+      timeout: 5s
+    x-aws-role:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow
+        Action:
+          - ssmmessages:CreateControlChannel
+          - ssmmessages:CreateDataChannel
+          - ssmmessages:OpenControlChannel
+          - ssmmessages:OpenDataChannel
+        Resource: '*'
+
+  manage_container:
+    container_name: manage_container
+    image: ${IMAGE_URI}/mc:${IMAGE_TAG:-latest}
+    ports:
+      - target: 52010
+        published: 52010
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+      - target: 50011
+        published: 50011
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+      - target: 52020
+        published: 52020
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+    env_file:
+      - ./Config/Party${PARTY_ID}/ManageContainer/.env
+    command: ["/bin/ash", "-c", "printenv && ./ManageContainer"]
+    healthcheck:
+      test:
+        - CMD
+        - /bin/sh
+        - -c
+        - |-
+          /bin/grpc_health_probe -addr=:52010 &&
+          /bin/grpc_health_probe -addr=:50011 &&
+          /bin/grpc_health_probe -addr=:52020
+      interval: 5s  # ECS では interval を 5s 以上に設定する必要がある
+      timeout: 5s
+      start_period: 5s
+    depends_on:
+      computation_container:
+        condition: service_healthy
+    x-aws-role:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow
+        Action:
+          - ssmmessages:CreateControlChannel
+          - ssmmessages:CreateDataChannel
+          - ssmmessages:OpenControlChannel
+          - ssmmessages:OpenDataChannel
+        Resource: '*'
+
+  manage_envoy_container:
+    container_name: manage_envoy_container
+    image: ${IMAGE_URI}/mc_envoy:${IMAGE_TAG:-latest}
+    ports:
+      - target: 9000
+        published: 9000
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+    env_file:
+      - ./Config/Party${PARTY_ID}/ManageContainer/envoy.env
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
+    depends_on:
+      manage_container:
+        condition: service_healthy
+    x-aws-role:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow
+        Action:
+          - ssmmessages:CreateControlChannel
+          - ssmmessages:CreateDataChannel
+          - ssmmessages:OpenControlChannel
+          - ssmmessages:OpenDataChannel
+        Resource: '*'
+
+  dbgate_container:
+    container_name: dbgate_container
+    image: ${IMAGE_URI}/dbgate:${IMAGE_TAG:-latest}
+    env_file:
+      - ./Config/Party${PARTY_ID}/DbContainer/DbGate/.env
+    command: ["/bin/bash", "-lc", "printenv && ./DbGate"]
+    depends_on:
+      sharedb_container:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - /bin/grpc_health_probe
+        - -addr=:50000
+      interval: 5s  # ECS では interval を 5s 以上に設定する必要がある
+      timeout: 5s
+      start_period: 5s
+    x-aws-role:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow
+        Action:
+          - ssmmessages:CreateControlChannel
+          - ssmmessages:CreateDataChannel
+          - ssmmessages:OpenControlChannel
+          - ssmmessages:OpenDataChannel
+        Resource: '*'
+
+  sharedb_container:
+    container_name: sharedb_container
+    image: ${IMAGE_URI}/sharedb:${IMAGE_TAG:-latest}
+    volumes:
+      - type: volume
+        source: sharedb
+        target: /opt/couchbase/var
+      - type: volume
+        source: sharedb-initialized
+        target: /nodestatus
+    ports:
+      - target: 8091
+        published: 8091
+        x-aws-protocol: http
+        protocol: tcp
+        mode: host
+    env_file:
+      - ./Config/Party${PARTY_ID}/DbContainer/Db/sharedb/.env
+    depends_on:
+      secrets-server:
+        condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - /bin/bash
+        - -l
+        - -c
+        - /scripts/health-check.sh
+      interval: 5s  # ECS では interval を 5s 以上に設定する必要がある
+      timeout: 5s
+      retries: 10 # ECS では retries を 10 以下に設定する必要がある
+    ulimits:
+      nofile:
+        soft: 500000
+        hard: 500000
+    x-aws-role:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow
+        Action:
+          - ssmmessages:CreateControlChannel
+          - ssmmessages:CreateDataChannel
+          - ssmmessages:OpenControlChannel
+          - ssmmessages:OpenDataChannel
+        Resource: '*'
+
+  secrets-server:
+    container_name: secrets-server
+    image: ${IMAGE_URI}/secrets-server:${IMAGE_TAG:-latest}
+    x-aws-role:
+      Version: '2012-10-17'
+      Statement:
+      - Effect: Allow
+        Action:
+          - ssmmessages:CreateControlChannel
+          - ssmmessages:CreateDataChannel
+          - ssmmessages:OpenControlChannel
+          - ssmmessages:OpenDataChannel
+        Resource: '*'
+
+volumes:
+  sharedb:
+  sharedb-initialized:
+
+x-aws-cloudformation:
+  Resources:
+    ComputationcontainerService:
+      Properties:
+        EnableExecuteCommand: true
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            AssignPublicIp: DISABLED
+            # 現在単一の AZ に存在するプライベートサブネット 1 つに
+            # ECS タスクが配置されるようになっている。
+            # それぞれ AZ が異なる 複数のプライベートサブネット上に配置したい場合、
+            # 以下のリソースを追加で確保する必要がある
+            # - Elastic IP
+            # - NAT gateways
+            Subnets:
+            - ${AWS_PRIVATE_SUBNET}
+    ManagecontainerService:
+      Properties:
+        EnableExecuteCommand: true
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            AssignPublicIp: DISABLED
+            Subnets:
+            - ${AWS_PRIVATE_SUBNET}
+    ManageenvoycontainerService:
+      Properties:
+        EnableExecuteCommand: true
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            AssignPublicIp: DISABLED
+            Subnets:
+            - ${AWS_PRIVATE_SUBNET}
+    SharedbcontainerService:
+      Properties:
+        EnableExecuteCommand: true
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            AssignPublicIp: DISABLED
+            Subnets:
+            - ${AWS_PRIVATE_SUBNET}
+    DbgatecontainerService:
+      Properties:
+        EnableExecuteCommand: true
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            AssignPublicIp: DISABLED
+            Subnets:
+            - ${AWS_PRIVATE_SUBNET}
+    SecretsserverService:
+      Properties:
+        EnableExecuteCommand: true
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            AssignPublicIp: DISABLED
+            Subnets:
+            - ${AWS_PRIVATE_SUBNET}
+    ComputationcontainerTCP50010Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 50010
+        Protocol: HTTPS
+    ComputationcontainerTCP50020Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 50020
+        Protocol: HTTPS
+    ComputationcontainerTCP51020Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 51020
+        Protocol: HTTPS
+    SharedbcontainerTCP8091Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 8091
+        Protocol: HTTPS
+    ManagecontainerTCP52010Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 52010
+        Protocol: HTTPS
+    ManagecontainerTCP50011Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 50011
+        Protocol: HTTPS
+    ManagecontainerTCP52020Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 52020
+        Protocol: HTTPS
+    ManageenvoycontainerTCP9000Listener:
+      Properties:
+        Certificates:
+          - CertificateArn: ${AWS_ELB_CERT}
+        Port: 9000
+        Protocol: HTTPS
+    ComputationcontainerTCP50010TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /grpc.health.v1.Health/Check
+        Matcher:
+          GrpcCode: 0
+        ProtocolVersion: GRPC
+    ComputationcontainerTCP50020TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /grpc.health.v1.Health/Check
+        Matcher:
+          GrpcCode: 0
+        ProtocolVersion: GRPC
+    ComputationcontainerTCP51020TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /grpc.health.v1.Health/Check
+        Matcher:
+          GrpcCode: 0
+        ProtocolVersion: GRPC
+    SharedbcontainerTCP8091TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /ui/index.html
+        Matcher:
+          HttpCode: 200-299
+    ManagecontainerTCP52010TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /grpc.health.v1.Health/Check
+        Matcher:
+          GrpcCode: 0
+        ProtocolVersion: GRPC
+    ManagecontainerTCP50011TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /grpc.health.v1.Health/Check
+        Matcher:
+          GrpcCode: 0
+        ProtocolVersion: GRPC
+    ManagecontainerTCP52020TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /grpc.health.v1.Health/Check
+        Matcher:
+          GrpcCode: 0
+        ProtocolVersion: GRPC
+    ManageenvoycontainerTCP9000TargetGroup:
+      Properties:
+        HealthCheckProtocol: HTTP
+        HealthCheckPath: /grpc.health.v1.Health/Check
+        Matcher:
+          GrpcCode: 0
+        ProtocolVersion: GRPC
+    SharedbcontainerTaskDefinition:
+      Properties:
+        # https://docs.couchbase.com/cloud/clusters/sizing.html#minimum-specification
+        # 最低システム要件が 4 vCPU 以上であり、これより小さくすると不安定になる
+        Cpu: 4096 # 4 vCPU
+        Memory: 30720 # 30 GB

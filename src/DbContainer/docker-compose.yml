@@ -1,0 +1,80 @@
+version: "3.3"
+services:
+  dbg:
+    container_name: dbgate_container1
+    tty: true # 起動しっぱなし
+    expose:
+      - "50000"
+    build:
+      context: ../../
+      dockerfile: src/DbContainer/DbGate/Dockerfile
+      target: src
+      args:
+        - lowercase_DB_NAMES=sharedb
+    volumes:
+      - type: bind
+        source: ./DbGate
+        target: /QuickMPC
+      - type: bind
+        source: ../../Config/DbContainer/DbGate1
+        target: /QuickMPC/Config
+      - type: bind
+        source: ../Proto
+        target: /Proto
+      # 開発環境のフォーマッタを統一
+      - type: bind
+        source: ../../.vscode
+        target: /QuickMPC/.vscode
+    env_file:
+      - ../../Config/DbContainer/DbGate1/.src.env
+    networks:
+      default: {}
+      shared-network:
+        ipv4_address: 10.0.1.130
+    depends_on:
+      sharedb:
+        condition: service_started
+
+  sharedb:
+    container_name: sharedb_container1
+    build:
+      context: ../../
+      dockerfile: src/DbContainer/Db/Dockerfile
+      target: src
+      args:
+        - lowercase_DB_NAME=sharedb
+    volumes:
+      - type: bind
+        source: ./Db/shareDb/data
+        target: /opt/couchbase/var
+      - type: bind
+        source: ./Db/shareDb/nodestatus
+        target: /nodestatus
+    ports:
+      - "8091-8094:8091-8094"
+      - "11210:11210"
+    env_file:
+      - ../../Config/DbContainer/Db/sharedb/.env
+    networks:
+      default: {}
+      shared-network:
+        ipv4_address: 10.0.1.131
+    depends_on:
+      secrets-server:
+        condition: service_started
+
+  secrets-server:
+    container_name: secrets-server
+    tty: true
+    build:
+      context: ../../
+      dockerfile: src/DbContainer/secrets-server.Dockerfile
+      target: src
+      args:
+        - lowercase_DB_NAMES=sharedb
+    networks:
+      - default
+
+networks:
+  shared-network:
+    external: true

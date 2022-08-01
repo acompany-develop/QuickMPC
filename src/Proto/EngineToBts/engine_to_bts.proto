@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package enginetobts;
+
+option go_package = "github.com/acompany-develop/QuickMPC-BTS/src/Proto/EngineToBts";
+
+service EngineToBts {
+    rpc GetTriples(GetTriplesRequest) returns (GetTriplesResponse) {}
+}
+
+message GetTriplesRequest{
+    uint32 job_id = 1;
+    uint32 amount = 2;
+}
+
+message Triple{
+    int64 a = 2;
+    int64 b = 3;
+    int64 c = 4;
+}
+
+message GetTriplesResponse{
+    repeated Triple triples = 1;
+}

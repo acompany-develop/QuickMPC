@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package managetomanage;
+
+option go_package = "github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer";
+
+/**
+ * ManagecToManage service
+*/
+service ManageToManage {
+    rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}
+    rpc Sync(SyncRequest) returns (SyncResponse) {}
+}
+
+/**
+ * the message of DeleteSharesRequest
+*/
+message DeleteSharesRequest{
+    string data_id = 1;
+}
+
+/**
+ * the message of DeleteSharesResponse
+*/
+message DeleteSharesResponse{
+    string message = 1;
+    bool is_ok = 2;
+}
+
+/**
+ * the message of SyncRequest
+*/
+message SyncRequest{
+    string sync_id = 1;
+}
+
+/**
+ * the message of SyncResponse
+*/
+message SyncResponse{
+    string message = 1;
+    bool is_ok = 2;
+}

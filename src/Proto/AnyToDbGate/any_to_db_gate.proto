@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package anytodbgate;
+
+option go_package = "github.com/acompany-develop/QuickMPC/src/Proto/AnyToDbGate";
+
+/**
+ * AnyToDbGate service
+*/
+service AnyToDbGate {
+    // execute query to DbGate container
+    rpc ExecuteQuery(ExecuteQueryRequest) returns (stream ExecuteQueryResponse) {}
+}
+
+/**
+ * the message of executeQueryRequest
+*/
+message ExecuteQueryRequest {
+    string host = 1;
+    string query = 2;
+}
+
+/**
+ * the message of executeQueryResponse
+*/
+message ExecuteQueryResponse {
+    string result = 1;
+    int32 piece_id = 2;
+}

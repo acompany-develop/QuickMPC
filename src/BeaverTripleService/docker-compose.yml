@@ -1,0 +1,21 @@
+version: "3.3"
+services:
+  bts:
+    container_name: beaver_triple_service
+    tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/bts_dev:latest
+    environment:
+      - STAGE=src
+    volumes:
+      - type: bind
+        source: ../../Config/BeaverTripleService
+        target: /QuickMPC-BTS/Config
+    ports: # TODO: IP/PORT衝突回避リファクタ時に`127.0.0.1:64101:54100`に変える
+      - "0.0.0.0:60120:50120"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.140
+
+networks:
+  shared-network:
+    external: true

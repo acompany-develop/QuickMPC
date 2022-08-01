@@ -1,0 +1,138 @@
+name: Push Stable CC, MC, DB Image
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  # 安定バージョンのQMPCイメージをpush
+  build_and_push_cc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Set current date as env variable
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+
+      - name: Build CC image
+        run: |
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/cc_dep:s${{ steps.date.outputs.date }}
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/cc_dep:stable
+        working-directory: ./src/ComputationContainer/
+
+      - name: Run Trivy vulnerability scanner for CC
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/cc_dep:s${{ steps.date.outputs.date }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Push image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/cc_dep:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/cc_dep:stable
+
+  build_and_push_mc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Set current date as env variable
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+
+      - name: Build MC image
+        run: |
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/mc_dep:s${{ steps.date.outputs.date }}
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/mc_dep:stable
+        working-directory: ./src/ManageContainer/
+
+      - name: Run Trivy vulnerability scanner for MC
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/mc_dep:s${{ steps.date.outputs.date }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Push image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/mc_dep:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/mc_dep:stable
+
+  build_and_push_dc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Set current date as env variable
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+
+      - name: Build DbGate image
+        run: |
+          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/dbg_dep:s${{ steps.date.outputs.date }}
+          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/dbg_dep:stable
+        working-directory: ./src/DbContainer/DbGate/
+
+      - name: Run Trivy vulnerability scanner for DbGate
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/dbg_dep:s${{ steps.date.outputs.date }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Build sharedb image
+        run: |
+          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/sharedb_dep:s${{ steps.date.outputs.date }}
+          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/sharedb_dep:stable
+        working-directory: ./src/DbContainer/Db/
+
+      - name: Run Trivy vulnerability scanner for sharedb
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/sharedb_dep:s${{ steps.date.outputs.date }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Push image
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/dbg_dep:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/dbg_dep:stable
+          docker push ghcr.io/${{ github.repository_owner }}/sharedb_dep:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/sharedb_dep:stable
+
+  build_and_push:
+    runs-on: ubuntu-latest
+    needs: [build_and_push_cc, build_and_push_mc, build_and_push_dc]
+
+    steps:
+      - name: Merge All build_and_push
+        run: echo "ok"

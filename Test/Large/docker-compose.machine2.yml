@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  compute:
+    container_name: computation_container
+    image: ghcr.io/acompany-develop/cc_test:original
+    expose:
+      - "50020"
+      - "51020"
+      - "50010"
+    volumes:
+      - type: bind
+        source: ./Config/ComputationContainer/
+        target: /QuickMPC/Config
+      - type: bind
+        source: ./Certificates/ComputationContainer/Ca
+        target: /QuickMPC/Certificates/Ca
+      - type: bind
+        source: ./Certificates/ComputationContainer/Server
+        target: /QuickMPC/Certificates/Server
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.20
+    command: ["/bin/sh", "-c", "bazel-bin/computation_container_test"]
+
+networks:
+  shared-network:
+    external: true

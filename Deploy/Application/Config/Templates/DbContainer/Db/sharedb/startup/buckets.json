@@ -1,0 +1,22 @@
+[
+  {
+    "name": "share",
+    "ramQuotaMB": 1024,
+    "bucketType": "couchbase",
+    "authType": "sasl",
+    "saslPassword": "",
+    "evictionPolicy": "valueOnly",
+    "replicaNumber": 0,
+    "flushEnabled": 1
+  },
+  {
+    "name": "result",
+    "ramQuotaMB": 1024,
+    "bucketType": "couchbase",
+    "authType": "sasl",
+    "saslPassword": "",
+    "evictionPolicy": "valueOnly",
+    "replicaNumber": 0,
+    "flushEnabled": 1
+  }
+]

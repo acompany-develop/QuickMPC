@@ -1,0 +1,21 @@
+cc_library(
+    name = "computation_benchmark",
+    srcs = [
+        "ComputationBenchmark.cpp"
+    ],
+    copts = ["-Iexternal/gtest/include","-DDEBUG"],
+    hdrs = [
+        "ComputationBenchmark.hpp",
+    ],
+    deps = [
+        "@gtest//:main",
+        "//Test/Benchmark:benchmark",
+        "//Test/Benchmark:share_comp_benchmark",
+        "//Test/Benchmark:share_benchmark",
+        "//Server/ComputationToComputationContainer:server",
+        "//Server/ManageToComputationContainer:server",
+        "//LogHeader:logger",
+        "@com_github_grpc_grpc//src/proto/grpc/health/v1:health_proto",
+    ],
+    visibility = ["//visibility:public"],
+)

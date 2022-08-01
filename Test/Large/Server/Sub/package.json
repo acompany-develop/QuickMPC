@@ -1,0 +1,6 @@
+{
+    "dependencies": {
+        "dotenv": "^9.0.2",
+        "express": "^4.17.1"
+    }
+}

@@ -1,0 +1,166 @@
+syntax = "proto3";
+
+package libctomanage;
+
+option go_package = "github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer";
+
+import "common_types/common_types.proto";
+
+/**
+ * LibcToManage service
+*/
+service LibcToManage {
+    rpc SendShares(SendSharesRequest) returns (SendSharesResponse) {}                                // シェアの送信リクエスト
+    rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}                          // シェアの削除リクエスト
+    rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                   // スキーマ取得リクエスト
+    rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
+    rpc GetComputationResult(GetComputationResultRequest) returns (GetComputationResultResponse) {}  // 計算結果取得リクエスト
+    rpc SendModelParam(SendModelParamRequest) returns (SendModelParamResponse) {}                    // モデルパラメータ送信リクエスト
+    rpc Predict(PredictRequest) returns (PredictResponse) {}                                         // モデル値予測リクエスト
+    rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
+}
+
+/**
+ * the message of SendSharesRequest
+*/
+message SendSharesRequest {
+    string data_id = 1;
+    string shares = 2;
+    repeated string schema = 3;
+    int32 piece_id = 4;
+    string sent_at = 5;
+    string token = 6;
+}
+
+/**
+ * the message of SendSharesResponse
+*/
+message SendSharesResponse {
+    string message = 1;
+    bool is_ok = 2;
+}
+
+/**
+ * the message of DeleteSharesRequest
+*/
+message DeleteSharesRequest {
+    repeated string dataIds = 1;
+    string token = 2;
+}
+
+/**
+ * the message of DeleteSharesResponse
+*/
+message DeleteSharesResponse {
+    string message = 1;
+    bool is_ok = 2;
+}
+
+/**
+ * the message of GetSchemaRequest
+*/
+message GetSchemaRequest {
+    string data_id = 1;
+    string token = 2;
+}
+
+/**
+ * the message of GetSchemaResponse
+*/
+message GetSchemaResponse {
+    string message = 1;
+    bool is_ok = 2;
+    repeated string schema = 3;
+}
+
+/**
+ * the message of ExecuteComputationRequest
+*/
+message JoinOrder{
+    repeated string dataIds = 1;
+    repeated int32 join = 2;
+    repeated int32 index = 3;
+}
+message Input{
+    repeated int32 src = 1;
+    repeated int32 target = 2;
+}
+message ExecuteComputationRequest {
+    pb_common_types.ComputationMethod method_id = 1;
+    string token = 2;
+    JoinOrder table = 3;
+    Input arg = 4;
+}
+
+/**
+ * the message of ExecuteComputationResponse
+*/
+message ExecuteComputationResponse {
+    string message = 1;
+    bool is_ok = 2;
+    string job_uuid = 3;
+}
+
+/**
+ * the message of GetComputationResultRequest
+*/
+message GetComputationResultRequest {
+    string job_uuid = 1;
+    string token = 2;
+}
+
+/**
+ * the message of GetComputationResultResponse
+*/
+message GetComputationResultResponse {
+    string message = 1;
+    bool is_ok = 2;
+    string result = 3;
+    pb_common_types.JobStatus status = 4;
+}
+
+/**
+ * the message of SendModelParamRequest
+*/
+message SendModelParamRequest {
+    string job_uuid = 1;
+    string params = 2;
+    string token = 3;
+}
+
+/**
+ * the message of SendModelParamResponse
+*/
+message SendModelParamResponse {
+    string message = 1;
+    bool is_ok = 2;
+}
+
+/**
+ * the message of PredictRequest
+*/
+message PredictRequest {
+    string job_uuid = 1;
+    string model_param_job_uuid = 2;
+    pb_common_types.PredictMethod model_id = 3;
+    JoinOrder table = 4;
+    repeated int32 src = 5;
+    string token = 6;
+}
+
+/**
+ * the message of PredictResponse
+*/
+message PredictResponse {
+    string message = 1;
+    bool is_ok = 2;
+}
+
+message GetDataListRequest {
+    string token = 1;
+}
+
+message GetDataListResponse {
+    string result = 1;
+    bool is_ok = 2;
+}

@@ -1,0 +1,668 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Change Set CodeDeploy Pipeline
+
+Parameters:
+  ApplicationStackName:
+    Description: Name of the not yet created Application CFN Stack
+    Type: String
+    Default: compose-application
+    AllowedPattern: (^[a-z][a-z0-9-]+$)
+  ChangeSetName:
+    Description: Name of Cfn Change Set
+    Type: String
+    Default: compose-demo
+    AllowedPattern: (^[a-z][a-z0-9-]+$)
+  PartyId:
+    Description: Party ID
+    Type: String
+  ExistingAwsVpc:
+    Description: Name of existing AWS Vpc
+    Type: AWS::EC2::VPC::Id
+  ExistingPrivateSubnet:
+    Description: Name of existing Private Subnet
+    Type: AWS::EC2::Subnet::Id
+  ExistingEcsCluster:
+    Description: Name of existing Ecs Cluster
+    Type: String
+  ExistingCert:
+    Description: Name of existing ALB Cert
+    Type: String
+
+Resources:
+  CcEcr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join
+        - "/"
+        - - !Sub "${AWS::StackName}"
+          - "cc"
+
+  McEcr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join
+        - "/"
+        - - !Sub "${AWS::StackName}"
+          - "mc"
+
+  McEnvoyEcr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join
+        - "/"
+        - - !Sub "${AWS::StackName}"
+          - "mc_envoy"
+
+  DbgEcr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join
+        - "/"
+        - - !Sub "${AWS::StackName}"
+          - "dbgate"
+
+  ShareDbEcr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join
+        - "/"
+        - - !Sub "${AWS::StackName}"
+          - "sharedb"
+
+  SsEcr:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: !Join
+        - "/"
+        - - !Sub "${AWS::StackName}"
+          - "secrets-server"
+
+  SourceBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+
+  PipelineRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+        Version: "2012-10-17"
+
+  PipelineRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: PipelineRoleDefaultPolicy
+      Roles:
+        - Ref: PipelineRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:DeleteObject*
+              - s3:PutObject*
+              - s3:Abort*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - SourceBucket
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - SourceBucket
+                        - Arn
+                    - /*
+          - Action:
+              - codebuild:StartBuild
+              - codebuild:BatchGetBuilds
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - ExtractBuild
+                  - Arn
+              - Fn::GetAtt:
+                  - ImageBuild
+                  - Arn
+          - Action:
+              - cloudformation:CreateChangeSet
+              - cloudformation:DescribeStacks
+              - cloudformation:DescribeChangeSet
+              - cloudformation:ExecuteChangeSet
+              - cloudformation:DeleteChangeSet
+            Effect: Allow
+            Resource:
+              - !Join
+                - ""
+                - - "arn:aws:cloudformation:"
+                  - Ref: AWS::Region
+                  - ":"
+                  - Ref: AWS::AccountId
+                  - ":stack/"
+                  - Ref: ApplicationStackName
+                  - "/*"
+          - Action:
+              - iam:PassRole
+            Effect: Allow
+            Resource:
+              - !GetAtt [ExtractBuildRole, Arn]
+
+  ImageBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+        Version: "2012-10-17"
+
+  ImageBuildRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ImageBuildRoleDefaultPolicy
+      Roles:
+        - Ref: ImageBuildRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              - Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":logs:"
+                    - Ref: AWS::Region
+                    - ":"
+                    - Ref: AWS::AccountId
+                    - :log-group:/aws/codebuild/
+                    - Ref: ImageBuild
+                    - :*
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:PutObject*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - SourceBucket
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - SourceBucket
+                        - Arn
+                    - /*
+          - Action:
+              - ecr:GetAuthorizationToken
+            Effect: Allow
+            Resource:
+              - "*"
+          - Action:
+              - ecr:BatchCheckLayerAvailability
+              - ecr:CompleteLayerUpload
+              - ecr:InitiateLayerUpload
+              - ecr:PutImage
+              - ecr:UploadLayerPart
+            Effect: Allow
+            Resource:
+              - !GetAtt CcEcr.Arn
+              - !GetAtt McEcr.Arn
+              - !GetAtt McEnvoyEcr.Arn
+              - !GetAtt DbgEcr.Arn
+              - !GetAtt ShareDbEcr.Arn
+              - !GetAtt SsEcr.Arn
+
+  ExtractBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: cloudformation.amazonaws.com
+        Version: "2012-10-17"
+
+  ExtractBuildRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ExtractBuildRoleDefaultPolicy
+      Roles:
+        - Ref: ExtractBuildRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              - Fn::Join:
+                  - ""
+                  - - "arn:"
+                    - Ref: AWS::Partition
+                    - ":logs:"
+                    - Ref: AWS::Region
+                    - ":"
+                    - Ref: AWS::AccountId
+                    - :log-group:/aws/codebuild/
+                    - Ref: ExtractBuild
+                    - :*
+          - Action:
+              - s3:GetObject*
+              - s3:GetBucket*
+              - s3:List*
+              - s3:PutObject*
+            Effect: Allow
+            Resource:
+              - Fn::GetAtt:
+                  - SourceBucket
+                  - Arn
+              - Fn::Join:
+                  - ""
+                  - - Fn::GetAtt:
+                        - SourceBucket
+                        - Arn
+                    - /*
+
+  ComposeRolePolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ComposeRolePolicy
+      Roles:
+        - Ref: ExtractBuildRole
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - cloudformation:*
+              - ecs:ListAccountSettings
+              - ecs:CreateCluster
+              - ecs:CreateService
+              - ecs:DeleteCluster
+              - ecs:DeleteService
+              - ecs:DeregisterTaskDefinition
+              - ecs:DescribeClusters
+              - ecs:DescribeServices
+              - ecs:DescribeTasks
+              - ecs:ListTasks
+              - ecs:RegisterTaskDefinition
+              - ecs:UpdateService
+              - ec2:AuthorizeSecurityGroupIngress
+              - ec2:DescribeVpcs
+              - ec2:DescribeVpcAttribute
+              - ec2:DescribeSubnets
+              - ec2:DescribeRouteTables
+              - ec2:CreateSecurityGroup
+              - ec2:CreateTags
+              - ec2:DescribeSecurityGroups
+              - ec2:DeleteSecurityGroup
+              - ec2:RevokeSecurityGroupIngress
+              - elasticfilesystem:CreateAccessPoint
+              - elasticfilesystem:CreateFileSystem
+              - elasticfilesystem:CreateMountTarget
+              - elasticfilesystem:DeleteAccessPoint
+              - elasticfilesystem:DeleteFileSystem
+              - elasticfilesystem:DeleteMountTarget
+              - elasticfilesystem:DescribeAccessPoints
+              - elasticfilesystem:DescribeBackupPolicy
+              - elasticfilesystem:DescribeFileSystemPolicy
+              - elasticfilesystem:DescribeFileSystems
+              - elasticfilesystem:DescribeLifecycleConfiguration
+              - elasticfilesystem:DescribeMountTargets
+              - elasticfilesystem:ModifyMountTarget
+              - elasticfilesystem:ModifyMountTargetSecurityGroups
+              - iam:AttachRolePolicy
+              - iam:CreateRole
+              - iam:DeleteRole
+              - iam:DeleteRolePolicy
+              - iam:DetachRolePolicy
+              - iam:PassRole
+              - iam:PutRolePolicy
+              - elasticloadbalancing:*
+              - application-autoscaling:*
+              - servicediscovery:*
+              - logs:CreateLogGroup
+              - logs:DescribeLogGroups
+              - logs:FilterLogEvents
+              - logs:DeleteLogGroup
+              - route53:CreateHostedZone
+              - route53:DeleteHostedZone
+              - route53:GetHealthCheck
+              - route53:GetHostedZone
+              - route53:ListHostedZonesByName
+              - ec2:CreateNetworkInterface
+              - ec2:DeleteNetworkInterface
+              - elasticfilesystem:UpdateFileSystem
+              - iam:TagRole
+              - iam:UntagRole
+              - iam:GetRolePolicy
+            Effect: Allow
+            Resource:
+              - "*"
+
+  ImageBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Join
+        - "-"
+        - - !Sub ${AWS::StackName}
+          - "ImageBuild"
+      Artifacts:
+        Type: CODEPIPELINE
+        EncryptionDisabled: false
+      Environment:
+        ComputeType: BUILD_GENERAL1_MEDIUM
+        Image: aws/codebuild/standard:5.0
+        PrivilegedMode: true
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Type: PLAINTEXT
+            Value: !Ref AWS::AccountId
+      ServiceRole: !Ref ImageBuildRole
+      Cache:
+        Type: LOCAL
+        Modes:
+          - LOCAL_CUSTOM_CACHE
+          - LOCAL_DOCKER_LAYER_CACHE
+          - LOCAL_SOURCE_CACHE
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+            pre_build:
+              commands:
+                - echo Logging in to Amazon ECR...
+                - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin https://$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+            build:
+              commands:
+                - echo Building the Docker image...
+                - cd ./QuickMPC/src/ComputationContainer
+                - docker build ../../ --file Dockerfile --target dep-runner -t $IMAGE_URI/cc:$IMAGE_TAG
+                - cd ../ManageContainer
+                - docker build ../../ --file envoy.Dockerfile --target dep-runner --build-arg party_id=$PARTY_ID -t $IMAGE_URI/mc_envoy:$IMAGE_TAG
+                - docker build ../../ --file Dockerfile --target dep-runner -t $IMAGE_URI/mc:$IMAGE_TAG
+                - cd ../DbContainer/DbGate
+                - docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAMES=sharedb -t $IMAGE_URI/dbgate:$IMAGE_TAG
+                - cd ../Db
+                - docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb -t $IMAGE_URI/sharedb:$IMAGE_TAG
+                - cd ../
+                - docker build . --file secrets-server.Dockerfile --target dep --build-arg lowercase_DB_NAMES=sharedb -t $IMAGE_URI/secrets-server:$IMAGE_TAG
+            post_build:
+              commands:
+                - echo Pushing the Docker image...
+                - docker push $IMAGE_URI/cc:$IMAGE_TAG
+                - docker push $IMAGE_URI/mc_envoy:$IMAGE_TAG
+                - docker push $IMAGE_URI/mc:$IMAGE_TAG
+                - docker push $IMAGE_URI/dbgate:$IMAGE_TAG
+                - docker push $IMAGE_URI/sharedb:$IMAGE_TAG
+                - docker push $IMAGE_URI/secrets-server:$IMAGE_TAG
+
+  # Code Build to Extract Cfn
+  ExtractBuild:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Join
+        - "-"
+        - - !Sub ${AWS::StackName}
+          - "ExtractBuild"
+      Artifacts:
+        Type: CODEPIPELINE
+        EncryptionDisabled: false
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        PrivilegedMode: true
+        Type: LINUX_CONTAINER
+      ServiceRole: !Ref ExtractBuildRole
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases:
+           install:
+             commands:
+               - mv /usr/local/bin/docker /usr/bin/docker
+               - curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
+           pre_build:
+             commands:
+               - echo Logging in to Amazon ECR...
+               - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin https://$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+               - echo Creating Docker Compose Context
+               - curl "http://169.254.170.2${AWS_CONTAINER_CREDENTIALS_RELATIVE_URI}" > creds.json
+               - export AWS_ACCESS_KEY_ID=$(cat creds.json | jq -r .AccessKeyId)
+               - export AWS_SECRET_ACCESS_KEY=$(cat creds.json | jq -r .SecretAccessKey)
+               - export AWS_SESSION_TOKEN=$(cat creds.json | jq -r .Token)
+               - export AWS_ELB=compose-infrastructure${PARTY_ID}-alb
+               - docker context create ecs demoecs --from-env
+               - docker context use demoecs
+           build:
+             commands:
+               - echo Convert Compose File
+               - cd QuickMPC/Deploy/Application
+               - docker --debug compose --project-name $PROJECT_NAME convert > cloudformation.yml
+               - cat cloudformation.yml
+          artifacts:
+            files:
+              - QuickMPC/Deploy/Application/cloudformation.yml
+
+  # Code Pipeline
+  Pipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      ArtifactStore:
+        Type: S3
+        Location: !Ref "SourceBucket"
+      RoleArn:
+        Fn::GetAtt:
+          - PipelineRole
+          - Arn
+      Stages:
+        - Name: S3Source
+          Actions:
+            - Name: TemplateSource
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Provider: S3
+                Version: "1"
+              Configuration:
+                S3Bucket: !Ref "SourceBucket"
+                S3ObjectKey: "compose-bundle.zip"
+              OutputArtifacts:
+                - Name: Source
+        - Name: Build
+          Actions:
+            - Name: BuildContainerImage
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref ImageBuild
+                EnvironmentVariables: !Sub |
+                  [
+                    {
+                      "name": "AWS_ACCOUNT_ID",
+                      "value": "${AWS::AccountId}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "IMAGE_URI",
+                      "value": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AWS::StackName}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "IMAGE_TAG",
+                      "value": "#{codepipeline.PipelineExecutionId}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "PARTY_ID",
+                      "value": "${PartyId}",
+                      "type": "PLAINTEXT"
+                    }
+                  ]
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: ImageBuild
+        - Name: Compose2Cloudformation
+          Actions:
+            - Name: ExtractCFN
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              Configuration:
+                ProjectName: !Ref ExtractBuild
+                EnvironmentVariables: !Sub |
+                  [
+                    {
+                      "name": "AWS_ACCOUNT_ID",
+                      "value": "${AWS::AccountId}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "IMAGE_URI",
+                      "value": "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AWS::StackName}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "IMAGE_TAG",
+                      "value": "#{codepipeline.PipelineExecutionId}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "AWS_ECS_CLUSTER",
+                      "value": "${ExistingEcsCluster}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "AWS_VPC",
+                      "value": "${ExistingAwsVpc}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "AWS_PRIVATE_SUBNET",
+                      "value": "${ExistingPrivateSubnet}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "PARTY_ID",
+                      "value": "${PartyId}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "AWS_ELB_CERT",
+                      "value": "${ExistingCert}",
+                      "type": "PLAINTEXT"
+                    },
+                    {
+                      "name": "PROJECT_NAME",
+                      "value": "${ApplicationStackName}",
+                      "type": "PLAINTEXT"
+                    }
+                  ]
+              InputArtifacts:
+                - Name: Source
+              OutputArtifacts:
+                - Name: ExtractedCfn
+        - Name: DeployStage
+          Actions:
+            - Name: CreateChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              InputArtifacts:
+                - Name: ExtractedCfn
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                RoleArn: !GetAtt [ExtractBuildRole, Arn]
+                StackName: !Ref ApplicationStackName
+                ChangeSetName: !Ref ChangeSetName
+                TemplatePath: "ExtractedCfn::QuickMPC/Deploy/Application/cloudformation.yml"
+                Capabilities: CAPABILITY_IAM
+              RunOrder: 1
+            - Name: ExecuteChangeSet
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: "1"
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                StackName: !Ref ApplicationStackName
+                ChangeSetName: !Ref ChangeSetName
+                RoleArn: !GetAtt [ExtractBuildRole, Arn]
+              RunOrder: 2
+
+Outputs:
+  CcEcr:
+    Description: ECR Repository to store the computation container Image
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${CcEcr}"
+  CcEcrName:
+    Description: ECR Repository to store the computation container Image
+    Value: !Ref CcEcr
+  McEcr:
+    Description: ECR Repository to store the manage container Image
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${McEcr}"
+  McEcrName:
+    Description: ECR Repository to store the manage container Image
+    Value: !Ref McEcr
+  McEnvoyEcr:
+    Description: ECR Repository to store the envoy Image
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${McEnvoyEcr}"
+  McEnvoyEcrName:
+    Description: ECR Repository to store the envoy Image
+    Value: !Ref McEnvoyEcr
+  DbgEcr:
+    Description: ECR Repository to store the dbgate Image
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${DbgEcr}"
+  DbgEcrName:
+    Description: ECR Repository to store the dbgate Image
+    Value: !Ref DbgEcr
+  ShareDbEcr:
+    Description: ECR Repository to store the sharedb Image
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${ShareDbEcr}"
+  ShareDbEcrName:
+    Description: ECR Repository to store the sharedb Image
+    Value: !Ref ShareDbEcr
+  SsEcr:
+    Description: ECR Repository to store the secrets-service Image
+    Value: !Sub "${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${SsEcr}"
+  SsEcrName:
+    Description: ECR Repository to store the secrets-service Image
+    Value: !Ref SsEcr
+  S3BucketName:
+    Description: S3 Bucket to store Application Source Code
+    Value: !Ref SourceBucket

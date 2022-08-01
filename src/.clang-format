@@ -1,0 +1,14 @@
+BasedOnStyle: Google
+IndentWidth: 4
+Language: Cpp
+Standard: c++17
+AlignAfterOpenBracket: BlockIndent
+BreakConstructorInitializers: BeforeComma
+BinPackParameters: false
+BinPackArguments: false
+# include順に依存している部分があるので並び変えないようにする
+SortIncludes: false
+AccessModifierOffset: -4
+BreakBeforeBinaryOperators: NonAssignment
+ColumnLimit: 100
+BreakBeforeBraces: Allman

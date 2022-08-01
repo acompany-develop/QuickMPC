@@ -1,0 +1,6 @@
+load("@//bazel:repositories.bzl", "Proto_repositories")
+Proto_repositories()
+load("@//bazel:Proto_deps.bzl", "Proto_deps")
+Proto_deps()
+load("@//bazel:Proto_extra_deps.bzl", "Proto_extra_deps")
+Proto_extra_deps()
