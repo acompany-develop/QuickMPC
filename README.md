@@ -78,7 +78,7 @@ make login
 cd QuickMPC
 ```
 
-1. Develop and bulid and test
+3. Develop and bulid and test
 ```sh
 # build
 bazel build //:all
