@@ -106,7 +106,7 @@ services:
 
   dev_bts:
     container_name: beaver_triple_service
-    image: ghcr.io/acompany-develop/bts_dev:s20220427
+    image: ghcr.io/acompany-develop/quickmpc-bts:s20220808
     environment:
       - STAGE=dev
     volumes:
