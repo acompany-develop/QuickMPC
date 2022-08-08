@@ -1,2 +1,0 @@
-CREATE PRIMARY INDEX `#primary` ON `share` USING GSI WITH {"defer_build": true};
-BUILD INDEX ON `share` (`#primary`);
