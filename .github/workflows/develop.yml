@@ -216,13 +216,13 @@ jobs:
 
       - name: Build CC image
         run: |
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/cc_dep:${{ github.run_id }}
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ github.run_id }}
         working-directory: ./src/ComputationContainer/
 
       - name: Run Trivy vulnerability scanner for CC
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/cc_dep:${{ github.run_id }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ github.run_id }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -234,7 +234,7 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/cc_dep:${{ github.run_id }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ github.run_id }}
 
   build_and_push_mc:
     runs-on: ubuntu-latest
@@ -245,13 +245,13 @@ jobs:
 
       - name: Build MC image
         run: |
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/mc_dep:${{ github.run_id }}
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ github.run_id }}
         working-directory: ./src/ManageContainer/
 
       - name: Run Trivy vulnerability scanner for MC
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/mc_dep:${{ github.run_id }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ github.run_id }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -263,7 +263,7 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/mc_dep:${{ github.run_id }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ github.run_id }}
 
   build_and_push_dc:
     runs-on: ubuntu-latest
@@ -274,13 +274,13 @@ jobs:
 
       - name: Build DbGate image
         run: |
-          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAMES=sharedb --tag ghcr.io/${{ github.repository_owner }}/dbg_dep:${{ github.run_id }}
+          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAMES=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:${{ github.run_id }}
         working-directory: ./src/DbContainer/DbGate/
 
       - name: Run Trivy vulnerability scanner for DbGate
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/dbg_dep:${{ github.run_id }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:${{ github.run_id }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -289,7 +289,7 @@ jobs:
 
       - name: Build sharedb image
         run: |
-          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/sharedb_dep:${{ github.run_id }}
+          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:${{ github.run_id }}
         working-directory: ./src/DbContainer/Db/
 
       - name: Log into registry
@@ -297,8 +297,8 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/dbg_dep:${{ github.run_id }}
-          docker push ghcr.io/${{ github.repository_owner }}/sharedb_dep:${{ github.run_id }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:${{ github.run_id }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:${{ github.run_id }}
 
   build_and_push:
     runs-on: ubuntu-latest

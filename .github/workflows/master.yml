@@ -19,14 +19,14 @@ jobs:
 
       - name: Build CC image
         run: |
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/cc_dep:s${{ steps.date.outputs.date }}
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/cc_dep:stable
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }}
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:stable
         working-directory: ./src/ComputationContainer/
 
       - name: Run Trivy vulnerability scanner for CC
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'ghcr.io/${{ github.repository_owner }}/cc_dep:s${{ steps.date.outputs.date }}'
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -38,8 +38,8 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/cc_dep:s${{ steps.date.outputs.date }}
-          docker push ghcr.io/${{ github.repository_owner }}/cc_dep:stable
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:stable
 
   build_and_push_mc:
     runs-on: ubuntu-latest
@@ -54,14 +54,14 @@ jobs:
 
       - name: Build MC image
         run: |
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/mc_dep:s${{ steps.date.outputs.date }}
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/mc_dep:stable
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }}
+          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:stable
         working-directory: ./src/ManageContainer/
 
       - name: Run Trivy vulnerability scanner for MC
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'ghcr.io/${{ github.repository_owner }}/mc_dep:s${{ steps.date.outputs.date }}'
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -73,8 +73,8 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/mc_dep:s${{ steps.date.outputs.date }}
-          docker push ghcr.io/${{ github.repository_owner }}/mc_dep:stable
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:stable
 
   build_and_push_dc:
     runs-on: ubuntu-latest
@@ -89,14 +89,14 @@ jobs:
 
       - name: Build DbGate image
         run: |
-          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/dbg_dep:s${{ steps.date.outputs.date }}
-          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/dbg_dep:stable
+          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:s${{ steps.date.outputs.date }}
+          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:stable
         working-directory: ./src/DbContainer/DbGate/
 
       - name: Run Trivy vulnerability scanner for DbGate
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'ghcr.io/${{ github.repository_owner }}/dbg_dep:s${{ steps.date.outputs.date }}'
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:s${{ steps.date.outputs.date }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -105,14 +105,14 @@ jobs:
 
       - name: Build sharedb image
         run: |
-          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/sharedb_dep:s${{ steps.date.outputs.date }}
-          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/sharedb_dep:stable
+          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:s${{ steps.date.outputs.date }}
+          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:stable
         working-directory: ./src/DbContainer/Db/
 
       - name: Run Trivy vulnerability scanner for sharedb
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: 'ghcr.io/${{ github.repository_owner }}/sharedb_dep:s${{ steps.date.outputs.date }}'
+          image-ref: 'ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:s${{ steps.date.outputs.date }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -124,10 +124,10 @@ jobs:
 
       - name: Push image
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/dbg_dep:s${{ steps.date.outputs.date }}
-          docker push ghcr.io/${{ github.repository_owner }}/dbg_dep:stable
-          docker push ghcr.io/${{ github.repository_owner }}/sharedb_dep:s${{ steps.date.outputs.date }}
-          docker push ghcr.io/${{ github.repository_owner }}/sharedb_dep:stable
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:stable
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:s${{ steps.date.outputs.date }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:stable
 
   build_and_push:
     runs-on: ubuntu-latest
