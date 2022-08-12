@@ -114,7 +114,7 @@ resultはJson文字列
 {
   "job_uuid": "10b6bfda-8776-4d8c-ad9a-b40fa277ff37",
   "status": 5,
-  "result": "\"{\"schema\":[\"s1\",\"s2\"],\"table\":[[\"1\",\"2\"],[\"3\",\"4\"]]}\""}
+  "result": "\"{\"schema\":[\"s1\",\"s2\"],\"table\":[[\"1\",\"2\"],[\"3\",\"4\"]]}\""
   "meta": {
     "piece_id": 1
   }
