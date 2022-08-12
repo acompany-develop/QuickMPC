@@ -115,12 +115,6 @@ rm-db:
 	- yes | docker system prune -a --filter label=secrets-server
 	- docker-compose -f $(DC)/docker-compose.yml rm -fvs secrets-server
 
-ps:
-	docker ps
-
-images:
-	docker images
-
 logs-cc:
 	docker-compose -f $(CC)/docker-compose.yml logs -f
 logs-dc:
@@ -139,7 +133,7 @@ login-sharedb:
 login-mc:
 	docker-compose -f $(MC)/docker-compose.yml exec mc /bin/bash
 login-bts:
-	docker-compose -f $(BTS)/docker-compose.yml exec mc /bin/bash
+	docker-compose -f $(BTS)/docker-compose.yml exec bts /bin/bash
 
 ROOT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 SOURCES := $(shell git ls-tree -r develop --name-only | grep -E '.*\.(cpp|hpp)')

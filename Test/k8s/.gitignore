@@ -1,5 +1,0 @@
-.output/*
-config/party*
-docker-compose/*
-kompose/*
-manifests/*
