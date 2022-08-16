@@ -12,17 +12,17 @@ from benchmark.metrics import PrintTime
 def get_data_id():
     val: dict = {}
 
-    def get(size: int):
-        if size in val:
-            return val[size]
-        secrets, schema = large_data(size)
+    def get(size: int, data_num):
+        if (size, data_num) in val:
+            return val[(size, data_num)]
+        secrets, schema = large_data(size, data_num)
         with PrintTime("send_share"):
             res = qmpc.send_share(secrets, schema)
         assert(res["is_ok"])
         data_id: str = res["data_id"]
-        val[size] = (data_id, secrets, schema)
-        return val[size]
-    return lambda size: get(size)
+        val[(size, data_num)] = (data_id, secrets, schema)
+        return val[(size, data_num)]
+    return lambda size, data_num=1: get(size, data_num)
 
 
 bench_size = [
@@ -115,3 +115,31 @@ def test_correl(size: int, get_data_id):
     true_val = correl_matrix[:schema_size-1, schema_size-1].transpose()
     for x, y in zip(res["results"][0], true_val):
         assert(math.isclose(x, y, abs_tol=0.1))
+
+
+@pytest.mark.parametrize(
+    ("size"), bench_size
+)
+def test_hjoin(size: int, get_data_id):
+    data_id1, secrets1, schema1 = get_data_id(size, data_num=1)
+    data_id2, secrets2, schema2 = get_data_id(size, data_num=2)
+
+    # takle情報を定義して計算
+    table = [[data_id1, data_id2], [2], [1, 1]]
+    with PrintTime("hjoin"):
+        res = get_result(qmpc.get_join_table(table), limit=10000)
+    assert(res["is_ok"])
+
+    # 正しく計算されたか確認
+    exe_schema = res["results"]["schema"]
+    assert(schema1[1:] + schema2[1:] == exe_schema)
+
+    exe_table = res["results"]["table"]
+    exe_table_sorted = sorted(exe_table)
+    true_table = []
+    for r1, r2 in zip(secrets1, secrets2):
+        true_table.append(r1[1:]+r2[1:])
+    true_table_sorted = sorted(true_table)
+    for r1, r2 in zip(true_table_sorted, exe_table_sorted):
+        for x, y in zip(r1, r2):
+            assert(math.isclose(x, y, abs_tol=0.1))

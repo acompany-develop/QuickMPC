@@ -145,9 +145,10 @@ def penguins(is_bitvector=False):
             schema[:8], schema[8:])
 
 
-def large_data(size: int):
+def large_data(size: int, data_num: int):
     schema_size: int = 10
-    schema: List[str] = [f"s{i}" for i in range(schema_size)]
+    schema: List[str] = ["id"] + \
+        [f"s{i}_{data_num}" for i in range(schema_size-1)]
 
     mod = 47
     data: List[List[str]] = [
