@@ -1,9 +1,9 @@
 #pragma once
 
-#include "FixedPoint/FixedPoint.hpp"
-#include "PrimeField/PrimeField.hpp"
 #include "ConfigParse/ConfigParse.hpp"
+#include "FixedPoint/FixedPoint.hpp"
 #include "Networking.hpp"
+#include "PrimeField/PrimeField.hpp"
 #include "Share.hpp"
 namespace qmpc::Share
 {

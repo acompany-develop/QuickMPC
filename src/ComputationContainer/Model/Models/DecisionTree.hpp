@@ -1,11 +1,11 @@
 #pragma once
 
-#include "nlohmann/json.hpp"
-#include "Model/ModelBase.hpp"
 #include "Client/ComputationToDbGate/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
-#include "Share/Compare.hpp"
 #include "Math/Math.hpp"
+#include "Model/ModelBase.hpp"
+#include "Share/Compare.hpp"
+#include "nlohmann/json.hpp"
 
 namespace qmpc::Model
 {

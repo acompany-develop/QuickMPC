@@ -1,12 +1,12 @@
 #pragma once
 
-#include <stdexcept>
+#include <boost/format.hpp>
 #include <optional>
+#include <stdexcept>
 
 #include "Client/ComputationToDbGate/Client.hpp"
-#include "external/Proto/common_types/common_types.pb.h"
-#include <boost/format.hpp>
 #include "Logging/Logger.hpp"
+#include "external/Proto/common_types/common_types.pb.h"
 namespace qmpc::Job
 {
 // Protocol Buffers の定義を引っ張ってくる

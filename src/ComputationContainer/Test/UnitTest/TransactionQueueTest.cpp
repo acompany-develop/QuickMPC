@@ -1,8 +1,9 @@
-#include "gtest/gtest.h"
-#include "TransactionQueue/TransactionQueue.hpp"
+#include <atomic>
 #include <thread>
 #include <vector>
-#include <atomic>
+
+#include "TransactionQueue/TransactionQueue.hpp"
+#include "gtest/gtest.h"
 
 const long long SIZE = 5000;
 
@@ -64,21 +65,25 @@ TEST(TransactionQueTest, AsyncSinglePushSinglePopTest)
 {
     qmpc::Utils::TransactionQueue<long long> q;
     // 順にpushさせる
-    std::thread th1([&]()
-                    {
-                        for (long long i = 0; i < SIZE; i++)
-                        {
-                            q.push(i);
-                        }
-                    });
+    std::thread th1(
+        [&]()
+        {
+            for (long long i = 0; i < SIZE; i++)
+            {
+                q.push(i);
+            }
+        }
+    );
     // 順にpopさせる
-    std::thread th2([&]()
-                    {
-                        for (long long i = 0; i < SIZE; i++)
-                        {
-                            EXPECT_EQ(q.pop(), i);
-                        }
-                    });
+    std::thread th2(
+        [&]()
+        {
+            for (long long i = 0; i < SIZE; i++)
+            {
+                EXPECT_EQ(q.pop(), i);
+            }
+        }
+    );
     // pushとpopを複数threadで非同期に行っている
     th1.join();
     th2.join();
@@ -101,26 +106,28 @@ TEST(TransactionQueTest, AsyncMultiPushSinglePopTest)
     // pushさせる物の順は[0, SIZE)の順列を並び替えた物と同値
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_push.push_back(std::thread([&, i]()
-                                           {
-                                               for (long long j = 0; j < SIZE / num_thread; j++)
-                                               {
-                                                   q.push((SIZE / num_thread) * i + j);
-                                               }
-                                           }));
+        threads_push.push_back(std::thread(
+            [&, i]()
+            {
+                for (long long j = 0; j < SIZE / num_thread; j++)
+                {
+                    q.push((SIZE / num_thread) * i + j);
+                }
+            }
+        ));
     }
 
     // SIZE全部出てくるかテスト
     // 順繰りに出てくるわけではないので注意
     for (long long i = 0; i < SIZE; i++)
     {
-        long long id = q.pop(); // 一つ一つpopする
-        check[id]++;            // 値が何回popされたか見る
+        long long id = q.pop();  // 一つ一つpopする
+        check[id]++;             // 値が何回popされたか見る
     }
 
     for (long long i = 0; i < SIZE; i++)
     {
-        EXPECT_EQ(check[i], 1); // 一回だけpopされたのならok
+        EXPECT_EQ(check[i], 1);  // 一回だけpopされたのならok
     }
 
     // 一応
@@ -154,14 +161,16 @@ TEST(TransactionQueTest, AsyncSinglePushMultiPopTest)
     std::vector<std::thread> threads_pop;
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_pop.push_back(std::thread([&]()
-                                          {
-                                              for (long long j = 0; j < SIZE / num_thread; j++)
-                                              {
-                                                  long long id = q.pop(); // 一つ一つpopする
-                                                  check[id]++;            // 値が何回popされたか見る
-                                              }
-                                          }));
+        threads_pop.push_back(std::thread(
+            [&]()
+            {
+                for (long long j = 0; j < SIZE / num_thread; j++)
+                {
+                    long long id = q.pop();  // 一つ一つpopする
+                    check[id]++;             // 値が何回popされたか見る
+                }
+            }
+        ));
     }
 
     // 全部終わるまで待機
@@ -172,7 +181,7 @@ TEST(TransactionQueTest, AsyncSinglePushMultiPopTest)
 
     for (long long i = 0; i < SIZE; i++)
     {
-        EXPECT_EQ(check[i], 1); // 全部一回popされたならok
+        EXPECT_EQ(check[i], 1);  // 全部一回popされたならok
     }
 }
 
@@ -194,13 +203,15 @@ TEST(TransactionQueTest, AsyncMultiPushMultiPopTest)
     // pushさせる物の順は[0, SIZE)の順列を並び替えた物と同値
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_push.push_back(std::thread([&, i]()
-                                           {
-                                               for (long long j = 0; j < SIZE / num_thread; j++)
-                                               {
-                                                   q.push((SIZE / num_thread) * i + j);
-                                               }
-                                           }));
+        threads_push.push_back(std::thread(
+            [&, i]()
+            {
+                for (long long j = 0; j < SIZE / num_thread; j++)
+                {
+                    q.push((SIZE / num_thread) * i + j);
+                }
+            }
+        ));
     }
 
     // SIZE個全部出てくるかnum_thread個のthreadでテスト
@@ -208,14 +219,16 @@ TEST(TransactionQueTest, AsyncMultiPushMultiPopTest)
     // 尚，popさせた順は[0, SIZE)を昇順に並び替えた配列と同値
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_pop.push_back(std::thread([&]()
-                                          {
-                                              for (long long j = 0; j < SIZE / num_thread; j++)
-                                              {
-                                                  long long id = q.pop(); // 一つ一つpopする
-                                                  check[id]++;            // 値が何回popされたか見る
-                                              }
-                                          }));
+        threads_pop.push_back(std::thread(
+            [&]()
+            {
+                for (long long j = 0; j < SIZE / num_thread; j++)
+                {
+                    long long id = q.pop();  // 一つ一つpopする
+                    check[id]++;             // 値が何回popされたか見る
+                }
+            }
+        ));
     }
 
     // 全部終わるまで待機
@@ -230,7 +243,7 @@ TEST(TransactionQueTest, AsyncMultiPushMultiPopTest)
 
     for (long long i = 0; i < SIZE; i++)
     {
-        EXPECT_EQ(check[i], 1); // 全部一回popされたならok
+        EXPECT_EQ(check[i], 1);  // 全部一回popされたならok
     }
 }
 
@@ -246,21 +259,25 @@ TEST(TransactionQueTest, AsyncSinglePushSinglePopMoreSIZETest)
     qmpc::Utils::TransactionQueue<long long> q;
 
     // 順にpushさせる
-    std::thread th1([&]()
-                    {
-                        for (long long i = 0; i < RESIZE; i++)
-                        {
-                            q.push(i);
-                        }
-                    });
+    std::thread th1(
+        [&]()
+        {
+            for (long long i = 0; i < RESIZE; i++)
+            {
+                q.push(i);
+            }
+        }
+    );
     // 順にpopさせる
-    std::thread th2([&]()
-                    {
-                        for (long long i = 0; i < RESIZE; i++)
-                        {
-                            EXPECT_EQ(q.pop(), i);
-                        }
-                    });
+    std::thread th2(
+        [&]()
+        {
+            for (long long i = 0; i < RESIZE; i++)
+            {
+                EXPECT_EQ(q.pop(), i);
+            }
+        }
+    );
     // pushとpopを複数threadで非同期に行っている
     th1.join();
     th2.join();
@@ -284,25 +301,29 @@ TEST(TransactionQueTest, AsyncMultiPushSinglePopMoreSIZETest)
     // pushさせる物の順は[0, RESIZE)の順列を並び替えた物と同値
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_push.push_back(std::thread([&, i]()
-                                           {
-                                               for (long long j = 0; j < RESIZE / num_thread; j++)
-                                               {
-                                                   q.push((RESIZE / num_thread) * i + j);
-                                               }
-                                           }));
+        threads_push.push_back(std::thread(
+            [&, i]()
+            {
+                for (long long j = 0; j < RESIZE / num_thread; j++)
+                {
+                    q.push((RESIZE / num_thread) * i + j);
+                }
+            }
+        ));
     }
 
     // RESIZE全部出てくるかテスト
     // 順繰りに出てくるわけではないので注意
-    std::thread thread_pop([&]()
-                           {
-                               for (long long i = 0; i < RESIZE; i++)
-                               {
-                                   long long id = q.pop(); // 一つ一つpopする
-                                   check[id]++;            // 値が何回popされたか見る
-                               }
-                           });
+    std::thread thread_pop(
+        [&]()
+        {
+            for (long long i = 0; i < RESIZE; i++)
+            {
+                long long id = q.pop();  // 一つ一つpopする
+                check[id]++;             // 値が何回popされたか見る
+            }
+        }
+    );
 
     // 全部終わるまで待機
     for (auto &th : threads_push)
@@ -314,7 +335,7 @@ TEST(TransactionQueTest, AsyncMultiPushSinglePopMoreSIZETest)
 
     for (long long i = 0; i < RESIZE; i++)
     {
-        EXPECT_EQ(check[i], 1); // 全部一回popされたならok
+        EXPECT_EQ(check[i], 1);  // 全部一回popされたならok
     }
 }
 
@@ -333,27 +354,31 @@ TEST(TransactionQueTest, AsyncSinglePushMultiPopMoreSIZETest)
     }
 
     // 順にpushさせる
-    std::thread thread_push([&]()
-                            {
-                                for (long long i = 0; i < RESIZE; i++)
-                                {
-                                    q.push(i);
-                                }
-                            });
+    std::thread thread_push(
+        [&]()
+        {
+            for (long long i = 0; i < RESIZE; i++)
+            {
+                q.push(i);
+            }
+        }
+    );
 
     // RESIZE個全部出てくるかnum_thread個のthreadでテスト
     // 各threadで順繰りに取れるわけではないので注意
     // 尚，popさせた順は[0, RESIZE)を昇順に並び替えた配列と同値
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_pop.push_back(std::thread([&]()
-                                          {
-                                              for (long long j = 0; j < RESIZE / num_thread; j++)
-                                              {
-                                                  long long id = q.pop(); // 一つ一つpopする
-                                                  check[id]++;            // 値が何回popされたか見る
-                                              }
-                                          }));
+        threads_pop.push_back(std::thread(
+            [&]()
+            {
+                for (long long j = 0; j < RESIZE / num_thread; j++)
+                {
+                    long long id = q.pop();  // 一つ一つpopする
+                    check[id]++;             // 値が何回popされたか見る
+                }
+            }
+        ));
     }
 
     // 全部終わるまで待機
@@ -365,7 +390,7 @@ TEST(TransactionQueTest, AsyncSinglePushMultiPopMoreSIZETest)
 
     for (long long i = 0; i < RESIZE; i++)
     {
-        EXPECT_EQ(check[i], 1); // 全部一回popされたならok
+        EXPECT_EQ(check[i], 1);  // 全部一回popされたならok
     }
 }
 
@@ -388,13 +413,15 @@ TEST(TransactionQueTest, AsyncMultiPushMultiPopMoreSIZETest)
     // pushさせる物の順は[0, RESIZE)の順列を並び替えた物と同値
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_push.push_back(std::thread([&, i]()
-                                           {
-                                               for (long long j = 0; j < RESIZE / num_thread; j++)
-                                               {
-                                                   q.push((RESIZE / num_thread) * i + j);
-                                               }
-                                           }));
+        threads_push.push_back(std::thread(
+            [&, i]()
+            {
+                for (long long j = 0; j < RESIZE / num_thread; j++)
+                {
+                    q.push((RESIZE / num_thread) * i + j);
+                }
+            }
+        ));
     }
 
     // RESIZE個全部出てくるかnum_thread個のthreadでテスト
@@ -402,14 +429,16 @@ TEST(TransactionQueTest, AsyncMultiPushMultiPopMoreSIZETest)
     // 尚，popさせた順は[0, RESIZE)を昇順に並び替えた配列と同値
     for (long long i = 0; i < num_thread; i++)
     {
-        threads_pop.push_back(std::thread([&]()
-                                          {
-                                              for (long long j = 0; j < RESIZE / num_thread; j++)
-                                              {
-                                                  long long id = q.pop(); // 一つ一つpopする
-                                                  check[id]++;            // 値が何回popされたか見る
-                                              }
-                                          }));
+        threads_pop.push_back(std::thread(
+            [&]()
+            {
+                for (long long j = 0; j < RESIZE / num_thread; j++)
+                {
+                    long long id = q.pop();  // 一つ一つpopする
+                    check[id]++;             // 値が何回popされたか見る
+                }
+            }
+        ));
     }
 
     // 全部終わるまで待機
@@ -424,6 +453,6 @@ TEST(TransactionQueTest, AsyncMultiPushMultiPopMoreSIZETest)
 
     for (long long i = 0; i < RESIZE; i++)
     {
-        EXPECT_EQ(check[i], 1); // 全部一回popされたならok
+        EXPECT_EQ(check[i], 1);  // 全部一回popされたならok
     }
 }

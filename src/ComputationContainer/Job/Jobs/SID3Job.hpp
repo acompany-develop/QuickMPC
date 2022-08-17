@@ -2,10 +2,10 @@
 
 #include <list>
 
-#include "Job/JobBase.hpp"
 #include "ConfigParse/ConfigParse.hpp"
-#include "Share/Matrix.hpp"
 #include "GBDT/SID3.hpp"
+#include "Job/JobBase.hpp"
+#include "Share/Matrix.hpp"
 
 namespace qmpc::Job
 {

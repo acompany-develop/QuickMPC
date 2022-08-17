@@ -1,13 +1,14 @@
 #pragma once
 #include <vector>
-#include "gtest/gtest.h"
-#include "Share/Share.hpp"
+
+#include "Job/Jobs/LogisticRegressionJob.hpp"
+#include "Model/Models/DecisionTree.hpp"
 #include "Model/Models/LinearRegression.hpp"
 #include "Model/Models/LogisticRegression.hpp"
-#include "Model/Models/DecisionTree.hpp"
-#include "Job/Jobs/LogisticRegressionJob.hpp"
-#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
 #include "Optimizer/GradientDescent.hpp"
+#include "Share/Share.hpp"
+#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
+#include "gtest/gtest.h"
 
 TEST(ModelTest, LinearRegressionTest)
 {

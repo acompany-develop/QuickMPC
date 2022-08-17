@@ -1,7 +1,7 @@
 #include "Client.hpp"
 
-#include <map>
 #include <chrono>
+#include <map>
 #include <thread>
 
 namespace qmpc::ComputationToDbGate

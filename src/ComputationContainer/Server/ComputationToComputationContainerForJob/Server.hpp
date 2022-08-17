@@ -1,22 +1,23 @@
 #pragma once
 
-#include <iostream>
-#include <string>
-#include <mutex>
-#include <condition_variable>
-#include <sstream>  // 文字列分割を実装する際に用いる
-#include <map>
-#include <vector>
-#include <tuple>
-
-#include "unistd.h"
-#include "Client/Helper/Helper.hpp"
-#include "external/Proto/ComputationToComputationContainerForJob/computation_to_computation_for_job.grpc.pb.h"
 #include <grpc/grpc.h>
+#include <grpcpp/security/server_credentials.h>
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
 #include <grpcpp/server_context.h>
-#include <grpcpp/security/server_credentials.h>
+
+#include <condition_variable>
+#include <iostream>
+#include <map>
+#include <mutex>
+#include <sstream>  // 文字列分割を実装する際に用いる
+#include <string>
+#include <tuple>
+#include <vector>
+
+#include "Client/Helper/Helper.hpp"
+#include "external/Proto/ComputationToComputationContainerForJob/computation_to_computation_for_job.grpc.pb.h"
+#include "unistd.h"
 
 namespace qmpc::ComputationToComputationForJob
 {

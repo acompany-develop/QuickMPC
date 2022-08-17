@@ -2,8 +2,8 @@
 
 #include <list>
 
-#include "Share/Share.hpp"
 #include "Job/JobBase.hpp"
+#include "Share/Share.hpp"
 
 namespace qmpc::Job
 {

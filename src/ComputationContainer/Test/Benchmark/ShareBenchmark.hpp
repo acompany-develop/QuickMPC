@@ -1,16 +1,17 @@
 #pragma once
-#include "gtest/gtest.h"
+#include <algorithm>
 #include <iostream>
+#include <random>
 #include <string>
 #include <thread>
-#include "unistd.h"
-#include "Share/Share.hpp"
-#include "Share/Compare.hpp"
+
+#include "Benchmark.hpp"
 #include "Random/Random.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
-#include <algorithm>
-#include <random>
-#include "Benchmark.hpp"
+#include "Share/Compare.hpp"
+#include "Share/Share.hpp"
+#include "gtest/gtest.h"
+#include "unistd.h"
 
 TEST(ShareBenchmark, AddBetweenShares)
 {

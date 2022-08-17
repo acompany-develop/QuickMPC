@@ -1,17 +1,16 @@
 #pragma once
 
-#include <string>
-#include <vector>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
-#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
-
-#include "Client/AnyToDb/N1QL.hpp"
-#include "nlohmann/json.hpp"
 #include "Client/AnyToDb/Client.hpp"
+#include "Client/AnyToDb/N1QL.hpp"
 #include "Client/ComputationToDbGate/ValueTable.hpp"
+#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
+#include "nlohmann/json.hpp"
 
 namespace qmpc::ComputationToDbGate
 {

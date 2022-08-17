@@ -1,8 +1,9 @@
 #include "Matrix.hpp"
+
 #include <Eigen/LU>
 
-#include "Networking.hpp"
 #include "Logging/Logger.hpp"
+#include "Networking.hpp"
 namespace qmpc::Share
 {
 /************** utils **************/

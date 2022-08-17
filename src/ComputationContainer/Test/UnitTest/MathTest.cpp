@@ -1,10 +1,8 @@
-#include "gtest/gtest.h"
-
 #include <vector>
 
-#include "Math/Math.hpp"
-
 #include "LogHeader/Logger.hpp"
+#include "Math/Math.hpp"
+#include "gtest/gtest.h"
 
 TEST(MathTest, MeanBetweenShares)
 {

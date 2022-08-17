@@ -1,8 +1,9 @@
 #pragma once
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/operators.hpp>
-#include <type_traits>
 #include <exception>
+#include <type_traits>
+
 #include "Logging/Logger.hpp"
 namespace qmpc
 {

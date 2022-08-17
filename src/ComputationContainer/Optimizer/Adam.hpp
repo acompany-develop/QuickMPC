@@ -1,8 +1,9 @@
 #pragma once
-#include <vector>
 #include <iostream>
-#include "Share/Share.hpp"
+#include <vector>
+
 #include "OptInterface.hpp"
+#include "Share/Share.hpp"
 
 namespace qmpc::Optimizer
 {

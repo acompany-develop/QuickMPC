@@ -1,12 +1,12 @@
 #pragma once
 
-#include <vector>
 #include <iomanip>
-#include "gtest/gtest.h"
-#include "Optimizer/optimizer.hpp"
-#include "ObjectiveFunction/ObjectiveFunctionInterface.hpp"
+#include <vector>
 
 #include "LogHeader/Logger.hpp"
+#include "ObjectiveFunction/ObjectiveFunctionInterface.hpp"
+#include "Optimizer/optimizer.hpp"
+#include "gtest/gtest.h"
 
 TEST(OptimizeTest, GradientDescent)
 {

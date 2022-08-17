@@ -1,8 +1,8 @@
-#include "gtest/gtest.h"
-#include "nlohmann/json.hpp"
-#include "Client/ComputationToDbGate/Client.hpp"
 #include "Client/AnyToDb/Client.hpp"
 #include "Client/AnyToDb/N1QL.hpp"
+#include "Client/ComputationToDbGate/Client.hpp"
+#include "gtest/gtest.h"
+#include "nlohmann/json.hpp"
 
 TEST(ComputationToDbGateTest, PieceIdTest)
 {

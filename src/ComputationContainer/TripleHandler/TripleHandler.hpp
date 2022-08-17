@@ -1,12 +1,12 @@
 #pragma once
 
+#include <queue>
+#include <tuple>
+
+#include "Client/ComputationToBts/Client.hpp"
 #include "FixedPoint/FixedPoint.hpp"
 #include "PrimeField/PrimeField.hpp"
-#include "Client/ComputationToBts/Client.hpp"
 #include "Share/AddressId.hpp"
-
-#include <tuple>
-#include <queue>
 
 namespace qmpc::TripleHandler
 {

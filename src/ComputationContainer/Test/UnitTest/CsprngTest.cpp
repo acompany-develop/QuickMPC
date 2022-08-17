@@ -1,14 +1,14 @@
-#include "gtest/gtest.h"
-#include "Random/Csprng.hpp"
-
 #include <stdlib.h>
+
 #include <set>
 
 #include "LogHeader/Logger.hpp"
+#include "Random/Csprng.hpp"
+#include "gtest/gtest.h"
 
 TEST(CsprngTest, GetRand)
 {
-    const unsigned int byteSize = 8; // 8byte = 64bit
+    const unsigned int byteSize = 8;  // 8byte = 64bit
 
     unsigned char *rnd = new unsigned char[byteSize];
 
@@ -57,7 +57,7 @@ TEST(CsprngTest, HowUse)
 {
     Utility::CSPRNG rng = Utility::CSPRNG();
 
-    const unsigned int byteSize = 8; // 8byte = 64bit
+    const unsigned int byteSize = 8;  // 8byte = 64bit
     const unsigned int bitSize = byteSize * 8;
 
     unsigned char *rnd = new unsigned char[byteSize];
