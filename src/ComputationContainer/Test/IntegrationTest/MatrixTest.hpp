@@ -2,10 +2,10 @@
 #include <iostream>
 #include <list>
 #include <random>
-#include "gtest/gtest.h"
-#include "Share/Matrix.hpp"
 
 #include "LogHeader/Logger.hpp"
+#include "Share/Matrix.hpp"
+#include "gtest/gtest.h"
 
 std::random_device rnd;
 std::mt19937_64 mt(rnd());

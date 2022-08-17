@@ -1,9 +1,8 @@
 #include "ModelBase.hpp"
 
 #include "Client/ComputationToDbGate/Client.hpp"
-#include "nlohmann/json.hpp"
-
 #include "LogHeader/Logger.hpp"
+#include "nlohmann/json.hpp"
 
 namespace qmpc::Model
 {

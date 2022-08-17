@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+
 #include "Share/Share.hpp"
 
 namespace qmpc::ObjectiveFunction

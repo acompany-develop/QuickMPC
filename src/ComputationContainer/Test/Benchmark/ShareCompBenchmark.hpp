@@ -4,15 +4,16 @@
  */
 
 #pragma once
-#include "gtest/gtest.h"
 #include <iostream>
 #include <string>
 #include <thread>
-#include "unistd.h"
-#include "Share/Share.hpp"
-#include "Share/Compare.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
+
 #include "Benchmark.hpp"
+#include "Server/ComputationToComputationContainer/Server.hpp"
+#include "Share/Compare.hpp"
+#include "Share/Share.hpp"
+#include "gtest/gtest.h"
+#include "unistd.h"
 
 TEST(ShareCompBenchmark, AddBetweenShareComps)
 {

@@ -1,5 +1,5 @@
 # QuickMPC
-[![Build CC, MC, DC, and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/acompany-develop/QuickMPC/actions/workflows/main.yml)
+[![Build CC, MC, DC and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml)
 
 <img src="https://user-images.githubusercontent.com/1694907/182115030-90fda7cf-068a-48bb-ba50-ee12be6af0b4.png" width=128>
 
@@ -16,7 +16,7 @@ QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Sec
 - `docker-compose`
 
 ## Getting Started
-[QuickMPC-libClient-pyのデモ](/QuickMPC-libClient-py/demo/README.md)
+[QuickMPC-libClient-pyのデモ](https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo/README.md)
 
 ## 開発時の注意
 ### 推奨スペック
@@ -34,7 +34,7 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 ```
 3. libClientのDemoを実行する
 - libClient-ts(https://github.com/acompany-develop/QuickMPC-libClient-ts/tree/develop/Demo/Develop)
-- libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/Demo)
+- libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo)
 
 ## 各コンテナのテスト方法
 詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/Test

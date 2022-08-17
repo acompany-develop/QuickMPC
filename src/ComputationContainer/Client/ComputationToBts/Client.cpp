@@ -1,14 +1,4 @@
 #include "Client.hpp"
-#include "ConfigParse/ConfigParse.hpp"
-#include "Client/Helper/Helper.hpp"
-
-#include <thread>
-#include <chrono>
-
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
 
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>
@@ -16,6 +6,15 @@
 #include <grpcpp/create_channel.h>
 #include <grpcpp/security/credentials.h>
 
+#include <chrono>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <thread>
+
+#include "Client/Helper/Helper.hpp"
+#include "ConfigParse/ConfigParse.hpp"
 #include "LogHeader/Logger.hpp"
 #include "Logging/Logger.hpp"
 

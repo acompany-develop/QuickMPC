@@ -1,15 +1,13 @@
-#include "gtest/gtest.h"
 #include <iostream>
-#include "PrimeField/PrimeField.hpp"
-#include "gtest/gtest.h"
 
 #include "PrimeField/PrimeField.hpp"
+#include "gtest/gtest.h"
 
 constexpr boost::multiprecision::uint128_t p = 18446744073709551557ull;
 constexpr boost::multiprecision::uint128_t x = 10000000;
-constexpr boost::multiprecision::uint128_t x_minus = 18446744073699551557ull; // x_minus = p-x
+constexpr boost::multiprecision::uint128_t x_minus = 18446744073699551557ull;  // x_minus = p-x
 constexpr boost::multiprecision::uint128_t y = 20000000;
-constexpr boost::multiprecision::uint128_t y_inv = 11710276295512354770ull; // y_inv = y^-1
+constexpr boost::multiprecision::uint128_t y_inv = 11710276295512354770ull;  // y_inv = y^-1
 
 // コンストラクタのチェック
 // メンバ変数に正しい値が入っているかテスト
@@ -222,13 +220,11 @@ TEST(PrimeFieldTest, OverMul)
 // modを超えた値での初期化でエラーするかテスト
 TEST(PrimeFieldTest, InitOverValue)
 {
-    EXPECT_ANY_THROW([]()
-                     { PrimeField a{PrimeField::p + 1}; }());
+    EXPECT_ANY_THROW([]() { PrimeField a{PrimeField::p + 1}; }());
 }
 
 // 負の値での初期化でエラーするかテスト
 TEST(PrimeFieldTest, InitMinusValue)
 {
-    EXPECT_ANY_THROW([]()
-                     { PrimeField a{-1}; }());
+    EXPECT_ANY_THROW([]() { PrimeField a{-1}; }());
 }

@@ -1,8 +1,7 @@
+#include "Client/ComputationToBts/Client.hpp"
+#include "LogHeader/Logger.hpp"
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
-#include "Client/ComputationToBts/Client.hpp"
-
-#include "LogHeader/Logger.hpp"
 
 void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
 {

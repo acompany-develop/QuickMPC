@@ -1,6 +1,6 @@
 #pragma once
-#include "Share/Share.hpp"
 #include "Math/Math.hpp"
+#include "Share/Share.hpp"
 
 namespace qmpc::GBDT
 {

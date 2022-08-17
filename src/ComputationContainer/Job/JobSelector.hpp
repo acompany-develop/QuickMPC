@@ -1,16 +1,16 @@
 #pragma once
 #include <memory>
-#include "Math/Math.hpp"
+
+#include "JobParameter.hpp"
 #include "Jobs/CorrelJob.hpp"
-#include "Jobs/MathJob.hpp"
 #include "Jobs/JoinTableJob.hpp"
 #include "Jobs/LinearRegressionJob.hpp"
 #include "Jobs/LogisticRegressionJob.hpp"
+#include "Jobs/MathJob.hpp"
 #include "Jobs/MeshCodeJob.hpp"
 #include "Jobs/SID3Job.hpp"
-#include "JobParameter.hpp"
-
 #include "LogHeader/Logger.hpp"
+#include "Math/Math.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
 
 namespace qmpc::Job

@@ -1,16 +1,17 @@
 #pragma once
 
-#include <cmath>
-#include "ConfigParse/ConfigParse.hpp"
-#include "Random/Random.hpp"
-#include "Networking.hpp"
-#include <boost/operators.hpp>
 #include <atomic>
-#include <tuple>
+#include <boost/operators.hpp>
+#include <cmath>
 #include <string>
+#include <tuple>
+
 #include "AddressId.hpp"
-#include "TripleHandler/TripleHandler.hpp"
+#include "ConfigParse/ConfigParse.hpp"
 #include "Logging/Logger.hpp"
+#include "Networking.hpp"
+#include "Random/Random.hpp"
+#include "TripleHandler/TripleHandler.hpp"
 namespace qmpc::Share
 {
 template <typename SV>
