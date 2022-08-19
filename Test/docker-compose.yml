@@ -24,7 +24,10 @@ services:
         condition: service_healthy
       dev_bts:
         condition: service_healthy
-    command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
+    command:
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container"
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -58,7 +61,10 @@ services:
     depends_on:
       dev_dbgate2:
         condition: service_healthy
-    command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
+    command:
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container"
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -92,7 +98,10 @@ services:
     depends_on:
       dev_dbgate3:
         condition: service_healthy
-    command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
+    command:
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container"
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -739,7 +748,9 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      ["/bin/bash", "-c", "printenv && bazel-bin/computation_container_test"]
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_test"
 
   medium_cc2:
     container_name: computation_container2
@@ -766,7 +777,9 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      ["/bin/bash", "-c", "printenv && bazel-bin/computation_container_test"]
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_test"
 
   medium_cc3:
     tty: true # docker run -t
@@ -794,7 +807,9 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      ["/bin/bash", "-c", "printenv && bazel-bin/computation_container_test"]
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_test"
 
   benchmark_cc1:
     container_name: computation_container1
@@ -819,11 +834,9 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      [
-        "/bin/bash",
-        "-c",
-        "printenv && bazel-bin/computation_container_benchmark",
-      ]
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_benchmark"
 
   benchmark_cc2:
     container_name: computation_container2
@@ -848,11 +861,9 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      [
-        "/bin/bash",
-        "-c",
-        "printenv && bazel-bin/computation_container_benchmark",
-      ]
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_benchmark"
 
   benchmark_cc3:
     tty: true # docker run -t
@@ -878,11 +889,9 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      [
-        "/bin/bash",
-        "-c",
-        "printenv && bazel-bin/computation_container_benchmark",
-      ]
+      - "/bin/bash",
+      - "-c",
+      - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_benchmark"
 
   medium_mc1:
     container_name: manage_container1
