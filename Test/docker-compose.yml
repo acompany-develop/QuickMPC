@@ -25,8 +25,8 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container"
     healthcheck:
       test: [
@@ -62,8 +62,8 @@ services:
       dev_dbgate2:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container"
     healthcheck:
       test: [
@@ -99,8 +99,8 @@ services:
       dev_dbgate3:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container"
     healthcheck:
       test: [
@@ -748,8 +748,8 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_test"
 
   medium_cc2:
@@ -777,8 +777,8 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_test"
 
   medium_cc3:
@@ -807,8 +807,8 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_test"
 
   benchmark_cc1:
@@ -834,8 +834,8 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_benchmark"
 
   benchmark_cc2:
@@ -861,8 +861,8 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_benchmark"
 
   benchmark_cc3:
@@ -889,8 +889,8 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      - "/bin/bash",
-      - "-c",
+      - "/bin/bash"
+      - "-c"
       - "printenv && LD_PRELOAD=bazel-bin/libexception_handler.so bazel-bin/computation_container_benchmark"
 
   medium_mc1:
