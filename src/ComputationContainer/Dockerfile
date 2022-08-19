@@ -91,6 +91,8 @@ RUN apk update && \
 RUN true
 COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bin/computation_container
 RUN true
+COPY --from=builder /QuickMPC/bazel-bin/libexception_handler.so /QuickMPC/bazel-bin/libexception_handler.so
+RUN true
 COPY --from=builder /usr/local/lib /usr/local/lib
 RUN true
 COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
@@ -113,6 +115,8 @@ FROM alpine:latest as large-runner
 RUN apk update && apk add curl
 RUN true
 COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bin/computation_container
+RUN true
+COPY --from=builder /QuickMPC/bazel-bin/libexception_handler.so /QuickMPC/bazel-bin/libexception_handler.so
 # テスト用バイナリ
 COPY --from=builder /QuickMPC/bazel-bin/computation_container_test /QuickMPC/bazel-bin/computation_container_test
 RUN true
