@@ -89,6 +89,7 @@ ENV BUILD_OPT=${BUILD_OPT}
 RUN echo ${BUILD_OPT}
 # 実行ファイル生成
 RUN bazel build //:all ${BUILD_OPT}
+# Collect depended shared libraries
 RUN mkdir -p /QuickMPC/__shared_libs && \
     ldd /QuickMPC/bazel-bin/computation_container | perl -pe 's/\s+/\n/g' | grep '^/' && \
     xargs -I{} cp {} /QuickMPC/__shared_libs
@@ -125,6 +126,7 @@ COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bi
 # テスト用バイナリ
 COPY --from=builder /QuickMPC/bazel-bin/computation_container_test /QuickMPC/bazel-bin/computation_container_test
 RUN true
+# Place depended shared libraries
 COPY --from=builder /QuickMPC/__shared_libs/. /QuickMPC/bazel-bin/
 RUN true
 WORKDIR /QuickMPC
