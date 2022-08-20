@@ -1,4 +1,4 @@
-FROM couchbase:community-7.0.2 as base
+FROM couchbase:community-7.1.1 as base
 
 # Configure apt-get for NodeJS
 # Install NPM and NodeJS and jq, with apt-get cleanup
