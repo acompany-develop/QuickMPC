@@ -5,6 +5,8 @@ ENV PATH $PATH:/grpc/cmake/build
 ENV PATH $PATH:/grpc/cmake/build/third_party/protobuf
 ENV PATH $PATH:$CMAKE_INSTALL_DIR/bin
 
+ARG TARGETPLATFORM
+
 RUN apt-get update && \
     apt-get install -y \
     git \
@@ -26,12 +28,24 @@ ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin
 
 # Install go
-RUN wget https://go.dev/dl/go1.18.1.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go1.18.1.linux-amd64.tar.gz
+RUN echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+    case "$TARGETPLATFORM" in \
+    linux/amd64) ARCH=linux-amd64 ;; \
+    linux/arm64) ARCH=linux-arm64 ;; \
+    esac; \
+    echo "ARCH: ${ARCH}" && \
+    wget -qO go.tar.gz https://go.dev/dl/go1.18.1.${ARCH}.tar.gz && \
+    tar -C /usr/local -xzf go.tar.gz
 
 # grpcサーバのhealthcheckをするためのツールをインストール
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.11 && \
-    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+    case "$TARGETPLATFORM" in \
+    linux/amd64) ARCH=linux-amd64 ;; \
+    linux/arm64) ARCH=linux-arm64 ;; \
+    esac; \
+    echo "ARCH: ${ARCH}" && \
+    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-${ARCH} && \
     chmod +x /bin/grpc_health_probe
 
 # docker-composeから環境変数受け取り
