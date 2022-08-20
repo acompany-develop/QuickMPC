@@ -59,15 +59,15 @@ RUN go install -v golang.org/x/tools/gopls@latest
 
 # Install Protocolbuf
 RUN apt-get install -y unzip curl && \
-  PROTOC_VER=3.18.0 && \
-  case "$TARGETPLATFORM" in \
-  linux/amd64) ARCH=linux-x86_64 ;; \
-  linux/arm64) ARCH=linux-aarch_64 ;; \
-  esac; \
-  curl -Lo protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-${ARCH}.zip && \
-  unzip protoc.zip -d /root/.local && \
-  go install -v google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0 && \
-  go install -v google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
+    PROTOC_VER=3.18.0 && \
+    case "$TARGETPLATFORM" in \
+    linux/amd64) ARCH=linux-x86_64 ;; \
+    linux/arm64) ARCH=linux-aarch_64 ;; \
+    esac; \
+    curl -Lo protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-${ARCH}.zip && \
+    unzip protoc.zip -d /root/.local && \
+    go install -v google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0 && \
+    go install -v google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
 
 ENV PATH=$PATH:/root/.local/bin
 
@@ -87,8 +87,8 @@ WORKDIR /QuickMPC
 RUN go mod vendor && go build
 # Collect depended shared libraries
 RUN mkdir -p /QuickMPC/__shared_libs && \
-  ldd /QuickMPC/DbGate | perl -pe 's/\s+/\n/g' | grep '^/' | \
-  xargs -I{} cp {} /QuickMPC/__shared_libs
+    ldd /QuickMPC/DbGate | perl -pe 's/\s+/\n/g' | grep '^/' | \
+    xargs -I{} cp {} /QuickMPC/__shared_libs
 
 
 FROM builder as dev
