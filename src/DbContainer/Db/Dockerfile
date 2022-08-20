@@ -4,7 +4,7 @@ FROM couchbase:community-7.1.1 as base
 # Install NPM and NodeJS and jq, with apt-get cleanup
 RUN apt update && \
     apt install ca-certificates && \
-    curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install -yq build-essential nodejs jq && \
     apt-get autoremove && apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
