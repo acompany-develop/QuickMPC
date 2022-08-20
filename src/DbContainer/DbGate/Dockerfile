@@ -62,13 +62,18 @@ RUN go install -v github.com/ramya-rao-a/go-outline@latest
 RUN go install -v golang.org/x/tools/gopls@latest
 
 # Install Protocolbuf
-RUN apt-get update && \
-    apt-get install -y unzip && \
-    PROTOC_VER=3.18.0 && \
-    curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-x86_64.zip && \
-    unzip protoc-${PROTOC_VER}-linux-x86_64.zip -d /root/.local && \
-    go install -v google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0 && \
-    go install -v google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
+RUN apt-get install -y unzip curl && \
+  PROTOC_VER=3.18.0 && \
+  echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+  case "$TARGETPLATFORM" in \
+  linux/amd64) ARCH=linux-x86_64 ;; \
+  linux/arm64) ARCH=linux-aarch_64 ;; \
+  esac; \
+  echo "ARCH: ${ARCH}" && \
+  curl -Lo protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-${ARCH}.zip && \
+  unzip protoc.zip -d /root/.local && \
+  go install -v google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0 && \
+  go install -v google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
 
 ENV PATH=$PATH:/root/.local/bin
 
@@ -86,6 +91,10 @@ RUN true
 COPY src/Proto/ /Proto
 WORKDIR /QuickMPC
 RUN go mod vendor && go build
+RUN mkdir -p /QuickMPC/__shared_libs && \
+  ldd /QuickMPC/DbGate | perl -pe 's/\s+/\n/g' | grep '^/' && \
+  xargs -I{} cp {} /QuickMPC/__shared_libs
+
 
 FROM builder as dev
 COPY ./src/DbContainer/.bashrc /root/
@@ -109,7 +118,8 @@ ENV lowercase_DB_NAMES=${lowercase_DB_NAMES}
 ENV BASH_ENV="/root/.bashrc"
 RUN true
 COPY --from=builder /QuickMPC/DbGate /QuickMPC/DbGate
-RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+RUN true
+COPY --from=builder /QuickMPC/__shared_libs/. /QuickMPC/
 RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
 RUN true
