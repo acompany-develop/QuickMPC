@@ -87,7 +87,7 @@ WORKDIR /QuickMPC
 RUN go mod vendor && go build
 # Collect depended shared libraries
 RUN mkdir -p /QuickMPC/__shared_libs && \
-  ldd /QuickMPC/DbGate | perl -pe 's/\s+/\n/g' | grep '^/' && \
+  ldd /QuickMPC/DbGate | perl -pe 's/\s+/\n/g' | grep '^/' | \
   xargs -I{} cp {} /QuickMPC/__shared_libs
 
 
@@ -115,7 +115,7 @@ RUN true
 COPY --from=builder /QuickMPC/DbGate /QuickMPC/DbGate
 RUN true
 # Place depended shared libraries
-COPY --from=builder /QuickMPC/__shared_libs/. /QuickMPC/
+COPY --from=builder /QuickMPC/__shared_libs/. /lib/
 RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
 RUN true

@@ -77,7 +77,7 @@ WORKDIR /QuickMPC
 RUN go mod vendor && go build
 # Collect depended shared libraries
 RUN mkdir -p /QuickMPC/__shared_libs && \
-  ldd /QuickMPC/ManageContainer | perl -pe 's/\s+/\n/g' | grep '^/' && \
+  ldd /QuickMPC/ManageContainer | perl -pe 's/\s+/\n/g' | grep '^/' | \
   xargs -I{} cp {} /QuickMPC/__shared_libs
 
 FROM builder as dev
@@ -92,7 +92,7 @@ RUN apk update && \
 COPY --from=builder /QuickMPC/ManageContainer /QuickMPC/ManageContainer
 RUN true
 # Place depended shared libraries
-COPY --from=builder /QuickMPC/__shared_libs/. /QuickMPC/
+COPY --from=builder /QuickMPC/__shared_libs/. /lib/
 RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
