@@ -5,6 +5,8 @@ ENV PATH $PATH:/grpc/cmake/build
 ENV PATH $PATH:/grpc/cmake/build/third_party/protobuf
 ENV PATH $PATH:$CMAKE_INSTALL_DIR/bin
 
+ARG TARGETPLATFORM
+
 RUN apt-get update && \
   apt-get install -y \
   git \
@@ -25,15 +27,27 @@ RUN apt-get update && \
 
 # grpcサーバのhealthcheckをするためのツールをインストール
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.11 && \
-  wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+  echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+  case "$TARGETPLATFORM" in \
+  linux/amd64) ARCH=linux-amd64 ;; \
+  linux/arm64) ARCH=linux-arm64 ;; \
+  esac; \
+  echo "ARCH: ${ARCH}" && \
+  wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-${ARCH} && \
   chmod +x /bin/grpc_health_probe
 
 ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin
 
 # Install go
-RUN wget https://go.dev/dl/go1.18.1.linux-amd64.tar.gz && \
-  tar -C /usr/local -xzf go1.18.1.linux-amd64.tar.gz
+RUN echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+  case "$TARGETPLATFORM" in \
+  linux/amd64) ARCH=linux-amd64 ;; \
+  linux/arm64) ARCH=linux-arm64 ;; \
+  esac; \
+  echo "ARCH: ${ARCH}" && \
+  wget https://go.dev/dl/go1.18.1.${ARCH}.tar.gz && \
+  tar -C /usr/local -xzf go1.18.1.${ARCH}.tar.gz
 
 FROM base as src
 # goの自動成型ツール
@@ -44,8 +58,14 @@ RUN go install -v golang.org/x/tools/gopls@latest
 # Install Protocolbuf
 RUN apt-get install -y unzip curl && \
   PROTOC_VER=3.18.0 && \
-  curl -LO https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-linux-x86_64.zip && \
-  unzip protoc-${PROTOC_VER}-linux-x86_64.zip -d /root/.local && \
+  echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+  case "$TARGETPLATFORM" in \
+  linux/amd64) ARCH=linux-x86_64 ;; \
+  linux/arm64) ARCH=linux-aarch_64 ;; \
+  esac; \
+  echo "ARCH: ${ARCH}" && \
+  curl -Lo protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-${ARCH}.zip && \
+  unzip protoc.zip -d /root/.local && \
   go install -v google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0 && \
   go install -v google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
 
@@ -61,6 +81,9 @@ RUN true
 COPY src/Proto/ /Proto
 WORKDIR /QuickMPC
 RUN go mod vendor && go build
+RUN mkdir -p /QuickMPC/__shared_libs && \
+  ldd /QuickMPC/ManageContainer | perl -pe 's/\s+/\n/g' | grep '^/' && \
+  xargs -I{} cp {} /QuickMPC/__shared_libs
 
 FROM builder as dev
 
@@ -72,7 +95,9 @@ RUN apk update && \
   # 公式イメージの upgrade がされていないため
   apk upgrade
 COPY --from=builder /QuickMPC/ManageContainer /QuickMPC/ManageContainer
-RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
+RUN true
+COPY --from=builder /QuickMPC/__shared_libs/. /QuickMPC/
+RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
