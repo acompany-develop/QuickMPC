@@ -9,11 +9,6 @@ RUN apt update && \
     apt-get autoremove && apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Upgrade to jq 1.6
-RUN wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && \
-    chmod +x jq-linux64 && \
-    mv jq-linux64 $(which jq)
-
 # Copy package.json
 WORKDIR /scripts
 COPY ./src/DbContainer/Db/scripts/package*.json ./
