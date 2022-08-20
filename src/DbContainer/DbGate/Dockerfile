@@ -28,23 +28,19 @@ ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin
 
 # Install go
-RUN echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
-    case "$TARGETPLATFORM" in \
+RUN case "$TARGETPLATFORM" in \
     linux/amd64) ARCH=linux-amd64 ;; \
     linux/arm64) ARCH=linux-arm64 ;; \
     esac; \
-    echo "ARCH: ${ARCH}" && \
     wget -qO go.tar.gz https://go.dev/dl/go1.18.1.${ARCH}.tar.gz && \
     tar -C /usr/local -xzf go.tar.gz
 
 # grpcサーバのhealthcheckをするためのツールをインストール
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.11 && \
-    echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
     case "$TARGETPLATFORM" in \
     linux/amd64) ARCH=linux-amd64 ;; \
     linux/arm64) ARCH=linux-arm64 ;; \
     esac; \
-    echo "ARCH: ${ARCH}" && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-${ARCH} && \
     chmod +x /bin/grpc_health_probe
 
@@ -64,12 +60,10 @@ RUN go install -v golang.org/x/tools/gopls@latest
 # Install Protocolbuf
 RUN apt-get install -y unzip curl && \
   PROTOC_VER=3.18.0 && \
-  echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
   case "$TARGETPLATFORM" in \
   linux/amd64) ARCH=linux-x86_64 ;; \
   linux/arm64) ARCH=linux-aarch_64 ;; \
   esac; \
-  echo "ARCH: ${ARCH}" && \
   curl -Lo protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VER}/protoc-${PROTOC_VER}-${ARCH}.zip && \
   unzip protoc.zip -d /root/.local && \
   go install -v google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.0 && \

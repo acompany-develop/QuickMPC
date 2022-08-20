@@ -30,24 +30,20 @@ RUN apt-get update && \
     dnsutils
 
 # Install cmake
-RUN echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
-    case "$TARGETPLATFORM" in \
+RUN case "$TARGETPLATFORM" in \
     linux/amd64) ARCH=linux-x86_64 ;; \
     linux/arm64) ARCH=linux-aarch64 ;; \
     esac; \
-    echo "ARCH: ${ARCH}" && \
     wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-${ARCH}.sh && \
     mkdir -p $CMAKE_INSTALL_DIR && \
     sh cmake-linux.sh -- --skip-license --prefix=$CMAKE_INSTALL_DIR && \
     rm cmake-linux.sh
 
 # Install bazelisk
-RUN echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
-    case "$TARGETPLATFORM" in \
+RUN case "$TARGETPLATFORM" in \
     linux/amd64) ARCH=linux-amd64 ;; \
     linux/arm64) ARCH=linux-arm64 ;; \
     esac; \
-    echo "ARCH: ${ARCH}" && \
     wget -q -O /bin/bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.12.2/bazelisk-${ARCH} && \
     chmod +x /bin/bazelisk && \
     ln -s /bin/bazelisk /bin/bazel
@@ -65,12 +61,10 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
 
 # grpcサーバのhealthcheckをするためのツールをインストール
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.11 && \
-    echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
     case "$TARGETPLATFORM" in \
     linux/amd64) ARCH=linux-amd64 ;; \
     linux/arm64) ARCH=linux-arm64 ;; \
     esac; \
-    echo "ARCH: ${ARCH}" && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-${ARCH} && \
     chmod +x /bin/grpc_health_probe
 
