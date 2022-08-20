@@ -5,6 +5,8 @@ ENV PATH $PATH:/grpc/cmake/build
 ENV PATH $PATH:/grpc/cmake/build/third_party/protobuf
 ENV PATH $PATH:$CMAKE_INSTALL_DIR/bin
 
+ARG TARGETPLATFORM
+
 RUN apt-get update && \
     apt-get install -y \
     git \
@@ -28,17 +30,27 @@ RUN apt-get update && \
     dnsutils
 
 # Install cmake
-RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.sh && \
+RUN echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+    case "$TARGETPLATFORM" in \
+    linux/amd64) ARCH=linux-x86_64 ;; \
+    linux/arm64) ARCH=linux-aarch64 ;; \
+    esac; \
+    echo "ARCH: ${ARCH}" && \
+    wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.24.1/cmake-3.24.1-${ARCH}.sh && \
     mkdir -p $CMAKE_INSTALL_DIR && \
     sh cmake-linux.sh -- --skip-license --prefix=$CMAKE_INSTALL_DIR && \
-    rm cmake-linux.sh && \
-    # Install bazel
-    echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list && \
-    wget https://bazel.build/bazel-release.pub.gpg && \
-    apt-key add bazel-release.pub.gpg && \
-    apt-get update && \
-    apt-get -y install bazel-5.0.0 && \
-    ln -s /usr/bin/bazel-5.0.0 /usr/bin/bazel
+    rm cmake-linux.sh
+
+# Install bazelisk
+RUN echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+    case "$TARGETPLATFORM" in \
+    linux/amd64) ARCH=linux-amd64 ;; \
+    linux/arm64) ARCH=linux-arm64 ;; \
+    esac; \
+    echo "ARCH: ${ARCH}" && \
+    wget -q -O /bin/bazelisk https://github.com/bazelbuild/bazelisk/releases/download/v1.12.2/bazelisk-${ARCH} && \
+    chmod +x /bin/bazelisk && \
+    ln -s /bin/bazelisk /bin/bazel
 
 # Install libsodium
 RUN cd / && git clone https://github.com/jedisct1/libsodium --branch stable && \
@@ -53,7 +65,13 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
 
 # grpcサーバのhealthcheckをするためのツールをインストール
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.11 && \
-    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    echo "TARGETPLATFORM: ${TARGETPLATFORM}" && \
+    case "$TARGETPLATFORM" in \
+    linux/amd64) ARCH=linux-amd64 ;; \
+    linux/arm64) ARCH=linux-arm64 ;; \
+    esac; \
+    echo "ARCH: ${ARCH}" && \
+    wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-${ARCH} && \
     chmod +x /bin/grpc_health_probe
 
 FROM base as src
@@ -77,6 +95,9 @@ ENV BUILD_OPT=${BUILD_OPT}
 RUN echo ${BUILD_OPT}
 # 実行ファイル生成
 RUN bazel build //:all ${BUILD_OPT}
+RUN mkdir -p /QuickMPC/__shared_libs && \
+    ldd /QuickMPC/bazel-bin/computation_container | perl -pe 's/\s+/\n/g' | grep '^/' && \
+    xargs -I{} cp {} /QuickMPC/__shared_libs
 
 FROM builder as dev
 
@@ -91,13 +112,7 @@ RUN apk update && \
 RUN true
 COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bin/computation_container
 RUN true
-COPY --from=builder /usr/local/lib /usr/local/lib
-RUN true
-COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
-RUN true
-COPY --from=builder /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
-RUN true
-COPY --from=builder /lib64 /lib64
+COPY --from=builder /QuickMPC/__shared_libs/. /QuickMPC/bazel-bin/
 RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
@@ -116,11 +131,6 @@ COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bi
 # テスト用バイナリ
 COPY --from=builder /QuickMPC/bazel-bin/computation_container_test /QuickMPC/bazel-bin/computation_container_test
 RUN true
-COPY --from=builder /usr/local/lib /usr/local/lib
+COPY --from=builder /QuickMPC/__shared_libs/. /QuickMPC/bazel-bin/
 RUN true
-COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
-RUN true
-COPY --from=builder /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
-RUN true
-COPY --from=builder /lib64 /lib64
 WORKDIR /QuickMPC
