@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "couchbase": "2.6.8",
-    "couchbase-index-manager": "0.7.2"
+    "couchbase": "4.1.2",
+    "couchbase-index-manager": "2.1.0"
   }
 }
