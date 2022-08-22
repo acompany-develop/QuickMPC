@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <regex>
 
 #include <boost/stacktrace.hpp>
 
@@ -37,13 +38,20 @@ extern "C"
 void __cxa_throw(void* ptr, std::type_info* tinfo, void (*dest)(void*))
 {
     // logging
-    std::cerr << CALL_WITH_DBG_INFO(generateLogHeader) << "exception handler is called.  stacktrace is following." << std::endl;
+    const std::string log_format_head = CALL_WITH_DBG_INFO(generateLogHeader);
 
-    const boost::stacktrace::stacktrace bt = boost::stacktrace::stacktrace();
-    const std::size_t frames = bt.size();
-    for (std::size_t i = 0; i < frames; ++i) {
-        std::cerr << CALL_WITH_DBG_INFO(generateLogHeader) << i << "# " << bt[i] << std::endl;
-    }
+    std::cerr << log_format_head << "exception handler is called.  stacktrace is following." << std::endl;
+
+    std::stringstream ss;
+    ss << boost::stacktrace::stacktrace();
+    const std::string stacktrace = ss.str();
+
+    // replace newline to follow log format
+    // this way is used because iteration over stacktrace cause performance issue
+    const std::string fmt = "\n" + log_format_head;
+    std::regex regex(R"(\n)");
+    std::regex_replace(std::ostream_iterator<char>(std::cerr), std::begin(stacktrace), std::end(stacktrace), regex, fmt);
+    std::cerr << "stacktrace is dumped." << std::endl;
 
     // find next definition of __cxa_throw which is in standard library.
     auto* handle = reinterpret_cast<decltype(__cxa_throw)*>(dlsym(RTLD_NEXT, __func__));
