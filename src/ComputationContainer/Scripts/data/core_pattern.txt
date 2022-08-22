@@ -1,0 +1,1 @@
+/tmp/cores/core_%E_%s_%t
