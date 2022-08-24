@@ -130,12 +130,32 @@ public:
         catch (const std::runtime_error &e)
         {
             spdlog::error("{}", static_cast<int>(statusManager.getStatus()));
-            qmpc::Log::Error(*boost::get_error_info<qmpc::Log::traced>(e), e.what(), "Job Error");
+            qmpc::Log::Error(e.what(), "Job Error");
+
+            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
+            if (error_info)
+            {
+                qmpc::Log::Error(*error_info);
+            }
+            else
+            {
+                qmpc::Log::Error("thrown exception has no stack trace information");
+            }
         }
         catch (const std::exception &e)
         {
             spdlog::error("unexpected Error");
-            qmpc::Log::Error(*boost::get_error_info<qmpc::Log::traced>(e), e.what(), "Job Error");
+            qmpc::Log::Error(e.what(), "Job Error");
+
+            auto *error_info = boost::get_error_info<qmpc::Log::traced>(e);
+            if (error_info)
+            {
+                qmpc::Log::Error(*error_info);
+            }
+            else
+            {
+                qmpc::Log::Error("thrown exception has no stack trace information");
+            }
         }
         return static_cast<int>(statusManager.getStatus());
     }
