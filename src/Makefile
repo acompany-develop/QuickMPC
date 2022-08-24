@@ -136,7 +136,7 @@ login-bts:
 	docker-compose -f $(BTS)/docker-compose.yml exec bts /bin/bash
 
 ROOT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
-SOURCES := $(shell git ls-tree -r develop --name-only | grep -E '.*\.(cpp|hpp)')
+SOURCES := $(shell find $(ROOT_DIR) -type d -name '.cache' -prune -o -type f \( -name *.cpp -o -type f -name *.hpp \) -print)
 CLANG_FORMAT = clang-format-14 --verbose --style=file:$(ROOT_DIR)/.clang-format
 
 .PHONY: fmt
