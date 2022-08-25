@@ -369,7 +369,7 @@ func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params 
 		return err
 	}
 	if exist {
-		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
+		return errors.New("Duplicate error: " + jobUUID + " has already been registered.")
 	}
 
 	saveParams := ComputationResult{
