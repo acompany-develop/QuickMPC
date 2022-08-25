@@ -159,7 +159,8 @@ func (c Client) existPieceID(conn *grpc.ClientConn, bucket string, ID string, pi
 
 	ls.Lock(ID)
 	defer ls.Unlock(ID)
-	query := fmt.Sprintf("SELECT x.meta, meta().id FROM `%s` x WHERE x.%s= '%s';", bucket, idName, ID)
+	query := fmt.Sprintf("SELECT x.meta, meta().id FROM `%s` x WHERE x.%s= '%s';", 
+		bucket, utils.EscapeInjection(idName, utils.Where), utils.EscapeInjection(ID, utils.Where))
 	resJson, err := ExecuteQuery(conn, query)
 
 	var res []Share
