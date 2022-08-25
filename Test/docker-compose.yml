@@ -1078,7 +1078,30 @@ services:
       - type: bind
         source: ./LibClient/src
         target: /LibClient/src
-    command: ["/bin/bash", "-c", "pipenv run pytest -s -v -log-cli-level=DEBUG"]
+    command: ["/bin/bash", "-c", "pipenv run pytest src/tests -s -v -log-cli-level=DEBUG"]
+    network_mode: "host"
+    depends_on:
+      dev_mc1:
+        condition: service_healthy
+      dev_mc2:
+        condition: service_healthy
+      dev_mc3:
+        condition: service_healthy
+
+  benchmark-libc:
+    container_name: lib_client
+    build:
+      context: ../
+      dockerfile: Test/LibClient/Dockerfile
+      target: medium
+    volumes:
+      - type: bind
+        source: ./LibClient/Data
+        target: /LibClient/Data
+      - type: bind
+        source: ./LibClient/src
+        target: /LibClient/src
+    command: ["/bin/bash", "-c", "pipenv run pytest src/benchmark -s -v -log-cli-level=DEBUG"]
     network_mode: "host"
     depends_on:
       dev_mc1:

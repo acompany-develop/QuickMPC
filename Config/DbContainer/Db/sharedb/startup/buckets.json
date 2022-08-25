@@ -1,7 +1,7 @@
 [
   {
     "name": "share",
-    "ramQuotaMB": 512,
+    "ramQuotaMB": 2048,
     "bucketType": "couchbase",
     "authType": "sasl",
     "saslPassword": "",
