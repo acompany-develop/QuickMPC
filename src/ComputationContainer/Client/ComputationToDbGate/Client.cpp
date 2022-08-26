@@ -51,9 +51,25 @@ std::vector<std::string> Client::readModelparam(const std::string &job_uuid) con
     auto n1ql = AnyToDb::N1QL("result");
     auto response = client_share.executeQuery(n1ql.select_id("job_uuid", job_uuid));
     auto response_json = nlohmann::json::parse(response);
+
+    // piece順に連結する
+    std::map<int, std::string> piece_map;
+    for (const auto &res : response_json)
+    {
+        piece_map.emplace(res["meta"]["piece_id"], res["result"]);
+    }
+    std::string result_str = "";
+    for (const auto &[_, result] : piece_map)
+    {
+        static_cast<void>(_);  // NOTE: unused warningを消すため
+        result_str += result;
+    }
+
+    // parseして値を返す
+    auto result_json = nlohmann::json::parse(result_str);
     std::vector<std::string> ret;
-    ret.reserve(response_json[0]["result"].size());
-    for (const auto &val : response_json[0]["result"])
+    ret.reserve(result_json.size());
+    for (const auto &val : result_json)
     {
         ret.emplace_back(val);
     }
@@ -64,7 +80,23 @@ nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
     auto n1ql = AnyToDb::N1QL("result");
     auto response = client_share.executeQuery(n1ql.select_id("job_uuid", job_uuid));
     auto response_json = nlohmann::json::parse(response);
-    return response_json[0]["result"];
+
+    // piece順に連結する
+    std::map<int, std::string> piece_map;
+    for (const auto &res : response_json)
+    {
+        piece_map.emplace(res["meta"]["piece_id"], res["result"]);
+    }
+    std::string result_str = "";
+    for (const auto &[_, result] : piece_map)
+    {
+        static_cast<void>(_);  // NOTE: unused warningを消すため
+        result_str += result;
+    }
+
+    // parseして値を返す
+    auto ret = nlohmann::json::parse(result_str);
+    return ret;
 }
 
 void Client::registerJob(const std::string &job_uuid, const int &status) const
@@ -72,6 +104,9 @@ void Client::registerJob(const std::string &job_uuid, const int &status) const
     nlohmann::json data_json;
     data_json["job_uuid"] = job_uuid;
     data_json["status"] = status;
+    nlohmann::json meta;
+    meta["piece_id"] = 1;
+    data_json["meta"] = meta;
     const std::string data_str = data_json.dump();
 
     const auto values = AnyToDb::N1QLValue(data_str);
@@ -84,7 +119,7 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
 {
     auto n1ql = AnyToDb::N1QL("result");
     const std::string query =
-        n1ql.update({"job_uuid", job_uuid}, {"status", std::to_string(status)});
+        n1ql.update({"job_uuid", job_uuid}, std::pair<std::string, int>{"status", status});
 
     client_share.executeQuery(query);
 }

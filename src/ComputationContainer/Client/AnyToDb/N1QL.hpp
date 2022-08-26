@@ -48,6 +48,7 @@ class N1QL
 
         auto insert(const std::string &) const -> std::string;
         auto update(const std::string &, const std::string &) const -> std::string;
+        auto update(const std::string &, int) const -> std::string;
         auto select() const -> std::string;
         auto select_count() const -> std::string;
         auto delete_f() const -> std::string;
@@ -72,10 +73,14 @@ public:
     /// `bucket`のデータを更新するクエリ
     /// @param cond      ".first"が".second"であるデータに対して処理を行う
     /// @param path_expr ".first"を".second"の値に更新する
+    template <class T>
     auto update(
-        const std::pair<std::string, std::string> &cond,
-        const std::pair<std::string, std::string> &path_expr
-    ) const -> std::string;
+        const std::pair<std::string, std::string> &cond, const std::pair<std::string, T> &path_expr
+    ) const -> std::string
+    {
+        return clause.update(path_expr.first, path_expr.second)
+               + clause.where(cond.first, cond.second) + clause.returning();
+    }
     // "バケット内のすべてのデータを参照するクエリ
     auto select() const -> std::string;
     // "id_name"が"id"であるデータを参照するクエリ
