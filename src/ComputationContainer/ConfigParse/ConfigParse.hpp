@@ -7,8 +7,8 @@
 #include <stdexcept>
 #include <string>
 
-#include "nlohmann/json.hpp"
 #include "Logging/Logger.hpp"
+#include "nlohmann/json.hpp"
 
 struct Url
 {

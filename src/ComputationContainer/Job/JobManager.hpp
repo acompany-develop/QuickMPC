@@ -1,18 +1,18 @@
 #pragma once
 
-#include <vector>
 #include <future>
+#include <memory>
 #include <thread>
 #include <unordered_map>
-#include <memory>
-#include "ConfigParse/ConfigParse.hpp"
-#include "TransactionQueue/TransactionQueue.hpp"
-#include "JobBase.hpp"
-#include "JobSelector.hpp"
-#include "JobParameter.hpp"
-#include "Client/ComputationToComputationContainerForJob/Client.hpp"
+#include <vector>
 
+#include "Client/ComputationToComputationContainerForJob/Client.hpp"
+#include "ConfigParse/ConfigParse.hpp"
+#include "JobBase.hpp"
+#include "JobParameter.hpp"
+#include "JobSelector.hpp"
 #include "LogHeader/Logger.hpp"
+#include "TransactionQueue/TransactionQueue.hpp"
 
 namespace qmpc::Job
 {

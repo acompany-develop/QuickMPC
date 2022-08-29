@@ -1,10 +1,10 @@
-#include "gtest/gtest.h"
-
+#include <iostream>
 #include <type_traits>
-#include "Random/Random.hpp"
+
 #include "FixedPoint/FixedPoint.hpp"
 #include "PrimeField/PrimeField.hpp"
-#include <iostream>
+#include "Random/Random.hpp"
+#include "gtest/gtest.h"
 TEST(RandomTest, getRandTypeTest)
 {
     auto instance = RandGenerator::getInstance();

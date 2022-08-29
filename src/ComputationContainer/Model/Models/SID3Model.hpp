@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Model/ModelBase.hpp"
 #include "Client/ComputationToDbGate/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "GBDT/SID3.hpp"
+#include "Model/ModelBase.hpp"
 
 namespace qmpc::Model
 {

@@ -12,10 +12,6 @@ cc_library(
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "//LogHeader:logger"
     ],
-    linkopts=["-lboost_stacktrace_addr2line"],
-    defines=["BOOST_STACKTRACE_LINK",
-        "BOOST_STACKTRACE_USE_ADDR2LINE"],
-    
     visibility = ["//visibility:public"],
 )
 

@@ -32,7 +32,7 @@ func insert_query(bucket string, id_name string, id string, value string) string
 	id_name_esc := utils.EscapeInjection(id_name, utils.Where)
 	id_esc := utils.EscapeInjection(id, utils.Where)
 	return fmt.Sprintf("INSERT INTO `%s`"+
-		"(KEY, VALUE) VALUES (UUID(), {'%s': '%s', 'result' : %s})"+
+		"(KEY, VALUE) VALUES (UUID(), {'%s': '%s', 'result' : '%s'})"+
 		"RETURNING *;", bucket, id_name_esc, id_esc, value)
 }
 func select_query(bucket string, id_name string, id string) string {
@@ -177,23 +177,16 @@ func testGetComputationResult(t *testing.T, dataID string) {
 		t.Error("insert result failed: " + err.Error())
 	}
 
-	var computationResult *m2db.ComputationResult
+	var computationResult []*m2db.ComputationResult
 	computationResult, err = client.GetComputationResult(dataID)
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
 	}
-
-	resultBytes, err := json.Marshal(computationResult.Result)
-
-	if err != nil {
-		t.Error("json.Marshal failed: " + err.Error())
-	}
-
-	result := string(resultBytes)
+	result := computationResult[0].Result
 
 	if result != value {
-		t.Errorf("Result not equal %v, Result: %v", value, computationResult)
+		t.Errorf("Result not equal %v, Result: %v", value, result)
 	}
 	uft.DeleteId(t, dataID)
 }
@@ -283,13 +276,13 @@ func testInsertModelParams(t *testing.T, jobUUID string) {
 	client := m2db.Client{}
 	// params送信
 	params := fmt.Sprintf("[\"1\",\"2\",\"3\"]")
-	err := client.InsertModelParams(jobUUID, params)
+	err := client.InsertModelParams(jobUUID, params, 1)
 	if err != nil {
 		t.Error("insert model params faild: " + err.Error())
 	}
 
 	// 重複データは送信されない
-	err = client.InsertModelParams(jobUUID, params)
+	err = client.InsertModelParams(jobUUID, params, 1)
 	if err == nil {
 		t.Error("duplicate data insert error")
 	}
@@ -297,17 +290,13 @@ func testInsertModelParams(t *testing.T, jobUUID string) {
 	// paramを取り出して比較
 	response, _ := m2db.ExecuteQuery(conn, delete_query("result", "job_uuid", jobUUID))
 
-	var deleteResult []m2db.Params
+	var deleteResult []m2db.ComputationResult
 	err = json.Unmarshal([]byte(response), &deleteResult)
 	if err != nil {
 		t.Error("json parses faild: " + err.Error())
 	}
-	bytes, err := json.Marshal(deleteResult[0].Result)
-	if err != nil {
-		t.Error(err)
-	}
 
-	if string(bytes) != params {
+	if deleteResult[0].Result != params {
 		t.Error("insert model params test faild: " + err.Error())
 	}
 	uft.DeleteId(t, jobUUID)
@@ -329,6 +318,49 @@ func TestInsertModelParamsParallel(t *testing.T) {
 		}(i)
 	}
 	wg.Wait()
+}
+
+// piece分割されたmodel paramが正常にinsertされるか
+func TestInsertModelParamsPiece(t *testing.T) {
+	jobUUID := "testInsertModelParamsPiece"
+	uft.DeleteId(t, jobUUID)
+	client := m2db.Client{}
+
+	// params送信
+	params1 := fmt.Sprintf("[\"1\",\"2\",\"3\"]")
+	err := client.InsertModelParams(jobUUID, params1, 1)
+	if err != nil {
+		t.Error("insert model params1 faild: " + err.Error())
+	}
+
+	params2 := fmt.Sprintf("[\"4\",\"5\",\"6\"]")
+	err = client.InsertModelParams(jobUUID, params2, 2)
+	if err != nil {
+		t.Error("insert model params1 faild: " + err.Error())
+	}
+
+	// paramを取り出して比較
+	response, _ := m2db.ExecuteQuery(conn, delete_query("result", "job_uuid", jobUUID))
+
+	var deleteResult []m2db.ComputationResult
+	err = json.Unmarshal([]byte(response), &deleteResult)
+	if err != nil {
+		t.Error("json parses faild: " + err.Error())
+	}
+
+	for _, res := range deleteResult {
+		resultParams := res.Result
+		var correctParams string
+		if res.Meta.PieceID == 1 {
+			correctParams = params1
+		} else {
+			correctParams = params2
+		}
+		if resultParams != correctParams {
+			t.Error("insert model params test faild: " + err.Error())
+		}
+	}
+	uft.DeleteId(t, jobUUID)
 }
 
 func testInsertPiece(t *testing.T, dataID string, pieces []int) {

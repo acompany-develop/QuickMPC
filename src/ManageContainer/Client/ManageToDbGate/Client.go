@@ -12,17 +12,22 @@ import (
 
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/AnyToDbGate"
+	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 	"google.golang.org/grpc"
 )
 
 // 同一IDに対する同時処理を防ぐためのもの
 var ls = utils.NewLockSet()
 
+type MetaResult struct {
+	PieceID int32 `json:"piece_id"`
+}
 type ComputationResult struct {
-	ID      string      `json:"id"`
-	JobUUID string      `json:"job_uuid"`
-	Status  int32       `json:"status"`
-	Result  interface{} `json:"result"`
+	ID      string     `json:"id"`
+	JobUUID string     `json:"job_uuid"`
+	Status  int32      `json:"status"`
+	Result  string     `json:"result"`
+	Meta    MetaResult `json:"meta"`
 }
 
 type Client struct{}
@@ -30,8 +35,8 @@ type M2DbClient interface {
 	InsertShares(string, []string, int32, string, string) error
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
-	GetComputationResult(string) (*ComputationResult, error)
-	InsertModelParams(string, string) error
+	GetComputationResult(string) ([]*ComputationResult, error)
+	InsertModelParams(string, string, int32) error
 	GetDataList() (string, error)
 }
 
@@ -141,10 +146,21 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 	return c.insertShares(conn, dataID, schema, pieceID, shares, sent_at)
 }
 
-func (c Client) existPieceID(conn *grpc.ClientConn, dataID string, pieceID int32) (bool, error) {
-	ls.Lock(dataID)
-	defer ls.Unlock(dataID)
-	query := fmt.Sprintf("SELECT x.meta, meta().id FROM `share` x WHERE x.data_id = '%s';", dataID)
+func (c Client) existPieceID(conn *grpc.ClientConn, bucket string, ID string, pieceID int32) (bool, error) {
+	var idName string
+	if bucket == "share" {
+		idName = "data_id"
+	} else if bucket == "result" {
+		idName = "job_uuid"
+	} else {
+		err := fmt.Errorf("'bucket' must be `share` or `result`. %s is not found.", bucket)
+		return false, err
+	}
+
+	ls.Lock(ID)
+	defer ls.Unlock(ID)
+	query := fmt.Sprintf("SELECT x.meta, meta().id FROM `%s` x WHERE x.%s= '%s';", 
+		bucket, utils.EscapeInjection(idName, utils.Where), utils.EscapeInjection(ID, utils.Where))
 	resJson, err := ExecuteQuery(conn, query)
 
 	var res []Share
@@ -163,7 +179,7 @@ func (c Client) existPieceID(conn *grpc.ClientConn, dataID string, pieceID int32
 // (conn)にシェアを送信する
 func (c Client) insertShares(conn *grpc.ClientConn, dataID string, schema []string, pieceID int32, shares string, sent_at string) error {
 	// 重複チェック
-	exist, err := c.existPieceID(conn, dataID, pieceID)
+	exist, err := c.existPieceID(conn, "share", dataID, pieceID)
 	if err != nil {
 		return err
 	}
@@ -301,7 +317,7 @@ func (c Client) getSchema(conn *grpc.ClientConn, dataID string) ([]string, error
 }
 
 // DBGから計算結果を得る
-func (c Client) GetComputationResult(jobUUID string) (*ComputationResult, error) {
+func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, error) {
 	conn, err := connect()
 	if err != nil {
 		return nil, err
@@ -311,7 +327,7 @@ func (c Client) GetComputationResult(jobUUID string) (*ComputationResult, error)
 }
 
 // (conn)から計算結果を得る
-func (c Client) getComputationResult(conn *grpc.ClientConn, jobUUID string) (*ComputationResult, error) {
+func (c Client) getComputationResult(conn *grpc.ClientConn, jobUUID string) ([]*ComputationResult, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 	// TODO: dbのスキーマを変更
@@ -322,55 +338,47 @@ func (c Client) getComputationResult(conn *grpc.ClientConn, jobUUID string) (*Co
 		return nil, err
 	}
 
-	var computationResults []ComputationResult
+	var computationResults []*ComputationResult
 	err = json.Unmarshal([]byte(response), &computationResults)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(computationResults) != 1 {
+	if len(computationResults) == 0 {
 		return nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
 	}
 
-	return &computationResults[0], nil
-}
-
-type Params struct {
-	JobUUID string      `json:"job_uuid"`
-	Result  interface{} `json:"result"`
+	return computationResults, nil
 }
 
 // DBGにモデルパラメータを送信する
-func (c Client) InsertModelParams(jobUUID string, params string) error {
+func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) error {
 	conn, err := connect()
 	if err != nil {
 		return err
 	}
 	defer conn.Close()
-	return c.insertModelParams(conn, jobUUID, params)
+	return c.insertModelParams(conn, jobUUID, params, pieceId)
 }
 
 // (conn)にモデルパラメータを送信する
-func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params string) error {
-	cnt, err := c.count(conn, "job_uuid", jobUUID, "result")
-	ls.Lock(jobUUID)
-	defer ls.Unlock(jobUUID)
+func (c Client) insertModelParams(conn *grpc.ClientConn, jobUUID string, params string, pieceId int32) error {
+	// 重複チェック
+	exist, err := c.existPieceID(conn, "result", jobUUID, pieceId)
 	if err != nil {
 		return err
 	}
-	if cnt > 0 {
-		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
+	if exist {
+		return errors.New("Duplicate error: " + jobUUID + " has already been registered.")
 	}
 
-	var paramsJSON interface{}
-	err = json.Unmarshal([]byte(params), &paramsJSON)
-	if err != nil {
-		return err
-	}
-
-	saveParams := Params{
+	saveParams := ComputationResult{
 		JobUUID: jobUUID,
-		Result:  paramsJSON,
+		Meta: MetaResult{
+			PieceID: pieceId,
+		},
+		Result: params,
+		Status: int32(pb_types.JobStatus_COMPLETED),
 	}
 
 	bytes, err := json.Marshal(saveParams)

@@ -1,5 +1,5 @@
 # QuickMPC
-[![Build CC, MC, DC, and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/main.yml/badge.svg?branch=develop)](https://github.com/acompany-develop/QuickMPC/actions/workflows/main.yml)
+[![Build CC, MC, DC and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml)
 
 <img src="https://user-images.githubusercontent.com/1694907/182115030-90fda7cf-068a-48bb-ba50-ee12be6af0b4.png" width=128>
 
@@ -12,7 +12,7 @@ This will enable businesses and engineers worldwide to use Python and JavaScript
 ![oss_eg](https://user-images.githubusercontent.com/1694907/182254973-ee3092a6-ee28-49bb-aaf6-637225271a0b.png)
 
 ## Getting Started
-[The demonstration with QuickMPC-libClient-py](/QuickMPC-libClient-py/demo/README.md)
+[The demonstration with QuickMPC-libClient-py](https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo/README.md)
 
 ## Dependent Tools/Commands
 - `make`
@@ -36,7 +36,7 @@ make debug t=./ManageContainer
 ```
 3. Execute libClient Demo
 - libClient-ts(https://github.com/acompany-develop/QuickMPC-libClient-ts/tree/develop/Demo/Develop)
-- libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/Demo)
+- libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo)
 
 ## How to test each container
 Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/Test

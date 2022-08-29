@@ -1,14 +1,15 @@
 #pragma once
 
-#include "ConfigParse/ConfigParse.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "FixedPoint/FixedPoint.hpp"
-#include "PrimeField/PrimeField.hpp"
 #include <boost/multiprecision/cpp_int.hpp>
 #include <iterator>
 #include <thread>
 #include <vector>
+
 #include "AddressId.hpp"
+#include "ConfigParse/ConfigParse.hpp"
+#include "FixedPoint/FixedPoint.hpp"
+#include "PrimeField/PrimeField.hpp"
+#include "Server/ComputationToComputationContainer/Server.hpp"
 namespace qmpc::Share
 {
 template <typename T>
@@ -120,7 +121,7 @@ auto recons(const T &share)
     std::vector<Result> ret(length);
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
-        std::vector<qmpc::Share::AddressId> ids_list(length); // 複数シェアのidリスト
+        std::vector<qmpc::Share::AddressId> ids_list(length);  // 複数シェアのidリスト
         for (unsigned int i = 0; i < length; i++)
         {
             ids_list[i] = share[i].getId();

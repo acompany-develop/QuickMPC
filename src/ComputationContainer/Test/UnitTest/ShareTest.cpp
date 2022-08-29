@@ -1,7 +1,6 @@
-#include "gtest/gtest.h"
-
-#include "Share/Share.hpp"
 #include "LogHeader/Logger.hpp"
+#include "Share/Share.hpp"
+#include "gtest/gtest.h"
 
 TEST(ShareTest, GetValue)
 {

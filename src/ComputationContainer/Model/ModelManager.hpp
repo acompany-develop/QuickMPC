@@ -1,18 +1,16 @@
 #pragma once
 
-#include <vector>
 #include <memory>
-
-#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
-#include "external/Proto/common_types/common_types.pb.h"
-
-#include "Model/ModelBase.hpp"
-#include "Model/Models/LinearRegression.hpp"
-#include "Model/Models/LogisticRegression.hpp"
-#include "Model/Models/DecisionTree.hpp"
-#include "Model/Models/SID3Model.hpp"
+#include <vector>
 
 #include "LogHeader/Logger.hpp"
+#include "Model/ModelBase.hpp"
+#include "Model/Models/DecisionTree.hpp"
+#include "Model/Models/LinearRegression.hpp"
+#include "Model/Models/LogisticRegression.hpp"
+#include "Model/Models/SID3Model.hpp"
+#include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
+#include "external/Proto/common_types/common_types.pb.h"
 
 namespace qmpc::Model
 {

@@ -1,9 +1,9 @@
 #pragma once
-#include <string>
+#include <algorithm>
 #include <initializer_list>
 #include <iostream>
+#include <string>
 #include <vector>
-#include <algorithm>
 
 #include "Share/Share.hpp"
 

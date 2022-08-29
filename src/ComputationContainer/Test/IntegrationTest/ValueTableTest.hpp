@@ -1,9 +1,8 @@
-#include "gtest/gtest.h"
-
-#include <vector>
 #include <string>
+#include <vector>
 
 #include "Client/ComputationToDbGate/ValueTable.hpp"
+#include "gtest/gtest.h"
 
 /****************** Test用の各データ ******************/
 const std::vector<std::vector<std::string>> table_data1{{"101", "1", "2"}, {"102", "3", "4"}};
