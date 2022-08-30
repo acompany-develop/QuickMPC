@@ -185,19 +185,19 @@ bool operator==(const Share<FixedPoint> &left, const FixedPoint &right)
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s)
 {
     int m = 16;
-    int k = 32;
+    int k = 48;
 
-    Share<FixedPoint> x = s * FixedPoint(std::pow(2, m));  // s に 2^m をかけて整数化を試みる
-    Share<FixedPoint> y = FixedPoint(std::pow(2, k)) + x;
+    Share<FixedPoint> x = s * FixedPoint(1LL << m);  // s に 2^m をかけて整数化を試みる
+    Share<FixedPoint> y = FixedPoint(1LL << k) + x;
     Share<FixedPoint> z = getLSBShare(y);
     y = (y - z) * FixedPoint(0.5);
     for (int i = 1; i < k; ++i)
     {
         Share<FixedPoint> b = getLSBShare(y);
-        z += (b * FixedPoint(std::pow(2, i)));
+        z += (b * FixedPoint(1LL << i));
         y = (y - b) * FixedPoint(0.5);
     }
-    return (z - x) / FixedPoint(std::pow(2, k));
+    return (z - x) / FixedPoint(1LL << k);
 }
 
 // 以下、サブプロトコル
