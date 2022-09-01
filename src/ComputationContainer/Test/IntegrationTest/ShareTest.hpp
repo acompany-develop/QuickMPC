@@ -1024,8 +1024,6 @@ TEST(StreamTest, ReconsBulk)
         EXPECT_NEAR(target[i].getDoubleVal(), expected[i].getDoubleVal(), 0.00001);
     }
 }
-<<<<<<< HEAD
-=======
 TEST(ShareTest, GenericSendShare)
 {
     Config *conf = Config::getInstance();

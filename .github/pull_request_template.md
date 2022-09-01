@@ -1,7 +1,7 @@
-# まとめ
+# Summary
 
-# 目的
+# Purpose
 
-# 内容
+# Contents
 
-# 実施したテスト方法
+# Testing Methods Performed

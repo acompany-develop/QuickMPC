@@ -217,5 +217,10 @@ inline auto abs(const FixedPointImpl<> &x)
         return x;
     }
 }
+template <typename T>
+std::string to_string(const FixedPointImpl<T> &fp)
+{
+    return fp.getStrVal();
+}
 }  // namespace qmpc::Utils
 using FixedPoint = qmpc::Utils::FixedPointImpl<>;

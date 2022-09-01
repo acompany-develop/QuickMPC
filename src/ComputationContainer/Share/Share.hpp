@@ -357,7 +357,8 @@ Share<T> getInv(const Share<T> &s)
     if (conf->party_id == conf->sp_id)
     {
         T u_rec = recons(u);
-        s_inv = sharize(u_rec.getInv());
+        T inv = T(1) / u_rec;
+        s_inv = sharize(inv);
     }
     else
     {

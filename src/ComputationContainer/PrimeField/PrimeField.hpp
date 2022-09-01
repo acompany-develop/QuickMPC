@@ -165,6 +165,11 @@ PrimeField<T> modsqrt(PrimeField<T> x)
     {
         return PrimeField(PrimeField<T>::p - R);
     }
+};
+template <typename T>
+std::string to_string(const PrimeField<T> &pf)
+{
+    return pf.getVal().str();
 }
 }  // namespace qmpc
 using PrimeField = qmpc::PrimeField<>;
