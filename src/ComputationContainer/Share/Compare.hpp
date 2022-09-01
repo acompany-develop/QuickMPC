@@ -1,11 +1,12 @@
 #pragma once
 
+#include <future>
+
 #include "ConfigParse/ConfigParse.hpp"
 #include "FixedPoint/FixedPoint.hpp"
 #include "Networking.hpp"
 #include "PrimeField/PrimeField.hpp"
 #include "Share.hpp"
-#include <future>
 namespace qmpc::Share
 {
 using PrimeField = qmpc::PrimeField<>;
