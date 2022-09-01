@@ -1024,3 +1024,227 @@ TEST(StreamTest, ReconsBulk)
         EXPECT_NEAR(target[i].getDoubleVal(), expected[i].getDoubleVal(), 0.00001);
     }
 }
+TEST(ShareTest, GenericSendShare)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        qmpc::Share::Share<bool> a{};
+        open(a);
+        auto a_rec = recons(a);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("sendshare bool time = {0} ms", elapsed_time_ms);
+    }
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        qmpc::Share::Share<int> b(4);
+        open(b);
+        auto b_rec = recons(b);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("sendshare int time = {0} ms", elapsed_time_ms);
+    }
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        qmpc::Share::Share<long> c(4);
+        open(c);
+        auto c_rec = recons(c);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("sendshare long time = {0} ms", elapsed_time_ms);
+    }
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        qmpc::Share::Share<float> d{};
+        open(d);
+        auto d_rec = recons(d);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("sendshare float time = {0} ms", elapsed_time_ms);
+    }
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        qmpc::Share::Share<double> e{};
+        open(e);
+        auto e_rec = recons(e);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("sendshare double time = {0} ms", elapsed_time_ms);
+    }
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        qmpc::Share::Share<FixedPoint> f{};
+        open(f);
+        auto f_rec = recons(f);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("sendshare fixedPoint time = {0} ms", elapsed_time_ms);
+    }
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        qmpc::Share::Share<PrimeField> f{};
+        open(f);
+        auto f_rec = recons(f);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("sendshare primefield time = {0} ms", elapsed_time_ms);
+    }
+}
+TEST(ShareTest, addIntShare)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    qmpc::Share::Share<int> a(3);
+    qmpc::Share::Share<int> b(4);
+    a = a + b;  // 21
+    std::cout << a.getVal() << std::endl;
+    open(a);
+    auto a_rec = recons(a);
+    std::cout << "addint share is " << a_rec << std::endl;
+    EXPECT_EQ(a_rec, n_parties * 3 + n_parties * 4);
+}
+
+TEST(ShareTest, subIntShare)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    qmpc::Share::Share<int> a(3);
+    qmpc::Share::Share<int> b(4);
+    a = a - b;
+    std::cout << a.getVal() << std::endl;
+    open(a);
+    auto a_rec = recons(a);
+    EXPECT_EQ(a_rec, n_parties * 3 - n_parties * 4);
+}
+TEST(ShareTest, mulIntShare)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    qmpc::Share::Share<int> a(3);
+    qmpc::Share::Share<int> b(4);
+    a = a * b;
+    std::cout << a.getVal() << std::endl;
+    open(a);
+    auto a_rec = recons(a);
+    EXPECT_EQ(a_rec, (n_parties * 3) * (n_parties * 4));
+}
+TEST(ShareTest, boolLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<bool>> a(50000, true);
+    open(a);
+    auto target = recons(a);
+}
+TEST(ShareTest, IntLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<int>> a(50000, 1);
+    open(a);
+    auto target = recons(a);
+}
+TEST(ShareTest, floatLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<float>> a(50000, 1);
+    open(a);
+    auto target = recons(a);
+}
+TEST(ShareTest, doubleLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<double>> a(50000, 1);
+    open(a);
+    auto target = recons(a);
+}
+TEST(ShareTest, FPLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<FixedPoint>> a(50000, FixedPoint("1"));
+    open(a);
+    auto target = recons(a);
+}
+TEST(ShareTest, IntMulLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<int>> a(20000, 1);
+    std::vector<qmpc::Share::Share<int>> b(20000, 1);
+    a = a * b;
+    open(a);
+    auto rec = recons(a);
+    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+}
+TEST(ShareTest, FPMulLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<FixedPoint>> a(20000, FixedPoint("1"));
+    std::vector<qmpc::Share::Share<FixedPoint>> b(20000, FixedPoint("1"));
+    a = a * b;
+    open(a);
+    auto rec = recons(a);
+
+    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+}
+
+TEST(ShareTest, IntMulExtraLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<int>> a(100000, 1);
+    std::vector<qmpc::Share::Share<int>> b(100000, 1);
+    a = a * b;
+    open(a);
+    auto rec = recons(a);
+    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+}
+
+TEST(ShareTest, doubleMulExtraLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<double>> a(100000, 1.0);
+    std::vector<qmpc::Share::Share<double>> b(100000, 1.0);
+    a = a * b;
+    open(a);
+    auto rec = recons(a);
+    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+}
+TEST(ShareTest, floatMulExtraLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<float>> a(100000, 1);
+    std::vector<qmpc::Share::Share<float>> b(100000, 1);
+    a = a * b;
+    open(a);
+    auto rec = recons(a);
+    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+}
+
+TEST(ShareTest, FPMulExtraLarge)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<qmpc::Share::Share<FixedPoint>> a(100000, FixedPoint("1"));
+    std::vector<qmpc::Share::Share<FixedPoint>> b(100000, FixedPoint("1"));
+    a = a * b;
+    open(a);
+    auto rec = recons(a);
+
+    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+}

@@ -2,7 +2,9 @@
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <iterator>
+#include <string>
 #include <thread>
+#include <type_traits>
 #include <vector>
 
 #include "AddressId.hpp"
@@ -12,6 +14,7 @@
 #include "Server/ComputationToComputationContainer/Server.hpp"
 namespace qmpc::Share
 {
+using std::to_string;
 template <typename T>
 class Share;
 
@@ -35,28 +38,27 @@ struct is_share<Share<T>> : std::true_type
 template <typename T>
 void send(const T &shares, const int &pt_id)
 {
+    // pt_idで指定されたパーティにシェアの値を送信する
+    Config *conf = Config::getInstance();
+    auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
+
     if constexpr (std::disjunction_v<std::is_array<T>, is_share_vector<T>>)
     {
-        // pt_idで指定されたパーティにシェアの値を送信する
-        Config *conf = Config::getInstance();
-        auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
-
+        using SV = typename T::value_type::value_type;
         size_t length = std::size(shares);
-        std::vector<std::string> str_values(length);
+        std::vector<SV> str_values(length);
         std::vector<qmpc::Share::AddressId> share_ids(length);
         for (unsigned int i = 0; i < length; i++)
         {
-            str_values[i] = shares[i].getVal().getStrVal();
+            str_values[i] = shares[i].getVal();
             share_ids[i] = shares[i].getId();
         }
-        client->exchangeShares(str_values.data(), share_ids.data(), length, conf->party_id);
+        client->exchangeShares(str_values, share_ids, length, conf->party_id);
     }
     else if constexpr (is_share<T>::value)
     {
-        Config *conf = Config::getInstance();
         // pt_idで指定されたパーティにシェアの値を送信する
-        auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
-        client->exchangeShare(shares.getVal().getStrVal(), shares.getId(), conf->party_id);
+        client->exchangeShare(shares.getVal(), shares.getId(), conf->party_id);
     }
 }
 template <class SV>
@@ -64,7 +66,7 @@ void send(const SV &share_value, const AddressId &share_id, int pt_id)
 {
     Config *conf = Config::getInstance();
     auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
-    client->exchangeShare(share_value.getStrVal(), share_id, conf->party_id);
+    client->exchangeShare(share_value, share_id, conf->party_id);
 }
 template <typename T>
 void open(const T &share)
@@ -94,17 +96,40 @@ auto recons(const T &share)
     auto server = ComputationToComputation::Server::getServer();
     //単一
     using Result = typename T::value_type;
-    Result ret;
+    Result ret{};
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
         if (pt_id == conf->party_id)
         {
-            ret += share.getVal();
+            if constexpr (std::is_same_v<Result, bool>)
+            {
+                ret ^= share.getVal();
+            }
+            else
+            {
+                ret += share.getVal();
+            }
         }
         else
         {
-            Result received_value{server->getShare(pt_id, share.getId())};
-            ret += received_value;
+            auto s = server->getShare(pt_id, share.getId());
+            if constexpr (std::is_same_v<Result, bool>)
+            {
+                ret ^= Result{std::stoi(s)};
+            }
+            else if constexpr (std::is_integral_v<Result>)
+            {
+                ret += Result{std::stoi(s)};
+            }
+            else if constexpr (std::is_floating_point_v<Result>)
+            {
+                ret += Result{std::stod(s)};
+            }
+            else
+            {
+                Result received_value{s};
+                ret += received_value;
+            }
         }
     }
     return ret;
@@ -131,7 +156,12 @@ auto recons(const T &share)
         {
             for (unsigned int i = 0; i < length; i++)
             {
-                ret[i] += share[i].getVal();
+                if constexpr (std::is_same_v<Result, bool>)
+                {
+                    ret[i] = ret[i] ^ share[i].getVal();
+                }
+                else
+                    ret[i] += share[i].getVal();
             }
         }
         else
@@ -139,7 +169,22 @@ auto recons(const T &share)
             std::vector<std::string> values = server->getShares(pt_id, ids_list, length);
             for (unsigned int i = 0; i < length; i++)
             {
-                ret[i] += Result(values[i]);
+                if constexpr (std::is_same_v<Result, bool>)
+                {
+                    ret[i] = ret[i] ^ Result(std::stoi(values[i]));
+                }
+                else if constexpr (std::is_integral_v<Result>)
+                {
+                    ret[i] += Result(std::stoi(values[i]));
+                }
+                else if constexpr (std::is_floating_point_v<Result>)
+                {
+                    ret[i] += Result(std::stod(values[i]));
+                }
+                else
+                {
+                    ret[i] += Result(values[i]);
+                }
             }
         }
     }
@@ -150,7 +195,15 @@ template <typename SV>
 SV receive(int sp_id, AddressId address_id)
 {
     ComputationToComputation::Server *server = ComputationToComputation::Server::getServer();
-    SV received_value(server->getShare(sp_id, address_id));
-    return received_value;
+    if constexpr (std::is_constructible_v<SV, std::string>)
+    {
+        SV received_value(server->getShare(sp_id, address_id));
+        return received_value;
+    }
+    else
+    {
+        SV received_value(std::stoi(server->getShare(sp_id, address_id)));
+        return received_value;
+    }
 }
 }  // namespace qmpc::Share

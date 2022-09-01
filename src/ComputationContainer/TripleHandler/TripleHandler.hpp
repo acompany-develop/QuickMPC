@@ -10,13 +10,13 @@
 
 namespace qmpc::TripleHandler
 {
-using TripleFp = std::tuple<::FixedPoint, ::FixedPoint, ::FixedPoint>;
-using TriplePf = std::tuple<::PrimeField, ::PrimeField, ::PrimeField>;
+
+template <typename T>
+using Triple = std::tuple<T, T, T>;
 
 class TripleHandler
 {
-    thread_local static inline std::queue<TripleFp> triple_fp_queue;
-    thread_local static inline std::queue<TriplePf> triple_pf_queue;
+    thread_local static inline std::queue<Triple<std::string>> triple_queue;
 
 private:
     // 1Jobで必要なトリプルを下回るとBTS周りでいろいろ死ぬので，でかめに設定
@@ -24,31 +24,6 @@ private:
         100000;  // 残ったトリプルの数が threshold を下回ったら補充する
 
 public:
-    template <typename TV>
-    TV convertStr2Triple(const auto &buf)
-    {
-        using SV = typename std::
-            conditional<std::is_same_v<TV, TripleFp>, ::FixedPoint, ::PrimeField>::type;
-        if constexpr (std::is_same_v<SV, ::PrimeField>)
-        {
-            // PrimeFieldで負の数が現状対応できない。
-            // TODO FixedPointをかませばうまくいく？
-            Config *conf = Config::getInstance();
-            int n_parties = conf->n_parties;
-            SV a(1);
-            SV b(1);
-            SV c(n_parties);
-            return std::make_tuple(a, b, c);
-        }
-        else
-        {
-            SV a(std::get<0>(buf));
-            SV b(std::get<1>(buf));
-            SV c(std::get<2>(buf));
-            return std::make_tuple(a, b, c);
-        }
-    }
-
     static TripleHandler *getInstance()
     {
         static TripleHandler obj;
@@ -56,7 +31,7 @@ public:
     }
 
     template <typename TV>
-    TV takeOutTriple(std::queue<TV> &triple_queue)
+    Triple<TV> takeOutTriple(std::queue<Triple<std::string>> &triple_queue)
     {
         // Tripleの残り数が閾値を下回ればTripleを閾値と同じ数だけ補充する
         if (triple_queue.size() < TripleHandler::threshold)
@@ -65,30 +40,42 @@ public:
             auto job_id = qmpc::Share::AddressId::getThreadJobId();
             for (const auto &triple : client->readTriples(job_id, TripleHandler::threshold))
             {
-                triple_queue.push(convertStr2Triple<TV>(triple));
+                triple_queue.push(triple);
             }
         }
-        auto triple = triple_queue.front();
+        auto [a, b, c] = triple_queue.front();
         triple_queue.pop();
-        return triple;
+        if constexpr (std::is_integral_v<TV>)
+        {
+            return Triple<TV>(std::stoi(a), std::stoi(b), std::stoi(c));
+        }
+        else if constexpr (std::is_floating_point_v<TV>)
+        {
+            return Triple<TV>(std::stod(a), std::stod(b), std::stod(c));
+        }
+        else
+        {
+            return Triple<TV>(a, b, c);
+        }
     }
 
     template <typename SV>
     auto getTriple(size_t needCount = 1)
     {
-        using Result =
-            typename std::conditional<std::is_same_v<SV, ::FixedPoint>, TripleFp, TriplePf>::type;
+        using Result = Triple<SV>;
         std::vector<Result> ret;
 
         for (size_t count = 0; count < needCount; count++)
         {
-            if constexpr (std::is_same_v<SV, ::FixedPoint>)
+            if constexpr (std::is_same_v<SV, ::PrimeField>)
             {
-                ret.emplace_back(takeOutTriple<Result>(this->triple_fp_queue));
+                Config *conf = Config::getInstance();
+                int n = conf->n_parties;
+                ret.emplace_back(std::make_tuple<::PrimeField>(1, 1, n));
             }
             else
             {
-                ret.emplace_back(takeOutTriple<Result>(this->triple_pf_queue));
+                ret.emplace_back(takeOutTriple<SV>(this->triple_queue));
             }
         }
         return ret;
