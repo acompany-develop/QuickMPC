@@ -184,7 +184,8 @@ bool operator==(const Share<FixedPoint> &left, const FixedPoint &right)
 // Docs/faster-comparison-operators.md
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s)
 {
-    int m = 16;
+    // Experimented and adjusted.
+    int m = 32;
     int k = 48;
 
     // s に 2^m をかけて整数化を試みる
