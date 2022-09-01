@@ -10,11 +10,15 @@ namespace qmpc::Optimizer
 
 /**
  * @brief 勾配の移動平均をとった最適化
+ * テンプレートパラメータ　Nesterov's momentum使用フラグ
+ * 下記の式を参考に実装
+ * https://pytorch.org/docs/stable/generated/torch.optim.SGD.html
  * 入力は勾配平均に対する重みβ、勾配に対するα、sgdへのバッチ数
  * v_k+1 = αv_k - βV
  * x_k+1 = x_k + v_k+1
  *
  */
+template <bool Nesterov>
 class Momentum : public qmpc::Optimizer::OptInterface
 {
     using Share = ::Share;
@@ -39,12 +43,17 @@ class Momentum : public qmpc::Optimizer::OptInterface
             for (size_t i = 0; i < size; ++i)
             {
                 vt[i] = beta * vt[i] + dfx[i];
-                // spdlog::info("df {} {}",i,test_dfx[i]);
             }
             for (size_t i = 0; i < size; ++i)
             {
-                theta[i] = theta[i] - alpha * vt[i];
-                // spdlog::info("df {} {}",i,test_dfx[i]);
+                if constexpr (Nesterov)
+                {
+                    theta[i] = theta[i] - alpha * vt[i];
+                }
+                else
+                {
+                    theta[i] = theta[i] - alpha * (dfx[i] + beta * vt[i]);
+                }
             }
         }
         return theta;

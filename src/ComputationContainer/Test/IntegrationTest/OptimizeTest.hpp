@@ -79,12 +79,16 @@ TEST(OptimizeTest, optimizer)
     // auto opt3 = new qmpc::Optimizer::NewTon();
     // opts.emplace_back(std::string("newton"), opt3);
 
-    auto opt4 = new qmpc::Optimizer::Momentum(FixedPoint("0.75"), FixedPoint("0.1"), batch_size);
+    auto opt4 =
+        new qmpc::Optimizer::Momentum<false>(FixedPoint("0.75"), FixedPoint("0.1"), batch_size);
     opts.emplace_back(std::string("momentum"), opt4);
 
     auto opt5 = new qmpc::Optimizer::Adam();
     opts.emplace_back(std::string("adam"), opt5);
 
+    auto opt6 =
+        new qmpc::Optimizer::Momentum<true>(FixedPoint("0.75"), FixedPoint("0.1"), batch_size);
+    opts.emplace_back(std::string("nesterov"), opt6);
     //ロジスティック回帰の重み
     std::vector<Share> theta(x[0].size());
     // 繰り返し回数
