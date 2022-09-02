@@ -115,6 +115,11 @@ inline constexpr int delta[] = {5, 5, 5, 5, 5, 5, 2};
 /// @brief generate one-hot-vector used by unitv
 /// @tparam N
 /// @return random share [r] and r-th value is 1 ,otherwise is 0 in n length array
+template <typename T, std::enable_if_t<std::is_integral_v<T>, std::nullptr_t> = nullptr>
+Share<T> operator==(const Share<T> &left, const Share<T> &right)
+{
+    return equality(left, right);
+}
 template <size_t N>
 std::pair<Share<int>, std::vector<Share<int>>> unitvPrep()
 {
@@ -224,7 +229,7 @@ Share<T> equality(const Share<T> &x, const Share<T> &y)
     auto d_expand = expand(d);
     int m = d_expand.size();
     std::vector<Share<int>> p(m), q(m);
-    Share<int> f{};
+    Share<T> f{};
     for (int i = 0; i < m; ++i)
     {
         if (conf->party_id == 1)

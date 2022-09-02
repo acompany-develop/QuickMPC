@@ -1312,29 +1312,36 @@ TEST(ShareTest, equalityTest)
     qmpc::Share::Share<int> x(1 << 31);
     qmpc::Share::Share<int> y(1 << 31);
     qmpc::Share::Share<int> z(15);
-    qmpc::Share::Share<FixedPoint> xf(5);
-    qmpc::Share::Share<FixedPoint> yf(5);
+    int minus = std::numeric_limits<int>::min();
+    qmpc::Share::Share<int> minusx(minus);
+    qmpc::Share::Share<int> minusy(minus);
     auto t = qmpc::Share::equality(x, y);
     auto f = qmpc::Share::equality(x, z);
 
     {
         const auto clock_start = std::chrono::system_clock::now();
-        auto b = xf == yf;
+        auto b = minusx == minusy;
+        open(b);
+        auto b_rec = recons(b);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
         spdlog::info("[{0}] Elapsed time = {1} ms", "eq", elapsed_time_ms);
+
+        EXPECT_EQ(b_rec, 1);
     }
 
     {
         const auto clock_start = std::chrono::system_clock::now();
-        auto b = qmpc::Share::equality(x, y);
+        auto b = x == y;
         open(b);
         auto b_rec = recons(b);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
         spdlog::info("[{0}] Elapsed time = {1} ms", "new eq", elapsed_time_ms);
+
+        EXPECT_EQ(b_rec, 1);
     }
     open(t);
     open(f);
