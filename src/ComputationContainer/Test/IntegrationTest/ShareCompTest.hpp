@@ -534,15 +534,18 @@ TEST(ShareTest, EqualityEpsilonTest)
     int n_parties = conf->n_parties;
 
     // m,k is LTZ parameters
-    int m = 32;
+    int m = 32 - 3;
     int k = 48;
     for (int _ = 0; _ < 10; ++_)
     {
         auto val1 = RandGenerator::getInstance()->getRand<long long>(2, (1LL << k) - 1);
-        auto val2 = val1 - 1;
+        auto val2 = val1 - 10;
 
         auto val_d1 = static_cast<double>(val1) / (1LL << m) / n_parties;
         auto val_d2 = static_cast<double>(val2) / (1LL << m) / n_parties;
+
+        std::cerr << val_d1 << " == " << val_d2 << " : " << (val_d1 == val_d2) << std::endl;
+        std::cerr << "\t" << std::abs(val_d1 - val_d2) << std::endl;
 
         auto s1 = Share(FixedPoint(std::to_string(val_d1)));
         auto s2 = Share(FixedPoint(std::to_string(val_d2)));

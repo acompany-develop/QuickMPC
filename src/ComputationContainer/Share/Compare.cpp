@@ -57,8 +57,8 @@ bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
 {
     // |x-y|<ep <=> (x-y<ep)&(y-x<ep)
     auto epsilon = 0.0001;
-    auto x_ret = (left < right + epsilon);
-    auto y_ret = (right < left + epsilon);
+    auto x_ret = (left < right);
+    auto y_ret = (right < left);
     auto ret = (FixedPoint(1) - x_ret) * (FixedPoint(1) - y_ret);
 
     if (ret.getDoubleVal() > 0.95)

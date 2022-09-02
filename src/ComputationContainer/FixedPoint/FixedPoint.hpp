@@ -103,7 +103,18 @@ public:
             ret = std::numeric_limits<D>::max();
         }
         ret /= shift;
-        return ret.str(20, std::ios_base::fixed);
+        return ret.str(0, std::ios_base::fixed);
+    }
+    T getRoundValue() const
+    {
+        D ret{this->getVal<D>()};
+        if (boost::math::isinf(ret))
+        {
+            ret = std::numeric_limits<D>::max();
+        }
+        ret /= shift;
+        ret = mp::round(ret);
+        return static_cast<T>(ret);
     }
     double getDoubleVal() const
     {

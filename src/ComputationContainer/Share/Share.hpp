@@ -490,7 +490,7 @@ Share<T> getLSBShare(const Share<T> &y)
     Share<T> t = y + r0 + T(2) * r_dash;
     open(t);
     T c = recons(t);
-    c = T(std::round(c.getDoubleVal())) % T(2);
+    c = T(c.getRoundValue()) % T(2);
     Share<T> b = c + r0 - T(2) * c * r0;
     return b;
 }
@@ -507,7 +507,7 @@ std::vector<Share<T>> getLSBShare(const std::vector<Share<T>> &y)
     b.reserve(y.size());
     for (int j = 0; j < static_cast<int>(c.size()); ++j)
     {
-        c[j] = T(std::round(c[j].getDoubleVal())) % T(2);
+        c[j] = T(c[j].getRoundValue()) % T(2);
         b.emplace_back(c[j] + r0[j] - T(2) * c[j] * r0[j]);
     }
 
