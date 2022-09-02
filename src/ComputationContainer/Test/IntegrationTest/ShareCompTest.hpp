@@ -547,8 +547,8 @@ TEST(ShareTest, EqualityEpsilonTest)
         std::cerr << val_d1 << " == " << val_d2 << " : " << (val_d1 == val_d2) << std::endl;
         std::cerr << "\t" << std::abs(val_d1 - val_d2) << std::endl;
 
-        auto s1 = Share(FixedPoint(std::to_string(val_d1)));
-        auto s2 = Share(FixedPoint(std::to_string(val_d2)));
+        auto s1 = Share(FixedPoint((boost::format("%.10f") % val_d1).str()));
+        auto s2 = Share(FixedPoint((boost::format("%.10f") % val_d2).str()));
 
         EXPECT_EQ(s1 == s2, false);
     }
