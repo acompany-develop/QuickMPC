@@ -445,7 +445,7 @@ Share<T> getRandBitShare()
         T square_r_rec = recons(square_r);
         if (square_r_rec.getDoubleVal() != 0.0)
         {
-            T r_dash = T(std::sqrt(square_r_rec.getDoubleVal()));
+            T r_dash = T(square_r_rec.getSqrtValue());
             T inv_r_dash = T(1.0) / r_dash;
             Share<T> r0 = Share(T(0.5) * (inv_r_dash * r + T(1.0)));
             return r0;
@@ -467,7 +467,7 @@ std::vector<Share<T>> getRandBitShare(int n)
     {
         if (square_r_rec[i].getDoubleVal() != 0.0)
         {
-            T r_dash = T(std::sqrt(square_r_rec[i].getDoubleVal()));
+            T r_dash = T(square_r_rec[i].getSqrtValue());
             T inv_r_dash = T(1.0) / r_dash;
             Share<T> r0 = Share(T(0.5) * (inv_r_dash * r[i] + T(1.0)));
             ret.emplace_back(r0);
