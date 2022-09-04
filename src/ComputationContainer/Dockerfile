@@ -61,7 +61,7 @@ FROM base as src
 # c_cpp_properties.jsonは残したいのでマウントはせず
 COPY ./.vscode/settings.json /QuickMPC/.vscode/
 
-FROM base as builder
+FROM base as builder_base
 COPY src/ComputationContainer/ /QuickMPC
 # github actionsで使用されているdockerがCOPYを2連続で行うとたまにエラーが出る問題を抱えている
 # その問題を回避するために、COPYの間にRun trueを挟んでいる
@@ -70,13 +70,19 @@ COPY src/Proto/ /Proto
 RUN true
 COPY src/ComputationContainer/sa.json /root/sa.json
 WORKDIR /QuickMPC
-ARG BUILD_OPT
-ENV BUILD_OPT=${BUILD_OPT}
-RUN echo ${BUILD_OPT}
+
+FROM builder_base as builder
 # 実行ファイル生成
-RUN --mount=type=cache,target=/root/.cache \
-    bazel build //:all ${BUILD_OPT}
-RUN --mount=type=cache,target=/root/.cache \
+RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
+    bazel build //:all
+RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
+    bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
+
+FROM builder_base as builder_debug
+# 実行ファイル生成
+RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
+    bazel build //:all --config=debug
+RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
     bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
 
 FROM builder as dev
@@ -103,11 +109,11 @@ RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
-FROM builder as small
+FROM builder_debug as small
 ENV PARTY_ID=1
 COPY Config/ComputationContainer/Compute${PARTY_ID}/.src.env /QuickMPC/Config/.env
 
-FROM builder as medium
+FROM builder_debug as medium
 
 # image for deploy
 FROM alpine:latest as large-runner
