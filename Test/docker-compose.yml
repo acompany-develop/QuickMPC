@@ -6,10 +6,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute1
@@ -47,10 +50,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute2
@@ -85,10 +91,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute3
@@ -153,10 +162,13 @@ services:
     expose:
       - "50120"
       - "50110"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-src
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: src
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-src
     volumes:
       - type: bind
         source: ../src/ComputationContainer
@@ -186,10 +198,13 @@ services:
     expose:
       - "50110"
       - "50111"
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-src
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: src
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-src
     volumes:
       - type: bind
         source: ../src/ManageContainer
@@ -230,10 +245,13 @@ services:
   dev_mc1:
     container_name: manage_container1
     tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage1
@@ -293,10 +311,13 @@ services:
   dev_mc2:
     container_name: manage_container2
     tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage2
@@ -352,10 +373,13 @@ services:
   dev_mc3:
     container_name: manage_container3
     tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage3
@@ -418,18 +442,24 @@ services:
       - type: volume
         source: resultdb1
         target: /Db/result
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: small
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
 
   small_mc:
     container_name: manage_container1
     tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: small
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
     volumes:
       - type: volume
         source: sharedb1
@@ -445,10 +475,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute1
@@ -477,10 +510,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute2
@@ -510,10 +546,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute3
@@ -542,10 +581,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute1
@@ -578,10 +620,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute2
@@ -615,10 +660,13 @@ services:
     expose:
       - "51020"
       - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
         source: ../Config/ComputationContainer/Compute3
@@ -648,10 +696,13 @@ services:
 
   medium_mc1:
     container_name: manage_container1
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage1
@@ -676,10 +727,13 @@ services:
 
   medium_mc2:
     container_name: manage_container2
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage2
@@ -704,10 +758,13 @@ services:
 
   medium_mc3:
     container_name: manage_container3
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage3
@@ -733,10 +790,13 @@ services:
   send_share_mc1:
     container_name: manage_container1
     tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage1
@@ -767,10 +827,13 @@ services:
   send_share_mc2:
     container_name: manage_container2
     tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage2
@@ -797,10 +860,13 @@ services:
   send_share_mc3:
     container_name: manage_container3
     tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
         source: ../Config/ManageContainer/Manage3
@@ -823,13 +889,46 @@ services:
     depends_on:
       dev_mc_envoy3:
         condition: service_started
+<<<<<<< HEAD
+=======
+      dev_dbgate3:
+        condition: service_started
+
+  medium_dbgate:
+    # tty: true
+    container_name: dbgate_container1
+    image: ghcr.io/acompany-develop/quickmpc-dbg:test-dbg-medium
+    build:
+      context: ../
+      dockerfile: src/DbContainer/DbGate/Dockerfile
+      target: medium
+      args:
+        - lowercase_DB_NAMES=sharedb
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-dbg:test-dbg-medium
+    env_file:
+      - ../Config/DbContainer/DbGate1/.env
+    expose:
+      - "50000"
+    networks:
+      default: {}
+      shared-network:
+        ipv4_address: 10.0.1.30
+    command: ["/bin/bash", "-lc", "printenv && go test ./... -v -cover"]
+    depends_on:
+      dev_sharedb1:
+        condition: service_healthy
+>>>>>>> Add image,cache_from to Test/docker-compose.yml
 
   medium-libc:
     container_name: lib_client
+    image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     build:
       context: ../
       dockerfile: Test/LibClient/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     volumes:
       - type: bind
         source: ./LibClient/Data
@@ -849,10 +948,13 @@ services:
 
   benchmark-libc:
     container_name: lib_client
+    image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     build:
       context: ../
       dockerfile: Test/LibClient/Dockerfile
       target: medium
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     volumes:
       - type: bind
         source: ./LibClient/Data
