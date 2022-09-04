@@ -53,6 +53,9 @@ jobs:
         env:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
       - name: Build and Push
         run: docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' --push
         working-directory: ./Test
