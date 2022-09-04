@@ -77,7 +77,7 @@ RUN echo ${BUILD_OPT}
 RUN --mount=type=cache,target=/root/.cache \
     bazel build //:all ${BUILD_OPT}
 RUN --mount=type=cache,target=/root/.cache \
-    cp /QuickMPC/bazel-bin/computation_container /QuickMPC/computation_container
+    bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
 
 FROM builder as dev
 
