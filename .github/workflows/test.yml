@@ -54,7 +54,7 @@ jobs:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
-        run: docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline'
+        run: docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' --push
         working-directory: ./Test
 
   small_test_cc:
