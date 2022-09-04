@@ -889,36 +889,6 @@ services:
     depends_on:
       dev_mc_envoy3:
         condition: service_started
-<<<<<<< HEAD
-=======
-      dev_dbgate3:
-        condition: service_started
-
-  medium_dbgate:
-    # tty: true
-    container_name: dbgate_container1
-    image: ghcr.io/acompany-develop/quickmpc-dbg:test-dbg-medium
-    build:
-      context: ../
-      dockerfile: src/DbContainer/DbGate/Dockerfile
-      target: medium
-      args:
-        - lowercase_DB_NAMES=sharedb
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-dbg:test-dbg-medium
-    env_file:
-      - ../Config/DbContainer/DbGate1/.env
-    expose:
-      - "50000"
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.30
-    command: ["/bin/bash", "-lc", "printenv && go test ./... -v -cover"]
-    depends_on:
-      dev_sharedb1:
-        condition: service_healthy
->>>>>>> Add image,cache_from to Test/docker-compose.yml
 
   medium-libc:
     container_name: lib_client

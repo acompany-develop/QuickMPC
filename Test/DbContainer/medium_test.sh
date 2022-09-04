@@ -1,9 +1,9 @@
 # !!!!!!!!!! NOTE: 関数の内部処理はexit_statusのANDを取るために必ずワンライナーで記述する !!!!!!!!!!
 
+
 # build処理を記述する関数
 build() {
-    git submodule update --init --recursive && \
-    docker buildx bake -f docker-compose.yml benchmark-libc dev_mc1 dev_mc2 dev_mc3 dev_cc3 dev_cc2 dev_cc1 --load
+    docker buildx bake -f docker-compose.yml dev_secrets-server dev_sharedb1 medium_dbgate --load
 }
 
 # runの前に実行されるsetup処理を記述する関数
@@ -15,7 +15,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose -f docker-compose.yml up benchmark-libc
+    docker-compose -f docker-compose.yml up --build medium_dbgate
 }
 
 # runの後に実行されるteardown処理を記述する関数
