@@ -3,7 +3,7 @@
 
 # build処理を記述する関数
 build() {
-    docker-compose -f docker-compose.yml build dev_secrets-server dev_sharedb1 medium_dbgate
+    docker buildx bake -f docker-compose.yml dev_secrets-server dev_sharedb1 medium_dbgate --load
 }
 
 # runの前に実行されるsetup処理を記述する関数

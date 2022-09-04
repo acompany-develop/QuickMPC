@@ -3,7 +3,7 @@
 
 # build処理を記述する関数
 build() {
-    docker-compose -f docker-compose.yml build small_secrets-server small_sharedb small_dbgate
+    docker buildx bake -f docker-compose.yml small_secrets-server small_sharedb small_dbgate --load
 }
 
 # runの前に実行されるsetup処理を記述する関数
