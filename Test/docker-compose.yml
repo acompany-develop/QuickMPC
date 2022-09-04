@@ -29,7 +29,7 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
-    command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
+    command: ["/bin/bash", "-c", "printenv && ./computation_container"]
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -67,7 +67,7 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
-    command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
+    command: ["/bin/bash", "-c", "printenv && ./computation_container"]
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -105,7 +105,7 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
-    command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
+    command: ["/bin/bash", "-c", "printenv && ./computation_container"]
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -470,7 +470,7 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      ["/bin/bash", "-c", "printenv && bazel-bin/computation_container_test"]
+      ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc2:
     container_name: computation_container2
@@ -502,7 +502,7 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      ["/bin/bash", "-c", "printenv && bazel-bin/computation_container_test"]
+      ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc3:
     tty: true # docker run -t
@@ -535,7 +535,7 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      ["/bin/bash", "-c", "printenv && bazel-bin/computation_container_test"]
+      ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   benchmark_cc1:
     container_name: computation_container1
@@ -570,7 +570,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "printenv && bazel-bin/computation_container_benchmark",
+        "printenv && ./computation_container_benchmark",
       ]
 
   benchmark_cc2:
@@ -606,7 +606,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "printenv && bazel-bin/computation_container_benchmark",
+        "printenv && ./computation_container_benchmark",
       ]
 
   benchmark_cc3:
@@ -643,7 +643,7 @@ services:
       [
         "/bin/bash",
         "-c",
-        "printenv && bazel-bin/computation_container_benchmark",
+        "printenv && ./computation_container_benchmark",
       ]
 
   medium_mc1:
