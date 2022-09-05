@@ -13,7 +13,7 @@
  * @param logSource ログ発行元を示す文字列（例："[Cc2CcForJob]", "[Cc2Cc]"）
  * @param endpoint エンドポイント
  */
-static void runServerCore(grpc::ServerBuilder &builder, std::string logSource, std::string endpoint)
+static void runServerCore(grpc::ServerBuilder &builder, const std::string& logSource, const std::string& endpoint)
 {
     /*
     grpc Server keepalive設定
