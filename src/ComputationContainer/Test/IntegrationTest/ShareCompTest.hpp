@@ -528,32 +528,6 @@ TEST(ShareCompTest, EqualityTest)
     EXPECT_EQ(ret.getVal(), 0);
 }
 
-TEST(ShareTest, EqualityEpsilonTest)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-
-    // m,k is LTZ parameters
-    int m = 32 - 3;
-    int k = 48;
-    for (int _ = 0; _ < 10; ++_)
-    {
-        auto val1 = RandGenerator::getInstance()->getRand<long long>(2, (1LL << k) - 1);
-        auto val2 = val1 - 10;
-
-        auto val_d1 = static_cast<double>(val1) / (1LL << m) / n_parties;
-        auto val_d2 = static_cast<double>(val2) / (1LL << m) / n_parties;
-
-        std::cerr << val_d1 << " == " << val_d2 << " : " << (val_d1 == val_d2) << std::endl;
-        std::cerr << "\t" << std::abs(val_d1 - val_d2) << std::endl;
-
-        auto s1 = Share(FixedPoint((boost::format("%.10f") % val_d1).str()));
-        auto s2 = Share(FixedPoint((boost::format("%.10f") % val_d2).str()));
-
-        EXPECT_EQ(s1 == s2, false);
-    }
-}
-
 //一括open,reconsテスト
 TEST(ShareCompTest, ShareCompReconsBulk)
 {

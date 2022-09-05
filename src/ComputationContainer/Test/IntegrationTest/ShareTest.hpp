@@ -718,6 +718,36 @@ TEST(ShareTest, ComparisonOperation)
     EXPECT_TRUE(d >= c);
 }
 
+TEST(ShareTest, EqualityEpsilonRandomTest)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+
+    // m,k is LTZ parameters
+    int m = 28;
+    int k = 48;
+    std::vector<std::pair<long long, long long>> random_range{
+        {1, 10},                            // small case
+        {1LL << (k - 1), (1LL << k) - 2}};  // large case
+    for (const auto &[lower, upper] : test_pair)
+    {
+        for (int _ = 0; _ < 10; ++_)
+        {
+            auto val1 = RandGenerator::getInstance()->getRand<long long>(lower, upper);
+            auto val2 = val1 + 1;
+
+            auto val_d1 = static_cast<double>(val1) / (1LL << (m - 2)) / n_parties;
+            auto val_d2 = static_cast<double>(val2) / (1LL << (m - 2)) / n_parties;
+
+            auto s1 = Share(FixedPoint((boost::format("%.10f") % val_d1).str()));
+            auto s2 = Share(FixedPoint((boost::format("%.10f") % val_d2).str()));
+
+            EXPECT_TRUE(s1 == s1);
+            EXPECT_FALSE(s1 == s2);
+        }
+    }
+}
+
 // ランダムな値で比較演算のテストを実行
 TEST(ShareTest, RandomComparisonOperation)
 {
