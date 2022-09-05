@@ -112,14 +112,14 @@ bool operator==(const Share<FixedPoint> &left, const FixedPoint &right);
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s);
 /// @brief l=32 split array
 inline constexpr int delta[] = {5, 5, 5, 5, 5, 5, 2};
-/// @brief generate one-hot-vector used by unitv
-/// @tparam N
-/// @return random share [r] and r-th value is 1 ,otherwise is 0 in n length array
 template <typename T, std::enable_if_t<std::is_integral_v<T>, std::nullptr_t> = nullptr>
 Share<T> operator==(const Share<T> &left, const Share<T> &right)
 {
     return equality(left, right);
 }
+/// @brief generate one-hot-vector used by unitv
+/// @tparam N generate share-value mod N
+/// @return random share [r] and r-th value is 1 ,otherwise is 0 in n length array
 template <size_t N>
 std::pair<Share<int>, std::vector<Share<int>>> unitvPrep()
 {
@@ -129,7 +129,7 @@ std::pair<Share<int>, std::vector<Share<int>>> unitvPrep()
     Config *conf = Config::getInstance();
     auto server = ComputationToComputation::Server::getServer();
     auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << 20, N);
-    auto r = RandGenerator::getInstance()->getRand<long long>(0, 31);
+    auto r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
     int n_parties = conf->n_parties;
     int pt_id = conf->party_id - 1;
     for (int i = 0; i < N * N; ++i)
