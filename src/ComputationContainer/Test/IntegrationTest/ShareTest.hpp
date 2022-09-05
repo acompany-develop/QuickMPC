@@ -729,7 +729,7 @@ TEST(ShareTest, EqualityEpsilonRandomTest)
     std::vector<std::pair<long long, long long>> random_range{
         {1, 10},                            // small case
         {1LL << (k - 1), (1LL << k) - 2}};  // large case
-    for (const auto &[lower, upper] : test_pair)
+    for (const auto &[lower, upper] : random_range)
     {
         for (int _ = 0; _ < 10; ++_)
         {
