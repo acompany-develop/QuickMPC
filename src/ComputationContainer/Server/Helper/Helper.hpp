@@ -13,7 +13,9 @@
  * @param logSource ログ発行元を示す文字列（例："[Cc2CcForJob]", "[Cc2Cc]"）
  * @param endpoint エンドポイント
  */
-static void runServerCore(grpc::ServerBuilder &builder, const std::string& logSource, const std::string& endpoint)
+static void runServerCore(
+    grpc::ServerBuilder& builder, const std::string& logSource, const std::string& endpoint
+)
 {
     /*
     grpc Server keepalive設定
@@ -30,7 +32,7 @@ static void runServerCore(grpc::ServerBuilder &builder, const std::string& logSo
     std::unique_ptr<grpc::Server> listener(builder.BuildAndStart());
 
     // HealthCheckService を有効化する
-    grpc::HealthCheckServiceInterface *service = listener->GetHealthCheckService();
+    grpc::HealthCheckServiceInterface* service = listener->GetHealthCheckService();
     if (service != nullptr)
     {
         service->SetServingStatus(true);  // 登録した全てのサービスで有効化
