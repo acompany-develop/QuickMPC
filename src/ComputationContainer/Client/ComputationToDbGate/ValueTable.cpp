@@ -96,8 +96,14 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         }
         if (++iterated % 100 == 0)
         {
-            spdlog::info("[progress] intersectionSortedValueIndex: lhs: {:>5.2f} %", i1 * 100.0 / sorted_v1.size());
-            spdlog::info("[progress] intersectionSortedValueIndex: rhs: {:>5.2f} %", i2 * 100.0 / sorted_v2.size());
+            spdlog::info(
+                "[progress] intersectionSortedValueIndex: lhs: {:>5.2f} %",
+                i1 * 100.0 / sorted_v1.size()
+            );
+            spdlog::info(
+                "[progress] intersectionSortedValueIndex: rhs: {:>5.2f} %",
+                i2 * 100.0 / sorted_v2.size()
+            );
         }
     }
     return it_list;
