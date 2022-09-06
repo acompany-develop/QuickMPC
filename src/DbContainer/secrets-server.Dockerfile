@@ -15,6 +15,9 @@ ENV lowercase_DB_NAMES=${lowercase_DB_NAMES}
 
 RUN mkdir /files
 
+HEALTHCHECK --interval=5s --timeout=5s --retries=10 \
+    CMD curl http://localhost:8000
+
 # NOTE: 秘密情報を消し去りたいとき、Imageの削除だけでなくビルドキャッシュも削除する必要がある
 # その際に`docker system prune --filter label=secrets-server`でこのImageのキャッシュだけ削除できるようにするためのもの
 LABEL secrets-server=
