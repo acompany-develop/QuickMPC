@@ -191,7 +191,7 @@ services:
         ipv4_address: 10.0.1.31
     depends_on:
       dev_secrets-server:
-        condition: service_started
+        condition: service_healthy
 
   dev_dbgate2:
     container_name: dbgate_container2
@@ -252,7 +252,7 @@ services:
         ipv4_address: 10.0.2.31
     depends_on:
       dev_secrets-server:
-        condition: service_started
+        condition: service_healthy
 
   dev_dbgate3:
     container_name: dbgate_container3
@@ -313,7 +313,7 @@ services:
         ipv4_address: 10.0.3.31
     depends_on:
       dev_secrets-server:
-        condition: service_started
+        condition: service_healthy
 
   dev_secrets-server:
     container_name: secrets-server
@@ -425,7 +425,7 @@ services:
         ipv4_address: 10.0.1.131
     depends_on:
       src_secrets-server:
-        condition: service_started
+        condition: service_healthy
 
   src_secrets-server:
     container_name: secrets-server
@@ -693,7 +693,7 @@ services:
       - "0.0.0.0:60131:8091"
     depends_on:
       small_secrets-server:
-        condition: service_started
+        condition: service_healthy
 
   small_secrets-server:
     container_name: secrets-server
