@@ -724,11 +724,11 @@ TEST(ShareTest, EqualityEpsilonRandomTest)
     int n_parties = conf->n_parties;
 
     // m,k is LTZ parameters
-    int m = 28;
+    int m = 20;
     int k = 48;
     std::vector<std::pair<long long, long long>> random_range{
-        {1, 10},                            // small case
-        {1LL << (k - 1), (1LL << k) - 2}};  // large case
+        {1, 10},                             // small case
+        {1LL << (k - 1), (1LL << k) - 20}};  // large case
     for (const auto &[lower, upper] : random_range)
     {
         for (int _ = 0; _ < 10; ++_)
@@ -736,8 +736,8 @@ TEST(ShareTest, EqualityEpsilonRandomTest)
             auto val1 = RandGenerator::getInstance()->getRand<long long>(lower, upper);
             auto val2 = val1 + 1;
 
-            auto val_d1 = static_cast<double>(val1) / (1LL << (m - 2)) / n_parties;
-            auto val_d2 = static_cast<double>(val2) / (1LL << (m - 2)) / n_parties;
+            auto val_d1 = static_cast<double>(val1) / (1LL << (m - 3)) / n_parties;
+            auto val_d2 = static_cast<double>(val2) / (1LL << (m - 3)) / n_parties;
 
             auto s1 = Share(FixedPoint((boost::format("%.10f") % val_d1).str()));
             auto s2 = Share(FixedPoint((boost::format("%.10f") % val_d2).str()));

@@ -185,7 +185,7 @@ bool operator==(const Share<FixedPoint> &left, const FixedPoint &right)
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s)
 {
     // Experimented and adjusted.
-    int m = 28;
+    int m = 20;
     int k = 48;
 
     // s に 2^m をかけて整数化を試みる
