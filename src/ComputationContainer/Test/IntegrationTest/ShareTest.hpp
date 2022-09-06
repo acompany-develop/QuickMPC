@@ -1274,18 +1274,23 @@ TEST(ShareTest, unitvTest)
 
 TEST(ShareTest, expandTest)
 {
-    int x = 5;  // 00000011
-    auto d = qmpc::Share::expand(x);
-    for (auto a : d)
+    const std::array<int, 7> delta = {5, 5, 5, 5, 5, 5, 2};
     {
-        std::cout << a << std::endl;
+        int x = 5;  // 00000011
+        auto d = qmpc::Share::expand(x, delta);
+        std::vector<int> expected = {0, 0, 0, 0, 0, 0, 0, 5};
+        for (int i = 0; i < d.size(); ++i)
+        {
+            EXPECT_EQ(expected[i], d[i]);
+        }
     }
     {
         int y = -5;
-        auto d = qmpc::Share::expand(y);
-        for (auto a : d)
+        auto d = qmpc::Share::expand(y, delta);
+        std::vector<int> expected = {0, 3, 31, 31, 31, 31, 31, 27};
+        for (int i = 0; i < d.size(); ++i)
         {
-            std::cout << a << std::endl;
+            EXPECT_EQ(expected[i], d[i]);
         }
     }
 }

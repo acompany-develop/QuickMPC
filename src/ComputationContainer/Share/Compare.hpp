@@ -111,7 +111,7 @@ bool operator==(const Share<FixedPoint> &left, const FixedPoint &right);
 
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s);
 /// @brief l=32 split array
-inline constexpr int delta[] = {5, 5, 5, 5, 5, 5, 2};
+inline constexpr std::array<int, 7> delta = {5, 5, 5, 5, 5, 5, 2};
 template <typename T, std::enable_if_t<std::is_integral_v<T>, std::nullptr_t> = nullptr>
 Share<T> operator==(const Share<T> &left, const Share<T> &right)
 {
@@ -185,8 +185,8 @@ std::vector<Share<T>> unitv(const Share<T> &n)
     }
     return ret;
 }
-
-inline std::vector<int> expand(int x)
+template <typename Arr>
+std::vector<int> expand(int x, const Arr &delta)
 {
     unsigned int x_u = static_cast<unsigned int>(x);
     std::vector<int> delta_sum;
@@ -226,7 +226,7 @@ Share<T> equality(const Share<T> &x, const Share<T> &y)
     {
         d = y.getVal() - x.getVal();
     }
-    auto d_expand = expand(d);
+    auto d_expand = expand(d, delta);
     int m = d_expand.size();
     std::vector<Share<int>> p(m), q(m);
     Share<T> f{};
