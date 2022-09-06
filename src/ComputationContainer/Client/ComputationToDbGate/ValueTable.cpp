@@ -77,6 +77,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     std::vector<std::pair<int, int>> it_list;
     it_list.reserve(sorted_v1.size());
     size_t i1 = 0, i2 = 0;
+    std::uint32_t iterated = 0;
     while (i1 < sorted_v1.size() && i2 < sorted_v2.size())
     {
         if (sorted_v1[i1] == sorted_v2[i2])
@@ -92,6 +93,11 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         else
         {
             ++i2;
+        }
+        if (++iterated % 100 == 0)
+        {
+            spdlog::info("[progress] intersectionSortedValueIndex: lhs: {:>5.2f} %", i1 * 100.0 / sorted_v1.size());
+            spdlog::info("[progress] intersectionSortedValueIndex: rhs: {:>5.2f} %", i2 * 100.0 / sorted_v2.size());
         }
     }
     return it_list;
