@@ -37,21 +37,6 @@ FixedPoint RandGenerator::getRand<FixedPoint>(long long min_val, long long max_v
     return val;
 }
 template <>
-std::vector<FixedPoint> RandGenerator::getRandVec<FixedPoint>(
-    long long min_val, long long max_val, int n
-)
-{
-    std::vector<FixedPoint> ret;
-    ret.reserve(n);
-    for (int i = 0; i < n; i++)
-    {
-        auto rnd = RandGenerator::getInstance()->generateRand();
-        auto rnd_mod = static_cast<long long>(rnd % (max_val - min_val));
-        ret.emplace_back(FixedPoint(std::abs(rnd_mod) + min_val));
-    }
-    return ret;
-}
-template <>
 PrimeField RandGenerator::getRand<PrimeField>(long long min_val, long long max_val)
 {
     // 1. long long int → unsigned long long (0 <= unsigned_rnd <= 2^{64}-1)

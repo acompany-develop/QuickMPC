@@ -87,7 +87,26 @@ void open(const T &share)
         th.join();
     }
 }
-
+template <typename T>
+auto stosv(const std::string &str_value)
+{
+    if constexpr (std::is_same_v<T, bool>)
+    {
+        return std::stoi(str_value);
+    }
+    else if constexpr (std::is_integral_v<T>)
+    {
+        return std::stoi(str_value);
+    }
+    else if constexpr (std::is_floating_point_v<T>)
+    {
+        return std::stod(str_value);
+    }
+    else  // TODO: constructable or convertible
+    {
+        return T(str_value);
+    }
+}
 template <typename T, std::enable_if_t<is_share<T>::value, std::nullptr_t> = nullptr>
 auto recons(const T &share)
 {
@@ -205,5 +224,18 @@ SV receive(int sp_id, AddressId address_id)
         SV received_value(std::stoi(server->getShare(sp_id, address_id)));
         return received_value;
     }
+}
+template <typename SV>
+std::vector<SV> receive(int sp_id, const std::vector<AddressId> &address_ids)
+{
+    ComputationToComputation::Server *server = ComputationToComputation::Server::getServer();
+    int n = address_ids.size();
+    std::vector<SV> ret(n);
+    auto shares = server->getShares(sp_id, address_ids, address_ids.size());
+    for (int i = 0; i < n; ++i)
+    {
+        ret[i] = stosv<SV>(shares[i]);
+    }
+    return ret;
 }
 }  // namespace qmpc::Share

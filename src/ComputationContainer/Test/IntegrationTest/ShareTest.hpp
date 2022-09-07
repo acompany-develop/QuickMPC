@@ -1248,3 +1248,110 @@ TEST(ShareTest, FPMulExtraLarge)
 
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
+
+TEST(ShareTest, unitvPreptest)
+{
+    auto [r, v] = qmpc::Share::unitvPrep<32>();
+    open(v);
+    open(r);
+    auto rec_r = recons(r);
+    auto rec_v = recons(v);
+    rec_r = (rec_r % 32 + 32) % 32;
+    std::cout << "r is " << rec_r << std::endl;
+    EXPECT_EQ(rec_v[rec_r], 1);
+}
+TEST(ShareTest, unitvTest)
+{
+    qmpc::Share::Share<int> n(5);
+    auto w = qmpc::Share::unitv(n);
+    open(w);
+    open(n);
+    auto rec_w = recons(w);
+    auto rec_n = recons(n);
+    std::cout << "n is " << rec_n << std::endl;
+    EXPECT_EQ(rec_w[rec_n % 32], 1);
+}
+
+TEST(ShareTest, expandTest)
+{
+    const std::array<int, 7> delta = {5, 5, 5, 5, 5, 5, 2};
+    {
+        int x = 5;  // 00000011
+        auto d = qmpc::Share::expand(x, delta);
+        std::vector<int> expected = {0, 0, 0, 0, 0, 0, 0, 5};
+        for (int i = 0; i < d.size(); ++i)
+        {
+            EXPECT_EQ(expected[i], d[i]);
+        }
+    }
+    {
+        int y = -5;
+        auto d = qmpc::Share::expand(y, delta);
+        std::vector<int> expected = {0, 3, 31, 31, 31, 31, 31, 27};
+        for (int i = 0; i < d.size(); ++i)
+        {
+            EXPECT_EQ(expected[i], d[i]);
+        }
+    }
+}
+
+TEST(ShareTest, equality1Test)
+{
+    qmpc::Share::Share<int> x(5);
+    qmpc::Share::Share<int> y(5);
+    qmpc::Share::Share<int> z(15);
+
+    auto t = qmpc::Share::equality1(x, y);
+    auto f = qmpc::Share::equality1(x, z);
+
+    open(t);
+    open(f);
+    auto t_rec = recons(t);
+    auto f_rec = recons(f);
+    EXPECT_EQ(t_rec, 1);
+    EXPECT_EQ(f_rec, 0);
+}
+
+TEST(ShareTest, equalityTest)
+{
+    qmpc::Share::Share<int> x(1 << 31);
+    qmpc::Share::Share<int> y(1 << 31);
+    qmpc::Share::Share<int> z(15);
+    int minus = std::numeric_limits<int>::min();
+    qmpc::Share::Share<int> minusx(minus);
+    qmpc::Share::Share<int> minusy(minus);
+    auto t = qmpc::Share::equality(x, y);
+    auto f = qmpc::Share::equality(x, z);
+
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        auto b = minusx == minusy;
+        open(b);
+        auto b_rec = recons(b);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
+        spdlog::info("[{0}] Elapsed time = {1} ms", "eq", elapsed_time_ms);
+
+        EXPECT_EQ(b_rec, 1);
+    }
+
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        auto b = x == y;
+        open(b);
+        auto b_rec = recons(b);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
+        spdlog::info("[{0}] Elapsed time = {1} ms", "new eq", elapsed_time_ms);
+
+        EXPECT_EQ(b_rec, 1);
+    }
+    open(t);
+    open(f);
+    auto t_rec = recons(t);
+    auto f_rec = recons(f);
+    EXPECT_EQ(t_rec, 1);
+    EXPECT_EQ(f_rec, 0);
+}
