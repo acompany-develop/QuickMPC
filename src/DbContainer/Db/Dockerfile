@@ -1,18 +1,13 @@
-FROM couchbase:community-7.0.2 as base
+FROM couchbase:community-7.1.1 as base
 
 # Configure apt-get for NodeJS
 # Install NPM and NodeJS and jq, with apt-get cleanup
 RUN apt update && \
     apt install ca-certificates && \
-    curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install -yq build-essential nodejs jq && \
     apt-get autoremove && apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-# Upgrade to jq 1.6
-RUN wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 && \
-    chmod +x jq-linux64 && \
-    mv jq-linux64 $(which jq)
 
 # Copy package.json
 WORKDIR /scripts
