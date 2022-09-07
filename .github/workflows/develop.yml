@@ -3,9 +3,8 @@ name: Build CC, MC, DB and Run Build and Test in Each Containers
 on:
   pull_request:
     branches:
-      - develop
+      - main
       - "feature/**"
-      - "migration/**"
 
 env:
   DOCKER_BUILDKIT: 1

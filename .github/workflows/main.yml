@@ -2,7 +2,7 @@ name: Push Stable CC, MC, DB Image
 
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 jobs:
   # 安定バージョンのQMPCイメージをpush
