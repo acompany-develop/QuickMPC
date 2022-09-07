@@ -254,6 +254,7 @@ def test_decision_tree(table_file: str):
     ("table_file", "table_file_for_join"),
     [
         ("table_data_5x5", "table_data_5x5_for_join"),
+        ("table_data_5x5", "table_data_5x5_for_failjoin"),
     ]
 )
 def test_table_hjoin(table_file: str, table_file_for_join: str):
