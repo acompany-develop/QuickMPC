@@ -2,9 +2,11 @@ name: Build CC, MC, DB and Run Build and Test in Each Containers
 
 on:
   pull_request:
+  push:
     branches:
-      - main
+      - develop
       - "feature/**"
+      - "migration/**"
 
 env:
   DOCKER_BUILDKIT: 1
@@ -203,106 +205,4 @@ jobs:
 
     steps:
       - name: Merge All medium_test
-        run: echo "ok"
-
-  # 安定バージョンのQMPCイメージをpush
-  build_and_push_cc:
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: Build CC image
-        run: |
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ github.run_id }}
-        working-directory: ./src/ComputationContainer/
-
-      - name: Run Trivy vulnerability scanner for CC
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ github.run_id }}"
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          vuln-type: "os,library"
-          severity: "CRITICAL,HIGH"
-
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-      - name: Push image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ github.run_id }}
-
-  build_and_push_mc:
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: Build MC image
-        run: |
-          docker build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ github.run_id }}
-        working-directory: ./src/ManageContainer/
-
-      - name: Run Trivy vulnerability scanner for MC
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ github.run_id }}"
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          vuln-type: "os,library"
-          severity: "CRITICAL,HIGH"
-
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-      - name: Push image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ github.run_id }}
-
-  build_and_push_dc:
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: checkout
-        uses: actions/checkout@v2
-
-      - name: Build DbGate image
-        run: |
-          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAMES=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:${{ github.run_id }}
-        working-directory: ./src/DbContainer/DbGate/
-
-      - name: Run Trivy vulnerability scanner for DbGate
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:${{ github.run_id }}"
-          format: "table"
-          exit-code: "1"
-          ignore-unfixed: true
-          vuln-type: "os,library"
-          severity: "CRITICAL,HIGH"
-
-      - name: Build sharedb image
-        run: |
-          docker build ../../../ --file Dockerfile --target dep --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:${{ github.run_id }}
-        working-directory: ./src/DbContainer/Db/
-
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-      - name: Push image
-        run: |
-          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:${{ github.run_id }}
-          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-sharedb:${{ github.run_id }}
-
-  build_and_push:
-    runs-on: ubuntu-latest
-    needs: [lint, build_and_push_cc, build_and_push_mc, build_and_push_dc]
-
-    steps:
-      - name: Merge All build_and_push
         run: echo "ok"
