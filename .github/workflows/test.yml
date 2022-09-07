@@ -4,9 +4,9 @@ on:
   pull_request:
   push:
     branches:
-      - develop
+      - main
+      - "release/**"
       - "feature/**"
-      - "migration/**"
 
 env:
   DOCKER_BUILDKIT: 1
