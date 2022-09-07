@@ -3,7 +3,6 @@ import random
 
 import numpy as np
 import pytest
-
 from utils import get_result, qmpc
 
 
@@ -286,6 +285,7 @@ def test_table_hjoin(table_file: str, table_file_for_join: str):
     ("table_file", "table_file_for_join"),
     [
         ("table_data_5x5", "table_data_5x5_for_join"),
+        ("table_data_5x5", "table_data_5x5_for_failjoin"),
     ]
 )
 def test_table_wjoin(table_file: str, table_file_for_join: str):
@@ -317,6 +317,7 @@ def test_table_wjoin(table_file: str, table_file_for_join: str):
     ("table_file", "table_file_for_join"),
     [
         ("table_data_5x5", "table_data_5x5_for_join"),
+        ("table_data_5x5", "table_data_5x5_for_failjoin"),
     ]
 )
 def test_table_hjoin_share(table_file: str, table_file_for_join: str):

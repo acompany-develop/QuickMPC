@@ -43,15 +43,11 @@ class JobBase : public Interface
         auto values = joinTable.getTable();
 
         // シェア型に変換
-        int h = values.size();
-        int w = values[0].size();
-        std::vector<std::vector<Share>> share_table(h, std::vector<Share>(w));
-        for (int i = 0; i < h; ++i)
+        std::vector<std::vector<Share>> share_table;
+        share_table.reserve(values.size());
+        for (const auto &rows : values)
         {
-            for (int j = 0; j < w; ++j)
-            {
-                share_table[i][j] = values[i][j];
-            }
+            share_table.emplace_back(rows.begin(), rows.end());
         }
 
         statusManager.nextStatus();
