@@ -68,6 +68,10 @@ public:
     {
         // 入力parse
         auto [x, y] = parse_table(table, arg);
+        if (x.empty())
+        {
+            return std::vector<Share>{};
+        }
 
         qmpc::ObjectiveFunction::CrossEntropyError function(x, y);
         // 探索のハイパーパラメータ，現在は0.1
