@@ -41,6 +41,10 @@ class JobBase : public Interface
         // table結合
         auto joinTable = db_client->readTable(request.table());
         auto values = joinTable.getTable();
+        if (values.empty())
+        {
+            spdlog::warn("Join table is empty. Check the table ID and the specified columns.");
+        }
 
         // シェア型に変換
         std::vector<std::vector<Share>> share_table;
