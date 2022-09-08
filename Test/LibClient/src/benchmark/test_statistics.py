@@ -102,7 +102,7 @@ def test_correl(size: int, get_data_id):
     data_id, secrets, schema = get_data_id(size)
     schema_size: int = len(schema)
 
-    # takle情報と列指定情報を定義して計算
+    # table情報と列指定情報を定義して計算
     table = [[data_id], [], [1]]
     inp = ([i+1 for i in range(schema_size)], [schema_size])
     with PrintTime("correl"):
@@ -124,7 +124,7 @@ def test_hjoin(size: int, get_data_id):
     data_id1, secrets1, schema1 = get_data_id(size, data_num=1)
     data_id2, secrets2, schema2 = get_data_id(size, data_num=2)
 
-    # takle情報を定義して計算
+    # table情報を定義して計算
     table = [[data_id1, data_id2], [2], [1, 1]]
     with PrintTime("hjoin"):
         res = get_result(qmpc.get_join_table(table), limit=10000)
