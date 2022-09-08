@@ -1,0 +1,42 @@
+runs:
+  using: "composite"
+  steps:
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: docker/setup-buildx-action@v2
+      with:
+        driver-opts: image=moby/buildkit:buildx-stable-1
+
+    - name: Enable buildkit cache
+      uses: actions/cache@v3
+      with:
+        path: /tmp/buildkit-cache/buildkit-state.tar
+        key: ${{ runner.os }}-buildkit-${{ github.run_id }}
+        restore-keys: |
+          ${{ runner.os }}-buildkit-
+
+    - name: Load buildkit state from cache
+      uses: dashevo/gh-action-cache-buildkit-state@v1
+      with:
+        builder: buildx_buildkit_${{ steps.buildx.outputs.name }}0
+        cache-path: /tmp/buildkit-cache
+        cache-max-size: 4g
+
+    # Setup config for using GCS as bazel remote cache
+    - name: Update GCP service account JSON
+      run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./src/ComputationContainer/sa.json
+      env:
+        CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+
+    - name: Update .bazelrc for using remote cache
+      run: |
+        eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./src/ComputationContainer/.bazelrc
+      env:
+        BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
