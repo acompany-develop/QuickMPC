@@ -46,7 +46,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -98,7 +98,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -152,7 +152,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Build images and run ManageContainer
         run: make test t=./ManageContainer m=build p=small
@@ -175,7 +175,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Build images and run secrets-server shareDbContainer DbGate
         run: make test t=./DbContainer m=build p=small
@@ -205,7 +205,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Set up Docker Buildx
         id: buildx
@@ -258,7 +258,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Build images and run ManageContainer
         run: make test t=./ManageContainer m=build p=medium
@@ -280,7 +280,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Build images and run DbContainer
         run: make test t=./DbContainer m=build p=medium
@@ -306,7 +306,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
 
       - name: Set up Docker Buildx
         id: buildx
