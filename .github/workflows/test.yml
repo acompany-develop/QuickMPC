@@ -39,9 +39,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -58,9 +58,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -77,9 +77,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -96,9 +96,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -115,9 +115,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -134,9 +134,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -153,9 +153,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -172,9 +172,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -191,9 +191,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
@@ -213,9 +213,9 @@ jobs:
 
       - uses: ./.github/actions/build_test_images
         with:
-          CI_PACKAGE_ACCESS_TOKEN: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+          ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+          bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Build and Push
         run: |
