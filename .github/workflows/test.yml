@@ -37,7 +37,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -52,7 +52,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -67,7 +67,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -82,7 +82,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -97,7 +97,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -112,7 +112,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -127,7 +127,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -142,7 +142,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -157,7 +157,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
@@ -175,7 +175,7 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - uses: .github/actions/build_test_images
+      - uses: ./.github/actions/build_test_images
 
       - name: Build and Push
         run: |
