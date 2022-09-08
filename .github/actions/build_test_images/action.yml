@@ -1,3 +1,11 @@
+inputs:
+  CI_PACKAGE_ACCESS_TOKEN:
+    required: true
+  CI_REMOTE_CACHE_JSON:
+    required: true
+  BAZEL_CACHE_BUCKET:
+    required: true
+
 runs:
   using: "composite"
   steps:
@@ -6,7 +14,7 @@ runs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
+        password: ${{ inputs.CI_PACKAGE_ACCESS_TOKEN }}
 
     - name: Set up Docker Buildx
       id: buildx
@@ -31,12 +39,14 @@ runs:
 
     # Setup config for using GCS as bazel remote cache
     - name: Update GCP service account JSON
+      shell: bash
       run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./src/ComputationContainer/sa.json
       env:
-        CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+        CI_REMOTE_CACHE_JSON: ${{ inputs.CI_REMOTE_CACHE_JSON }}
 
     - name: Update .bazelrc for using remote cache
+      shell: bash
       run: |
         eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./src/ComputationContainer/.bazelrc
       env:
-        BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+        BAZEL_CACHE_BUCKET: ${{ inputs.BAZEL_CACHE_BUCKET }}
