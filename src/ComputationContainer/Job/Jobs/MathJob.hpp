@@ -23,19 +23,18 @@ public:
     )
     {
         std::list<std::vector<Share>> cols;
-        int n = table.size();
-        int m = table[0].size();
         for (const auto &w : arg[0])
         {
-            std::vector<Share> tmp(n);
-            for (int h = 0; h < n; ++h)
+            std::vector<Share> tmp;
+            tmp.reserve(table.size());
+            for (const auto &row : table)
             {
-                tmp[h] = table[h][w - 1];
+                tmp.emplace_back(row[w - 1]);
             }
             cols.emplace_back(tmp);
         }
         std::vector<Share> ret;
-        ret.reserve(n * m);
+        ret.reserve(arg[0].size());
         for (auto &&col : cols)
         {
             ret.emplace_back(f(col));
