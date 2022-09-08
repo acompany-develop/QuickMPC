@@ -30,7 +30,151 @@ jobs:
           cd ${{ github.workspace }}/src/
           make check
 
-  build_test_images:
+  build_test_images_cc_dev:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            dev_cc1 --push
+        working-directory: ./Test
+
+  build_test_images_cc_medium:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            medium_cc1 --push
+        working-directory: ./Test
+
+  build_test_images_cc_small:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            small_cc --push
+        working-directory: ./Test
+
+  build_test_images_mc_dev:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            dev_mc1 --push
+        working-directory: ./Test
+
+  build_test_images_mc_medium:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            medium_mc1 --push
+        working-directory: ./Test
+
+  build_test_images_mc_small:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            small_mc --push
+        working-directory: ./Test
+
+  build_test_images_db_dev:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            dev_dbgate1 dev_sharedb1 dev_secrets-server --push
+        working-directory: ./Test
+
+  build_test_images_db_medium:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            medium_dbgate --push
+        working-directory: ./Test
+
+  build_test_images_db_small:
+    runs-on: ubuntu-latest
+    needs: [lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - uses: .github/actions/build_test_images
+
+      - name: Build and Push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            small_secrets-server small_sharedb small_dbgate --push
+        working-directory: ./Test
+
+  build_test_images_libc_medium:
     runs-on: ubuntu-latest
     needs: [lint]
 
@@ -41,53 +185,17 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
-
-      - name: Set up Docker Buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-        with:
-          driver-opts: image=moby/buildkit:buildx-stable-1
-
-      - name: Enable buildkit cache
-        uses: actions/cache@v3
-        with:
-          path: /tmp/buildkit-cache/buildkit-state.tar
-          key: ${{ runner.os }}-buildkit-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-buildkit-
-
-      - name: Load buildkit state from cache
-        uses: dashevo/gh-action-cache-buildkit-state@v1
-        with:
-          builder: buildx_buildkit_${{ steps.buildx.outputs.name }}0
-          cache-path: /tmp/buildkit-cache
-          cache-max-size: 4g
-
-      # Setup config for using GCS as bazel remote cache
-      - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./src/ComputationContainer/sa.json
-        env:
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-
-      - name: Update .bazelrc for using remote cache
-        run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./src/ComputationContainer/.bazelrc
-        env:
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+      - uses: .github/actions/build_test_images
 
       - name: Build and Push
-        run: docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' --push
+        run: |
+          docker buildx bake -f docker-compose.yml --set *.cache-to='type=inline' \
+            medium-libc --push
         working-directory: ./Test
 
   small_test_cc:
     runs-on: ubuntu-latest
-    needs: [build_test_images]
+    needs: [build_test_images_cc_small]
 
     steps:
       - name: Checkout
@@ -141,7 +249,7 @@ jobs:
 
   small_test_mc:
     runs-on: ubuntu-latest
-    needs: [build_test_images]
+    needs: [build_test_images_mc_small]
 
     steps:
       - name: Checkout
@@ -164,7 +272,7 @@ jobs:
 
   small_test_dc:
     runs-on: ubuntu-latest
-    needs: [build_test_images]
+    needs: [build_test_images_db_small]
 
     steps:
       - name: Checkout
@@ -195,7 +303,7 @@ jobs:
 
   medium_test_cc:
     runs-on: ubuntu-latest
-    needs: [build_test_images]
+    needs: [build_test_images_cc_medium, build_test_images_db_dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -248,7 +356,7 @@ jobs:
 
   medium_test_mc:
     runs-on: ubuntu-latest
-    needs: [build_test_images]
+    needs: [build_test_images_mc_medium, build_test_images_db_dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -270,7 +378,7 @@ jobs:
 
   medium_test_dc:
     runs-on: ubuntu-latest
-    needs: [build_test_images]
+    needs: [build_test_images_db_medium, build_test_images_db_dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -292,7 +400,7 @@ jobs:
 
   medium_test_libclient:
     runs-on: ubuntu-latest
-    needs: [build_test_images]
+    needs: [build_test_images_libc_medium, build_test_images_mc_dev, build_test_images_cc_dev, build_test_images_db_dev]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
