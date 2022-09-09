@@ -113,7 +113,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             }
         }
     }
-    spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", 100);
+    spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", 100.0);
 
     spdlog::info("[progress] hjoin: core (1/1)");
 
