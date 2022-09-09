@@ -29,7 +29,7 @@ public:
         int iterationNum, const interface &f, const std::vector<Share> &theta
     ) const override
     {
-        spdlog::info("[progress] SGD optimize: remain: ", iterationNum);
+        spdlog::info("[progress] SGD optimize: remain: {}", iterationNum);
         if (iterationNum == 0)
         {
             return theta;
