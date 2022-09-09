@@ -62,6 +62,7 @@ public:
         const std::vector<std::list<int>> &arg
     )
     {
+        spdlog::info("[progress] Linear Regression: learning: pre-processing (0/4)");
         // 入力parse
         auto [x, y] = parse_table(table, arg);
 
@@ -70,10 +71,18 @@ public:
         auto mat_y = qmpc::Share::ShareMatrix(y);
 
         // w = (X^T * X)^{-1} * X^T * y
+        spdlog::info("[progress] Linear Regression: learning: mat mul (1/4)");
         auto mat_x_trans = mat_x.transpose();
         auto mat_mul = (mat_x_trans * mat_x);
+
+        spdlog::info("[progress] Linear Regression: learning: mat inverse (2/4)");
         auto mat_mul_inv = mat_mul.inverse();
+
+        spdlog::info("[progress] Linear Regression: learning: mat mul (3/4)");
         auto w = mat_mul_inv * mat_x_trans * mat_y;
+
+        spdlog::info("[progress] Linear Regression: learning: post-procesing (4/4)");
+
         return w.transpose().get_row()[0];
     }
 };

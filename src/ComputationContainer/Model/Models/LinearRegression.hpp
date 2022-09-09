@@ -1,5 +1,9 @@
 #pragma once
 
+#include <chrono>
+
+#include <boost/range/adaptor/indexed.hpp>
+
 #include "Client/ComputationToDbGate/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "Model/ModelBase.hpp"
@@ -54,6 +58,8 @@ public:
         const std::string &model_param_job_uuid
     ) const override
     {
+        spdlog::info("[progress] Linear Regression: predict: pre-processing (0/2)");
+
         auto db_client = qmpc::ComputationToDbGate::Client::getInstance();
         auto a_str = db_client->readModelparam(model_param_job_uuid);
         auto a = std::vector<Share>(a_str.begin(), a_str.end());
@@ -61,10 +67,29 @@ public:
 
         std::vector<Share> result;
         result.reserve(a.size());
-        for (const auto &xi : x)
+
+        spdlog::info("[progress] Linear Regression: predict: compute (1/2)");
+        auto time_from = std::chrono::system_clock::now();
+        for (const auto &xi : boost::adaptors::index(x))
         {
-            result.emplace_back(predict_f(a, xi));
+            if (xi.index() % 1000 == 0)
+            {
+                auto time_to = std::chrono::system_clock::now();
+                auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(time_to - time_from);
+
+                if (dur.count() >= 5000)
+                {
+                    spdlog::info("[progress] Linear Regression: predict: compute (1/2): {:>5.2f} %",
+                        xi.index() * 100.0 / x.size());
+                    time_from = time_to;
+                }
+            }
+
+            result.emplace_back(predict_f(a, xi.value()));
         }
+
+        spdlog::info("[progress] Linear Regression: predict: post-processing (2/2)");
+
         return result;
     }
 };
