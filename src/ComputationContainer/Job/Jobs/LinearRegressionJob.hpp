@@ -64,6 +64,10 @@ public:
     {
         // 入力parse
         auto [x, y] = parse_table(table, arg);
+        if (x.empty())
+        {
+            return std::vector<Share>{};
+        }
 
         // 行列に変換
         auto mat_x = qmpc::Share::ShareMatrix(x);

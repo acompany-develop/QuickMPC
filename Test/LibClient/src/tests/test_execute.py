@@ -3,7 +3,6 @@ import random
 
 import numpy as np
 import pytest
-
 from utils import get_result, qmpc
 
 
@@ -342,3 +341,63 @@ def test_table_hjoin_share(table_file: str, table_file_for_join: str):
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id1, data_id2])
+
+
+@pytest.mark.parametrize(
+    ("table_file", "table_file_for_join"),
+    [
+        ("table_data_5x5", "table_data_5x5_for_failjoin"),
+    ]
+)
+def test_table_hjoin_fail(table_file: str, table_file_for_join: str):
+
+    # share送信
+    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
+    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
+
+    # table情報を定義してテーブル結合リクエスト送信
+    table = [[data_id1, data_id2], [0], [1, 1]]
+    res = get_result(qmpc.get_join_table(table))
+
+    # 結合結果が空でもエラーなくresponseが返ってくるか
+    assert(res["is_ok"])
+
+
+@pytest.mark.parametrize(
+    ("table_file", "table_file_for_join"),
+    [
+        ("table_data_5x5", "table_data_5x5_for_failjoin"),
+    ]
+)
+def test_table_wjoin_fail(table_file: str, table_file_for_join: str):
+
+    # share送信
+    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
+    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
+
+    # table情報を定義してテーブル結合リクエスト送信
+    table = [[data_id1, data_id2], [1], [1, 1]]
+    res = get_result(qmpc.get_join_table(table))
+
+    # 結合結果が空でもエラーなくresponseが返ってくるか
+    assert(res["is_ok"])
+
+
+@pytest.mark.parametrize(
+    ("table_file", "table_file_for_join"),
+    [
+        ("table_data_5x5", "table_data_5x5_for_failjoin"),
+    ]
+)
+def test_table_hjoin_share_fail(table_file: str, table_file_for_join: str):
+
+    # share送信
+    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
+    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
+
+    # table情報を定義してテーブル結合リクエスト送信
+    table = [[data_id1, data_id2], [2], [1, 1]]
+    res = get_result(qmpc.get_join_table(table))
+
+    # 結合結果が空でもエラーなくresponseが返ってくるか
+    assert(res["is_ok"])

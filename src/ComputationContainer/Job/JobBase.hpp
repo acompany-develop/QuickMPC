@@ -41,17 +41,17 @@ class JobBase : public Interface
         // table結合
         auto joinTable = db_client->readTable(request.table());
         auto values = joinTable.getTable();
+        if (values.empty())
+        {
+            spdlog::warn("Join table is empty. Check the table ID and the specified columns.");
+        }
 
         // シェア型に変換
-        int h = values.size();
-        int w = values[0].size();
-        std::vector<std::vector<Share>> share_table(h, std::vector<Share>(w));
-        for (int i = 0; i < h; ++i)
+        std::vector<std::vector<Share>> share_table;
+        share_table.reserve(values.size());
+        for (const auto &rows : values)
         {
-            for (int j = 0; j < w; ++j)
-            {
-                share_table[i][j] = values[i][j];
-            }
+            share_table.emplace_back(rows.begin(), rows.end());
         }
 
         statusManager.nextStatus();
