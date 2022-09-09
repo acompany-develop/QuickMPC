@@ -89,6 +89,7 @@ public:
 
             result.emplace_back(predict_f(a, xi.value()));
         }
+        spdlog::info("[progress] Linear Regression: predict: compute (1/2): {:>5.2f} %", 100);
 
         spdlog::info("[progress] Linear Regression: predict: post-processing (2/2)");
 
