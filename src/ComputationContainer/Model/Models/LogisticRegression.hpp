@@ -1,8 +1,7 @@
 #pragma once
 
-#include <chrono>
-
 #include <boost/range/adaptor/indexed.hpp>
+#include <chrono>
 
 #include "Client/ComputationToDbGate/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
@@ -82,12 +81,15 @@ public:
             if (xi.index() % 1000 == 0)
             {
                 auto time_to = std::chrono::system_clock::now();
-                auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(time_to - time_from);
+                auto dur =
+                    std::chrono::duration_cast<std::chrono::milliseconds>(time_to - time_from);
 
                 if (dur.count() >= 5000)
                 {
-                    spdlog::info("[progress] Logistic Regression: predict: compute (1/2): {:>5.2f} %",
-                        xi.index() * 100.0 / x.size());
+                    spdlog::info(
+                        "[progress] Logistic Regression: predict: compute (1/2): {:>5.2f} %",
+                        xi.index() * 100.0 / x.size()
+                    );
                     time_from = time_to;
                 }
             }

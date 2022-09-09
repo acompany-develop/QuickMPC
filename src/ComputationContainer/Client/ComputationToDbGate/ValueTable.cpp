@@ -105,10 +105,8 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 
             if (dur.count() >= 5000)
             {
-                double max_progress = std::max(
-                    i1 * 100.0 / sorted_v1.size(),
-                    i2 * 100.0 / sorted_v2.size()
-                );
+                double max_progress =
+                    std::max(i1 * 100.0 / sorted_v1.size(), i2 * 100.0 / sorted_v2.size());
                 spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", max_progress);
 
                 time_from = time_to;
