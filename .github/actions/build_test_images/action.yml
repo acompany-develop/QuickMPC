@@ -34,7 +34,7 @@ runs:
         driver-opts: image=moby/buildkit:buildx-stable-1
 
     - name: Enable buildkit cache
-      if: ${{ inputs.use_cache }}
+      if: ${{ inputs.use_cache == true }}
       uses: actions/cache@v3
       with:
         path: /tmp/buildkit-cache/buildkit-state.tar
@@ -43,7 +43,7 @@ runs:
           ${{ runner.os }}-buildkit-${{ inputs.cache_name_suffix }}
 
     - name: Load buildkit state from cache
-      if: ${{ inputs.use_cache }}
+      if: ${{ inputs.use_cache == true }}
       uses: magicmemories/gh-action-cache-buildkit-state@a8160e1690b34fa2175ce46e643e955bd15989ce
       with:
         builder: buildx_buildkit_${{ steps.buildx.outputs.name }}0
