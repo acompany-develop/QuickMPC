@@ -29,8 +29,8 @@ runs:
         driver-opts: image=moby/buildkit:buildx-stable-1
 
     - name: Enable buildkit cache
-      uses: actions/cache@v3
       if: ${{ inputs.use_cache }}
+      uses: actions/cache@v3
       with:
         path: /tmp/buildkit-cache/buildkit-state.tar
         key: ${{ runner.os }}-buildkit-${{ inputs.cache_name_suffix }}-${{ github.run_id }}
@@ -38,8 +38,8 @@ runs:
           ${{ runner.os }}-buildkit-${{ inputs.cache_name_suffix }}
 
     - name: Load buildkit state from cache
-      uses: dashevo/gh-action-cache-buildkit-state@v1
       if: ${{ inputs.use_cache }}
+      uses: dashevo/gh-action-cache-buildkit-state@v1
       with:
         builder: buildx_buildkit_${{ steps.buildx.outputs.name }}0
         cache-path: /tmp/buildkit-cache
