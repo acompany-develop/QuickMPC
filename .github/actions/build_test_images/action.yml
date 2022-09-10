@@ -1,14 +1,19 @@
 inputs:
   ci_package_access_token:
+    type: string
     required: true
   ci_remote_cache_json:
+    type: string
     required: true
   bazel_cache_bucket:
+    type: string
     required: true
   use_cache:
+    type: boolean
     default: false
     required: false
   cache_name_suffix:
+    type: string
     default: "default"
     required: false
 
