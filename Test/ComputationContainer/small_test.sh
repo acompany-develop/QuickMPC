@@ -15,7 +15,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose -f docker-compose.yml run small_cc /bin/sh -c "cd /QuickMPC && bazel test //Test/UnitTest:all --config=debug --test_env=IS_TEST=true --test_output=all"
+    docker-compose -f docker-compose.yml run -T small_cc /bin/sh -c "cd /QuickMPC && bazel test //Test/UnitTest:all --config=debug --test_env=IS_TEST=true --test_output=all"
 }
 
 # runの後に実行されるteardown処理を記述する関数

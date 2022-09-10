@@ -708,7 +708,6 @@ services:
 
   small_cc:
     container_name: computation_container1
-    tty: true # 起動しっぱなし
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
     build:
       context: ../
