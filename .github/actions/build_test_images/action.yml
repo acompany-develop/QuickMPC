@@ -44,7 +44,7 @@ runs:
 
     - name: Load buildkit state from cache
       if: ${{ inputs.use_cache }}
-      uses: dashevo/gh-action-cache-buildkit-state@v1
+      uses: magicmemories/gh-action-cache-buildkit-state@a8160e1690b34fa2175ce46e643e955bd15989ce
       with:
         builder: buildx_buildkit_${{ steps.buildx.outputs.name }}0
         cache-path: /tmp/buildkit-cache
