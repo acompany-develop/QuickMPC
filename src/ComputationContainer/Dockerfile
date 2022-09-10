@@ -113,6 +113,10 @@ FROM builder_debug as small
 ENV PARTY_ID=1
 COPY Config/ComputationContainer/Compute${PARTY_ID}/.src.env /QuickMPC/Config/.env
 
+FROM builder_base as small_tmp
+ENV PARTY_ID=1
+COPY Config/ComputationContainer/Compute${PARTY_ID}/.src.env /QuickMPC/Config/.env
+
 FROM builder_debug as medium
 
 # image for deploy

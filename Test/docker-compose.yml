@@ -712,9 +712,9 @@ services:
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
-      # temporarily change build stage from `small` to `builder_base` because it takes long time.
+      # temporarily change build stage from `small` to `small_tmp` because it takes long time.
       # TODO(#36): improve performance
-      target: builder_base
+      target: small_tmp
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
 
