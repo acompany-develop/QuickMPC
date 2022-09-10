@@ -3,7 +3,7 @@
 
 # build処理を記述する関数
 build() {
-    docker buildx bake -f docker-compose.yml docker-compose -f docker-compose.yml build benchmark_cc1 benchmark_cc2 benchmark_cc3 --load
+    docker buildx bake -f docker-compose.yml benchmark_cc1 benchmark_cc2 benchmark_cc3 --load
 }
 
 # runの前に実行されるsetup処理を記述する関数
@@ -15,7 +15,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose -f docker-compose.yml up --build benchmark_cc1 benchmark_cc2 benchmark_cc3
+    docker-compose -f docker-compose.yml up benchmark_cc1 benchmark_cc2 benchmark_cc3
 }
 
 # runの後に実行されるteardown処理を記述する関数
