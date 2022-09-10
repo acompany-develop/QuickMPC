@@ -16,6 +16,10 @@ inputs:
     type: string
     default: "default"
     required: false
+  cache_size:
+    type: string
+    default: 2g
+    required: false
 
 runs:
   using: "composite"

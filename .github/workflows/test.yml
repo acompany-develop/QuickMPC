@@ -43,6 +43,7 @@ jobs:
           ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
           bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
           use_cache: true
+          cache_size: 4g
 
       - name: Build and Push
         run: |
@@ -63,7 +64,8 @@ jobs:
           ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
           bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
           use_cache: true
-          cache_name_suffix: "debug-medium"
+          cache_name_suffix: "debug"
+          cache_size: 6g
 
       - name: Build and Push
         run: |
@@ -84,7 +86,8 @@ jobs:
           ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
           bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
           use_cache: true
-          cache_name_suffix: "debug-small"
+          cache_name_suffix: "debug"
+          cache_size: 6g
 
       - name: Build and Push
         run: |
