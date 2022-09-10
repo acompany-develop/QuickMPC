@@ -42,6 +42,7 @@ jobs:
           ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
           ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
           bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          use_cache: true
 
       - name: Build and Push
         run: |
@@ -61,6 +62,8 @@ jobs:
           ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
           ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
           bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          use_cache: true
+          cache_name_suffix: "debug-medium"
 
       - name: Build and Push
         run: |
@@ -80,6 +83,8 @@ jobs:
           ci_package_access_token: ${{ secrets.CI_PACKAGE_ACCESS_TOKEN }}
           ci_remote_cache_json: ${{ secrets.CI_REMOTE_CACHE_JSON }}
           bazel_cache_bucket: ${{ secrets.BAZEL_CACHE_BUCKET }}
+          use_cache: true
+          cache_name_suffix: "debug-small"
 
       - name: Build and Push
         run: |

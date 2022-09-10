@@ -5,6 +5,12 @@ inputs:
     required: true
   bazel_cache_bucket:
     required: true
+  use_cache:
+    default: false
+    required: false
+  cache_name_suffix:
+    default: "default"
+    required: false
 
 runs:
   using: "composite"
@@ -24,14 +30,16 @@ runs:
 
     - name: Enable buildkit cache
       uses: actions/cache@v3
+      if: ${{ inputs.use_cache }}
       with:
         path: /tmp/buildkit-cache/buildkit-state.tar
-        key: ${{ runner.os }}-buildkit-${{ github.run_id }}
+        key: ${{ runner.os }}-buildkit-${{ inputs.cache_name_suffix }}-${{ github.run_id }}
         restore-keys: |
-          ${{ runner.os }}-buildkit-
+          ${{ runner.os }}-buildkit-${{ inputs.cache_name_suffix }}
 
     - name: Load buildkit state from cache
       uses: dashevo/gh-action-cache-buildkit-state@v1
+      if: ${{ inputs.use_cache }}
       with:
         builder: buildx_buildkit_${{ steps.buildx.outputs.name }}0
         cache-path: /tmp/buildkit-cache
