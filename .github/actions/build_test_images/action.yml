@@ -43,7 +43,7 @@ runs:
       with:
         builder: buildx_buildkit_${{ steps.buildx.outputs.name }}0
         cache-path: /tmp/buildkit-cache
-        cache-max-size: 4g
+        cache-max-size: 2g
 
     # Setup config for using GCS as bazel remote cache
     - name: Update GCP service account JSON
