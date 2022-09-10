@@ -7,5 +7,5 @@ setup() {
 }
 
 run() {
-    docker-compose -f docker-compose.yml up --build dev_dbgate1 dev_dbgate2 dev_dbgate3
+    docker-compose -f docker-compose.yml up dev_dbgate1 dev_dbgate2 dev_dbgate3
 }
