@@ -1,5 +1,6 @@
 #include "ValueTable.hpp"
 
+#include <chrono>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -76,7 +77,11 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     // v1, v2がソートされている必要あり
     std::vector<std::pair<int, int>> it_list;
     it_list.reserve(sorted_v1.size());
+
     size_t i1 = 0, i2 = 0;
+    std::uint32_t iterated = 0;
+    spdlog::info("[progress] hjoin: core (0/1)");
+    auto time_from = std::chrono::system_clock::now();
     while (i1 < sorted_v1.size() && i2 < sorted_v2.size())
     {
         if (sorted_v1[i1] == sorted_v2[i2])
@@ -93,7 +98,25 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         {
             ++i2;
         }
+        if (++iterated % 10 == 0)
+        {
+            auto time_to = std::chrono::system_clock::now();
+            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(time_to - time_from);
+
+            if (dur.count() >= 5000)
+            {
+                double max_progress =
+                    std::max(i1 * 100.0 / sorted_v1.size(), i2 * 100.0 / sorted_v2.size());
+                spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", max_progress);
+
+                time_from = time_to;
+            }
+        }
     }
+    spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", 100.0);
+
+    spdlog::info("[progress] hjoin: core (1/1)");
+
     return it_list;
 }
 
