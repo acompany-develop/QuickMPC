@@ -36,7 +36,9 @@ public:
             if (status.ok())
             {
                 spdlog::info(
-                    "{} - [server] send, gRPC status: {}", grpc_method_full_name, status.error_code()
+                    "{} - [server] send, gRPC status: {}",
+                    grpc_method_full_name,
+                    status.error_code()
                 );
             }
             else
@@ -58,7 +60,7 @@ public:
 class LoggingServerInterceptorFactory : public grpc::experimental::ServerInterceptorFactoryInterface
 {
 public:
-    grpc::experimental::Interceptor *CreateServerInterceptor(grpc::experimental::ServerRpcInfo *info
+    grpc::experimental::Interceptor* CreateServerInterceptor(grpc::experimental::ServerRpcInfo* info
     ) override
     {
         return new LoggingServerInterceptor(info);
@@ -85,7 +87,6 @@ static void runServerCore(
 
     // 外部からのSSL通信はインフラレイヤーでhttpに変換するのでInsecureにする
     builder.AddListeningPort(endpoint, grpc::InsecureServerCredentials());
-
 
     std::vector<std::unique_ptr<grpc::experimental::ServerInterceptorFactoryInterface>> creators;
     creators.push_back(std::make_unique<LoggingServerInterceptorFactory>());
