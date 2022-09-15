@@ -32,8 +32,8 @@ ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin
 
 # Install go
-RUN wget https://go.dev/dl/go1.18.1.linux-amd64.tar.gz && \
-  tar -C /usr/local -xzf go1.18.1.linux-amd64.tar.gz
+RUN wget https://go.dev/dl/go1.18.6.linux-amd64.tar.gz && \
+  tar -C /usr/local -xzf go1.18.6.linux-amd64.tar.gz
 
 FROM base as src
 # goの自動成型ツール
