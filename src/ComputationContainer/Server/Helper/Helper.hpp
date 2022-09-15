@@ -8,6 +8,63 @@
 
 #include "LogHeader/Logger.hpp"
 
+class LoggingServerInterceptor : public grpc::experimental::Interceptor
+{
+    std::string grpc_method_full_name;
+
+public:
+    explicit LoggingServerInterceptor(grpc::experimental::ServerRpcInfo* info)
+        : grpc_method_full_name(info->method())
+    {
+    }
+
+    void Intercept(grpc::experimental::InterceptorBatchMethods* methods) override
+    {
+        if (methods->QueryInterceptionHookPoint(
+                grpc::experimental::InterceptionHookPoints::POST_RECV_MESSAGE
+            ))
+        {
+            spdlog::info("{} - [server] received", grpc_method_full_name);
+        }
+
+        if (methods->QueryInterceptionHookPoint(
+                grpc::experimental::InterceptionHookPoints::PRE_SEND_STATUS
+            ))
+        {
+            const grpc::Status status = methods->GetSendStatus();
+
+            if (status.ok())
+            {
+                spdlog::info(
+                    "{} - [server] send, gRPC status: {}", grpc_method_full_name, status.error_code()
+                );
+            }
+            else
+            {
+                spdlog::info(
+                    "{} - [server] send, gRPC status: {}, message: {}, details: {}",
+                    grpc_method_full_name,
+                    status.error_code(),
+                    status.error_message(),
+                    status.error_details()
+                );
+            }
+        }
+
+        methods->Proceed();
+    }
+};
+
+class LoggingServerInterceptorFactory : public grpc::experimental::ServerInterceptorFactoryInterface
+{
+public:
+    grpc::experimental::Interceptor *CreateServerInterceptor(grpc::experimental::ServerRpcInfo *info
+    ) override
+    {
+        return new LoggingServerInterceptor(info);
+    }
+};
+
 /*
  * @param &builder 呼び出し側で宣言したServerBuilder変数
  * @param logSource ログ発行元を示す文字列（例："[Cc2CcForJob]", "[Cc2Cc]"）
@@ -28,6 +85,11 @@ static void runServerCore(
 
     // 外部からのSSL通信はインフラレイヤーでhttpに変換するのでInsecureにする
     builder.AddListeningPort(endpoint, grpc::InsecureServerCredentials());
+
+
+    std::vector<std::unique_ptr<grpc::experimental::ServerInterceptorFactoryInterface>> creators;
+    creators.push_back(std::make_unique<LoggingServerInterceptorFactory>());
+    builder.experimental().SetInterceptorCreators(std::move(creators));
 
     std::unique_ptr<grpc::Server> listener(builder.BuildAndStart());
 
