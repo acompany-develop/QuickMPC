@@ -105,6 +105,29 @@ public:
         ret /= shift;
         return ret.str(20, std::ios_base::fixed);
     }
+    T getRoundValue() const
+    {
+        D ret{this->getVal<D>()};
+        if (boost::math::isinf(ret))
+        {
+            ret = std::numeric_limits<D>::max();
+        }
+        ret /= shift;
+        ret = mp::round(ret);
+        return static_cast<T>(ret);
+    }
+
+    D getSqrtValue() const
+    {
+        D ret{this->getVal<D>()};
+        if (boost::math::isinf(ret))
+        {
+            ret = std::numeric_limits<D>::max();
+        }
+        ret /= shift;
+        ret = mp::sqrt(ret);
+        return ret;
+    }
     double getDoubleVal() const
     {
         auto ret{this->getVal<double>()};
