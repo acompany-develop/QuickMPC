@@ -685,6 +685,49 @@ TEST(ShareTest, LTZ)
     }
 }
 
+TEST(ShareTest, LTZBulk)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<Share> s = {
+        Share(FixedPoint("3.0")),
+        Share(FixedPoint("-3.0")),
+        Share(FixedPoint("10.5")),
+        Share(FixedPoint("-10.5")),
+        Share(FixedPoint("10250.4")),
+        Share(FixedPoint("-10250.4")),
+        Share(FixedPoint("0.0")),
+        Share(FixedPoint("0.01")),
+        Share(FixedPoint("0.0001")),
+        Share(FixedPoint("-0.01")),
+        Share(FixedPoint("-0.0001")),
+    };
+
+    // [(真値, LTZ の結果)]
+    std::vector<std::vector<double>> expected = {
+        {3.0 * n_parties, 0},
+        {-3.0 * n_parties, 1},
+        {10.5 * n_parties, 0},
+        {-10.5 * n_parties, 1},
+        {10250.4 * n_parties, 0},
+        {-10250.4 * n_parties, 1},
+        {0.0, 0},
+        {0.01 * n_parties, 0},
+        {0.0001 * n_parties, 0},
+        {-0.01 * n_parties, 1},
+        {-0.0001 * n_parties, 1},
+    };
+    double error = 0.00001;
+    auto s_ltz = qmpc::Share::LTZ(s);
+    open(s_ltz);
+    auto result = recons(s_ltz);
+    for (int i = 0; i < static_cast<int>(s.size()); ++i)
+    {
+        spdlog::info("[{}<0] {}", expected[i][0], result[i]);
+        EXPECT_NEAR(result[i].getDoubleVal(), expected[i][1], error);
+    }
+}
+
 // Share(とFixedPoint)での比較が可能かテストする
 TEST(ShareTest, ComparisonOperation)
 {
