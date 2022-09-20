@@ -96,24 +96,8 @@ void runServer(std::string endpoint)
 
     grpc::ServerBuilder builder;
 
-    builder.AddListeningPort(endpoint, grpc::InsecureServerCredentials());
     builder.RegisterService(&server);
-    std::unique_ptr<grpc::Server> listener(builder.BuildAndStart());
 
-    // HealthCheckService を有効化する
-    grpc::HealthCheckServiceInterface *service = listener->GetHealthCheckService();
-    if (service != nullptr)
-    {
-        service->SetServingStatus(true);  // 登録した全てのサービスで有効化
-    }
-    else
-    {
-        spdlog::info(
-            "{:<15} grpc::DefaultHealthCheckService is not enabled on {:<30}", "[Mc2Cc]", endpoint
-        );
-    }
-
-    spdlog::info("{:<15} Server listening on {:<30}", "[Mc2Cc]", endpoint);
-    listener->Wait();
+    runServerCore(builder, "[Mc2Cc]", endpoint);
 }
 }  // namespace qmpc::ManageToComputation
