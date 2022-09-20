@@ -171,6 +171,6 @@ void Server::runServer(std::string endpoint)
     grpc::ServerBuilder builder;
     builder.RegisterService(server);
 
-    runServerCore(builder, "[Cc2Cc]", endpoint);
+    runServerCore(builder, "Cc2Cc", endpoint);
 }
 }  // namespace qmpc::ComputationToComputation

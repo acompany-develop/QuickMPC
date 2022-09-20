@@ -14,6 +14,76 @@
 
 #include "ConfigParse/ConfigParse.hpp"
 
+class LoggingClientInterceptor : public grpc::experimental::Interceptor
+{
+    std::string grpc_method_full_name;
+
+    bool send_messsage_status;
+    std::string request;
+    std::string response;
+
+public:
+    explicit LoggingClientInterceptor(grpc::experimental::ClientRpcInfo *info)
+        : grpc_method_full_name(info->method())
+    {
+    }
+
+    void Intercept(grpc::experimental::InterceptorBatchMethods *methods) override
+    {
+        if (methods->QueryInterceptionHookPoint(
+                grpc::experimental::InterceptionHookPoints::PRE_SEND_MESSAGE
+            ))
+        {
+            spdlog::info("{} - [client] send", grpc_method_full_name);
+        }
+
+        if (methods->QueryInterceptionHookPoint(
+                grpc::experimental::InterceptionHookPoints::POST_RECV_STATUS
+            ))
+        {
+            const grpc::Status *status = methods->GetRecvStatus();
+
+            if (status == nullptr)
+            {
+                spdlog::warn("{} - [client] received, gRPC status: nullptr", grpc_method_full_name);
+            }
+            else
+            {
+                if (status->ok())
+                {
+                    spdlog::info(
+                        "{} - [client] received, gRPC status: {}",
+                        grpc_method_full_name,
+                        status->error_code()
+                    );
+                }
+                else
+                {
+                    spdlog::info(
+                        "{} - [client] received, gRPC status: {}, message: {}, details: {}",
+                        grpc_method_full_name,
+                        status->error_code(),
+                        status->error_message(),
+                        status->error_details()
+                    );
+                }
+            }
+        }
+
+        methods->Proceed();
+    }
+};
+
+class LoggingClientInterceptorFactory : public grpc::experimental::ClientInterceptorFactoryInterface
+{
+public:
+    grpc::experimental::Interceptor *CreateClientInterceptor(grpc::experimental::ClientRpcInfo *info
+    ) override
+    {
+        return new LoggingClientInterceptor(info);
+    }
+};
+
 /**
  * gRPC チャンネル生成時に渡すデフォルト設定を返す
  */
@@ -43,7 +113,7 @@ static grpc::ChannelArguments getDefaultChannelArguments(
  */
 template <typename T>
 static std::unique_ptr<typename T::Stub> createStub(
-    const Url& target, const grpc::ChannelArguments& args = getDefaultChannelArguments()
+    const Url &target, const grpc::ChannelArguments &args = getDefaultChannelArguments()
 )
 {
     // プロトコルに合わせて credentials を設定
@@ -56,8 +126,11 @@ static std::unique_ptr<typename T::Stub> createStub(
     {
         creds = grpc::SslCredentials(grpc::SslCredentialsOptions());
     }
+    std::vector<std::unique_ptr<grpc::experimental::ClientInterceptorFactoryInterface>> creators;
+    creators.push_back(std::make_unique<LoggingClientInterceptorFactory>());
 
-    auto channel = CreateCustomChannel(target.getAddress(), creds, args);
+    auto channel =
+        CreateCustomChannelWithInterceptors(target.getAddress(), creds, args, std::move(creators));
+
     return T::NewStub(channel);
-    ;
 }
