@@ -24,9 +24,12 @@ public:
     void Intercept(grpc::experimental::InterceptorBatchMethods* methods) override
     {
         if (methods->QueryInterceptionHookPoint(
-                grpc::experimental::InterceptionHookPoints::POST_RECV_MESSAGE
+                grpc::experimental::InterceptionHookPoints::POST_RECV_INITIAL_METADATA
             ))
         {
+            // if this was hooked `POST_RECV_MESSAGE`
+            // and ServerRpcInfo::Type was `CLIENT_STREAMING`,
+            // this was going to be called multiple.
             spdlog::info("{} - [server:{}] received", grpc_method_full_name, server_name);
         }
 
