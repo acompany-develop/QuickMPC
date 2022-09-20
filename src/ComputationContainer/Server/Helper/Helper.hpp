@@ -11,10 +11,13 @@
 class LoggingServerInterceptor : public grpc::experimental::Interceptor
 {
     std::string grpc_method_full_name;
+    std::string server_name;
 
 public:
-    explicit LoggingServerInterceptor(grpc::experimental::ServerRpcInfo* info)
-        : grpc_method_full_name(info->method())
+    explicit LoggingServerInterceptor(
+        grpc::experimental::ServerRpcInfo* info, const std::string& server_name
+    )
+        : grpc_method_full_name(info->method()), server_name(server_name)
     {
     }
 
@@ -24,7 +27,7 @@ public:
                 grpc::experimental::InterceptionHookPoints::POST_RECV_MESSAGE
             ))
         {
-            spdlog::info("{} - [server] received", grpc_method_full_name);
+            spdlog::info("{} - [server:{}] received", grpc_method_full_name, server_name);
         }
 
         if (methods->QueryInterceptionHookPoint(
@@ -36,16 +39,18 @@ public:
             if (status.ok())
             {
                 spdlog::info(
-                    "{} - [server] send, gRPC status: {}",
+                    "{} - [server:{}] send, gRPC status: {}",
                     grpc_method_full_name,
+                    server_name,
                     status.error_code()
                 );
             }
             else
             {
                 spdlog::info(
-                    "{} - [server] send, gRPC status: {}, message: {}, details: {}",
+                    "{} - [server:{}] send, gRPC status: {}, message: {}, details: {}",
                     grpc_method_full_name,
+                    server_name,
                     status.error_code(),
                     status.error_message(),
                     status.error_details()
@@ -59,11 +64,16 @@ public:
 
 class LoggingServerInterceptorFactory : public grpc::experimental::ServerInterceptorFactoryInterface
 {
+private:
+    std::string server_name;
+
 public:
+    LoggingServerInterceptorFactory(const std::string& server_name) : server_name(server_name) {}
+
     grpc::experimental::Interceptor* CreateServerInterceptor(grpc::experimental::ServerRpcInfo* info
     ) override
     {
-        return new LoggingServerInterceptor(info);
+        return new LoggingServerInterceptor(info, server_name);
     }
 };
 
@@ -89,7 +99,7 @@ static void runServerCore(
     builder.AddListeningPort(endpoint, grpc::InsecureServerCredentials());
 
     std::vector<std::unique_ptr<grpc::experimental::ServerInterceptorFactoryInterface>> creators;
-    creators.push_back(std::make_unique<LoggingServerInterceptorFactory>());
+    creators.push_back(std::make_unique<LoggingServerInterceptorFactory>(logSource));
     builder.experimental().SetInterceptorCreators(std::move(creators));
 
     std::unique_ptr<grpc::Server> listener(builder.BuildAndStart());
@@ -103,13 +113,13 @@ static void runServerCore(
     else
     {
         spdlog::info(
-            "{:<15 } grpc::DefaultHealthCheckService "
+            "[{:<15 }] grpc::DefaultHealthCheckService "
             "is not enabled on {:<30}",
             logSource,
             endpoint
         );
     }
 
-    spdlog::info("{:<15} Server listening on {:<30}", logSource, endpoint);
+    spdlog::info("[{:<15}] Server listening on {:<30}", logSource, endpoint);
     listener->Wait();
 }

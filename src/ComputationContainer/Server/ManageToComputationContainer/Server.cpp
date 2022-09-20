@@ -98,6 +98,6 @@ void runServer(std::string endpoint)
 
     builder.RegisterService(&server);
 
-    runServerCore(builder, "[Mc2Cc]", endpoint);
+    runServerCore(builder, "Mc2Cc", endpoint);
 }
 }  // namespace qmpc::ManageToComputation

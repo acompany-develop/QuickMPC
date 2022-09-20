@@ -56,6 +56,6 @@ void Server::runServer(std::string endpoint)
     grpc::ServerBuilder builder;
     builder.RegisterService(server);
 
-    runServerCore(builder, "[Cc2CcForJob]", endpoint);
+    runServerCore(builder, "Cc2CcForJob", endpoint);
 }
 }  // namespace qmpc::ComputationToComputationForJob
