@@ -14,7 +14,7 @@
 
 #include "ConfigParse/ConfigParse.hpp"
 
-class LoggingInterceptor : public grpc::experimental::Interceptor
+class LoggingClientInterceptor : public grpc::experimental::Interceptor
 {
     std::string grpc_method_full_name;
 
@@ -23,7 +23,7 @@ class LoggingInterceptor : public grpc::experimental::Interceptor
     std::string response;
 
 public:
-    explicit LoggingInterceptor(grpc::experimental::ClientRpcInfo *info)
+    explicit LoggingClientInterceptor(grpc::experimental::ClientRpcInfo *info)
         : grpc_method_full_name(info->method())
     {
     }
@@ -74,13 +74,13 @@ public:
     }
 };
 
-class LoggingInterceptorFactory : public grpc::experimental::ClientInterceptorFactoryInterface
+class LoggingClientInterceptorFactory : public grpc::experimental::ClientInterceptorFactoryInterface
 {
 public:
     grpc::experimental::Interceptor *CreateClientInterceptor(grpc::experimental::ClientRpcInfo *info
     ) override
     {
-        return new LoggingInterceptor(info);
+        return new LoggingClientInterceptor(info);
     }
 };
 
@@ -127,7 +127,7 @@ static std::unique_ptr<typename T::Stub> createStub(
         creds = grpc::SslCredentials(grpc::SslCredentialsOptions());
     }
     std::vector<std::unique_ptr<grpc::experimental::ClientInterceptorFactoryInterface>> creators;
-    creators.push_back(std::make_unique<LoggingInterceptorFactory>());
+    creators.push_back(std::make_unique<LoggingClientInterceptorFactory>());
 
     auto channel =
         CreateCustomChannelWithInterceptors(target.getAddress(), creds, args, std::move(creators));
