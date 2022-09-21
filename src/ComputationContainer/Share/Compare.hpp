@@ -110,6 +110,8 @@ bool operator<(const Share<FixedPoint> &left, const FixedPoint &right);
 bool operator==(const Share<FixedPoint> &left, const FixedPoint &right);
 
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s);
+std::vector<Share<FixedPoint>> LTZ(const std::vector<Share<FixedPoint>> &s);
+
 /// @brief l=32 split array
 inline constexpr std::array<int, 7> delta = {5, 5, 5, 5, 5, 5, 2};
 template <typename T, std::enable_if_t<std::is_integral_v<T>, std::nullptr_t> = nullptr>
@@ -278,3 +280,4 @@ inline PrimeField Fp2Pf(const FixedPoint &fp)
 }
 
 }  // namespace qmpc::Share
+

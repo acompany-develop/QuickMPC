@@ -202,6 +202,25 @@ Share<FixedPoint> LTZ(const Share<FixedPoint> &s)
     return (z - x) / FixedPoint(std::to_string(1LL << k));
 }
 
+std::vector<Share<FixedPoint>> LTZ(const std::vector<Share<FixedPoint>> &s)
+{
+    // Experimented and adjusted.
+    int m = 20;
+    int k = 48;
+
+    auto x = s * FixedPoint(std::to_string(1LL << m));
+    auto y = FixedPoint(std::to_string(1LL << k)) + x;
+    auto z = getLSBShare(y);
+    y = (y - z) * FixedPoint(0.5);
+    for (int i = 1; i < k; ++i)
+    {
+        auto b = getLSBShare(y);
+        z = z + (b * FixedPoint(std::to_string(1LL << i)));
+        y = (y - b) * FixedPoint(0.5);
+    }
+    return (z - x) / FixedPoint(std::to_string(1LL << k));
+}
+
 // 以下、サブプロトコル
 
 // 乱数rのシェア[r]を生成する。
@@ -753,3 +772,4 @@ Share<PrimeField> equalityTest(Share<PrimeField> a_share, Share<PrimeField> b_sh
     return ret;
 }
 }  // namespace qmpc::Share
+

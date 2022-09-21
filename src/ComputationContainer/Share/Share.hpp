@@ -197,7 +197,15 @@ public:
     }
     friend std::vector<Share> operator/(const std::vector<Share> &left, const SV &right)
     {
-        return left * (SV(1.0) / right);
+        std::vector<Share> ret;
+        ret.reserve(left.size());
+
+        for (const auto &v : left)
+        {
+            ret.emplace_back(v / right);
+        }
+
+        return ret;
     }
     friend std::vector<Share> operator/(const SV &left, const std::vector<Share> &right)
     {
@@ -499,7 +507,7 @@ template <typename T>
 std::vector<Share<T>> getLSBShare(const std::vector<Share<T>> &y)
 {
     std::vector<Share<T>> r0 = getRandBitShare<T>(static_cast<int>(y.size()));
-    std::vector<Share<T>> r_dash = getRandShares<T>(0, 1000, static_cast<int>(y.size()));
+    std::vector<Share<T>> r_dash = getRandShares<T>(1, 1000, static_cast<int>(y.size()));
     std::vector<Share<T>> t = y + r0 + T(2) * r_dash;
     open(t);
     std::vector<T> c = recons(t);
@@ -559,3 +567,4 @@ std::vector<Share<T>> getFloor(const std::vector<Share<T>> &s)
 
 using Share = qmpc::Share::Share<FixedPoint>;
 using ShareComp = qmpc::Share::Share<PrimeField>;
+
