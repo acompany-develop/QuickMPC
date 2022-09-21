@@ -349,6 +349,32 @@ TEST(ShareBenchmark, ComparisonOperation)
     );
 }
 
+TEST(ShareBenchmark, BulkComparisonOperation)
+{
+    std::vector<int> bench_size{1, 10, 100, 1000};
+    for (const auto& size : bench_size)
+    {
+        std::vector<Share> l(size);
+        std::vector<Share> r(size);
+
+        const auto test_name_each = getTestNameWithSize("BulkComparisonOperation.EachLess", size);
+        measureExecTime(
+            test_name_each,
+            1,
+            [&]()
+            {
+                for (int i = 0; i < size; ++i)
+                {
+                    l[i] < r[i];
+                }
+            }
+        );
+
+        const auto test_name_bulk = getTestNameWithSize("BulkComparisonOperation.BulkLess", size);
+        measureExecTime(test_name_bulk, 1, [&]() { allLess(l, r); });
+    }
+}
+
 //一括open,reconsテスト
 TEST(ShareBenchmark, ReconsBulk)
 {
@@ -464,3 +490,4 @@ TEST(ShareBenchmark, Sqrt)
 
     measureExecTime("Sqrt", 5, [&]() { auto b_sqrt = qmpc::Share::sqrt(b); });
 }
+
