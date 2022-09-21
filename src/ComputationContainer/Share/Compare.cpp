@@ -77,6 +77,79 @@ bool operator==(const Share<FixedPoint> &left, const FixedPoint &right)
     return convertFpToBool(ret, "Share == FixedPoint");
 }
 
+std::vector<bool> allLess(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+)
+{
+    auto s = left - right;
+    auto s_ltz = LTZ(s);
+    open(s_ltz);
+    auto fpv = recons(s_ltz);
+    std::vector<bool> ret;
+    ret.reserve(fpv.size());
+    for (const auto &fp : fpv)
+    {
+        ret.emplace_back(convertFpToBool(fp, "Share < Share"));
+    }
+    return ret;
+}
+std::vector<bool> allGreater(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+)
+{
+    auto s = right - left;
+    auto s_ltz = LTZ(s);
+    open(s_ltz);
+    auto fpv = recons(s_ltz);
+    std::vector<bool> ret;
+    ret.reserve(fpv.size());
+    for (const auto &fp : fpv)
+    {
+        ret.emplace_back(convertFpToBool(fp, "Share > Share"));
+    }
+    return ret;
+}
+std::vector<bool> allLessEq(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+)
+{
+    auto gtv = allGreater(left, right);
+    std::vector<bool> ret;
+    ret.reserve(gtv.size());
+    for (const auto &gt : gtv)
+    {
+        ret.emplace_back(gt ^ true);
+    }
+    return ret;
+}
+std::vector<bool> allGreaterEq(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+)
+{
+    auto ltv = allLess(left, right);
+    std::vector<bool> ret;
+    ret.reserve(ltv.size());
+    for (const auto &lt : ltv)
+    {
+        ret.emplace_back(lt ^ true);
+    }
+    return ret;
+}
+std::vector<bool> allEq(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+)
+{
+    auto x_ret = allLess(left, right);
+    auto y_ret = allGreater(left, right);
+    std::vector<bool> ret;
+    ret.reserve(x_ret.size());
+    for (size_t i = 0; i < x_ret.size(); ++i)
+    {
+        ret.emplace_back((x_ret[i] | y_ret[i]) ^ true);
+    }
+    return ret;
+}
+
 // Less Than Zero ([s < 0])
 // アルゴリズムの詳細はこちら:
 // Docs/faster-comparison-operators.md
