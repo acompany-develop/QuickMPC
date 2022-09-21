@@ -7,36 +7,25 @@
 namespace qmpc::Share
 {
 
-// アルゴリズムの詳細はこちら:
-// Docs/faster-comparison-operators.md
-bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
+auto convertFpToBool(const FixedPoint &fp, const std::string &op_name)
 {
-    Share<FixedPoint> s = left - right;
-    Share s_ltz = LTZ(s);
-    open(s_ltz);
-    auto ret = recons(s_ltz);
-
-    if (ret.getDoubleVal() > 0.95)
+    if (fp.getDoubleVal() > 0.95)
     {
         return true;
     }
-    else if (ret.getDoubleVal() >= 0.5)
+    else if (fp.getDoubleVal() >= 0.5)
     {
-        spdlog::error(
-            "This operation (Share == Share) determined to be false, but it could be true."
-        );
+        spdlog::error("This operation (%s) determined to be true, but it could be false.", op_name);
         spdlog::error(
             "If you want to ignore the error and continue the calculation, replace 'exit' with "
-            "'return false;'. "
+            "'return true;'. "
         );
         std::exit(EXIT_FAILURE);
         // return true;
     }
-    else if (ret.getDoubleVal() >= 0.05)
+    else if (fp.getDoubleVal() >= 0.05)
     {
-        spdlog::error(
-            "This operation (Share < FixedPoint) determined to be false, but it could be true."
-        );
+        spdlog::error("This operation (%s) determined to be false, but it could be true.", op_name);
         spdlog::error(
             "If you want to ignore the error and continue the calculation, replace 'exit' with "
             "'return false;'. "
@@ -48,6 +37,17 @@ bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
     {
         return false;
     }
+}
+
+// アルゴリズムの詳細はこちら:
+// Docs/faster-comparison-operators.md
+bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
+{
+    Share<FixedPoint> s = left - right;
+    Share s_ltz = LTZ(s);
+    open(s_ltz);
+    auto ret = recons(s_ltz);
+    return convertFpToBool(ret, "Share < Share");
 }
 
 // [left == right] <=> [not (left < right)] and [not (right < left)]
@@ -58,41 +58,7 @@ bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
     auto x_ret = (left < right);
     auto y_ret = (right < left);
     auto ret = (FixedPoint(1) - x_ret) * (FixedPoint(1) - y_ret);
-
-    if (ret.getDoubleVal() > 0.95)
-    {
-        return true;
-    }
-    else if (ret.getDoubleVal() >= 0.5)
-    {
-        spdlog::error(
-            "This operation (Share == Share) determined to be true, "
-            "but it could be false."
-        );
-        spdlog::error(
-            "If you want to ignore the error and continue the "
-            "calculation, replace 'exit' with 'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return true;
-    }
-    else if (ret.getDoubleVal() >= 0.05)
-    {
-        spdlog::error(
-            "This operation (Share == Share) determined to be true, "
-            "but it could be false."
-        );
-        spdlog::error(
-            "If you want to ignore the error and continue the "
-            "calculation, replace 'exit' with 'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return false;
-    }
-    else
-    {
-        return false;
-    }
+    return convertFpToBool(ret, "Share == Share");
 }
 
 bool operator<(const Share<FixedPoint> &left, const FixedPoint &right)
@@ -101,82 +67,14 @@ bool operator<(const Share<FixedPoint> &left, const FixedPoint &right)
     Share s_ltz = LTZ(s);
     open(s_ltz);
     auto ret = recons(s_ltz);
-
-    if (ret.getDoubleVal() > 0.95)
-    {
-        return true;
-    }
-    else if (ret.getDoubleVal() >= 0.5)
-    {
-        spdlog::error(
-            "This operation (Share == Share) determined to be true, "
-            "but it could be false."
-        );
-        spdlog::error(
-            "If you want to ignore the error and continue the "
-            "calculation, replace 'exit' with 'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return true;
-    }
-    else if (ret.getDoubleVal() >= 0.05)
-    {
-        spdlog::error(
-            "This operation (Share == Share) determined to be true, "
-            "but it could be false."
-        );
-        spdlog::error(
-            "If you want to ignore the error and continue the "
-            "calculation, replace 'exit' with 'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return false;
-    }
-    else
-    {
-        return false;
-    }
+    return convertFpToBool(ret, "Share < FixedPoint");
 }
 bool operator==(const Share<FixedPoint> &left, const FixedPoint &right)
 {
     auto x_ret = (left < right);
     auto y_ret = (right < left);
     auto ret = (FixedPoint(1) - x_ret) * (FixedPoint(1) - y_ret);
-
-    if (ret.getDoubleVal() > 0.95)
-    {
-        return true;
-    }
-    else if (ret.getDoubleVal() >= 0.5)
-    {
-        spdlog::error(
-            "This operation (Share == Share) determined to be true, "
-            "but it could be false."
-        );
-        spdlog::error(
-            "If you want to ignore the error and continue the "
-            "calculation, replace 'exit' with 'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return true;
-    }
-    else if (ret.getDoubleVal() >= 0.05)
-    {
-        spdlog::error(
-            "This operation (Share == Share) determined to be true, "
-            "but it could be false."
-        );
-        spdlog::error(
-            "If you want to ignore the error and continue the "
-            "calculation, replace 'exit' with 'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return false;
-    }
-    else
-    {
-        return false;
-    }
+    return convertFpToBool(ret, "Share == FixedPoint");
 }
 
 // Less Than Zero ([s < 0])
