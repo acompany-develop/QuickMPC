@@ -761,6 +761,41 @@ TEST(ShareTest, ComparisonOperation)
     EXPECT_TRUE(d >= c);
 }
 
+TEST(ShareTest, ComparisonOperationBulk)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    Share a(FixedPoint("2.0"));
+    Share b(FixedPoint("3.0"));
+    std::vector<Share> l{a, a, b, b};
+    std::vector<Share> r{a, b, a, b};
+
+    // <
+    auto lt = allLess(l, r);
+    std::vector<bool> lt_t{false, true, false, false};
+    EXPECT_EQ(lt, lt_t);
+
+    // >
+    auto gt = allGreater(l, r);
+    std::vector<bool> gt_t{false, false, true, false};
+    EXPECT_EQ(gt, gt_t);
+
+    // <=
+    auto lte = allLessEq(l, r);
+    std::vector<bool> lte_t{true, true, false, true};
+    EXPECT_EQ(lte, lte_t);
+
+    // >=
+    auto gte = allGreaterEq(l, r);
+    std::vector<bool> gte_t{true, false, true, true};
+    EXPECT_EQ(gte, gte_t);
+
+    // ==
+    auto eq = allEq(l, r);
+    std::vector<bool> eq_t{true, false, false, true};
+    EXPECT_EQ(eq, eq_t);
+}
+
 TEST(ShareTest, EqualityEpsilonRandomTest)
 {
     Config *conf = Config::getInstance();
