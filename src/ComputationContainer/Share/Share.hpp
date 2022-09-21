@@ -437,20 +437,40 @@ std::vector<Share<T>> getRandShares(long long min_val, long long max_val, int n)
 template <typename T>
 Share<T> getRandBitShare()
 {
-    while (true)
+    std::vector<Share<T>> e(2);
+    std::vector<AddressId> addressIds;
+    auto random_s = RandGenerator::getInstance()->getRand<long long>(1, 1 << 20);
+    auto r = RandGenerator::getInstance()->getRand<long long>(0, 1);
+    Share<T> ret;
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    int pt_id = conf->party_id - 1;
+    for (auto &a : e)
     {
-        Share<T> r = Share(RandGenerator::getInstance()->getRand<T>(-1000, 1000));
-        Share<T> square_r = r * r;
-        open(square_r);
-        T square_r_rec = recons(square_r);
-        if (square_r_rec.getDoubleVal() != 0.0)
-        {
-            T r_dash = T(square_r_rec.getSqrtValue());
-            T inv_r_dash = T(1.0) / r_dash;
-            Share<T> r0 = Share(T(0.5) * (inv_r_dash * r + T(1.0)));
-            return r0;
-        }
+        addressIds.emplace_back(a.getId());
     }
+    if (pt_id == 0)
+    {
+        e[1] = 1;
+        e[0] += random_s;
+        e[1] += random_s;
+        std::rotate(e.begin(), e.begin() + r, e.end());
+        send(e, (pt_id + 1) % n_parties + 1);
+        auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
+        ret = s[0] - random_s;
+    }
+    else
+    {
+        auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
+        for (int i = 0; i < 2; ++i)
+        {
+            e[i] = s[i] + random_s;
+        }
+        std::rotate(e.begin(), e.begin() + r, e.end());
+        send(e, (pt_id + 1) % n_parties + 1);
+        ret = -random_s;
+    }
+    return ret;
 }
 
 template <typename T>

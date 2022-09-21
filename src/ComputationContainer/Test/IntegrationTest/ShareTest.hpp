@@ -478,6 +478,16 @@ TEST(ShareTest, DivBetweenFixedPointAndShare)
 TEST(ShareTest, RandBitShare)
 {
     int N = 5;
+    {
+        const auto clock_start = std::chrono::system_clock::now();
+        Share a = qmpc::Share::getRandBitShare<FixedPoint>();
+        open(a);
+        FixedPoint a_rec = recons(a);
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        spdlog::info("[{0}] Elapsed time = {1} ms", "getRandShare", elapsed_time_ms);
+    }
     for (int i = 0; i < N; ++i)
     {
         Share a = qmpc::Share::getRandBitShare<FixedPoint>();
