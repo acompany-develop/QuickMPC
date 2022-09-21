@@ -295,4 +295,3 @@ inline PrimeField Fp2Pf(const FixedPoint &fp)
 }
 
 }  // namespace qmpc::Share
-

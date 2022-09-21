@@ -567,4 +567,3 @@ std::vector<Share<T>> getFloor(const std::vector<Share<T>> &s)
 
 using Share = qmpc::Share::Share<FixedPoint>;
 using ShareComp = qmpc::Share::Share<PrimeField>;
-

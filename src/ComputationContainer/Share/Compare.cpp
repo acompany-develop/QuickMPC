@@ -743,4 +743,3 @@ Share<PrimeField> equalityTest(Share<PrimeField> a_share, Share<PrimeField> b_sh
     return ret;
 }
 }  // namespace qmpc::Share
-

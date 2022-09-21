@@ -356,7 +356,13 @@ TEST(ShareBenchmark, BulkComparisonOperation)
     {
         std::vector<Share> l(size);
         std::vector<Share> r(size);
-
+        const auto test_name_bulk = getTestNameWithSize("BulkComparisonOperation.BulkLess", size);
+        measureExecTime(test_name_bulk, 1, [&]() { allLess(l, r); });
+    }
+    for (const auto& size : bench_size)
+    {
+        std::vector<Share> l(size);
+        std::vector<Share> r(size);
         const auto test_name_each = getTestNameWithSize("BulkComparisonOperation.EachLess", size);
         measureExecTime(
             test_name_each,
@@ -369,9 +375,6 @@ TEST(ShareBenchmark, BulkComparisonOperation)
                 }
             }
         );
-
-        const auto test_name_bulk = getTestNameWithSize("BulkComparisonOperation.BulkLess", size);
-        measureExecTime(test_name_bulk, 1, [&]() { allLess(l, r); });
     }
 }
 
@@ -490,4 +493,3 @@ TEST(ShareBenchmark, Sqrt)
 
     measureExecTime("Sqrt", 5, [&]() { auto b_sqrt = qmpc::Share::sqrt(b); });
 }
-
