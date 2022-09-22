@@ -152,7 +152,7 @@ def large_data(size: int, data_num: int):
 
     mod = 47
     data: List[List[str]] = [
-        [str(((i*size + k) % mod)/mod)for k in range(schema_size)]
+        [str(i)] + [str(((i*size + k) % mod)/mod)for k in range(schema_size-1)]
         for i in range(size)
     ]
     return qmpc.parse_csv_data([schema]+data)
