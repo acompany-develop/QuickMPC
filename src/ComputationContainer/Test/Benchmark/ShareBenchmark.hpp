@@ -464,3 +464,30 @@ TEST(ShareBenchmark, Sqrt)
 
     measureExecTime("Sqrt", 5, [&]() { auto b_sqrt = qmpc::Share::sqrt(b); });
 }
+
+// getRandBulkテスト
+TEST(ShareBenchmark, LargeBulkRandBit)
+{
+    constexpr int SIZE = 10'000'000;
+    const auto test_name = getTestNameWithSize("LargeBulkRandBit", SIZE);
+    constexpr auto N = 5;
+    measureExecTime<std::chrono::microseconds>(
+        test_name,
+        N,
+        [&]()
+        {
+            std::vector<Share> a = qmpc::Share::getRandBitShare<FixedPoint>(N);
+            open(a);
+            std::vector<FixedPoint> a_rec = recons(a);
+        }
+    );
+}
+// 一括LSBShareのテスト
+TEST(ShareBenchmark, LargeBulkLSBShare)
+{
+    constexpr int SIZE = 10'000;
+    std::vector<Share> s(SIZE);
+
+    const auto test_name = getTestNameWithSize("BulkLSbShare", s.size());
+    measureExecTime(test_name, 1, [&]() { auto lsb = qmpc::Share::getLSBShare(s); });
+}

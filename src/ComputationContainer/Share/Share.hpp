@@ -476,27 +476,59 @@ Share<T> getRandBitShare()
 template <typename T>
 std::vector<Share<T>> getRandBitShare(int n)
 {
-    std::vector<Share<T>> r = getRandShares<T>(-1000, 1000, n);
-    std::vector<Share<T>> square_r = r * r;
-    open(square_r);
-    std::vector<T> square_r_rec = recons(square_r);
-
-    std::vector<Share<T>> ret;
-    ret.reserve(n);
-    for (int i = 0; i < n; i++)
+    std::vector<Share<T>> e(2 * n);
+    std::vector<AddressId> addressIds(2 * n);
+    auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << 20, n);
+    auto r = RandGenerator::getInstance()->getRandVec<long long>(0, 1, n);
+    std::vector<Share<T>> ret(n);
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    int pt_id = conf->party_id - 1;
+    for (int i = 0; i < 2 * n; ++i)
     {
-        if (square_r_rec[i].getDoubleVal() != 0.0)
+        addressIds[i] = e[i].getId();
+    }
+    if (pt_id == 0)
+    {
+        for (int i = 0; i < n; ++i)
         {
-            T r_dash = T(square_r_rec[i].getSqrtValue());
-            T inv_r_dash = T(1.0) / r_dash;
-            Share<T> r0 = Share(T(0.5) * (inv_r_dash * r[i] + T(1.0)));
-            ret.emplace_back(r0);
+            e[i * 2] = 1;
+            e[i * 2] += random_s[i];
+            e[i * 2 + 1] += random_s[i];
         }
-        else
+        for (int i = 0; i < n; ++i)
         {
-            // もし square_r_rec[i] の値が 0
-            // である場合は、再度乱数ビットシェアを生成する
-            ret.emplace_back(getRandBitShare<T>());
+            if (r[i] == 1)
+            {
+                std::swap(e[2 * i], e[2 * i + 1]);
+            }
+        }
+        send(e, (pt_id + 1) % n_parties + 1);
+        auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
+        for (int i = 0; i < n; ++i)
+        {
+            ret[i] = s[2 * i] - random_s[i];
+        }
+    }
+    else
+    {
+        auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
+        for (int i = 0; i < n; ++i)
+        {
+            e[i * 2] = s[i * 2] + random_s[i];
+            e[i * 2 + 1] = s[i * 2 + 1] + random_s[i];
+        }
+        for (int i = 0; i < n; ++i)
+        {
+            if (r[i] == 1)
+            {
+                std::swap(e[2 * i], e[2 * i + 1]);
+            }
+        }
+        send(e, (pt_id + 1) % n_parties + 1);
+        for (int i = 0; i < n; ++i)
+        {
+            ret[i] = -random_s[i];
         }
     }
     return ret;
