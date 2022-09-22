@@ -1,8 +1,11 @@
 #include "ValueTable.hpp"
 
+#include <algorithm>
 #include <chrono>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "Share/Compare.hpp"
 
 namespace qmpc::ComputationToDbGate
 {
@@ -74,49 +77,63 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     const std::vector<T> &sorted_v1, const std::vector<T> &sorted_v2
 )
 {
-    // v1, v2がソートされている必要あり
-    std::vector<std::pair<int, int>> it_list;
-    it_list.reserve(sorted_v1.size());
-
-    size_t i1 = 0, i2 = 0;
-    std::uint32_t iterated = 0;
+    // v2がソートされている必要あり
     spdlog::info("[progress] hjoin: core (0/1)");
-    auto time_from = std::chrono::system_clock::now();
-    while (i1 < sorted_v1.size() && i2 < sorted_v2.size())
+
+    int size = sorted_v1.size();
+    int len = sorted_v2.size();
+    std::vector<int> lower(size, -1);
+    std::vector<int> upper(size, len - 1);
+    auto d_max = len;
+    // parallel binary search
+    int iterated = 0;
+    while (d_max > 1)
     {
-        if (sorted_v1[i1] == sorted_v2[i2])
+        std::vector<int> mid_v(size);
+        for (int i = 0; i < size; ++i)
         {
-            it_list.emplace_back(i1, i2);
-            ++i1;
-            ++i2;
+            mid_v[i] = (lower[i] + upper[i]) / 2;
         }
-        else if (sorted_v1[i1] < sorted_v2[i2])
-        {
-            ++i1;
-        }
-        else
-        {
-            ++i2;
-        }
-        if (++iterated % 10 == 0)
-        {
-            auto time_to = std::chrono::system_clock::now();
-            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(time_to - time_from);
 
-            if (dur.count() >= 5000)
-            {
-                double max_progress =
-                    std::max(i1 * 100.0 / sorted_v1.size(), i2 * 100.0 / sorted_v2.size());
-                spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", max_progress);
-
-                time_from = time_to;
-            }
+        std::vector<T> target;
+        target.reserve(size);
+        for (const auto &mid : mid_v)
+        {
+            target.emplace_back(sorted_v2[mid]);
         }
+
+        auto less_eq = qmpc::Share::allLessEq(sorted_v1, target);
+        d_max = 0;
+        for (int i = 0; i < size; ++i)
+        {
+            (less_eq[i] ? upper[i] : lower[i]) = mid_v[i];
+            d_max = std::max(d_max, upper[i] - lower[i]);
+        }
+        double progress = 100.0 - d_max * 100.0 / len;
+        spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", progress);
+    }
+
+    std::vector<T> target;
+    target.reserve(size);
+    for (const auto &i : upper)
+    {
+        target.emplace_back(std::max(0, i));
     }
     spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", 100.0);
 
-    spdlog::info("[progress] hjoin: core (1/1)");
+    // leq && geq => eq
+    auto greater_eq = qmpc::Share::allGreaterEq(sorted_v1, target);
+    std::vector<std::pair<int, int>> it_list;
+    it_list.reserve(sorted_v1.size());
+    for (int i = 0; i < size; ++i)
+    {
+        if (greater_eq[i])
+        {
+            it_list.emplace_back(i, upper[i]);
+        }
+    }
 
+    spdlog::info("[progress] hjoin: core (1/1)");
     return it_list;
 }
 

@@ -27,6 +27,7 @@ cc_library(
     deps = [
         "@nlohmann_json//:json",
         "//Share:share",
+        "//Share:compare"
     ],
     visibility = ["//visibility:public"],
 )
