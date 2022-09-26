@@ -685,6 +685,49 @@ TEST(ShareTest, LTZ)
     }
 }
 
+TEST(ShareTest, LTZBulk)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    std::vector<Share> s = {
+        Share(FixedPoint("3.0")),
+        Share(FixedPoint("-3.0")),
+        Share(FixedPoint("10.5")),
+        Share(FixedPoint("-10.5")),
+        Share(FixedPoint("10250.4")),
+        Share(FixedPoint("-10250.4")),
+        Share(FixedPoint("0.0")),
+        Share(FixedPoint("0.01")),
+        Share(FixedPoint("0.0001")),
+        Share(FixedPoint("-0.01")),
+        Share(FixedPoint("-0.0001")),
+    };
+
+    // [(真値, LTZ の結果)]
+    std::vector<std::vector<double>> expected = {
+        {3.0 * n_parties, 0},
+        {-3.0 * n_parties, 1},
+        {10.5 * n_parties, 0},
+        {-10.5 * n_parties, 1},
+        {10250.4 * n_parties, 0},
+        {-10250.4 * n_parties, 1},
+        {0.0, 0},
+        {0.01 * n_parties, 0},
+        {0.0001 * n_parties, 0},
+        {-0.01 * n_parties, 1},
+        {-0.0001 * n_parties, 1},
+    };
+    double error = 0.00001;
+    auto s_ltz = qmpc::Share::LTZ(s);
+    open(s_ltz);
+    auto result = recons(s_ltz);
+    for (int i = 0; i < static_cast<int>(s.size()); ++i)
+    {
+        spdlog::info("[{}<0] {}", expected[i][0], result[i]);
+        EXPECT_NEAR(result[i].getDoubleVal(), expected[i][1], error);
+    }
+}
+
 // Share(とFixedPoint)での比較が可能かテストする
 TEST(ShareTest, ComparisonOperation)
 {
@@ -716,6 +759,41 @@ TEST(ShareTest, ComparisonOperation)
     EXPECT_TRUE(d == c);
     EXPECT_TRUE(d <= c);
     EXPECT_TRUE(d >= c);
+}
+
+TEST(ShareTest, ComparisonOperationBulk)
+{
+    Config *conf = Config::getInstance();
+    int n_parties = conf->n_parties;
+    Share a(FixedPoint("2.0"));
+    Share b(FixedPoint("3.0"));
+    std::vector<Share> l{a, a, b, b};
+    std::vector<Share> r{a, b, a, b};
+
+    // <
+    auto lt = allLess(l, r);
+    std::vector<bool> lt_t{false, true, false, false};
+    EXPECT_EQ(lt, lt_t);
+
+    // >
+    auto gt = allGreater(l, r);
+    std::vector<bool> gt_t{false, false, true, false};
+    EXPECT_EQ(gt, gt_t);
+
+    // <=
+    auto lte = allLessEq(l, r);
+    std::vector<bool> lte_t{true, true, false, true};
+    EXPECT_EQ(lte, lte_t);
+
+    // >=
+    auto gte = allGreaterEq(l, r);
+    std::vector<bool> gte_t{true, false, true, true};
+    EXPECT_EQ(gte, gte_t);
+
+    // ==
+    auto eq = allEq(l, r);
+    std::vector<bool> eq_t{true, false, false, true};
+    EXPECT_EQ(eq, eq_t);
 }
 
 TEST(ShareTest, EqualityEpsilonRandomTest)

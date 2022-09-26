@@ -108,8 +108,25 @@ bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
 bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
 bool operator<(const Share<FixedPoint> &left, const FixedPoint &right);
 bool operator==(const Share<FixedPoint> &left, const FixedPoint &right);
+std::vector<bool> allLess(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+);
+std::vector<bool> allGreater(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+);
+std::vector<bool> allLessEq(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+);
+std::vector<bool> allGreaterEq(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+);
+std::vector<bool> allEq(
+    const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
+);
 
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s);
+std::vector<Share<FixedPoint>> LTZ(const std::vector<Share<FixedPoint>> &s);
+
 /// @brief l=32 split array
 inline constexpr std::array<int, 7> delta = {5, 5, 5, 5, 5, 5, 2};
 template <typename T, std::enable_if_t<std::is_integral_v<T>, std::nullptr_t> = nullptr>
