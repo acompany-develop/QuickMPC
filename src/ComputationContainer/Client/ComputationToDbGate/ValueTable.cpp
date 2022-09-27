@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -85,7 +86,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     // ブロックサイズ(S)とブロック数(N):N:=size/S
     // サイズO(N)のBulk比較をO(Slog(len) + S)回行う
     int block_size = std::min(100, size);
-    int block_nums = size / block_size;
+    int block_nums = (size + block_size - 1) / block_size;
 
     std::vector<int> block_it;
     std::vector<T> block_s;
@@ -104,9 +105,8 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", 0);
     std::vector<int> lower(block_nums, -1);
     std::vector<int> upper(block_nums, len - 1);
-    auto d_max = len;
-    int iterated = 0;
-    while (d_max > 1)
+    int iterated_num = std::log2(len) + 1;
+    for (int i = 0; i < iterated_num; ++i)
     {
         std::vector<int> mid_v(block_nums);
         for (int i = 0; i < block_nums; ++i)
@@ -122,13 +122,11 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         }
 
         auto less_eq = qmpc::Share::allLessEq(block_s, target);
-        d_max = 0;
         for (int i = 0; i < block_nums; ++i)
         {
             (less_eq[i] ? upper[i] : lower[i]) = mid_v[i];
-            d_max = std::max(d_max, upper[i] - lower[i]);
         }
-        double progress = 100.0 - d_max * 100.0 / len;
+        double progress = 100.0 * i / iterated_num;
         spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", progress);
     }
     spdlog::info("[progress] hjoin: binary search (1/1): {:>5.2f} %", 100);
@@ -193,7 +191,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         // [0th less, 0th greater, 1st less, 1st greater ....]
         auto comp = qmpc::Share::allLess(comp_l, comp_r);
         auto comp_it = 0;
-        auto progress = 0.0;
+        auto progress = 100.0;
         for (int i = 0; i < block_nums; ++i)
         {
             if (fin[i])
