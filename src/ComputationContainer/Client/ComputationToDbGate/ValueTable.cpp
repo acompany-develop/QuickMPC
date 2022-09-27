@@ -84,7 +84,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     int size = sorted_v1.size();
     int len = sorted_v2.size();
     // ブロックサイズ(S)とブロック数(N):N:=size/S
-    // サイズO(N)のBulk比較をO(Slog(len) + S)回行う
+    // サイズO(N)のBulk比較をO(log(len) + S)回行う
     int block_size = std::min(100, size);
     int block_nums = (size + block_size - 1) / block_size;
 
