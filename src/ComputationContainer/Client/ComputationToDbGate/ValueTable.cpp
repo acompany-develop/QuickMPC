@@ -177,8 +177,8 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             }
             // lessとgreaterも並列で行う
             comp_l.emplace_back(sorted_v1[i1]);
-            comp_l.emplace_back(sorted_v1[i2]);
-            comp_r.emplace_back(sorted_v1[i2]);
+            comp_l.emplace_back(sorted_v2[i2]);
+            comp_r.emplace_back(sorted_v2[i2]);
             comp_r.emplace_back(sorted_v1[i1]);
         }
 
