@@ -78,7 +78,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     const std::vector<T> &sorted_v1, const std::vector<T> &sorted_v2
 )
 {
-    // v2がソートされている必要あり
+    // v1, v2がソートされている必要あり
     spdlog::info("[progress] hjoin: core (0/1)");
 
     int size = sorted_v1.size();
