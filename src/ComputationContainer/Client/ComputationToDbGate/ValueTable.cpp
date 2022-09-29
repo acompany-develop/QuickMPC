@@ -106,7 +106,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     std::vector<int> lower(block_nums, -1);
     std::vector<int> upper(block_nums, len - 1);
     int iterated_num = std::log2(len) + 1;
-    for (int i = 0; i < iterated_num; ++i)
+    for (int progress_i = 0; progress_i < iterated_num; ++progress_i)
     {
         std::vector<int> mid_v(block_nums);
         for (int i = 0; i < block_nums; ++i)
@@ -126,7 +126,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         {
             (less_eq[i] ? upper[i] : lower[i]) = mid_v[i];
         }
-        double progress = 100.0 * i / iterated_num;
+        double progress = 100.0 * progress_i / iterated_num;
         spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", progress);
     }
     spdlog::info("[progress] hjoin: binary search (1/1): {:>5.2f} %", 100);
