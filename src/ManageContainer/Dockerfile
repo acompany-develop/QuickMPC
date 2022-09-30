@@ -24,7 +24,7 @@ RUN apt-get update && \
   cmake
 
 # grpcサーバのhealthcheckをするためのツールをインストール
-RUN GRPC_HEALTH_PROBE_VERSION=v0.4.11 && \
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
   wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
   chmod +x /bin/grpc_health_probe
 
@@ -32,8 +32,8 @@ ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin
 
 # Install go
-RUN wget https://go.dev/dl/go1.18.1.linux-amd64.tar.gz && \
-  tar -C /usr/local -xzf go1.18.1.linux-amd64.tar.gz
+RUN wget https://go.dev/dl/go1.18.6.linux-amd64.tar.gz && \
+  tar -C /usr/local -xzf go1.18.6.linux-amd64.tar.gz
 
 FROM base as src
 # goの自動成型ツール
@@ -73,7 +73,7 @@ RUN apk update && \
   apk upgrade
 COPY --from=builder /QuickMPC/ManageContainer /QuickMPC/ManageContainer
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
-COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
+COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.13 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
 FROM builder as small
