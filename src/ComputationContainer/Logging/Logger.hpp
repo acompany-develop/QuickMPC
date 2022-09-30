@@ -56,7 +56,7 @@ public:
     constexpr Log(Log::LogLevel level) : level(level) {}
     //例外生成用関数
     template <class E>
-    static void throw_with_trace(const E &e)
+    [[noreturn]] static void throw_with_trace(const E &e)
     {
         throw boost::enable_error_info(e) << traced(boost::stacktrace::stacktrace());
     }

@@ -12,7 +12,6 @@
 auto bitVecCreater = [](const std::vector<std::vector<int>> &data)
 {
     int col = std::size(data[0]);
-    int row = std::size(data);
 
     std::vector<std::vector<std::vector<FixedPoint>>> fixed_vec;
     for (int i = 0; i < col; ++i)
@@ -23,8 +22,9 @@ auto bitVecCreater = [](const std::vector<std::vector<int>> &data)
         {
             col_value[cur[i]] = -1;
         }
-        for (auto &[key, value] : col_value)
+        for (auto &[_, value] : col_value)
         {
+            static_cast<void>(_);  // NOTE: unused warningを消すため
             value = index++;
         }
         int value_size = std::size(col_value);
@@ -185,10 +185,10 @@ TEST(SID3RegTest, categoryError)
     auto convertToShare = [](const std::vector<std::vector<FixedPoint>> &test_data)
     {
         std::vector<std::vector<Share>> stest_data;
-        for (int i = 0; i < test_data.size(); ++i)
+        for (size_t i = 0; i < test_data.size(); ++i)
         {
             std::vector<Share> test_(test_data[i].size());
-            for (int j = 0; j < test_data[i].size(); ++j)
+            for (size_t j = 0; j < test_data[i].size(); ++j)
             {
                 test_[j] = qmpc::Share::getConstantShare(test_data[i][j]);
             }
@@ -260,7 +260,7 @@ TEST(SGBMTest, treeGradTest)
         tt += FixedPoint(1);
     }
     std::set<int> R;
-    for (int i = 0; i < x.size(); ++i)
+    for (size_t i = 0; i < x.size(); ++i)
     {
         R.insert(i);
     }
@@ -269,7 +269,7 @@ TEST(SGBMTest, treeGradTest)
     auto tree_grads = tree->grad();
     open(tree_grads);
     auto grads = recons(tree_grads);
-    for (int i = 0; i < T.size(); ++i)
+    for (size_t i = 0; i < T.size(); ++i)
     {
         spdlog::info("grad {} is {}", i, grads[i]);
     }
@@ -281,10 +281,10 @@ TEST(SGBMTest, treeGradTest)
     auto convertToShare = [](const std::vector<std::vector<FixedPoint>> &test_data)
     {
         std::vector<std::vector<Share>> stest_data;
-        for (int i = 0; i < test_data.size(); ++i)
+        for (size_t i = 0; i < test_data.size(); ++i)
         {
             std::vector<Share> test_(test_data[i].size());
-            for (int j = 0; j < test_data[i].size(); ++j)
+            for (size_t j = 0; j < test_data[i].size(); ++j)
             {
                 test_[j] = qmpc::Share::getConstantShare(test_data[i][j]);
             }
@@ -347,7 +347,7 @@ TEST(SGBMTest, GBDTRegressionTest)
         tt += FixedPoint(1);
     }
     std::set<int> R;
-    for (int i = 0; i < x.size(); ++i)
+    for (size_t i = 0; i < x.size(); ++i)
     {
         R.insert(i);
     }
@@ -355,7 +355,7 @@ TEST(SGBMTest, GBDTRegressionTest)
     auto pred = gt.boosting(20);
     open(pred);
     auto p_rec = recons(pred);
-    for (int i = 0; i < t.size(); ++i)
+    for (size_t i = 0; i < t.size(); ++i)
     {
         spdlog::info("pred is {}", p_rec[i]);
         spdlog::info("t is {}", t_rec[i]);
@@ -375,10 +375,10 @@ TEST(SGBMTest, GBDTRegressionTest)
     auto convertToShare = [](const std::vector<std::vector<FixedPoint>> &test_data)
     {
         std::vector<std::vector<Share>> stest_data;
-        for (int i = 0; i < test_data.size(); ++i)
+        for (size_t i = 0; i < test_data.size(); ++i)
         {
             std::vector<Share> test_(test_data[i].size());
-            for (int j = 0; j < test_data[i].size(); ++j)
+            for (size_t j = 0; j < test_data[i].size(); ++j)
             {
                 test_[j] = qmpc::Share::getConstantShare(test_data[i][j]);
             }
@@ -435,9 +435,9 @@ TEST(SID3Test, sid3JsonConstructorTest)
 
     std::vector<std::vector<FixedPoint>> t_ = {{1, 1, 0, 1, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 1}};
     std::vector<std::vector<Share>> t(t_.size(), std::vector<Share>(t_[0].size()));
-    for (int i = 0; i < t_.size(); ++i)
+    for (size_t i = 0; i < t_.size(); ++i)
     {
-        for (int j = 0; j < t_[i].size(); ++j)
+        for (size_t j = 0; j < t_[i].size(); ++j)
         {
             t[i][j] = qmpc::Share::getConstantShare(t_[i][j]);
         }
@@ -490,9 +490,9 @@ TEST(SID3Test, sid3JsonPredictTest)
 
     std::vector<std::vector<FixedPoint>> t_ = {{1, 1, 0, 1, 0}, {0, 0, 1, 0, 0}, {0, 0, 0, 0, 1}};
     std::vector<std::vector<Share>> t(t_.size(), std::vector<Share>(t_[0].size()));
-    for (int i = 0; i < t_.size(); ++i)
+    for (size_t i = 0; i < t_.size(); ++i)
     {
-        for (int j = 0; j < t_[i].size(); ++j)
+        for (size_t j = 0; j < t_[i].size(); ++j)
         {
             t[i][j] = qmpc::Share::getConstantShare(t_[i][j]);
         }
@@ -519,10 +519,10 @@ TEST(SID3Test, sid3JsonPredictTest)
     auto convertToShare = [](const std::vector<std::vector<FixedPoint>> &test_data)
     {
         std::vector<std::vector<Share>> stest_data;
-        for (int i = 0; i < test_data.size(); ++i)
+        for (size_t i = 0; i < test_data.size(); ++i)
         {
             std::vector<Share> test_(test_data[i].size());
-            for (int j = 0; j < test_data[i].size(); ++j)
+            for (size_t j = 0; j < test_data[i].size(); ++j)
             {
                 test_[j] = qmpc::Share::getConstantShare(test_data[i][j]);
             }

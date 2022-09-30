@@ -39,7 +39,7 @@ class Adam : public qmpc::Optimizer::OptInterface
         {
             auto l1 = f.df(1, theta);
             auto l2 = l1 * l1;
-            for (int i = 0; i < size; ++i)
+            for (size_t i = 0; i < size; ++i)
             {
                 mt[i] = beta1 * mt[i] + (1 - beta1) * l1[i];
                 vt[i] = beta2 * vt[i] + (1 - beta2) * l2[i];
@@ -47,7 +47,7 @@ class Adam : public qmpc::Optimizer::OptInterface
             beta1_pow *= beta1.getDoubleVal();
             beta2_pow *= beta2.getDoubleVal();
             auto b_t = std::sqrt(1 - beta2_pow) / (1 - beta1_pow);
-            for (int i = 0; i < size; ++i)
+            for (size_t i = 0; i < size; ++i)
             {
                 theta[i] = theta[i] - alpha * mt[i] * FixedPoint(b_t) / (sqrt(vt[i]) + eps);
             }
@@ -79,7 +79,6 @@ public:
     */
     Shares optimize(int iterationNum, const interface &f, const Shares &theta) const override
     {
-        size_t sz = std::size(theta);
         return adapt(iterationNum, theta, f);
     }
 };

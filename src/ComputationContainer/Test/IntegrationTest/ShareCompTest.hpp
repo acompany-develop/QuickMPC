@@ -67,7 +67,7 @@ TEST(ShareCompTest, DivBetweenShareComps)
     a = a / b;
     open(a);
     PrimeField a_rec = recons(a);
-    EXPECT_EQ(a_rec, PrimeField(9223372036854775779));
+    EXPECT_EQ(a_rec, PrimeField(9223372036854775779ull));
 }
 
 TEST(ShareCompTest, AddBetweenShareCompAndPrimeField)
@@ -352,16 +352,16 @@ TEST(ShareCompTest, BStoSC)
     bool flag = true;  // テストが失敗した場合falseになる
     // テストケース
     PrimeField test_case[10] = {
-        PrimeField(8404635061939753279),
-        PrimeField(14055031461681146081),
-        PrimeField(4401882840069225473),
-        PrimeField(955727980728323728),
-        PrimeField(11939286497068664120),
-        PrimeField(7128445707545015008),
-        PrimeField(13165665109915604075),
-        PrimeField(2146559468229273184),
-        PrimeField(12307437278508535873),
-        PrimeField(2264793496591040620)};
+        PrimeField(8404635061939753279ull),
+        PrimeField(14055031461681146081ull),
+        PrimeField(4401882840069225473ull),
+        PrimeField(955727980728323728ull),
+        PrimeField(11939286497068664120ull),
+        PrimeField(7128445707545015008ull),
+        PrimeField(13165665109915604075ull),
+        PrimeField(2146559468229273184ull),
+        PrimeField(12307437278508535873ull),
+        PrimeField(2264793496591040620ull)};
 
     for (int i = 0; i < 10; i++)
     {
@@ -386,16 +386,16 @@ TEST(ShareCompTest, PFtoBS)
     bool flag = true;  // テストが失敗した場合falseになる
     // テストケース
     PrimeField test_case[10] = {
-        PrimeField(5801164259233537525),
-        PrimeField(11990882371217920413),
-        PrimeField(12133433930879247631),
-        PrimeField(12367114231622338330),
-        PrimeField(5019517851162398891),
-        PrimeField(4135365588412164698),
-        PrimeField(5721501916669856084),
-        PrimeField(12279116850396682003),
-        PrimeField(7702089081674672791),
-        PrimeField(1083686755848627406)};
+        PrimeField(5801164259233537525ull),
+        PrimeField(11990882371217920413ull),
+        PrimeField(12133433930879247631ull),
+        PrimeField(12367114231622338330ull),
+        PrimeField(5019517851162398891ull),
+        PrimeField(4135365588412164698ull),
+        PrimeField(5721501916669856084ull),
+        PrimeField(12279116850396682003ull),
+        PrimeField(7702089081674672791ull),
+        PrimeField(1083686755848627406ull)};
 
     for (int i = 0; i < 10; i++)
     {

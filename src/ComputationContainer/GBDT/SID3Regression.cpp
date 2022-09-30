@@ -54,7 +54,7 @@ Share SID3Regression::infomationGain(const std::vector<Share> &category) const
     auto average_mask = averageVec * mask;
     auto target_mask = targets * mask;
     Share ret;
-    for (int i = 0; i < T.size(); ++i)
+    for (size_t i = 0; i < T.size(); ++i)
     {
         Share cur = target_mask[i] - average_mask[i];
         cur *= cur;
@@ -177,10 +177,10 @@ std::shared_ptr<SID3Regression> SID3Regression::createTree(
     std::tie(current->error_value, current->att_class) = current->IG();
 
     // TODO:ここではデータ数に対してうまく調整したほうが良いかも
-    if (R.empty() or (T.size() >= 3 * current->size) or (0 == current->size)) return current;
+    if (R.empty() or (T.size() >= 3u * current->size) or (0u == current->size)) return current;
     auto R_ = R;
     R_.erase(current->att_class);
-    for (int j = 0; j < S[current->att_class].size(); ++j)
+    for (size_t j = 0; j < S[current->att_class].size(); ++j)
     {
         auto T_ = T * S[current->att_class][j];
         auto child = createTree(T_, S, targets, R_);

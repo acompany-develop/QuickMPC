@@ -82,6 +82,7 @@ std::string Client::executeQuery(const std::string &query) const
         std::string res;
         for (const auto &[_, piece] : pieces)
         {
+            static_cast<void>(_);  // NOTE: unused warningを消すため
             res.append(piece);
         }
         return res;

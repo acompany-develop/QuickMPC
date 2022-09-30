@@ -23,8 +23,8 @@ class Momentum : public qmpc::Optimizer::OptInterface
 {
     using Share = ::Share;
     using interface = qmpc::ObjectiveFunction::ObjectiveFunctionInterface;
-    const ::FixedPoint beta;
     const ::FixedPoint alpha;
+    const ::FixedPoint beta;
     const int batch_size;
     std::vector<Share> moment(
         int iterationNum,

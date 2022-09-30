@@ -132,7 +132,6 @@ class Config
             {
                 return std::stoi(env_map[std::string(s)]);
             }
-            qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
         }
         else
         {
@@ -141,8 +140,8 @@ class Config
             {
                 return atoi(tmp);
             }
-            qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
         }
+        qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
     }
     std::string getEnvString(const char *s)
     {
@@ -154,7 +153,6 @@ class Config
             {
                 return env_map[std::string(s)];
             }
-            qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
         }
         else
         {
@@ -163,8 +161,8 @@ class Config
             {
                 return std::string(tmp);
             }
-            qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
         }
+        qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
     }
     Url getEnvUrl(const char *s)
     {
@@ -176,7 +174,6 @@ class Config
             {
                 return Url::Parse(env_map[std::string(s)]);
             }
-            qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
         }
         else
         {
@@ -185,8 +182,8 @@ class Config
             {
                 return Url::Parse(tmp);
             }
-            qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
         }
+        qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
     }
 
 public:
