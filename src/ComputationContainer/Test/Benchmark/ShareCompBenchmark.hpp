@@ -198,7 +198,7 @@ TEST(ShareCompBenchmark, BStoSC)
         {
             // IntegrationTest/ShareCompTest.hpp からコピペ
             // ShareCompTest のテストケースの中から1個取ってきた
-            auto test_case = PrimeField(14055031461681146081);
+            auto test_case = PrimeField(14055031461681146081ull);
             auto a_shares = qmpc::Share::PFtoBS(test_case);
             ShareComp ans = qmpc::Share::BStoSC(a_shares);
         }
@@ -215,7 +215,7 @@ TEST(ShareCompBenchmark, PFtoBS)
         {
             // IntegrationTest/ShareCompTest.hpp からコピペ
             // ShareCompTest のテストケースの中から1個取ってきた
-            auto test_case = PrimeField(11990882371217920413);
+            auto test_case = PrimeField(11990882371217920413ull);
             auto a_shares = qmpc::Share::PFtoBS(test_case);
         }
     );

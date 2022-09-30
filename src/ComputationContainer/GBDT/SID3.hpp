@@ -113,7 +113,7 @@ public:
         const std::vector<std::vector<Share>> &targets,
         const std::set<int> &R
     )
-        : T(T), S(bit_data), targets(targets), R(R), att_class(-1), y(FixedPoint(-1))
+        : T(T), S(bit_data), targets(targets), att_class(-1), R(R), y(FixedPoint(-1))
     {
         size = dataSize();
     }

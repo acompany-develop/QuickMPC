@@ -134,7 +134,7 @@ auto recons(const T &share)
             auto s = server->getShare(pt_id, share.getId());
             if constexpr (std::is_same_v<Result, bool>)
             {
-                ret ^= Result{std::stoi(s)};
+                ret ^= Result{s == "1"};
             }
             else if constexpr (std::is_integral_v<Result>)
             {
@@ -142,7 +142,7 @@ auto recons(const T &share)
             }
             else if constexpr (std::is_floating_point_v<Result>)
             {
-                ret += Result{std::stod(s)};
+                ret += Result{std::stof(s)};
             }
             else
             {

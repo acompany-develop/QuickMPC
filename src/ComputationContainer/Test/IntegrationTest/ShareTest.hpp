@@ -763,8 +763,6 @@ TEST(ShareTest, ComparisonOperation)
 
 TEST(ShareTest, ComparisonOperationBulk)
 {
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
     Share a(FixedPoint("2.0"));
     Share b(FixedPoint("3.0"));
     std::vector<Share> l{a, a, b, b};
@@ -1125,8 +1123,6 @@ TEST(StreamTest, ReconsBulk)
     }
     open(t);
     auto target = recons(t);
-    bool ng = false;
-
     for (int i = 0; i < static_cast<int>(t.size()); ++i)
     {
         EXPECT_NEAR(target[i].getDoubleVal(), expected[i].getDoubleVal(), 0.00001);
@@ -1134,13 +1130,11 @@ TEST(StreamTest, ReconsBulk)
 }
 TEST(ShareTest, GenericSendShare)
 {
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
     {
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<bool> a{};
         open(a);
-        auto a_rec = recons(a);
+        [[maybe_unused]] auto _ = recons(a);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -1150,7 +1144,7 @@ TEST(ShareTest, GenericSendShare)
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<int> b(4);
         open(b);
-        auto b_rec = recons(b);
+        [[maybe_unused]] auto _ = recons(b);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -1160,7 +1154,7 @@ TEST(ShareTest, GenericSendShare)
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<long> c(4);
         open(c);
-        auto c_rec = recons(c);
+        [[maybe_unused]] auto _ = recons(c);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -1170,7 +1164,7 @@ TEST(ShareTest, GenericSendShare)
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<float> d{};
         open(d);
-        auto d_rec = recons(d);
+        [[maybe_unused]] auto _ = recons(d);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -1180,7 +1174,7 @@ TEST(ShareTest, GenericSendShare)
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<double> e{};
         open(e);
-        auto e_rec = recons(e);
+        [[maybe_unused]] auto _ = recons(e);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -1190,7 +1184,7 @@ TEST(ShareTest, GenericSendShare)
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<FixedPoint> f{};
         open(f);
-        auto f_rec = recons(f);
+        [[maybe_unused]] auto _ = recons(f);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -1200,7 +1194,7 @@ TEST(ShareTest, GenericSendShare)
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<PrimeField> f{};
         open(f);
-        auto f_rec = recons(f);
+        [[maybe_unused]] auto _ = recons(f);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -1247,40 +1241,30 @@ TEST(ShareTest, mulIntShare)
 }
 TEST(ShareTest, boolLarge)
 {
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
     std::vector<qmpc::Share::Share<bool>> a(50000, true);
     open(a);
     auto target = recons(a);
 }
 TEST(ShareTest, IntLarge)
 {
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
     std::vector<qmpc::Share::Share<int>> a(50000, 1);
     open(a);
     auto target = recons(a);
 }
 TEST(ShareTest, floatLarge)
 {
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
     std::vector<qmpc::Share::Share<float>> a(50000, 1);
     open(a);
     auto target = recons(a);
 }
 TEST(ShareTest, doubleLarge)
 {
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
     std::vector<qmpc::Share::Share<double>> a(50000, 1);
     open(a);
     auto target = recons(a);
 }
 TEST(ShareTest, FPLarge)
 {
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
     std::vector<qmpc::Share::Share<FixedPoint>> a(50000, FixedPoint("1"));
     open(a);
     auto target = recons(a);
@@ -1387,7 +1371,7 @@ TEST(ShareTest, expandTest)
         int x = 5;  // 00000011
         auto d = qmpc::Share::expand(x, delta);
         std::vector<int> expected = {0, 0, 0, 0, 0, 0, 0, 5};
-        for (int i = 0; i < d.size(); ++i)
+        for (size_t i = 0; i < d.size(); ++i)
         {
             EXPECT_EQ(expected[i], d[i]);
         }
@@ -1396,7 +1380,7 @@ TEST(ShareTest, expandTest)
         int y = -5;
         auto d = qmpc::Share::expand(y, delta);
         std::vector<int> expected = {0, 3, 31, 31, 31, 31, 31, 27};
-        for (int i = 0; i < d.size(); ++i)
+        for (size_t i = 0; i < d.size(); ++i)
         {
             EXPECT_EQ(expected[i], d[i]);
         }

@@ -106,7 +106,7 @@ public:
         const std::vector<Share> &targets,
         const std::set<int> &R
     )
-        : T(T), S(S), targets(targets), R(R), att_class(-1)
+        : T(T), S(S), targets(targets), att_class(-1), R(R)
     {
         size = dataSize();
         y = dot(targets, T);

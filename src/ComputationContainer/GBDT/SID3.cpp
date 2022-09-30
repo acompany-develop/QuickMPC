@@ -23,7 +23,7 @@ Share SID3::majorityClass(const std::vector<std::vector<Share>> &U) const
         base_count.emplace_back(static_cast<int>(count.getDoubleVal()), index);
         index++;
     }
-    auto [max_num, max_num_index] = *max_element(base_count.begin(), base_count.end());
+    auto max_num_index = max_element(base_count.begin(), base_count.end())->second;
     // TODO:正確にShare化する必要があるが分類の場合はこのままで良い
     Share ret = qmpc::Share::getConstantShare(FixedPoint(max_num_index));
     return ret;
@@ -60,11 +60,11 @@ Share SID3::dot(const std::vector<Share> &x, const std::vector<Share> &y) const
 auto SID3::getMaxGini(const std::vector<std::vector<Share>> &U) const
 {
     auto gini_indexies = calcGini(U, R);
-    for (const auto &[gini_, index] : gini_indexies)
-    {
-        // spdlog::info("gini_ is {}",gini_);
-        // spdlog::info("index is {}",index);
-    }
+    // for (const auto &[gini_, index] : gini_indexies)
+    // {
+    //     spdlog::info("gini_ is {}",gini_);
+    //     spdlog::info("index is {}",index);
+    // }
     if (gini_indexies.empty()) return std::make_pair<double, int>(-1, -1);
     auto ret = *std::max_element(gini_indexies.begin(), gini_indexies.end());
     return ret;

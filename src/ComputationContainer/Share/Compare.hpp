@@ -144,18 +144,17 @@ std::pair<Share<int>, std::vector<Share<int>>> unitvPrep()
     std::vector<AddressId> addressIds(N * N);
     std::vector<Share<int>> ret(N * N);
     Config *conf = Config::getInstance();
-    auto server = ComputationToComputation::Server::getServer();
     auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << 20, N);
     auto r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
     int n_parties = conf->n_parties;
     int pt_id = conf->party_id - 1;
-    for (int i = 0; i < N * N; ++i)
+    for (size_t i = 0; i < N * N; ++i)
     {
         addressIds[i] = e[i].getId();
     }
     if (pt_id == 0)
     {
-        for (int i = 0; i < N * N; ++i)
+        for (size_t i = 0; i < N * N; ++i)
         {
             if (i % N == i / N) e[i] = 1;
             e[i] += random_s[i % N];
@@ -165,7 +164,7 @@ std::pair<Share<int>, std::vector<Share<int>>> unitvPrep()
         send(e, (pt_id + 1) % n_parties + 1);
         auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
 
-        for (int i = 0; i < N * N; ++i)
+        for (size_t i = 0; i < N * N; ++i)
         {
             ret[i] = s[i] - random_s[i % N];
         }
@@ -173,13 +172,13 @@ std::pair<Share<int>, std::vector<Share<int>>> unitvPrep()
     else
     {
         auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
-        for (int i = 0; i < N * N; ++i)
+        for (size_t i = 0; i < N * N; ++i)
         {
             e[i] = s[i] + random_s[i % N];
         }
         std::rotate(e.begin(), e.begin() + r * N, e.end());
         send(e, (pt_id + 1) % n_parties + 1);
-        for (int i = 0; i < N * N; ++i)
+        for (size_t i = 0; i < N * N; ++i)
         {
             ret[i] = -random_s[i % N];
         }

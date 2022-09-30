@@ -30,13 +30,12 @@ public:
     {
     }
     /**
-    /**
      * @brief 指定した決定技アルゴリズムでブースティングを実行
      * ブースティング時のハイパーパラメータ
      * 木の数、学習率lr,最大深度max_depth,葉の最大枚数max_leaves
      *
      *
-    */
+     */
     auto boosting(size_t numIterations)
     {
         //予測結果
@@ -49,7 +48,7 @@ public:
         {
             //誤差
             std::vector<Share> diff(T.size());
-            for (int i = 0; i < T.size(); ++i)
+            for (size_t i = 0; i < T.size(); ++i)
             {
                 diff[i] = targets[i] - currentY[i];
             }
@@ -57,7 +56,7 @@ public:
             //勾配結果を取得
             auto grad = tree->grad();
             //予測値
-            for (int i = 0; i < T.size(); ++i)
+            for (size_t i = 0; i < T.size(); ++i)
             {
                 currentY[i] = currentY[i] + lr * grad[i];
             }
