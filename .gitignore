@@ -31,3 +31,7 @@ src/_DbContainer/DbGate/start.dev.sh
 __pycache__
 
 Deploy/Application/Config/Party*
+
+!**/Db/**
+**/Db/*/**
+!**/Db/**/.gitkeep

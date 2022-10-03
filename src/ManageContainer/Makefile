@@ -36,6 +36,10 @@ rm:
 rm-all:
 	docker-compose down --rmi all --volumes
 
+# Dbのデータを削除
+rm-db:
+	rm -r ../Db/**/*
+
 ps:
 	docker-compose ps
 
