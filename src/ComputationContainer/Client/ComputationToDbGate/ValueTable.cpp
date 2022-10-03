@@ -1,8 +1,12 @@
 #include "ValueTable.hpp"
 
+#include <algorithm>
 #include <chrono>
+#include <cmath>
 #include <unordered_map>
 #include <unordered_set>
+
+#include "Share/Compare.hpp"
 
 namespace qmpc::ComputationToDbGate
 {
@@ -75,48 +79,151 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 )
 {
     // v1, v2がソートされている必要あり
-    std::vector<std::pair<int, int>> it_list;
-    it_list.reserve(sorted_v1.size());
-
-    size_t i1 = 0, i2 = 0;
-    std::uint32_t iterated = 0;
     spdlog::info("[progress] hjoin: core (0/1)");
-    auto time_from = std::chrono::system_clock::now();
-    while (i1 < sorted_v1.size() && i2 < sorted_v2.size())
+
+    int size = sorted_v1.size();
+    int len = sorted_v2.size();
+    // ブロックサイズ(S)とブロック数(N):N:=size/S
+    // サイズO(N)のBulk比較をO(log(len) + S)回行う
+    int block_size = std::min(100, size);
+    int block_nums = (size + block_size - 1) / block_size;
+
+    std::vector<int> block_it;
+    std::vector<T> block_s;
+    block_it.reserve(block_nums);
+    block_s.reserve(block_nums);
+    for (int i = 0; i < block_nums; ++i)
     {
-        if (sorted_v1[i1] == sorted_v2[i2])
+        auto it = i * block_size;
+        block_it.emplace_back(it);
+        block_s.emplace_back(sorted_v1[it]);
+    }
+
+    // parallel binary search
+    // block_itの各要素 i について(v1[i]>=v2[j]) となる最小のjを求める
+    // 各iとjはv1,v2のブロックの区切りをなす
+    spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", 0);
+    std::vector<int> lower(block_nums, -1);
+    std::vector<int> upper(block_nums, len - 1);
+    int iterated_num = std::log2(len) + 1;
+    for (int progress_i = 0; progress_i < iterated_num; ++progress_i)
+    {
+        std::vector<int> mid_v(block_nums);
+        for (int i = 0; i < block_nums; ++i)
         {
-            it_list.emplace_back(i1, i2);
-            ++i1;
-            ++i2;
+            mid_v[i] = (lower[i] + upper[i]) / 2;
         }
-        else if (sorted_v1[i1] < sorted_v2[i2])
+
+        std::vector<T> target;
+        target.reserve(block_nums);
+        for (const auto &mid : mid_v)
         {
-            ++i1;
+            target.emplace_back(sorted_v2[mid]);
+        }
+
+        auto less_eq = qmpc::Share::allLessEq(block_s, target);
+        for (int i = 0; i < block_nums; ++i)
+        {
+            (less_eq[i] ? upper[i] : lower[i]) = mid_v[i];
+        }
+        double progress = 100.0 * progress_i / iterated_num;
+        spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", progress);
+    }
+    spdlog::info("[progress] hjoin: binary search (1/1): {:>5.2f} %", 100);
+
+    // parallel linear search
+    // 各ブロックを並列に走査する
+    spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", 0);
+    std::vector<std::pair<int, int>> now_its;
+    std::vector<std::pair<int, int>> limit_its;
+    now_its.reserve(block_nums);
+    limit_its.reserve(block_nums);
+    for (int i = 0; i < block_nums; ++i)
+    {
+        now_its.emplace_back(block_it[i], std::max(0, upper[i]));
+        if (i + 1 < block_nums)
+        {
+            limit_its.emplace_back(block_it[i + 1], std::max(0, upper[i + 1]));
         }
         else
         {
-            ++i2;
-        }
-        if (++iterated % 10 == 0)
-        {
-            auto time_to = std::chrono::system_clock::now();
-            auto dur = std::chrono::duration_cast<std::chrono::milliseconds>(time_to - time_from);
-
-            if (dur.count() >= 5000)
-            {
-                double max_progress =
-                    std::max(i1 * 100.0 / sorted_v1.size(), i2 * 100.0 / sorted_v2.size());
-                spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", max_progress);
-
-                time_from = time_to;
-            }
+            limit_its.emplace_back(size, len);
         }
     }
-    spdlog::info("[progress] hjoin: core (0/1): {:>5.2f} %", 100.0);
 
+    // it_list := v1とv2の積集合のindex
+    std::vector<std::pair<int, int>> it_list;
+    it_list.reserve(size);
+    std::vector<bool> fin(block_nums, false);
+    while (true)
+    {
+        std::vector<T> comp_l;
+        comp_l.reserve(block_nums);
+        std::vector<T> comp_r;
+        comp_r.reserve(block_nums);
+        for (int i = 0; i < block_nums; ++i)
+        {
+            // 不要な比較を減らすため探索し終えたindexを見ない
+            if (fin[i])
+            {
+                continue;
+            }
+            auto [i1, i2] = now_its[i];
+            auto [lim1, lim2] = limit_its[i];
+            if (i1 == lim1 || i2 == lim2)
+            {
+                fin[i] = true;
+                continue;
+            }
+            // lessとgreaterも並列で行う
+            comp_l.emplace_back(sorted_v1[i1]);
+            comp_l.emplace_back(sorted_v2[i2]);
+            comp_r.emplace_back(sorted_v2[i2]);
+            comp_r.emplace_back(sorted_v1[i1]);
+        }
+
+        // comp_lが空 <=> 全てのindexでlimitまで探索し終えた
+        if (comp_l.empty())
+        {
+            break;
+        }
+
+        // [0th less, 0th greater, 1st less, 1st greater ....]
+        auto comp = qmpc::Share::allLess(comp_l, comp_r);
+        auto comp_it = 0;
+        auto progress = 100.0;
+        for (int i = 0; i < block_nums; ++i)
+        {
+            if (fin[i])
+            {
+                continue;
+            }
+            // "==" <=> "not < && not >"
+            if (!comp[comp_it] && !comp[comp_it + 1])
+            {
+                it_list.emplace_back(now_its[i]);
+                ++now_its[i].first;
+                ++now_its[i].second;
+            }
+            else if (comp[comp_it])
+            {
+                ++now_its[i].first;
+            }
+            else
+            {
+                ++now_its[i].second;
+            }
+
+            auto max_progress =
+                std::max(now_its[i].first - block_it[i], now_its[i].second - upper[i]) * 100.0
+                / block_size;
+            progress = std::min(progress, max_progress);
+            comp_it += 2;
+        }
+        spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", progress);
+    }
+    spdlog::info("[progress] hjoin: linear search (1/1): {:>5.2f} %", 100);
     spdlog::info("[progress] hjoin: core (1/1)");
-
     return it_list;
 }
 
