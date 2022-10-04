@@ -15,6 +15,10 @@ import (
 	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
+// DBの役割を果たすディレクトリのパス
+const shareDbPath = "/Db/share"
+const resultDbPath = "/Db/result"
+
 // 同一IDに対する同時処理を防ぐためのもの
 var ls = utils.NewLockSet()
 
@@ -30,7 +34,7 @@ type ComputationResult struct {
 	Meta    ComputationResultMeta `json:"meta"`
 }
 
-//
+// Share形式
 type ShareMeta struct {
 	Schema  []string `json:"schema"`
 	PieceID int32    `json:"piece_id"`
@@ -42,6 +46,7 @@ type Share struct {
 	SentAt string      `json:"sent_at"`
 }
 
+// 外部から呼ばれるinterface
 type Client struct{}
 type M2DbClient interface {
 	InsertShares(string, []string, int32, string, string) error
@@ -52,9 +57,7 @@ type M2DbClient interface {
 	GetDataList() (string, error)
 }
 
-const shareDbPath = "/Db/share"
-const resultDbPath = "/Db/result"
-
+// path(ファイル，ディレクトリ)が存在するか
 func isExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
@@ -69,20 +72,19 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 	if isExists(dataPath) {
 		return errors.New("重複データ登録エラー: " + dataID + "は既に登録されています．")
 	}
-	os.Mkdir(fmt.Sprintf("%s/%s", shareDbPath, dataID), 0777)
+	os.Mkdir(fmt.Sprintf("%s/%s", shareDbPath, dataID), 0666)
 
 	var sharesJson interface{}
 	errUnmarshal := json.Unmarshal([]byte(shares), &sharesJson)
 	if errUnmarshal != nil {
 		return errUnmarshal
 	}
-	meta := ShareMeta{
-		Schema:  schema,
-		PieceID: pieceID,
-	}
 	share := Share{
 		DataID: dataID,
-		Meta:   meta,
+		Meta: ShareMeta{
+			Schema:  schema,
+			PieceID: pieceID,
+		},
 		Value:  sharesJson,
 		SentAt: sentAt,
 	}
@@ -191,7 +193,7 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 	if isExists(dataPath) {
 		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
 	}
-	os.Mkdir(fmt.Sprintf("%s/%s", resultDbPath, jobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("%s/%s", resultDbPath, jobUUID), 0666)
 
 	var modelParamJson interface{}
 	errUnmarshal := json.Unmarshal([]byte(params), &modelParamJson)

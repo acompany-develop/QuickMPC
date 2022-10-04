@@ -33,7 +33,6 @@ const defaultParams = "[\"1\",\"2\",\"3\"]"
 const defaultResult = "[\"1\",\"2\",\"3\"]"
 
 /* InsertShares(string, []string, int32, string, string) error */
-
 // シェアが保存されるかTest
 func TestInsertSharesSuccess(t *testing.T) {
 	initialize()
