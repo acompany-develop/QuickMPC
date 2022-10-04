@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sync"
 	"testing"
 )
 
@@ -37,7 +38,7 @@ func TestInsertSharesSuccess(t *testing.T) {
 	if err_insert != nil {
 		t.Error("insert shares faild: " + err_insert.Error())
 	}
-	_, err_exist := os.Stat(fmt.Sprintf("/Db/share/%s", defaultDataID))
+	_, err_exist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID))
 	if err_exist != nil {
 		t.Error("insert shares faild: " + err_exist.Error())
 	}
@@ -46,17 +47,63 @@ func TestInsertSharesSuccess(t *testing.T) {
 }
 
 // 重複シェアを弾くかTest
-func TestInsertSharesRejectDuplicateDataId(t *testing.T) {
+func TestInsertSharesRejectDuplicate(t *testing.T) {
 	initialize()
-	const sameDataID = defaultDataID
 
 	client := Client{}
 	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
-	err_insert := client.InsertShares(sameDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+	err_insert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
 
 	if err_insert == nil {
 		t.Error("insert duplicate shares must be failed, but success.")
 	}
+
+	initialize()
+}
+
+// pieceが同時に送信されて保存されるかTest
+func TestInsertSharesParallelSuccess(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	wg := sync.WaitGroup{}
+	for i := 1; i <= 100; i++ {
+		wg.Add(1)
+		go func(pieceId int32) {
+			err_insert := client.InsertShares(defaultDataID, defaultSchema, pieceId, defaultShares, defaultSentAt)
+			if err_insert != nil {
+				t.Error("insert shares faild: " + err_insert.Error())
+			}
+			_, err_exist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, pieceId))
+			if err_exist != nil {
+				t.Error("insert shares faild: " + err_exist.Error())
+			}
+			defer wg.Done()
+		}(int32(i))
+	}
+	wg.Wait()
+
+	initialize()
+}
+
+// 同じShareが同時に送信されてエラーが出るかTest
+func TestInsertSharesParallelRejectDuplicate(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+	wg := sync.WaitGroup{}
+	for i := 1; i <= 100; i++ {
+		wg.Add(1)
+		go func() {
+			err_insert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+			if err_insert == nil {
+				t.Error("insert duplicate shares must be failed, but success.")
+			}
+			defer wg.Done()
+		}()
+	}
+	wg.Wait()
 
 	initialize()
 }

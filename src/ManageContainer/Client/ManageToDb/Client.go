@@ -2,6 +2,12 @@
 package mng2db
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"os"
+
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 )
 
@@ -42,8 +48,50 @@ type M2DbClient interface {
 	GetDataList() (string, error)
 }
 
+const shareDbPath = "/Db/share"
+const resultDbPath = "/Db/result"
+
+func isExists(path string) bool {
+	_, err := os.Stat(path)
+	return err == nil
+}
+
 // DBにシェアを保存する
 func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shares string, sent_at string) error {
+	dataPath := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, pieceID)
+	ls.Lock(dataPath)
+	defer ls.Unlock(dataPath)
+
+	if isExists(dataPath) {
+		return errors.New("重複データ登録エラー: " + dataID + "は既に登録されています．")
+	}
+	os.Mkdir(fmt.Sprintf("%s/%s", shareDbPath, dataID), 0777)
+
+	var shares_json interface{}
+	errUnmarshal := json.Unmarshal([]byte(shares), &shares_json)
+	if errUnmarshal != nil {
+		return errUnmarshal
+	}
+	meta := ShareMeta{
+		Schema:  schema,
+		PieceID: pieceID,
+	}
+	share := Share{
+		DataID: dataID,
+		Meta:   meta,
+		Value:  shares_json,
+		SentAt: sent_at,
+	}
+	bytes, errMarshal := json.Marshal(share)
+	if errMarshal != nil {
+		return errMarshal
+	}
+
+	errWrite := ioutil.WriteFile(dataPath, bytes, 0666)
+	if errWrite != nil {
+		return errWrite
+	}
+
 	return nil
 }
 
