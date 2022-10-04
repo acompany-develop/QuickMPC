@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strconv"
 
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 )
@@ -139,7 +141,43 @@ func (c Client) GetSchema(dataID string) ([]string, error) {
 
 // DBから計算結果を得る
 func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, error) {
-	return []*ComputationResult{}, nil
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
+
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+	if !isExists(path + "/completed") {
+		// TODO: statusの保存方法を決定して取得する
+		// 旧仕様では存在しない場合はstatusだけ返してエラーはnilとしてる
+		// statusすら存在しない場合に限りエラーを返す
+		status := 0
+		errMessage := fmt.Sprintf("computation result is not found: status is %d", status)
+		return nil, errors.New(errMessage)
+	}
+
+	var computationResults []*ComputationResult
+	files, _ := filepath.Glob(path + "/*")
+	for _, piecePath := range files {
+		if piecePath == path+"/completed" {
+			continue
+		}
+		raw, errRead := ioutil.ReadFile(piecePath)
+		if errRead != nil {
+			return nil, errRead
+		}
+
+		var result *ComputationResult
+		errUnmarshal := json.Unmarshal(raw, &result)
+		if errUnmarshal != nil {
+			return nil, errUnmarshal
+		}
+		computationResults = append(computationResults, result)
+	}
+
+	if len(computationResults) == 0 {
+		return nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
+	}
+
+	return computationResults, nil
 }
 
 // DBにモデルパラメータを保存する
