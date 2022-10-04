@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
@@ -60,7 +61,7 @@ func isExists(path string) bool {
 }
 
 // DBにシェアを保存する
-func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shares string, sent_at string) error {
+func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shares string, sentAt string) error {
 	dataPath := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, pieceID)
 	ls.Lock(dataPath)
 	defer ls.Unlock(dataPath)
@@ -70,8 +71,8 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 	}
 	os.Mkdir(fmt.Sprintf("%s/%s", shareDbPath, dataID), 0777)
 
-	var shares_json interface{}
-	errUnmarshal := json.Unmarshal([]byte(shares), &shares_json)
+	var sharesJson interface{}
+	errUnmarshal := json.Unmarshal([]byte(shares), &sharesJson)
 	if errUnmarshal != nil {
 		return errUnmarshal
 	}
@@ -82,8 +83,8 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 	share := Share{
 		DataID: dataID,
 		Meta:   meta,
-		Value:  shares_json,
-		SentAt: sent_at,
+		Value:  sharesJson,
+		SentAt: sentAt,
 	}
 	bytes, errMarshal := json.Marshal(share)
 	if errMarshal != nil {
@@ -220,5 +221,7 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 
 // DBからdata一覧を取得する
 func (c Client) GetDataList() (string, error) {
+	AppLogger.Warning("GetDataList()は削除予定の非推奨機能です．")
+	// NOTE: 一部のテストで使用しているため削除まではnilを返す
 	return "", nil
 }

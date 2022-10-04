@@ -39,14 +39,14 @@ func TestInsertSharesSuccess(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	err_insert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+	errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
 
-	if err_insert != nil {
-		t.Error("insert shares faild: " + err_insert.Error())
+	if errInsert != nil {
+		t.Error("insert shares faild: " + errInsert.Error())
 	}
-	_, err_exist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID))
-	if err_exist != nil {
-		t.Error("insert shares faild: " + err_exist.Error())
+	_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID))
+	if errExist != nil {
+		t.Error("insert shares faild: " + errExist.Error())
 	}
 
 	initialize()
@@ -58,9 +58,9 @@ func TestInsertSharesRejectDuplicate(t *testing.T) {
 
 	client := Client{}
 	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
-	err_insert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+	errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
 
-	if err_insert == nil {
+	if errInsert == nil {
 		t.Error("insert duplicate shares must be failed, but success.")
 	}
 
@@ -76,13 +76,13 @@ func TestInsertSharesParallelSuccess(t *testing.T) {
 	for i := 1; i <= 100; i++ {
 		wg.Add(1)
 		go func(pieceId int32) {
-			err_insert := client.InsertShares(defaultDataID, defaultSchema, pieceId, defaultShares, defaultSentAt)
-			if err_insert != nil {
-				t.Error("insert shares faild: " + err_insert.Error())
+			errInsert := client.InsertShares(defaultDataID, defaultSchema, pieceId, defaultShares, defaultSentAt)
+			if errInsert != nil {
+				t.Error("insert shares faild: " + errInsert.Error())
 			}
-			_, err_exist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, pieceId))
-			if err_exist != nil {
-				t.Error("insert shares faild: " + err_exist.Error())
+			_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, pieceId))
+			if errExist != nil {
+				t.Error("insert shares faild: " + errExist.Error())
 			}
 			defer wg.Done()
 		}(int32(i))
@@ -102,8 +102,8 @@ func TestInsertSharesParallelRejectDuplicate(t *testing.T) {
 	for i := 1; i <= 100; i++ {
 		wg.Add(1)
 		go func() {
-			err_insert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
-			if err_insert == nil {
+			errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+			if errInsert == nil {
 				t.Error("insert duplicate shares must be failed, but success.")
 			}
 			defer wg.Done()
@@ -125,8 +125,8 @@ func TestDeleteSharesSuccess(t *testing.T) {
 	client := Client{}
 	client.DeleteShares(dataIds)
 
-	_, err_exist := os.Stat(fmt.Sprintf("/Db/share/%s", defaultDataID))
-	if err_exist == nil {
+	_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s", defaultDataID))
+	if errExist == nil {
 		t.Error(fmt.Sprintf("delete shares faild: '/Db/share/%s' must be deleted, but exist", defaultDataID))
 	}
 	initialize()
@@ -239,14 +239,14 @@ func TestInsertModelParamsSuccess(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	err_insert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
+	errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
 
-	if err_insert != nil {
-		t.Error("insert model params faild: " + err_insert.Error())
+	if errInsert != nil {
+		t.Error("insert model params faild: " + errInsert.Error())
 	}
-	_, err_exist := os.Stat(fmt.Sprintf("/Db/result/%s", defaultJobUUID))
-	if err_exist != nil {
-		t.Error("insert model prarams faild: " + err_exist.Error())
+	_, errExist := os.Stat(fmt.Sprintf("/Db/result/%s", defaultJobUUID))
+	if errExist != nil {
+		t.Error("insert model prarams faild: " + errExist.Error())
 	}
 
 	initialize()
@@ -258,9 +258,9 @@ func TestInsertModelParamsSuccessDuplicate(t *testing.T) {
 
 	client := Client{}
 	client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
-	err_insert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
+	errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
 
-	if err_insert == nil {
+	if errInsert == nil {
 		t.Error("insert duplicate model params must be failed, but success.")
 	}
 
@@ -276,13 +276,13 @@ func TestInsertModelParamsParallelSuccess(t *testing.T) {
 	for i := 1; i <= 100; i++ {
 		wg.Add(1)
 		go func(pieceId int32) {
-			err_insert := client.InsertModelParams(defaultJobUUID, defaultParams, pieceId)
-			if err_insert != nil {
-				t.Error("insert model params faild: " + err_insert.Error())
+			errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, pieceId)
+			if errInsert != nil {
+				t.Error("insert model params faild: " + errInsert.Error())
 			}
-			_, err_exist := os.Stat(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, pieceId))
-			if err_exist != nil {
-				t.Error("insert model params faild: " + err_exist.Error())
+			_, errExist := os.Stat(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, pieceId))
+			if errExist != nil {
+				t.Error("insert model params faild: " + errExist.Error())
 			}
 			defer wg.Done()
 		}(int32(i))
@@ -302,8 +302,8 @@ func TestInsertModelParamsParallelRejectDuplicate(t *testing.T) {
 	for i := 1; i <= 100; i++ {
 		wg.Add(1)
 		go func() {
-			err_insert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
-			if err_insert == nil {
+			errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
+			if errInsert == nil {
 				t.Error("insert duplicate shares must be failed, but success.")
 			}
 			defer wg.Done()
