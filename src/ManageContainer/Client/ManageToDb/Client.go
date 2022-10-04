@@ -97,6 +97,17 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 
 // DBから指定されたシェアを削除する
 func (c Client) DeleteShares(dataIDs []string) error {
+	for _, dataID := range dataIDs {
+		ls.Lock(dataID)
+		path := fmt.Sprintf("%s/%s", shareDbPath, dataID)
+		if isExists(path) {
+			err := os.RemoveAll(path)
+			if err != nil {
+				return err
+			}
+		}
+		ls.Unlock(dataID)
+	}
 	return nil
 }
 
