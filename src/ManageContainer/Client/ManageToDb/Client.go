@@ -72,7 +72,7 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 	if isExists(dataPath) {
 		return errors.New("重複データ登録エラー: " + dataID + "は既に登録されています．")
 	}
-	os.Mkdir(fmt.Sprintf("%s/%s", shareDbPath, dataID), 0666)
+	os.Mkdir(fmt.Sprintf("%s/%s", shareDbPath, dataID), 0777)
 
 	var sharesJson interface{}
 	errUnmarshal := json.Unmarshal([]byte(shares), &sharesJson)
@@ -93,7 +93,7 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 		return errMarshal
 	}
 
-	errWrite := ioutil.WriteFile(dataPath, bytes, 0666)
+	errWrite := ioutil.WriteFile(dataPath, bytes, 0777)
 	if errWrite != nil {
 		return errWrite
 	}
@@ -193,7 +193,7 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 	if isExists(dataPath) {
 		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
 	}
-	os.Mkdir(fmt.Sprintf("%s/%s", resultDbPath, jobUUID), 0666)
+	os.Mkdir(fmt.Sprintf("%s/%s", resultDbPath, jobUUID), 0777)
 
 	var modelParamJson interface{}
 	errUnmarshal := json.Unmarshal([]byte(params), &modelParamJson)
@@ -214,7 +214,7 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 		return errMarshal
 	}
 
-	errWrite := ioutil.WriteFile(dataPath, bytes, 0666)
+	errWrite := ioutil.WriteFile(dataPath, bytes, 0777)
 	if errWrite != nil {
 		return errWrite
 	}
