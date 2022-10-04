@@ -2,8 +2,10 @@ package mng2db
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"reflect"
 	"regexp"
 	"sync"
 	"testing"
@@ -132,10 +134,33 @@ func TestGetSchemaSuccess(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/Db/share/%s", defaultDataID), 0777)
-	// TODO: insert shareと同じことをするため保留
+	data := "{\"meta\":{\"schema\":[\"attr1\",\"attr2\",\"attr3\"]}}"
+	ioutil.WriteFile(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
-	client.GetSchema(defaultDataID)
+	schema, err := client.GetSchema(defaultDataID)
+
+	if err != nil {
+		t.Error("get schema faild: " + err.Error())
+	}
+	cor := []string{"attr1", "attr2", "attr3"}
+	if !reflect.DeepEqual(schema, cor) {
+		t.Errorf("get schema faild: schema must be %v, but value is %v", cor, schema)
+	}
+
+	initialize()
+}
+
+// 保存されていないSchemaでエラーがでるかTest
+func TestGetSchemaFailedEmptyID(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	_, err := client.GetSchema(defaultDataID)
+
+	if err == nil {
+		t.Error("get schema must be faild: data is not registered.")
+	}
 
 	initialize()
 }

@@ -113,7 +113,28 @@ func (c Client) DeleteShares(dataIDs []string) error {
 
 // DBからschemaを得る
 func (c Client) GetSchema(dataID string) ([]string, error) {
-	return []string{}, nil
+
+	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 1)
+	ls.Lock(path)
+	defer ls.Unlock(path)
+
+	if !isExists(path) {
+		errMessage := "データ未登録エラー: " + dataID + "は登録されていません．"
+		return []string{}, errors.New(errMessage)
+	}
+
+	raw, errRead := ioutil.ReadFile(path)
+	if errRead != nil {
+		return []string{}, errRead
+	}
+
+	var data Share
+	errUnmarshal := json.Unmarshal(raw, &data)
+	if errUnmarshal != nil {
+		return []string{}, errUnmarshal
+	}
+
+	return data.Meta.Schema, nil
 }
 
 // DBから計算結果を得る
