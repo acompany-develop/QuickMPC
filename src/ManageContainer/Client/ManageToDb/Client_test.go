@@ -235,7 +235,7 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 
 /* InsertModelParams(string, string, int32) error */
 // モデルパラメータが送れるかTest
-func TestInsertModelParams(t *testing.T) {
+func TestInsertModelParamsSuccess(t *testing.T) {
 	initialize()
 
 	client := Client{}
@@ -244,7 +244,7 @@ func TestInsertModelParams(t *testing.T) {
 	if err_insert != nil {
 		t.Error("insert model params faild: " + err_insert.Error())
 	}
-	_, err_exist := os.Stat(fmt.Sprintf("/Db/share/%s", defaultJobUUID))
+	_, err_exist := os.Stat(fmt.Sprintf("/Db/result/%s", defaultJobUUID))
 	if err_exist != nil {
 		t.Error("insert model prarams faild: " + err_exist.Error())
 	}
@@ -253,17 +253,63 @@ func TestInsertModelParams(t *testing.T) {
 }
 
 // 重複モデルパラメータを弾くかTest
-func TestInsertModelParamsDuplicate(t *testing.T) {
+func TestInsertModelParamsSuccessDuplicate(t *testing.T) {
 	initialize()
-	const sameJobUUID = defaultJobUUID
 
 	client := Client{}
 	client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
-	err_insert := client.InsertModelParams(sameJobUUID, defaultParams, defaultPieceID)
+	err_insert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
 
 	if err_insert == nil {
 		t.Error("insert duplicate model params must be failed, but success.")
 	}
+
+	initialize()
+}
+
+// pieceが同時に送信されて保存されるかTest
+func TestInsertModelParamsParallelSuccess(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	wg := sync.WaitGroup{}
+	for i := 1; i <= 100; i++ {
+		wg.Add(1)
+		go func(pieceId int32) {
+			err_insert := client.InsertModelParams(defaultJobUUID, defaultParams, pieceId)
+			if err_insert != nil {
+				t.Error("insert model params faild: " + err_insert.Error())
+			}
+			_, err_exist := os.Stat(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, pieceId))
+			if err_exist != nil {
+				t.Error("insert model params faild: " + err_exist.Error())
+			}
+			defer wg.Done()
+		}(int32(i))
+	}
+	wg.Wait()
+
+	initialize()
+}
+
+// 同じShareが同時に送信されてエラーが出るかTest
+func TestInsertModelParamsParallelRejectDuplicate(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
+	wg := sync.WaitGroup{}
+	for i := 1; i <= 100; i++ {
+		wg.Add(1)
+		go func() {
+			err_insert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
+			if err_insert == nil {
+				t.Error("insert duplicate shares must be failed, but success.")
+			}
+			defer wg.Done()
+		}()
+	}
+	wg.Wait()
 
 	initialize()
 }

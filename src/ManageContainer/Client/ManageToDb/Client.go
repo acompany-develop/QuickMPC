@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
+	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
 // 同一IDに対する同時処理を防ぐためのもの
@@ -182,6 +183,38 @@ func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, erro
 
 // DBにモデルパラメータを保存する
 func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) error {
+	dataPath := fmt.Sprintf("%s/%s/%d", resultDbPath, jobUUID, pieceId)
+	ls.Lock(dataPath)
+	defer ls.Unlock(dataPath)
+
+	if isExists(dataPath) {
+		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
+	}
+	os.Mkdir(fmt.Sprintf("%s/%s", resultDbPath, jobUUID), 0777)
+
+	var modelParamJson interface{}
+	errUnmarshal := json.Unmarshal([]byte(params), &modelParamJson)
+	if errUnmarshal != nil {
+		return errUnmarshal
+	}
+
+	saveParams := ComputationResult{
+		JobUUID: jobUUID,
+		Meta: ComputationResultMeta{
+			PieceID: pieceId,
+		},
+		Result: params,
+		Status: int32(pb_types.JobStatus_COMPLETED),
+	}
+	bytes, errMarshal := json.Marshal(saveParams)
+	if errMarshal != nil {
+		return errMarshal
+	}
+
+	errWrite := ioutil.WriteFile(dataPath, bytes, 0666)
+	if errWrite != nil {
+		return errWrite
+	}
 	return nil
 }
 
