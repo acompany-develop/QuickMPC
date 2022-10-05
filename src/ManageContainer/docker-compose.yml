@@ -24,6 +24,9 @@ services:
       - type: bind
         source: ../../.vscode
         target: /QuickMPC/.vscode
+      - type: bind
+        source: ../Db/
+        target: /Db
     env_file:
       - ../../Config/ManageContainer/Manage1/.src.env
     networks:

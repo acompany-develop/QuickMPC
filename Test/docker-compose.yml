@@ -504,6 +504,12 @@ services:
       - type: bind
         source: ../.vscode
         target: /QuickMPC/.vscode
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage1/.env
     expose:
@@ -557,6 +563,12 @@ services:
       - type: bind
         source: ../Config/ManageContainer/Manage2
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb2_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb2_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage2/.env
     expose:
@@ -610,6 +622,12 @@ services:
       - type: bind
         source: ../Config/ManageContainer/Manage3
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb3_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb3_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage3/.env
     expose:
@@ -711,6 +729,13 @@ services:
       context: ../
       dockerfile: src/ManageContainer/Dockerfile
       target: small
+    volumes:
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage1/.env
 
@@ -1118,6 +1143,13 @@ volumes:
   sharedb2-initialized:
   sharedb3:
   sharedb3-initialized:
+  # TODO: DB削除が完了したら↑のsharedb*を消す
+  sharedb1_tmp:
+  sharedb2_tmp:
+  sharedb3_tmp:
+  resultdb1_tmp:
+  resultdb2_tmp:
+  resultdb3_tmp:
 networks:
   shared-network:
     external: true
