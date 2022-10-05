@@ -43,11 +43,11 @@ func TestInsertSharesSuccess(t *testing.T) {
 	errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
 
 	if errInsert != nil {
-		t.Error("insert shares faild: " + errInsert.Error())
+		t.Error("insert shares failed: " + errInsert.Error())
 	}
 	_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID))
 	if errExist != nil {
-		t.Error("insert shares faild: " + errExist.Error())
+		t.Error("insert shares failed: " + errExist.Error())
 	}
 
 	initialize()
@@ -79,11 +79,11 @@ func TestInsertSharesParallelSuccess(t *testing.T) {
 		go func(pieceId int32) {
 			errInsert := client.InsertShares(defaultDataID, defaultSchema, pieceId, defaultShares, defaultSentAt)
 			if errInsert != nil {
-				t.Error("insert shares faild: " + errInsert.Error())
+				t.Error("insert shares failed: " + errInsert.Error())
 			}
 			_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, pieceId))
 			if errExist != nil {
-				t.Error("insert shares faild: " + errExist.Error())
+				t.Error("insert shares failed: " + errExist.Error())
 			}
 			defer wg.Done()
 		}(int32(i))
@@ -128,7 +128,7 @@ func TestDeleteSharesSuccess(t *testing.T) {
 
 	_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s", defaultDataID))
 	if errExist == nil {
-		t.Error(fmt.Sprintf("delete shares faild: '/Db/share/%s' must be deleted, but exist", defaultDataID))
+		t.Error(fmt.Sprintf("delete shares failed: '/Db/share/%s' must be deleted, but exist", defaultDataID))
 	}
 	initialize()
 }
@@ -146,11 +146,11 @@ func TestGetSchemaSuccess(t *testing.T) {
 	schema, err := client.GetSchema(defaultDataID)
 
 	if err != nil {
-		t.Error("get schema faild: " + err.Error())
+		t.Error("get schema failed: " + err.Error())
 	}
 	cor := []string{"attr1", "attr2", "attr3"}
 	if !reflect.DeepEqual(schema, cor) {
-		t.Errorf("get schema faild: schema must be %v, but value is %v", cor, schema)
+		t.Errorf("get schema failed: schema must be %v, but value is %v", cor, schema)
 	}
 
 	initialize()
@@ -164,7 +164,7 @@ func TestGetSchemaFailedEmptyID(t *testing.T) {
 	_, err := client.GetSchema(defaultDataID)
 
 	if err == nil {
-		t.Error("get schema must be faild: data is not registered.")
+		t.Error("get schema must be failed: data is not registered.")
 	}
 
 	initialize()
@@ -185,19 +185,19 @@ func TestGetComputationResultSuccess(t *testing.T) {
 	result, err := client.GetComputationResult(defaultJobUUID)
 
 	if err != nil {
-		t.Error("get computation result faild: " + err.Error())
+		t.Error("get computation result failed: " + err.Error())
 	}
 	if result[0].JobUUID != defaultJobUUID {
-		t.Error(fmt.Sprintf("get computation result faild: JobUUID must be %s, but value is %s", defaultJobUUID, result[0].JobUUID))
+		t.Error(fmt.Sprintf("get computation result failed: JobUUID must be %s, but value is %s", defaultJobUUID, result[0].JobUUID))
 	}
 	if result[0].Result != defaultResult {
-		t.Error(fmt.Sprintf("get computation result faild: Result must be %s, but value is %s", defaultResult, result[0].Result))
+		t.Error(fmt.Sprintf("get computation result failed: Result must be %s, but value is %s", defaultResult, result[0].Result))
 	}
 	if result[0].Meta.PieceID != defaultPieceID {
-		t.Error(fmt.Sprintf("get computation result faild: PieceID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
+		t.Error(fmt.Sprintf("get computation result failed: PieceID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
 	}
 	if result[0].Status != int32(pb_types.JobStatus_COMPLETED) {
-		t.Error(fmt.Sprintf("get computation result faild: Status must be %d, but value is %d", pb_types.JobStatus_COMPLETED, result[0].Status))
+		t.Error(fmt.Sprintf("get computation result failed: Status must be %d, but value is %d", pb_types.JobStatus_COMPLETED, result[0].Status))
 	}
 
 	initialize()
@@ -211,7 +211,7 @@ func TestGetComputationResultFailedEmptyResult(t *testing.T) {
 	_, err := client.GetComputationResult(defaultJobUUID)
 
 	if err == nil {
-		t.Error("get computation result must be faild: result is not registered.")
+		t.Error("get computation result must be failed: result is not registered.")
 	}
 
 	initialize()
@@ -229,7 +229,7 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 	_, err := client.GetComputationResult(defaultJobUUID)
 
 	if err == nil {
-		t.Error("get computation result must be faild: computation is running(complated file is not found).")
+		t.Error("get computation result must be failed: computation is running(complated file is not found).")
 	}
 
 	initialize()
@@ -250,11 +250,11 @@ func TestGetComputationResultSuccessGetStatus(t *testing.T) {
 		result, err := client.GetComputationResult(defaultJobUUID)
 
 		if err != nil {
-			t.Error("get computation result faild: " + err.Error())
+			t.Error("get computation result failed: " + err.Error())
 		}
 		resultIndex := result[0].Status
 		if resultIndex != int32(i) {
-			t.Errorf("get computation result faild: status must be %s, but value is %s.", status, pb_types.JobStatus_name[resultIndex])
+			t.Errorf("get computation result failed: status must be %s, but value is %s.", status, pb_types.JobStatus_name[resultIndex])
 		}
 	}
 
@@ -270,11 +270,11 @@ func TestInsertModelParamsSuccess(t *testing.T) {
 	errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
 
 	if errInsert != nil {
-		t.Error("insert model params faild: " + errInsert.Error())
+		t.Error("insert model params failed: " + errInsert.Error())
 	}
 	_, errExist := os.Stat(fmt.Sprintf("/Db/result/%s", defaultJobUUID))
 	if errExist != nil {
-		t.Error("insert model prarams faild: " + errExist.Error())
+		t.Error("insert model prarams failed: " + errExist.Error())
 	}
 
 	initialize()
@@ -306,11 +306,11 @@ func TestInsertModelParamsParallelSuccess(t *testing.T) {
 		go func(pieceId int32) {
 			errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, pieceId)
 			if errInsert != nil {
-				t.Error("insert model params faild: " + errInsert.Error())
+				t.Error("insert model params failed: " + errInsert.Error())
 			}
 			_, errExist := os.Stat(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, pieceId))
 			if errExist != nil {
-				t.Error("insert model params faild: " + errExist.Error())
+				t.Error("insert model params failed: " + errExist.Error())
 			}
 			defer wg.Done()
 		}(int32(i))
