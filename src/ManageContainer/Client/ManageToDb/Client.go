@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
@@ -143,25 +144,40 @@ func (c Client) GetSchema(dataID string) ([]string, error) {
 	return data.Meta.Schema, nil
 }
 
+func getComputationStatus(path string) (int32, error) {
+	statusSize := len(pb_types.JobStatus_value)
+	for i := statusSize - 1; i > 0; i-- {
+		status := pb_types.JobStatus_name[int32(i)]
+		if isExists(fmt.Sprintf("%s/status_%s", path, status)) {
+			return int32(i), nil
+		}
+	}
+	errMessage := fmt.Sprintf("computation result status is not found")
+	return 0, errors.New(errMessage)
+}
+
 // DBから計算結果を得る
 func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+
+	status, errStatus := getComputationStatus(path)
+	if errStatus != nil {
+		return nil, errStatus
+	}
+
 	if !isExists(path + "/completed") {
-		// TODO: statusの保存方法を決定して取得する
-		// 旧仕様では存在しない場合はstatusだけ返してエラーはnilとしてる
-		// statusすら存在しない場合に限りエラーを返す
-		status := 0
-		errMessage := fmt.Sprintf("computation result is not found: status is %d", status)
-		return nil, errors.New(errMessage)
+		// statusが存在する場合はstatusだけ返してエラーはnilとする
+		return []*ComputationResult{{Status: status}}, nil
 	}
 
 	var computationResults []*ComputationResult
+	isStatusFile := regexp.MustCompile(".*status_*|.*/completed")
 	files, _ := filepath.Glob(path + "/*")
 	for _, piecePath := range files {
-		if piecePath == path+"/completed" {
+		if isStatusFile.MatchString(piecePath) {
 			continue
 		}
 		raw, errRead := ioutil.ReadFile(piecePath)
@@ -181,6 +197,8 @@ func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, erro
 		return nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
 	}
 
+	// CC側でStatusが更新されないためここで更新する
+	computationResults[0].Status = status
 	return computationResults, nil
 }
 

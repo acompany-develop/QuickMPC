@@ -9,6 +9,8 @@ import (
 	"regexp"
 	"sync"
 	"testing"
+
+	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
 // DBを初期化する
@@ -174,9 +176,10 @@ func TestGetComputationResultSuccess(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
-	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"status\":1,\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":1}}"
+	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":1}}"
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
+	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
 	result, err := client.GetComputationResult(defaultJobUUID)
@@ -191,10 +194,10 @@ func TestGetComputationResultSuccess(t *testing.T) {
 		t.Error(fmt.Sprintf("get computation result faild: Result must be %s, but value is %s", defaultResult, result[0].Result))
 	}
 	if result[0].Meta.PieceID != defaultPieceID {
-		t.Error(fmt.Sprintf("get computation result faild: JobUUID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
+		t.Error(fmt.Sprintf("get computation result faild: PieceID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
 	}
-	if result[0].Status != 1 {
-		t.Error(fmt.Sprintf("get computation result faild: JobUUID must be %d, but value is %d", 1, result[0].Status))
+	if result[0].Status != int32(pb_types.JobStatus_COMPLETED) {
+		t.Error(fmt.Sprintf("get computation result faild: Status must be %d, but value is %d", pb_types.JobStatus_COMPLETED, result[0].Status))
 	}
 
 	initialize()
@@ -214,7 +217,7 @@ func TestGetComputationResultFailedEmptyResult(t *testing.T) {
 	initialize()
 }
 
-// completedファイルが存在しない場合にエラーがでるかTest
+// statusもcompletedも存在しない場合にエラーがでるかTest
 func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 	initialize()
 
@@ -227,6 +230,32 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 
 	if err == nil {
 		t.Error("get computation result must be faild: computation is running(complated file is not found).")
+	}
+
+	initialize()
+}
+
+// complatedでなくても最新のstatusが正しく取得できるかTest
+func TestGetComputationResultSuccessGetStatus(t *testing.T) {
+	initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	statusSize := len(pb_types.JobStatus_value)
+	// UNKNOWNを除く各Statusについて昇順にチェック
+	for i := 1; i < statusSize; i++ {
+		status := pb_types.JobStatus_name[int32(i)]
+		os.Create(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, status))
+
+		client := Client{}
+		result, err := client.GetComputationResult(defaultJobUUID)
+
+		if err != nil {
+			t.Error("get computation result faild: " + err.Error())
+		}
+		resultIndex := result[0].Status
+		if resultIndex != int32(i) {
+			t.Errorf("get computation result faild: status must be %s, but value is %s.", status, pb_types.JobStatus_name[resultIndex])
+		}
 	}
 
 	initialize()
