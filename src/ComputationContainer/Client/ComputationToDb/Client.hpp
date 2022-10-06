@@ -14,6 +14,9 @@ namespace qmpc::ComputationToDb
 {
 class Client final
 {
+    static inline const std::string shareDbPath = "/Db/share/";
+    static inline const std::string resultDbPath = "/Db/result/";
+
 public:
     Client();
     static std::shared_ptr<Client> getInstance();
