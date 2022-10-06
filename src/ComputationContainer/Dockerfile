@@ -109,7 +109,7 @@ RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.11 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
-FROM builder_debug as small
+FROM builder_base as small
 ENV PARTY_ID=1
 COPY Config/ComputationContainer/Compute${PARTY_ID}/.src.env /QuickMPC/Config/.env
 RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
