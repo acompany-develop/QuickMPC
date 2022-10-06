@@ -137,5 +137,8 @@ cc_test(
         "@gtest//:main",
         "//Client/ComputationToDb:client",
     ],
+    linkopts = [
+        "-lstdc++fs"
+    ],
     visibility = ["//visibility:public"],
 )

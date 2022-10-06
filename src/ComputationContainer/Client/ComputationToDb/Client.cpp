@@ -1,7 +1,12 @@
 #include "Client.hpp"
 
+#include <experimental/filesystem>
+
 namespace qmpc::ComputationToDb
 {
+
+namespace fs = std::experimental::filesystem;
+
 Client::Client() {}
 
 std::shared_ptr<Client> Client::getInstance()

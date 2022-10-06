@@ -11,6 +11,9 @@ cc_library(
         "//Client/ComputationToDbGate:valuetable",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
     ],
+    linkopts = [
+        "-lstdc++fs"
+    ],
     visibility = ["//visibility:public"],
 )
 
