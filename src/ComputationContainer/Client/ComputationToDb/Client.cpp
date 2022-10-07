@@ -122,9 +122,27 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
 // tableデータを結合して取り出す
 ValueTable Client::readTable(const managetocomputation::JoinOrder &table)
 {
-    std::vector<std::vector<std::string>> t;
-    std::vector<std::string> s;
-    return ValueTable(t, s);
+    // requestからデータ読み取り
+    auto size = table.join().size();
+    std::vector<int> join;
+    join.reserve(size);
+    for (const auto &j : table.join())
+    {
+        join.emplace_back(j);
+    }
+    std::vector<int> index;
+    index.reserve(size);
+    for (const auto &j : table.index())
+    {
+        index.emplace_back(j);
+    }
+    std::vector<ValueTable> tables;
+    tables.reserve(size + 1);
+    for (const auto &dataId : table.dataids())
+    {
+        tables.emplace_back(this->readShare(dataId));
+    }
+    return parseRead(tables, join, index);
 }
 
 }  // namespace qmpc::ComputationToDb
