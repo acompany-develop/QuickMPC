@@ -25,7 +25,6 @@ std::shared_ptr<Client> Client::getInstance()
 ValueTable Client::readShare(const std::string &data_id) const
 {
     // DBから値を取り出す
-    using PAIR = std::pair<int, const nlohmann::json &>;
     std::map<int, nlohmann::json> pieces;
     int all_size = 0;
     std::vector<std::string> schemas;
