@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	m2c "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToComputationContainer"
-	m2dg "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDbGate"
+	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
 	m2m "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToManageContainer"
 	m2t "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToTokenCA"
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
@@ -22,7 +22,7 @@ import (
 // ServerのInterface定義
 type server struct {
 	pb.UnimplementedLibcToManageServer
-	m2dbclient m2dg.M2DbClient
+	m2dbclient m2db.M2DbClient
 	m2cclient  m2c.M2CClient
 	m2mclient  m2m.M2MClient
 	m2tclient  m2t.M2TCAClient
@@ -373,7 +373,7 @@ func RunServer() {
 	s := common.NewServer()
 	reflection.Register(s)
 
-	pb.RegisterLibcToManageServer(s, &server{m2dbclient: m2dg.Client{}, m2cclient: m2c.Client{}, m2mclient: m2m.Client{}, m2tclient: m2t.Client{}})
+	pb.RegisterLibcToManageServer(s, &server{m2dbclient: m2db.Client{}, m2cclient: m2c.Client{}, m2mclient: m2m.Client{}, m2tclient: m2t.Client{}})
 
 	AppLogger.Info("L2m Server listening on", port)
 	if err := s.Serve(lis); err != nil {
