@@ -2,6 +2,7 @@
 
 #include <experimental/filesystem>
 #include <fstream>
+#include <regex>
 
 #include "external/Proto/common_types/common_types.pb.h"
 
@@ -65,8 +66,11 @@ std::string Client::readModelparamString(const std::string &job_uuid) const
 {
     // DBから値を取り出す
     std::map<int, std::string> pieces;
+    std::regex is_status_file(R"((.*/completed)|(.*/status_.*))");
     for (const auto &entry : fs::directory_iterator(resultDbPath + job_uuid))
     {
+        if (std::regex_match(entry.path().string(), is_status_file)) continue;
+
         auto ifs = std::ifstream(entry.path());
         std::string data;
         getline(ifs, data);
