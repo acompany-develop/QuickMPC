@@ -62,6 +62,7 @@ public:
             ofs << data;
             ofs.close();
         }
+        std::ofstream(resultDbPath + job_uuid + "/completed");
     }
 };
 }  // namespace qmpc::ComputationToDb

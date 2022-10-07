@@ -365,3 +365,19 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultJsonPieceTest)
     initialize();
 }
 
+TEST(ComputationToDbTest, SuccessWriteComputationResultCompletedTest)
+{
+    initialize();
+
+    const std::string job_uuid = "WriteComputationResultTestId";
+    const std::vector<std::vector<std::string>> data = {{"12", "15", "21"}};
+    fs::create_directories("/Db/result/" + job_uuid);
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    cc_to_db->writeComputationResult(job_uuid, data);
+
+    auto exist = fs::exists("/Db/result/" + job_uuid + "/completed");
+    EXPECT_TRUE(exist);
+
+    initialize();
+}
