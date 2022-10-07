@@ -64,8 +64,7 @@ ValueTable Client::readShare(const std::string &data_id) const
     return ValueTable(table, schemas);
 }
 
-// model parameter(vector)の取り出し
-std::vector<std::string> Client::readModelparam(const std::string &job_uuid) const
+std::string Client::readModelparamString(const std::string &job_uuid) const
 {
     // DBから値を取り出す
     std::map<int, std::string> pieces;
@@ -86,14 +85,24 @@ std::vector<std::string> Client::readModelparam(const std::string &job_uuid) con
         static_cast<void>(_);
         result_str += piece;
     }
+    return result_str;
+}
 
+// model parameter(vector)の取り出し
+std::vector<std::string> Client::readModelparam(const std::string &job_uuid) const
+{
+    auto result_str = readModelparamString(job_uuid);
     auto result_json = nlohmann::json::parse(result_str);
     std::vector<std::string> result(result_json.begin(), result_json.end());
     return result;
 }
 
 // model parameter(json)の取り出し
-nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const { return {}; }
+nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
+{
+    auto result_str = readModelparamString(job_uuid);
+    return nlohmann::json::parse(result_str);
+}
 
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const {}

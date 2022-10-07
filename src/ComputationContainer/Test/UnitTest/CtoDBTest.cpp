@@ -117,7 +117,6 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
 
     initialize();
 }
-*/
 
 // model parameter(vector)の取り出し
 // std::vector<std::string> Client::readModelparam(const std::string &job_uuid);
@@ -171,13 +170,62 @@ TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
 
     initialize();
 }
+*/
 
-/*
 // model parameter(json)の取り出し
 // nlohmann::json Client::readModelparamJson(const std::string &job_uuid);
-TEST(ComputationToDbTest, SuccessReadModelParamJsonTest) {}
-TEST(ComputationToDbTest, SuccessReadModelParamJsonPieceTest) {}
+TEST(ComputationToDbTest, SuccessReadModelParamJsonTest)
+{
+    initialize();
 
+    const std::string job_uuid = "ReadModelParamTestId";
+    const std::string data =
+        "{\"result\":\"{\\\"key1\\\":1,\\\"key2\\\":{\\\"key3\\\":\\\"val\\\"}}\""
+        ",\"meta\":{\"piece_id\":0}}";
+    fs::create_directories("/Db/result/" + job_uuid);
+    auto ofs = std::ofstream("/Db/result/" + job_uuid + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto read_data = cc_to_db->readModelparamJson(job_uuid);
+
+    nlohmann::json true_result = {{"key1", 1}, {"key2", {{"key3", "val"}}}};
+    EXPECT_EQ(true_result, read_data);
+
+    initialize();
+}
+TEST(ComputationToDbTest, SuccessReadModelParamJsonPieceTest)
+{
+    initialize();
+
+    const std::string job_uuid = "ReadModelParamTestId";
+    const std::vector<std::string> data = {
+        "{\"result\":\"{\\\"key1\\\"\""
+        ",\"meta\":{\"piece_id\":0}}",
+        "{\"result\":\":1,\\\"key2\\\":{\\\"ke\""
+        ",\"meta\":{\"piece_id\":1}}",
+        "{\"result\":\"y3\\\":\\\"val\\\"}}\""
+        ",\"meta\":{\"piece_id\":2}}",
+    };
+    fs::create_directories("/Db/result/" + job_uuid);
+    for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
+    {
+        auto ofs = std::ofstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
+        ofs << data[piece_id];
+        ofs.close();
+    }
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto read_data = cc_to_db->readModelparamJson(job_uuid);
+
+    nlohmann::json true_result = {{"key1", 1}, {"key2", {{"key3", "val"}}}};
+    EXPECT_EQ(true_result, read_data);
+
+    initialize();
+}
+
+/*
 // Job を DB に新規登録する
 // void Client::registerJob(const std::string &job_uuid, const int &status);
 TEST(ComputationToDbTest, SuccessRregisterJobTest) {}
