@@ -3,8 +3,8 @@
 #include <boost/format.hpp>
 #include <optional>
 #include <stdexcept>
-
-#include "Client/ComputationToDbGate/Client.hpp"
+;
+#include "Client/ComputationToDb/Client.hpp"
 #include "Logging/Logger.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
 namespace qmpc::Job
@@ -14,8 +14,8 @@ using Status = pb_common_types::JobStatus;
 
 class StatusManager
 {
-    std::shared_ptr<qmpc::ComputationToDbGate::Client> db_client =
-        qmpc::ComputationToDbGate::Client::getInstance();
+    std::shared_ptr<qmpc::ComputationToDb::Client> db_client =
+        qmpc::ComputationToDb::Client::getInstance();
     std::optional<std::string> job_uuid;
     Status status;
 

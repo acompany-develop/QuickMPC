@@ -1,6 +1,5 @@
 #include "ModelBase.hpp"
 
-#include "Client/ComputationToDbGate/Client.hpp"
 #include "LogHeader/Logger.hpp"
 #include "nlohmann/json.hpp"
 
@@ -13,7 +12,7 @@ std::pair<std::vector<std::vector<Share>>, std::vector<std::string>> ModelBase::
     statusManager.nextStatus();
 
     // table結合
-    auto db_client = qmpc::ComputationToDbGate::Client::getInstance();
+    auto db_client = qmpc::ComputationToDb::Client::getInstance();
     auto joinTable = db_client->readTable(request.table());
     auto values = joinTable.getTable();
 

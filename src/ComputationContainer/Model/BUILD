@@ -10,7 +10,7 @@ cc_library(
         "@nlohmann_json//:json",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "//Share:share",
-        "//Client/ComputationToDbGate:client",
+        "//Client/ComputationToDb:client",
         "//Client/ComputationToDbGate:valuetable",
         "//Job:jobStatus",
         "//LogHeader:logger",

@@ -3,7 +3,7 @@
 #include <boost/range/adaptor/indexed.hpp>
 #include <chrono>
 
-#include "Client/ComputationToDbGate/Client.hpp"
+#include "Client/ComputationToDb/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "Model/ModelBase.hpp"
 
@@ -59,7 +59,7 @@ public:
     {
         spdlog::info("[progress] Linear Regression: predict: pre-processing (0/2)");
 
-        auto db_client = qmpc::ComputationToDbGate::Client::getInstance();
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto a_str = db_client->readModelparam(model_param_job_uuid);
         auto a = std::vector<Share>(a_str.begin(), a_str.end());
         auto x = parse_table(table, arg);

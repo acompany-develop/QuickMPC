@@ -13,7 +13,6 @@ cc_library(
         "@nlohmann_json//:json",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "//Server/ComputationToComputationContainerForJob:server",
-        "//Client/ComputationToDbGate:client",
         "//Job:jobManager",
         "//Model:modelManager",
         "@com_github_grpc_grpc//:grpc++",
