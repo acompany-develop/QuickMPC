@@ -32,7 +32,7 @@ ValueTable Client::readShare(const std::string &data_id) const
     {
         auto ifs = std::ifstream(entry.path());
         std::string data;
-        ifs >> data;
+        getline(ifs, data);
         auto json = nlohmann::json::parse(data);
 
         all_size += json["value"].size();
@@ -69,7 +69,7 @@ std::string Client::readModelparamString(const std::string &job_uuid) const
     {
         auto ifs = std::ifstream(entry.path());
         std::string data;
-        ifs >> data;
+        getline(ifs, data);
 
         auto json = nlohmann::json::parse(data);
         pieces.emplace(json["meta"]["piece_id"], json["result"]);

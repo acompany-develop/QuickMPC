@@ -277,7 +277,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArrayTest)
 
     auto ifs = std::ifstream("/Db/result/" + job_uuid + "/0");
     std::string read_data;
-    ifs >> read_data;
+    getline(ifs, read_data);
     const auto true_data =
         "{\"job_uuid\":\"WriteComputationResultTestId\""
         ",\"meta\":{\"piece_id\":0}"
@@ -300,7 +300,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultJsonTest)
 
     auto ifs = std::ifstream("/Db/result/" + job_uuid + "/0");
     std::string read_data;
-    ifs >> read_data;
+    getline(ifs, read_data);
     const auto true_data =
         "{\"job_uuid\":\"WriteComputationResultTestId\""
         ",\"meta\":{\"piece_id\":0}"
@@ -326,7 +326,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArrayPieceTest)
     {
         auto ifs = std::ifstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
         std::string read_data;
-        ifs >> read_data;
+        getline(ifs, read_data);
         const auto true_data =
             "{\"job_uuid\":\"WriteComputationResultTestId\""
             ",\"meta\":{\"piece_id\":"
@@ -354,7 +354,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultJsonPieceTest)
     {
         auto ifs = std::ifstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
         std::string read_data;
-        ifs >> read_data;
+        getline(ifs, read_data);
         const auto true_data =
             "{\"job_uuid\":\"WriteComputationResultTestId\""
             ",\"meta\":{\"piece_id\":"
