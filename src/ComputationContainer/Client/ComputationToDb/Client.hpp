@@ -45,6 +45,23 @@ public:
         const std::string &job_uuid, const T &results, int piece_size = 1000000
     ) const
     {
+        const nlohmann::json data_json = results;
+        const std::string data_str = data_json.dump();
+
+        // 巨大なデータはpieceに分割して保存する
+        for (size_t left = 0; left < data_str.size(); left += piece_size)
+        {
+            const auto piece_str = data_str.substr(left, piece_size);
+            const int piece_id = left / piece_size;
+
+            nlohmann::json piece_data_json = {
+                {"job_uuid", job_uuid}, {"result", piece_str}, {"meta", {{"piece_id", piece_id}}}};
+            const std::string data = piece_data_json.dump();
+
+            auto ofs = std::ofstream(resultDbPath + job_uuid + "/" + std::to_string(piece_id));
+            ofs << data;
+            ofs.close();
+        }
     }
 };
 }  // namespace qmpc::ComputationToDb

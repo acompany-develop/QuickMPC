@@ -4,10 +4,6 @@
 #include <fstream>
 
 #include "external/Proto/common_types/common_types.pb.h"
-// XXX: 実装終わったら削除する
-#include <iostream>
-using std::cout;
-using std::endl;
 
 namespace qmpc::ComputationToDb
 {
