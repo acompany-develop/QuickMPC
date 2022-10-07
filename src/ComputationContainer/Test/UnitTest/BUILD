@@ -136,6 +136,7 @@ cc_test(
     deps = [
         "@gtest//:main",
         "//Client/ComputationToDb:client",
+        "@Proto//common_types:common_types_cc_proto",
     ],
     linkopts = [
         "-lstdc++fs"

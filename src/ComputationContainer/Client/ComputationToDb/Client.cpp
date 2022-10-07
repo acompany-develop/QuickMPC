@@ -2,6 +2,8 @@
 
 #include <experimental/filesystem>
 #include <fstream>
+
+#include "external/Proto/common_types/common_types.pb.h"
 // XXX: 実装終わったら削除する
 #include <iostream>
 using std::cout;
@@ -105,10 +107,21 @@ nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
 }
 
 // Job を DB に新規登録する
-void Client::registerJob(const std::string &job_uuid, const int &status) const {}
+void Client::registerJob(const std::string &job_uuid, const int &status) const
+{
+    fs::create_directories(resultDbPath + job_uuid);
+    updateJobStatus(job_uuid, status);
+}
 
 // Job の実行状態を更新する
-void Client::updateJobStatus(const std::string &job_uuid, const int &status) const {}
+void Client::updateJobStatus(const std::string &job_uuid, const int &status) const
+{
+    const google::protobuf::EnumDescriptor *descriptor =
+        google::protobuf::GetEnumDescriptor<pb_common_types::JobStatus>();
+    std::ofstream(
+        resultDbPath + job_uuid + "/status_" + descriptor->FindValueByNumber(status)->name()
+    );
+}
 
 // tableデータを結合して取り出す
 ValueTable Client::readTable(const managetocomputation::JoinOrder &table)

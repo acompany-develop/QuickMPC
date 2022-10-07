@@ -2,6 +2,7 @@
 #include <fstream>
 
 #include "Client/ComputationToDb/Client.hpp"
+#include "external/Proto/common_types/common_types.pb.h"
 #include "gtest/gtest.h"
 namespace fs = std::experimental::filesystem;
 
@@ -13,11 +14,11 @@ using std::endl;
 // DBを初期化する
 auto initialize()
 {
-    for (const auto& entry : fs::directory_iterator("/Db/share/"))
+    for (const auto &entry : fs::directory_iterator("/Db/share/"))
     {
         if (fs::is_directory(entry.path())) fs::remove_all(entry.path());
     }
-    for (const auto& entry : fs::directory_iterator("/Db/result/"))
+    for (const auto &entry : fs::directory_iterator("/Db/result/"))
     {
         if (fs::is_directory(entry.path())) fs::remove_all(entry.path());
     }
@@ -170,7 +171,6 @@ TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
 
     initialize();
 }
-*/
 
 // model parameter(json)の取り出し
 // nlohmann::json Client::readModelparamJson(const std::string &job_uuid);
@@ -224,16 +224,51 @@ TEST(ComputationToDbTest, SuccessReadModelParamJsonPieceTest)
 
     initialize();
 }
+*/
 
-/*
 // Job を DB に新規登録する
 // void Client::registerJob(const std::string &job_uuid, const int &status);
-TEST(ComputationToDbTest, SuccessRregisterJobTest) {}
+TEST(ComputationToDbTest, SuccessRregisterJobTest)
+{
+    initialize();
+
+    const std::string job_uuid = "RregisterJobTestId";
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    cc_to_db->registerJob(job_uuid, pb_common_types::JobStatus::UNKNOWN);
+
+    auto exist = fs::exists("/Db/result/" + job_uuid);
+    EXPECT_TRUE(exist);
+
+    initialize();
+}
 
 // Job の実行状態を更新する
 // void Client::updateJobStatus(const std::string &job_uuid, const int &status);
-TEST(ComputationToDbTest, SuccessupdateJobStatusTest) {}
+TEST(ComputationToDbTest, SuccessupdateJobStatusTest)
+{
+    initialize();
 
+    const std::string job_uuid = "RregisterJobTestId";
+    fs::create_directories("/Db/result/" + job_uuid);
+    const google::protobuf::EnumDescriptor *descriptor =
+        google::protobuf::GetEnumDescriptor<pb_common_types::JobStatus>();
+    for (int status = 0;; ++status)
+    {
+        auto ptr = descriptor->FindValueByNumber(status);
+        if (ptr == nullptr) break;
+
+        auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+        cc_to_db->updateJobStatus(job_uuid, status);
+
+        auto exist = fs::exists("/Db/result/" + job_uuid + "/status_" + ptr->name());
+        EXPECT_TRUE(exist);
+    }
+
+    initialize();
+}
+
+/*
 // resultの保存
 // template <class T>
 // void writeComputationResult(const std::string &job_uuid, const T &results, int piece_size);
