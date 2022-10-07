@@ -40,7 +40,7 @@ ValueTable Client::readShare(const std::string &data_id) const
 
         all_size += json["value"].size();
         auto piece_id = json["meta"]["piece_id"];
-        pieces.emplace(PAIR{piece_id, json["value"]});
+        pieces.emplace(piece_id, json["value"]);
 
         // schemaを1番目の要素だけから取り出す
         if (piece_id == 0)
@@ -65,7 +65,32 @@ ValueTable Client::readShare(const std::string &data_id) const
 }
 
 // model parameter(vector)の取り出し
-std::vector<std::string> Client::readModelparam(const std::string &job_uuid) const { return {}; }
+std::vector<std::string> Client::readModelparam(const std::string &job_uuid) const
+{
+    // DBから値を取り出す
+    std::map<int, std::string> pieces;
+    for (const auto &entry : fs::directory_iterator(resultDbPath + job_uuid))
+    {
+        auto ifs = std::ifstream(entry.path());
+        std::string data;
+        ifs >> data;
+
+        auto json = nlohmann::json::parse(data);
+        pieces.emplace(json["meta"]["piece_id"], json["result"]);
+    }
+
+    // piece_id順にresultを結合
+    std::string result_str = "";
+    for (const auto &[_, piece] : pieces)
+    {
+        static_cast<void>(_);
+        result_str += piece;
+    }
+
+    auto result_json = nlohmann::json::parse(result_str);
+    std::vector<std::string> result(result_json.begin(), result_json.end());
+    return result;
+}
 
 // model parameter(json)の取り出し
 nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const { return {}; }

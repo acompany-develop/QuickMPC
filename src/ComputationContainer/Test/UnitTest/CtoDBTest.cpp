@@ -23,6 +23,7 @@ auto initialize()
     }
 }
 
+/*
 // shareの取り出し
 // qmpc::ComputationToDbGate::ValueTable Client::readShare(const std::string &data_id);
 TEST(ComputationToDbTest, SuccessReadShareTest)
@@ -116,13 +117,62 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
 
     initialize();
 }
+*/
 
-/*
 // model parameter(vector)の取り出し
 // std::vector<std::string> Client::readModelparam(const std::string &job_uuid);
-TEST(ComputationToDbTest, SuccessReadModelParamTest) {}
-TEST(ComputationToDbTest, SuccessReadModelParamPieceTest) {}
+TEST(ComputationToDbTest, SuccessReadModelParamTest)
+{
+    initialize();
 
+    const std::string job_uuid = "ReadModelParamTestId";
+    const std::string data =
+        "{\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\""
+        ",\"meta\":{\"piece_id\":0}}";
+    fs::create_directories("/Db/result/" + job_uuid);
+    auto ofs = std::ofstream("/Db/result/" + job_uuid + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto read_data = cc_to_db->readModelparam(job_uuid);
+
+    std::vector<std::string> true_result = {"1", "2", "3"};
+    EXPECT_EQ(true_result, read_data);
+
+    initialize();
+}
+
+TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
+{
+    initialize();
+
+    const std::string job_uuid = "ReadModelParamTestId";
+    const std::vector<std::string> data = {
+        "{\"result\":\"[\\\"1\\\",\\\"2\""
+        ",\"meta\":{\"piece_id\":0}}",
+        "{\"result\":\"\\\",\\\"3\\\"\""
+        ",\"meta\":{\"piece_id\":1}}",
+        "{\"result\":\",\\\"4\\\"]\""
+        ",\"meta\":{\"piece_id\":2}}"};
+    fs::create_directories("/Db/result/" + job_uuid);
+    for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
+    {
+        auto ofs = std::ofstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
+        ofs << data[piece_id];
+        ofs.close();
+    }
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto read_data = cc_to_db->readModelparam(job_uuid);
+
+    std::vector<std::string> true_result = {"1", "2", "3", "4"};
+    EXPECT_EQ(true_result, read_data);
+
+    initialize();
+}
+
+/*
 // model parameter(json)の取り出し
 // nlohmann::json Client::readModelparamJson(const std::string &job_uuid);
 TEST(ComputationToDbTest, SuccessReadModelParamJsonTest) {}
