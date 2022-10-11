@@ -1103,7 +1103,7 @@ services:
       - type: bind
         source: ./LibClient/src
         target: /LibClient/src
-    command: ["/bin/bash", "-c", "pipenv run pip list && pipenv run pytest src/tests -s -v -log-cli-level=DEBUG"]
+    command: ["/bin/bash", "-c", "pip list && pytest src/tests -s -v -log-cli-level=DEBUG"]
     network_mode: "host"
     depends_on:
       dev_mc1:
@@ -1126,7 +1126,7 @@ services:
       - type: bind
         source: ./LibClient/src
         target: /LibClient/src
-    command: ["/bin/bash", "-c", "pipenv run pip list && pipenv run pytest src/benchmark -s -v -log-cli-level=DEBUG"]
+    command: ["/bin/bash", "-c", "pip list && pytest src/benchmark -s -v -log-cli-level=DEBUG"]
     network_mode: "host"
     depends_on:
       dev_mc1:

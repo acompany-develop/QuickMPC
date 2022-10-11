@@ -8,9 +8,7 @@ COPY QuickMPC-libClient-py /QuickMPC-libClient-py
 # install pipenv and modules
 WORKDIR /LibClient
 RUN pip install -U pip && \
-    pip install pipenv && \
-    pipenv --python=3.7 && \
-    pipenv install --skip-lock \
+    pip install \
       pytest \
       seaborn \
       scikit-learn \
