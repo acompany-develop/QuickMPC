@@ -117,6 +117,7 @@ def test_execute(parallel_num: int):
             assert (math.isclose(x, y, abs_tol=0.1))
 
 
+@pytest.mark.skip(reason="Predict does not yet support parallelism.")
 @pytest.mark.parametrize(
     ("parallel_num"), parallel_num
 )
