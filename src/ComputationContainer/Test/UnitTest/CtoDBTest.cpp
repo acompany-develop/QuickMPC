@@ -26,9 +26,8 @@ TEST(ComputationToDbTest, SuccessReadShareTest)
     initialize();
 
     const std::string data_id = "ReadShareTestId";
-    const std::string data =
-        "{\"value\":[[\"1\",\"2\"],[\"3\",\"4\"]]"
-        ",\"meta\":{\"piece_id\":0,\"schema\":[\"attr1\",\"attr2\"]}}";
+    const std::string data = R"({"value":[["1","2"],["3","4"]])"
+                             R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})";
     fs::create_directories("/Db/share/" + data_id);
     auto ofs = std::ofstream("/Db/share/" + data_id + "/0");
     ofs << data;
@@ -50,13 +49,12 @@ TEST(ComputationToDbTest, SuccessReadSharePieceTest)
 
     const std::string data_id = "ReadShareTestId";
     const std::vector<std::string> data = {
-        "{\"value\":[[\"1\",\"2\"],[\"3\",\"4\"]]"
-        ",\"meta\":{\"piece_id\":0,\"schema\":[\"attr1\",\"attr2\"]}}",
-        "{\"value\":[[\"5\",\"6\"],[\"7\",\"8\"]]"
-        ",\"meta\":{\"piece_id\":1,\"schema\":[\"attr1\",\"attr2\"]}}",
-        "{\"value\":[[\"9\",\"10\"]]"
-        ",\"meta\":{\"piece_id\":2,\"schema\":[\"attr1\",\"attr2\"]}}",
-    };
+        R"({"value":[["1","2"],["3","4"]])"
+        R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})",
+        R"({"value":[["5","6"],["7","8"]])"
+        R"(,"meta":{"piece_id":1,"schema":["attr1","attr2"]}})",
+        R"({"value":[["9","10"]])"
+        R"(,"meta":{"piece_id":2,"schema":["attr1","attr2"]}})"};
     fs::create_directories("/Db/share/" + data_id);
     for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
     {
@@ -120,9 +118,8 @@ TEST(ComputationToDbTest, SuccessReadModelParamTest)
     initialize();
 
     const std::string job_uuid = "ReadModelParamTestId";
-    const std::string data =
-        "{\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\""
-        ",\"meta\":{\"piece_id\":0}}";
+    const std::string data = R"({"result":"[\"1\",\"2\",\"3\"]")"
+                             R"(,"meta":{"piece_id":0}})";
     fs::create_directories("/Db/result/" + job_uuid);
     auto ofs = std::ofstream("/Db/result/" + job_uuid + "/0");
     ofs << data;
@@ -143,12 +140,12 @@ TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
 
     const std::string job_uuid = "ReadModelParamTestId";
     const std::vector<std::string> data = {
-        "{\"result\":\"[\\\"1\\\",\\\"2\""
-        ",\"meta\":{\"piece_id\":0}}",
-        "{\"result\":\"\\\",\\\"3\\\"\""
-        ",\"meta\":{\"piece_id\":1}}",
-        "{\"result\":\",\\\"4\\\"]\""
-        ",\"meta\":{\"piece_id\":2}}"};
+        R"({"result":"[\"1\",\"2\"")"
+        R"(,"meta":{"piece_id":0}})",
+        R"({"result":",\"3\"")"
+        R"(,"meta":{"piece_id":1}})",
+        R"({"result":",\"4\"]")"
+        R"(,"meta":{"piece_id":2}})"};
     fs::create_directories("/Db/result/" + job_uuid);
     for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
     {
@@ -173,9 +170,8 @@ TEST(ComputationToDbTest, SuccessReadModelParamJsonTest)
     initialize();
 
     const std::string job_uuid = "ReadModelParamTestId";
-    const std::string data =
-        "{\"result\":\"{\\\"key1\\\":1,\\\"key2\\\":{\\\"key3\\\":\\\"val\\\"}}\""
-        ",\"meta\":{\"piece_id\":0}}";
+    const std::string data = R"({"result":"{\"key1\":1,\"key2\":{\"key3\":\"val\"}}")"
+                             R"(,"meta":{"piece_id":0}})";
     fs::create_directories("/Db/result/" + job_uuid);
     auto ofs = std::ofstream("/Db/result/" + job_uuid + "/0");
     ofs << data;
@@ -195,12 +191,12 @@ TEST(ComputationToDbTest, SuccessReadModelParamJsonPieceTest)
 
     const std::string job_uuid = "ReadModelParamTestId";
     const std::vector<std::string> data = {
-        "{\"result\":\"{\\\"key1\\\"\""
-        ",\"meta\":{\"piece_id\":0}}",
-        "{\"result\":\":1,\\\"key2\\\":{\\\"ke\""
-        ",\"meta\":{\"piece_id\":1}}",
-        "{\"result\":\"y3\\\":\\\"val\\\"}}\""
-        ",\"meta\":{\"piece_id\":2}}",
+        R"({"result":"{\"key1\"")"
+        R"(,"meta":{"piece_id":0}})",
+        R"({"result":":1,\"key2\":{\"ke")"
+        R"(,"meta":{"piece_id":1}})",
+        R"({"result":"y3\":\"val\"}}")"
+        R"(,"meta":{"piece_id":2}})",
     };
     fs::create_directories("/Db/result/" + job_uuid);
     for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
@@ -278,10 +274,9 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArrayTest)
     auto ifs = std::ifstream("/Db/result/" + job_uuid + "/0");
     std::string read_data;
     getline(ifs, read_data);
-    const auto true_data =
-        "{\"job_uuid\":\"WriteComputationResultTestId\""
-        ",\"meta\":{\"piece_id\":0}"
-        ",\"result\":\"[[\\\"12\\\",\\\"15\\\",\\\"21\\\"]]\"}";
+    const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
+                           R"(,"meta":{"piece_id":0})"
+                           R"(,"result":"[[\"12\",\"15\",\"21\"]]"})";
     EXPECT_EQ(read_data, true_data);
 
     initialize();
@@ -301,10 +296,9 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultJsonTest)
     auto ifs = std::ifstream("/Db/result/" + job_uuid + "/0");
     std::string read_data;
     getline(ifs, read_data);
-    const auto true_data =
-        "{\"job_uuid\":\"WriteComputationResultTestId\""
-        ",\"meta\":{\"piece_id\":0}"
-        ",\"result\":\"{\\\"key1\\\":1,\\\"key2\\\":{\\\"key3\\\":\\\"val\\\"}}\"}";
+    const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
+                           R"(,"meta":{"piece_id":0})"
+                           R"(,"result":"{\"key1\":1,\"key2\":{\"key3\":\"val\"}}"})";
     EXPECT_EQ(read_data, true_data);
 
     initialize();
@@ -321,16 +315,16 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArrayPieceTest)
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
     cc_to_db->writeComputationResult(job_uuid, data, 4);
 
-    std::vector<std::string> true_result = {"[[\\\"1", "2\\\",\\\"", "15\\\",", "\\\"21\\\"", "]]"};
+    std::vector<std::string> true_result = {R"([[\"1)", R"(2\",\")", R"(15\",)", R"(\"21\")", "]]"};
     for (size_t piece_id = 0; piece_id < true_result.size(); ++piece_id)
     {
         auto ifs = std::ifstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
         std::string read_data;
         getline(ifs, read_data);
-        const auto true_data =
-            "{\"job_uuid\":\"WriteComputationResultTestId\""
-            ",\"meta\":{\"piece_id\":"
-            + std::to_string(piece_id) + "},\"result\":\"" + true_result[piece_id] + "\"}";
+        const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
+                               R"(,"meta":{"piece_id":)"
+                               + std::to_string(piece_id) + R"(},"result":")"
+                               + true_result[piece_id] + R"("})";
         EXPECT_EQ(read_data, true_data);
     }
 
@@ -349,16 +343,23 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultJsonPieceTest)
     cc_to_db->writeComputationResult(job_uuid, data, 4);
 
     std::vector<std::string> true_result = {
-        "{\\\"ke", "y1\\\":", "1,\\\"k", "ey2\\\"", ":{\\\"k", "ey3\\\"", ":\\\"va", "l\\\"}}"};
+        R"({\"ke)",
+        R"(y1\":)",
+        R"(1,\"k)",
+        R"(ey2\")",
+        R"(:{\"k)",
+        R"(ey3\")",
+        R"(:\"va)",
+        R"(l\"}})"};
     for (size_t piece_id = 0; piece_id < true_result.size(); ++piece_id)
     {
         auto ifs = std::ifstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
         std::string read_data;
         getline(ifs, read_data);
-        const auto true_data =
-            "{\"job_uuid\":\"WriteComputationResultTestId\""
-            ",\"meta\":{\"piece_id\":"
-            + std::to_string(piece_id) + "},\"result\":\"" + true_result[piece_id] + "\"}";
+        const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
+                               R"(,"meta":{"piece_id":)"
+                               + std::to_string(piece_id) + R"(},"result":")"
+                               + true_result[piece_id] + R"("})";
         EXPECT_EQ(read_data, true_data);
     }
 
