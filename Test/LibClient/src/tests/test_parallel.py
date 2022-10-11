@@ -22,6 +22,7 @@ def test_send_share(parallel_num: int):
     filename: str = "Data/table_data_5x5.csv"
     secrets, schema = qmpc.parse_csv_file(filename)
 
+    # 並列にsend_share
     executor = ThreadPoolExecutor()
     futures = []
     for _ in range(parallel_num):
@@ -49,6 +50,7 @@ def test_send_model_params_array(parallel_num: int):
         reader = csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)
         data = [row for row in reader][0]
 
+    # 並列にsend_model_params
     executor = ThreadPoolExecutor()
     futures = []
     for _ in range(parallel_num):
@@ -70,6 +72,7 @@ def test_send_model_params_json(parallel_num: int):
     with open(filename) as f:
         data = json.load(f)
 
+    # 並列にsend_model_params
     executor = ThreadPoolExecutor()
     futures = []
     for _ in range(parallel_num):
@@ -99,6 +102,7 @@ def test_execute(parallel_num: int):
     res = get_result(qmpc.mean(table, inp))
     assert (res["is_ok"])
 
+    # 並列にexecute_computation
     executor = ThreadPoolExecutor()
     futures = []
     for _ in range(parallel_num):
@@ -142,6 +146,7 @@ def test_predict(parallel_num: int):
     table = [[data_id], [], [1]]
     inp = [i for i in range(2, length+1)]
 
+    # 並列にpredict
     executor = ThreadPoolExecutor()
     futures = []
     for _ in range(parallel_num):
@@ -169,6 +174,7 @@ def test_get_computation_result(parallel_num: int):
     res = qmpc.send_model_params(data)
     job_uuid = res["job_uuid"]
 
+    # 並列にget_computation_result
     executor = ThreadPoolExecutor()
     futures = []
     for _ in range(parallel_num):
