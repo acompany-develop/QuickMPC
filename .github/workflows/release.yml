@@ -91,8 +91,8 @@ jobs:
 
       - name: Build DbGate image
         run: |
-          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:s${{ steps.date.outputs.date }}
-          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAME=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:stable
+          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAMES=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:s${{ steps.date.outputs.date }}
+          docker build ../../../ --file Dockerfile --target dep-runner --build-arg lowercase_DB_NAMES=sharedb --tag ghcr.io/${{ github.repository_owner }}/quickmpc-dbg:stable
         working-directory: ./src/DbContainer/DbGate/
 
       - name: Run Trivy vulnerability scanner for DbGate
