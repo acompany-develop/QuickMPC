@@ -77,6 +77,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 
 	if err != nil {
 		AppLogger.Error(err)
+		s.m2dbclient.DeleteShares([]string{dataID})
 		s.m2mclient.DeleteShares(dataID)
 		return &pb.SendSharesResponse{
 			Message: err.Error(),

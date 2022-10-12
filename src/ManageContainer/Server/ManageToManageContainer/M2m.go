@@ -3,7 +3,7 @@ package m2mserver
 import (
 	"context"
 
-	m2dg "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDbGate"
+	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	common "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
@@ -12,7 +12,7 @@ import (
 
 type server struct {
 	pb.UnimplementedManageToManageServer
-	m2dbclient m2dg.M2DbClient
+	m2dbclient m2db.M2DbClient
 }
 
 func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*pb.DeleteSharesResponse, error) {
@@ -52,7 +52,7 @@ func RunServer() {
 	lis, port := common.Listen(ip)
 
 	s := common.NewServer()
-	pb.RegisterManageToManageServer(s, &server{m2dbclient: m2dg.Client{}})
+	pb.RegisterManageToManageServer(s, &server{m2dbclient: m2db.Client{}})
 
 	AppLogger.Info("M2m Server listening on", port)
 	if err := s.Serve(lis); err != nil {
