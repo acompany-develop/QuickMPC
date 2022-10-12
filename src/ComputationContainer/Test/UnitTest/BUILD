@@ -126,3 +126,20 @@ cc_test(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_test(
+    name = "CtoDBTest",
+    srcs = [
+        "CtoDBTest.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    deps = [
+        "@gtest//:main",
+        "//Client/ComputationToDb:client",
+        "@Proto//common_types:common_types_cc_proto",
+    ],
+    linkopts = [
+        "-lstdc++fs"
+    ],
+    visibility = ["//visibility:public"],
+)

@@ -33,6 +33,9 @@ services:
       - type: bind
         source: ../../.vscode
         target: /QuickMPC/.vscode
+      - type: bind
+        source: ../Db/
+        target: /Db
     env_file:
       - ../../Config/ComputationContainer/Compute1/.src.env
     networks:

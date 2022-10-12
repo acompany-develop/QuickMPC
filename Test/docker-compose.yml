@@ -14,6 +14,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute1
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute1/.env
     networks:
@@ -50,6 +56,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute2
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb2_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb2_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
     networks:
@@ -84,6 +96,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute3
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb3_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb3_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
     networks:
@@ -673,6 +691,13 @@ services:
   small_cc:
     container_name: computation_container1
     tty: true # 起動しっぱなし
+    volumes:
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
