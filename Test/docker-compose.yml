@@ -811,10 +811,10 @@ services:
         source: ../Config/ComputationContainer/Compute2
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb2_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb2_tmp
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
@@ -845,10 +845,10 @@ services:
         source: ../Config/ComputationContainer/Compute3
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb3_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb3_tmp
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
@@ -913,10 +913,10 @@ services:
         source: ../Config/ComputationContainer/Compute2
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb2_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb2_tmp
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
@@ -949,10 +949,10 @@ services:
         source: ../Config/ComputationContainer/Compute3
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb3_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb3_tmp
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
@@ -1013,10 +1013,10 @@ services:
         source: ../Config/ManageContainer/Manage2
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb2_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb2_tmp
         target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage2/.env
@@ -1045,10 +1045,10 @@ services:
         source: ../Config/ManageContainer/Manage3
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb3_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb3_tmp
         target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage3/.env
@@ -1113,10 +1113,10 @@ services:
         source: ../Config/ManageContainer/Manage2
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb2_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb2_tmp
         target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage2/.env
@@ -1145,10 +1145,10 @@ services:
         source: ../Config/ManageContainer/Manage3
         target: /QuickMPC/Config
       - type: volume
-        source: sharedb1_tmp
+        source: sharedb3_tmp
         target: /Db/share
       - type: volume
-        source: resultdb1_tmp
+        source: resultdb3_tmp
         target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage3/.env
