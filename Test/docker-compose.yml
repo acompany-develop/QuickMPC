@@ -777,6 +777,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute1
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute1/.env
     networks:
@@ -804,6 +810,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute2
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
     networks:
@@ -832,6 +844,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute3
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
     networks:
@@ -859,6 +877,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute1
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute1/.env
     networks:
@@ -888,6 +912,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute2
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
     networks:
@@ -918,6 +948,12 @@ services:
       - type: bind
         source: ../Config/ComputationContainer/Compute3
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
     networks:
@@ -944,6 +980,12 @@ services:
       - type: bind
         source: ../Config/ManageContainer/Manage1
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage1/.env
     expose:
@@ -970,6 +1012,12 @@ services:
       - type: bind
         source: ../Config/ManageContainer/Manage2
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage2/.env
     expose:
@@ -996,6 +1044,12 @@ services:
       - type: bind
         source: ../Config/ManageContainer/Manage3
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage3/.env
     expose:
@@ -1026,6 +1080,12 @@ services:
       - type: bind
         source: ../.vscode
         target: /QuickMPC/.vscode
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage1/.env
     expose:
@@ -1052,6 +1112,12 @@ services:
       - type: bind
         source: ../Config/ManageContainer/Manage2
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage2/.env
     expose:
@@ -1078,6 +1144,12 @@ services:
       - type: bind
         source: ../Config/ManageContainer/Manage3
         target: /QuickMPC/Config
+      - type: volume
+        source: sharedb1_tmp
+        target: /Db/share
+      - type: volume
+        source: resultdb1_tmp
+        target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage3/.env
     expose:
