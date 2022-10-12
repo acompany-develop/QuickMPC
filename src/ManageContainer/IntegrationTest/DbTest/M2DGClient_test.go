@@ -75,7 +75,7 @@ func testInsertShares(t *testing.T, dataID string) {
 	// share送信
 	client := m2db.Client{}
 	schema := []string{"attr1", "attr2", "attr3"}
-	const pieceID int32 = 1
+	const pieceID int32 = 0
 	shares := fmt.Sprintf("[[\"1\",\"2\",\"3\"],[\"4\",\"5\",\"6\"]]")
 	sent_at := ""
 	err := client.InsertShares(dataID, schema, pieceID, shares, sent_at)
@@ -125,7 +125,7 @@ func testGetSchema(t *testing.T, dataID string) {
 	client := m2db.Client{}
 	// share送信
 	schema := []string{"attr1", "attr2", fmt.Sprintf("attr%s", dataID)}
-	const pieceID int32 = 1
+	const pieceID int32 = 0
 	const shares string = "[[\"1\",\"2\",\"3\"],[\"4\",\"5\",\"6\"]]"
 	const sent_at string = ""
 	err := client.InsertShares(dataID, schema, pieceID, shares, sent_at)
@@ -216,8 +216,8 @@ func TestCountShares(t *testing.T) {
 	uft.DeleteId(t, dataID2)
 	client := m2db.Client{}
 	schema := []string{"attr1", "attr2", "attr3"}
-	const pieceID1 int32 = 1
-	const pieceID2 int32 = 2
+	const pieceID1 int32 = 0
+	const pieceID2 int32 = 1
 	const shares string = "[[\"1\",\"2\",\"3\"],[\"4\",\"5\",\"6\"]]"
 	const sent_at string = ""
 	// share送信
@@ -328,13 +328,13 @@ func TestInsertModelParamsPiece(t *testing.T) {
 
 	// params送信
 	params1 := fmt.Sprintf("[\"1\",\"2\",\"3\"]")
-	err := client.InsertModelParams(jobUUID, params1, 1)
+	err := client.InsertModelParams(jobUUID, params1, 0)
 	if err != nil {
 		t.Error("insert model params1 faild: " + err.Error())
 	}
 
 	params2 := fmt.Sprintf("[\"4\",\"5\",\"6\"]")
-	err = client.InsertModelParams(jobUUID, params2, 2)
+	err = client.InsertModelParams(jobUUID, params2, 1)
 	if err != nil {
 		t.Error("insert model params1 faild: " + err.Error())
 	}
@@ -351,7 +351,7 @@ func TestInsertModelParamsPiece(t *testing.T) {
 	for _, res := range deleteResult {
 		resultParams := res.Result
 		var correctParams string
-		if res.Meta.PieceID == 1 {
+		if res.Meta.PieceID == 0 {
 			correctParams = params1
 		} else {
 			correctParams = params2

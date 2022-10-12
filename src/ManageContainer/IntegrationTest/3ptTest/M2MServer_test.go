@@ -40,7 +40,7 @@ func TestSendShare(t *testing.T) {
 		DataId:  dataID,
 		Shares:  "[]",
 		Schema:  []string{},
-		PieceId: 1,
+		PieceId: 0,
 		SentAt:  "",
 		Token:   "token_demo",
 	}

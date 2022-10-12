@@ -27,7 +27,7 @@ func initialize() {
 var defaultSchema = []string{"attr1", "attr2", "attr3"}
 
 const defaultDataID = "m2db_test_dataid"
-const defaultPieceID = 1
+const defaultPieceID = 0
 const defaultShares = "[[\"1\",\"2\",\"3\"],[\"4\",\"5\",\"6\"]]"
 const defaultSentAt = ""
 const defaultJobUUID = "m2db_test_jobuuid"
@@ -74,7 +74,7 @@ func TestInsertSharesParallelSuccess(t *testing.T) {
 
 	client := Client{}
 	wg := sync.WaitGroup{}
-	for i := 1; i <= 100; i++ {
+	for i := 0; i < 100; i++ {
 		wg.Add(1)
 		go func(pieceId int32) {
 			errInsert := client.InsertShares(defaultDataID, defaultSchema, pieceId, defaultShares, defaultSentAt)
@@ -100,7 +100,7 @@ func TestInsertSharesParallelRejectDuplicate(t *testing.T) {
 	client := Client{}
 	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
 	wg := sync.WaitGroup{}
-	for i := 1; i <= 100; i++ {
+	for i := 0; i < 100; i++ {
 		wg.Add(1)
 		go func() {
 			errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
@@ -176,7 +176,7 @@ func TestGetComputationResultSuccess(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
-	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":1}}"
+	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":0}}"
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
 	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
@@ -222,7 +222,7 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
-	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"status\":1,\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":1}}"
+	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"status\":1,\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":0}}"
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
@@ -301,7 +301,7 @@ func TestInsertModelParamsParallelSuccess(t *testing.T) {
 
 	client := Client{}
 	wg := sync.WaitGroup{}
-	for i := 1; i <= 100; i++ {
+	for i := 0; i < 100; i++ {
 		wg.Add(1)
 		go func(pieceId int32) {
 			errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, pieceId)
@@ -327,7 +327,7 @@ func TestInsertModelParamsParallelRejectDuplicate(t *testing.T) {
 	client := Client{}
 	client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)
 	wg := sync.WaitGroup{}
-	for i := 1; i <= 100; i++ {
+	for i := 0; i < 100; i++ {
 		wg.Add(1)
 		go func() {
 			errInsert := client.InsertModelParams(defaultJobUUID, defaultParams, defaultPieceID)

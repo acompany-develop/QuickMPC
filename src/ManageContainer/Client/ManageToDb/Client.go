@@ -121,7 +121,7 @@ func (c Client) DeleteShares(dataIDs []string) error {
 // DBからschemaを得る
 func (c Client) GetSchema(dataID string) ([]string, error) {
 
-	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 1)
+	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
 	ls.Lock(path)
 	defer ls.Unlock(path)
 
