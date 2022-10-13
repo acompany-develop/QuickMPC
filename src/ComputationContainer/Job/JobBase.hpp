@@ -5,7 +5,7 @@
 #include <map>
 #include <vector>
 
-#include "Client/ComputationToDbGate/Client.hpp"
+#include "Client/ComputationToDb/Client.hpp"
 #include "Client/ComputationToDbGate/ValueTable.hpp"
 #include "JobParameter.hpp"
 #include "JobStatus.hpp"
@@ -29,8 +29,8 @@ class JobBase : public Interface
     const managetocomputation::ExecuteComputationRequest request;
     const unsigned int job_id;
 
-    std::shared_ptr<qmpc::ComputationToDbGate::Client> db_client =
-        qmpc::ComputationToDbGate::Client::getInstance();
+    std::shared_ptr<qmpc::ComputationToDb::Client> db_client =
+        qmpc::ComputationToDb::Client::getInstance();
 
     StatusManager statusManager;
 

@@ -5,7 +5,6 @@
 #include <string>
 #include <thread>
 
-#include "Client/ComputationToDbGate/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "Job/JobManager.hpp"
 #include "LogHeader/Logger.hpp"

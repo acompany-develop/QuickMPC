@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Client/ComputationToDbGate/Client.hpp"
+#include "Client/ComputationToDb/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "GBDT/SID3.hpp"
 #include "Model/ModelBase.hpp"
@@ -103,7 +103,7 @@ public:
         const std::string &model_param_job_uuid
     ) const override
     {
-        auto db_client = qmpc::ComputationToDbGate::Client::getInstance();
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto sid3_param_json = db_client->readModelparamJson(model_param_job_uuid);
         auto sid3_tree = std::make_unique<qmpc::GBDT::SID3>(sid3_param_json);
 

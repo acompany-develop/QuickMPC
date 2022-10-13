@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Client/ComputationToDbGate/Client.hpp"
+#include "Client/ComputationToDb/Client.hpp"
 #include "Client/ComputationToDbGate/ValueTable.hpp"
 #include "Job/JobStatus.hpp"
 #include "Share/Share.hpp"
@@ -42,7 +42,7 @@ class ModelBase
     void writeDb(const managetocomputation::PredictRequest &request, U &&values)
     {
         statusManager.nextStatus();
-        auto db_client = qmpc::ComputationToDbGate::Client::getInstance();
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto results = toString(values);
         db_client->writeComputationResult(request.job_uuid(), results);
         statusManager.nextStatus();

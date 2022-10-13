@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	m2dg "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDbGate"
+	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer"
 	pb_m2c "github.com/acompany-develop/QuickMPC/src/Proto/ManageToComputationContainer"
@@ -27,8 +27,8 @@ func (localDbGate) DeleteShares([]string) error {
 func (localDbGate) GetSchema(string) ([]string, error) {
 	return []string{"attr1"}, nil
 }
-func (localDbGate) GetComputationResult(string) ([]*m2dg.ComputationResult, error) {
-	return []*m2dg.ComputationResult{{Result: "result"}, {Result: "result"}}, nil
+func (localDbGate) GetComputationResult(string) ([]*m2db.ComputationResult, error) {
+	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil
 }
 func (localDbGate) InsertModelParams(string, string, int32) error {
 	return nil

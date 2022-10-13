@@ -3,7 +3,6 @@ import csv
 import time
 
 from quickmpc import QMPC
-
 from utils import get_result, qmpc
 
 # 各種リクエストに用いる変数
@@ -51,7 +50,6 @@ def check_all_request(token: str):
     res_send_model_params = qmpc_inner.send_model_params(data)
     res_predict = qmpc_inner.linear_regression_predict(
         model_param_job_uuid, table, inp)
-    res_get_data_list = qmpc_inner.get_data_list()
     res_delete_share = qmpc_inner.delete_share([data_id])
 
     return [res_send_share["is_ok"],
@@ -59,7 +57,6 @@ def check_all_request(token: str):
             res_get_computation_result["is_ok"],
             res_send_model_params["is_ok"],
             res_predict["is_ok"],
-            res_get_data_list["is_ok"],
             res_delete_share["is_ok"]]
 
 
@@ -67,18 +64,18 @@ def test_token_dep():
     """ deploy tokenでの動作確認 """
     token: str = "token_dep"
     res = check_all_request(token)
-    assert(all(res))
+    assert (all(res))
 
 
 def test_token_demo():
     """ demo tokenでの動作確認 """
     token: str = "token_demo"
     res = check_all_request(token)
-    assert(all(res))
+    assert (all(res))
 
 
 def test_token_error():
     """ 適当なtokenでの動作確認 """
     token: str = "token_hoge"
     res = check_all_request(token)
-    assert(any(res) is False)
+    assert (any(res) is False)

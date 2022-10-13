@@ -1,6 +1,7 @@
 package integration_3pt_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -29,4 +30,9 @@ func TestMain(m *testing.M) {
 	time.Sleep(3 * time.Second)
 
 	os.Exit(code)
+}
+
+func deleteId(t *testing.T, id string) {
+	os.RemoveAll(fmt.Sprintf("/Db/share/%s", id))
+	os.RemoveAll(fmt.Sprintf("/Db/result/%s", id))
 }

@@ -3,11 +3,10 @@ package integration_3pt_test
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 
-	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDbGate"
 	m2m "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToManageContainer"
-	uft "github.com/acompany-develop/QuickMPC/src/ManageContainer/IntegrationTest/UtilsForTest"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer"
 	"google.golang.org/grpc"
@@ -29,7 +28,7 @@ func connect() (*grpc.ClientConn, error) {
 
 func TestSendShare(t *testing.T) {
 	dataID := "sendShare"
-	uft.DeleteId(t, dataID)
+	deleteId(t, dataID)
 	conn, err := connect()
 	if err != nil {
 		t.Fatal(err)
@@ -40,7 +39,7 @@ func TestSendShare(t *testing.T) {
 		DataId:  dataID,
 		Shares:  "[]",
 		Schema:  []string{},
-		PieceId: 1,
+		PieceId: 0,
 		SentAt:  "",
 		Token:   "token_demo",
 	}
@@ -71,13 +70,10 @@ func TestSendShare(t *testing.T) {
 	// 削除リクエストにより削除されるのを待機
 	m2m_client.Sync("send_end")
 
-	dbclient := m2db.Client{}
-	cnt, err := dbclient.Count("data_id", dataID, "share")
-	if err != nil {
-		t.Fatal(err)
+	_, err = os.Stat(fmt.Sprintf("/Db/share/%s", dataID))
+	if err == nil {
+		t.Fatal("dataID must be deleted")
 	}
-	if cnt > 0 {
-		t.Fatalf("dataID must be deleted. conut = %d", cnt)
-	}
-	uft.DeleteId(t, dataID)
+
+	deleteId(t, dataID)
 }

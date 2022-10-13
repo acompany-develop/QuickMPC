@@ -19,17 +19,17 @@ func (s *server) ExecuteQuery(in *pb.ExecuteQueryRequest, stream pb.AnyToDbGate_
 	AppLogger.Infof("Received: %v", in.GetQuery())
 	if strings.Contains(in.GetQuery(), "existID") {
 		stream.Send(&pb.ExecuteQueryResponse{
-			Result:  "[{\"data_id\":\"existID\",\"meta\":{\"piece_id\":1,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\"},",
-			PieceId: int32(1),
+			Result:  "[{\"data_id\":\"existID\",\"meta\":{\"piece_id\":0,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\"},",
+			PieceId: int32(0),
 		})
 		stream.Send(&pb.ExecuteQueryResponse{
-			Result:  "{\"data_id\":\"existID\",\"meta\":{\"piece_id\":2,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":\"[\\\"4\\\",\\\"5\\\",\\\"6\\\"]\"}]",
-			PieceId: int32(2),
+			Result:  "{\"data_id\":\"existID\",\"meta\":{\"piece_id\":1,\"schema\":[\"attr1\",\"attr2\",\"attr3\"]},\"job_uuid\":\"test\",\"result\":\"[\\\"4\\\",\\\"5\\\",\\\"6\\\"]\"}]",
+			PieceId: int32(1),
 		})
 	} else {
 		stream.Send(&pb.ExecuteQueryResponse{
 			Result:  "[]",
-			PieceId: int32(1),
+			PieceId: int32(0),
 		})
 	}
 	return nil
@@ -63,7 +63,7 @@ func TestInsertShares(t *testing.T) {
 	// share送信
 	const dataID string = "notExistID"
 	schema := []string{"attr1", "attr2", "attr3"}
-	const pieceID int32 = 1
+	const pieceID int32 = 0
 	const shares string = "[[\"1\",\"2\",\"3\"],[\"4\",\"5\",\"6\"]]"
 	const sent_at string = ""
 	err := client.insertShares(conn, dataID, schema, pieceID, shares, sent_at)
@@ -80,7 +80,7 @@ func TestInsertSharesDuplicate(t *testing.T) {
 	// share送信
 	const dataID string = "existID"
 	schema := []string{"attr1", "attr2", "attr3"}
-	const pieceID int32 = 1
+	const pieceID int32 = 0
 	const shares string = "[[\"1\",\"2\",\"3\"],[\"4\",\"5\",\"6\"]]"
 	const sent_at string = ""
 	err := client.insertShares(conn, dataID, schema, pieceID, shares, sent_at)
@@ -142,7 +142,7 @@ func TestInsertModelParams(t *testing.T) {
 	// モデルパラメータ送信
 	const jobUUID string = "notExistID"
 	const params string = "[\"1\",\"2\",\"3\"]"
-	const pieceId int32 = 1
+	const pieceId int32 = 0
 	err := client.insertModelParams(conn, jobUUID, params, pieceId)
 	if err != nil {
 		t.Error("insert model parameters faild: " + err.Error())
@@ -157,7 +157,7 @@ func TestInsertModelParamsDuplicate(t *testing.T) {
 	// モデルパラメータ送信
 	const jobUUID string = "existID"
 	const params string = "[\"1\",\"2\",\"3\"]"
-	const pieceId int32 = 1
+	const pieceId int32 = 0
 	err := client.insertModelParams(conn, jobUUID, params, pieceId)
 	if err == nil {
 		t.Error("insert duplicate model parameters success error")

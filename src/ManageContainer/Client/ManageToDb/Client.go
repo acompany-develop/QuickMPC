@@ -121,7 +121,7 @@ func (c Client) DeleteShares(dataIDs []string) error {
 // DBからschemaを得る
 func (c Client) GetSchema(dataID string) ([]string, error) {
 
-	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 1)
+	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
 	ls.Lock(path)
 	defer ls.Unlock(path)
 
@@ -236,6 +236,10 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 	if errWrite != nil {
 		return errWrite
 	}
+
+	os.Create(fmt.Sprintf("%s/%s/completed", resultDbPath, jobUUID))
+	os.Create(fmt.Sprintf("%s/%s/status_%s", resultDbPath, jobUUID, pb_types.JobStatus_COMPLETED))
+
 	return nil
 }
 

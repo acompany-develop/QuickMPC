@@ -4,30 +4,30 @@ import (
 	"context"
 	"testing"
 
-	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDbGate"
+	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer"
 )
 
 // Test用のDbGとCCのmock
-type localDbGate struct{}
+type localDb struct{}
 
-func (localDbGate) InsertShares(string, []string, int32, string, string) error {
+func (localDb) InsertShares(string, []string, int32, string, string) error {
 	return nil
 }
-func (localDbGate) DeleteShares([]string) error {
+func (localDb) DeleteShares([]string) error {
 	return nil
 }
-func (localDbGate) GetSchema(string) ([]string, error) {
+func (localDb) GetSchema(string) ([]string, error) {
 	return []string{""}, nil
 }
-func (localDbGate) GetComputationResult(string) ([]*m2db.ComputationResult, error) {
+func (localDb) GetComputationResult(string) ([]*m2db.ComputationResult, error) {
 	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil
 }
-func (localDbGate) InsertModelParams(string, string, int32) error {
+func (localDb) InsertModelParams(string, string, int32) error {
 	return nil
 }
-func (localDbGate) GetDataList() (string, error) {
+func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }
 
@@ -36,7 +36,7 @@ var s *utils.TestServer
 
 func init() {
 	s = &utils.TestServer{}
-	pb.RegisterManageToManageServer(s.GetServer(), &server{m2dbclient: localDbGate{}})
+	pb.RegisterManageToManageServer(s.GetServer(), &server{m2dbclient: localDb{}})
 	s.Serve()
 }
 

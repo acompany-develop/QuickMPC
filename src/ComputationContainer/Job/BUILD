@@ -7,7 +7,7 @@ cc_library(
         "//Job:jobStatus",
         "//Computation:computation",
         "//Share:share",
-        "//Client/ComputationToDbGate:client",
+        "//Client/ComputationToDb:client",
         "//Client/ComputationToDbGate:valuetable",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "//LogHeader:logger"
@@ -45,7 +45,7 @@ cc_library(
         "JobStatus.hpp",
     ],
     deps = [
-        "//Client/ComputationToDbGate:client",
+        "//Client/ComputationToDb:client",
         "@Proto//common_types:common_types_cc_proto",
         "//Logging:log",
     ],

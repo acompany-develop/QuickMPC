@@ -2,18 +2,18 @@ package integration_3pt_test
 
 import (
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
-	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDbGate"
+	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
 	m2m "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToManageContainer"
-	uft "github.com/acompany-develop/QuickMPC/src/ManageContainer/IntegrationTest/UtilsForTest"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 )
 
 func TestDeleteShares(t *testing.T) {
 	dataID := "deleteShares"
-	uft.DeleteId(t, dataID)
+	deleteId(t, dataID)
 	// delete用のdataを送信
 	dbclient := m2db.Client{}
 	dbclient.InsertShares(dataID, []string{}, 1, "[]", "")
@@ -29,14 +29,10 @@ func TestDeleteShares(t *testing.T) {
 
 	// 同期させてから削除されてるかチェック
 	m2m_client.Sync("delete_all")
-	cnt, err := dbclient.Count("data_id", dataID, "share")
-	if err != nil {
-		t.Fatal(err)
+	_, err = os.Stat(fmt.Sprintf("/Db/share/%s", dataID))
+	if err == nil {
+		t.Fatal("dataID must be deleted")
 	}
-	if cnt > 0 {
-		t.Fatalf("dataID must be deleted. conut = %d", cnt)
-	}
-	uft.DeleteId(t, dataID)
 }
 
 func TestDeleteShares1PT(t *testing.T) {
@@ -47,7 +43,7 @@ func TestDeleteShares1PT(t *testing.T) {
 	* 3. PT2,3のデータが削除されたか確認
 	 */
 	dataID := "deleteShares1PT"
-	uft.DeleteId(t, dataID)
+	deleteId(t, dataID)
 	config, err := utils.GetConfig()
 	if err != nil {
 		t.Fatal(err)
@@ -70,20 +66,18 @@ func TestDeleteShares1PT(t *testing.T) {
 		// NOTE: PT2,3は削除リクエストを受け取る
 		// delete用のdataを送信
 		dbclient := m2db.Client{}
-		dbclient.InsertShares(dataID, []string{}, 1, "[]", "")
+		dbclient.InsertShares(dataID, []string{}, 0, "[]", "")
 		// PT1にdata送信の終了を通知
 		m2m_client.Sync("insert")
 		// PT1のdata削除リクエストの終了を待機
 		m2m_client.Sync("delete")
-		cnt, err := dbclient.Count("data_id", dataID, "share")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if cnt > 0 {
-			t.Fatalf("dataID must be deleted. conut = %d", cnt)
+		// 同期させてから削除されてるかチェック
+		_, err = os.Stat(fmt.Sprintf("/Db/share/%s", dataID))
+		if err == nil {
+			t.Fatal("dataID must be deleted")
 		}
 	}
-	uft.DeleteId(t, dataID)
+	deleteId(t, dataID)
 }
 
 func TestSync(t *testing.T) {
