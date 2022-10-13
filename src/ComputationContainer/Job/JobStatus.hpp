@@ -3,7 +3,7 @@
 #include <boost/format.hpp>
 #include <optional>
 #include <stdexcept>
-;
+
 #include "Client/ComputationToDb/Client.hpp"
 #include "Logging/Logger.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
