@@ -28,11 +28,11 @@ var defaultSchema = []string{"attr1", "attr2", "attr3"}
 
 const defaultDataID = "m2db_test_dataid"
 const defaultPieceID = 0
-const defaultShares = "[[\"1\",\"2\",\"3\"],[\"4\",\"5\",\"6\"]]"
+const defaultShares = `[["1","2","3"],["4","5","6"]]`
 const defaultSentAt = ""
 const defaultJobUUID = "m2db_test_jobuuid"
-const defaultParams = "[\"1\",\"2\",\"3\"]"
-const defaultResult = "[\"1\",\"2\",\"3\"]"
+const defaultParams = `["1","2","3"]`
+const defaultResult = `["1","2","3"]`
 
 /* InsertShares(string, []string, int32, string, string) error */
 // シェアが保存されるかTest
@@ -139,7 +139,7 @@ func TestGetSchemaSuccess(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/Db/share/%s", defaultDataID), 0777)
-	data := "{\"meta\":{\"schema\":[\"attr1\",\"attr2\",\"attr3\"]}}"
+	data := `{"meta":{"schema":["attr1","attr2","attr3"]}}`
 	ioutil.WriteFile(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
@@ -176,7 +176,7 @@ func TestGetComputationResultSuccess(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
-	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":0}}"
+	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":"[\"1\",\"2\",\"3\"]","meta":{"piece_id":0}}`
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
 	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
@@ -222,7 +222,7 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
-	data := "{\"id\":\"\",\"job_uuid\":\"m2db_test_jobuuid\",\"status\":1,\"result\":\"[\\\"1\\\",\\\"2\\\",\\\"3\\\"]\",\"meta\":{\"piece_id\":0}}"
+	data := `{"id":"","job_uuid":"m2db_test_jobuuid","status":1,"result":"[\"1\",\"2\",\"3\"]\","meta":{"piece_id":0}}`
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
