@@ -11,7 +11,7 @@ cc_library(
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "//Share:share",
         "//Client/ComputationToDb:client",
-        "//Client/ComputationToDbGate:valuetable",
+        "//Client/ComputationToDb:valuetable",
         "//Job:jobStatus",
         "//LogHeader:logger",
     ],

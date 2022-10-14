@@ -14,7 +14,7 @@ auto initialize(const std::string &id)
 }
 
 // shareの取り出し
-// qmpc::ComputationToDbGate::ValueTable Client::readShare(const std::string &data_id);
+// qmpc::ComputationToDb::ValueTable Client::readShare(const std::string &data_id);
 TEST(ComputationToDbTest, SuccessReadShareTest)
 {
     const std::string data_id = "ReadShareTestId";

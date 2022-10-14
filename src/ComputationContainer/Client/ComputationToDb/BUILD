@@ -8,7 +8,7 @@ cc_library(
     ],
     deps = [
         "@nlohmann_json//:json",
-        "//Client/ComputationToDbGate:valuetable",
+        "//Client/ComputationToDb:valuetable",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "@Proto//common_types:common_types_cc_proto",
     ],
@@ -18,3 +18,18 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 
+cc_library(
+    name = "valuetable",
+    srcs = [
+        "ValueTable.cpp"
+    ],
+    hdrs = [
+        "ValueTable.hpp",
+    ],
+    deps = [
+        "@nlohmann_json//:json",
+        "//Share:share",
+        "//Share:compare"
+    ],
+    visibility = ["//visibility:public"],
+)
