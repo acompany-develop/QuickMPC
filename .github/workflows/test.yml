@@ -1,4 +1,4 @@
-name: Build CC, MC, DB and Run Build and Test in Each Containers
+name: Build CC, MC and Run Build and Test in Each Containers
 
 on:
   pull_request:

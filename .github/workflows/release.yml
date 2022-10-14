@@ -1,4 +1,4 @@
-name: Push Stable CC, MC, DB Image
+name: Push Stable CC, MC Image
 
 on:
   push:
