@@ -22,6 +22,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute1/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.20
@@ -62,6 +63,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -99,6 +101,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
