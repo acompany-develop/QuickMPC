@@ -26,8 +26,6 @@ services:
       shared-network:
         ipv4_address: 10.0.1.20
     depends_on:
-      dev_dbgate1:
-        condition: service_healthy
       dev_bts:
         condition: service_healthy
     command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
@@ -67,9 +65,6 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
-    depends_on:
-      dev_dbgate2:
-        condition: service_healthy
     command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
     healthcheck:
       test: [
@@ -107,9 +102,6 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
-    depends_on:
-      dev_dbgate3:
-        condition: service_healthy
     command: ["/bin/bash", "-c", "printenv && bazel-bin/computation_container"]
     healthcheck:
       test: [
@@ -150,205 +142,6 @@ services:
       timeout: 5s
       start_period: 5s
 
-  dev_dbgate1:
-    container_name: dbgate_container1
-    tty: true # 起動しっぱなし
-    expose:
-      - "50000"
-    build:
-      context: ../
-      dockerfile: src/DbContainer/DbGate/Dockerfile
-      target: dev
-      args:
-        - lowercase_DB_NAMES=sharedb
-    volumes:
-      - type: bind
-        source: ../Config/DbContainer/DbGate1
-        target: /QuickMPC/Config
-    env_file:
-      - ../Config/DbContainer/DbGate1/.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.30
-    command: ["/bin/bash", "-lc", "printenv && ./DbGate"]
-    depends_on:
-      dev_sharedb1:
-        condition: service_healthy
-    healthcheck:
-      test:
-        ["CMD-SHELL", "/bin/grpc_health_probe -addr=dbgate_container1:50000"]
-      interval: 3s
-      timeout: 5s
-      start_period: 5s
-
-  dev_sharedb1:
-    container_name: sharedb_container1
-    build:
-      context: ../
-      dockerfile: src/DbContainer/Db/Dockerfile
-      target: dev
-      args:
-        - lowercase_DB_NAME=sharedb
-    volumes:
-      - type: volume
-        source: sharedb1
-        target: /opt/couchbase/var
-      - type: volume
-        source: sharedb1-initialized
-        target: /nodestatus
-    ports:
-      - "0.0.0.0:60031:8091"
-    expose:
-      - "8091-8094"
-    env_file:
-      - ../Config/DbContainer/Db/sharedb/.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.31
-    depends_on:
-      dev_secrets-server:
-        condition: service_healthy
-
-  dev_dbgate2:
-    container_name: dbgate_container2
-    tty: true # 起動しっぱなし
-    expose:
-      - "50000"
-    build:
-      context: ../
-      dockerfile: src/DbContainer/DbGate/Dockerfile
-      target: dev
-      args:
-        - lowercase_DB_NAMES=sharedb
-    volumes:
-      - type: bind
-        source: ../Config/DbContainer/DbGate2
-        target: /QuickMPC/Config
-    env_file:
-      - ../Config/DbContainer/DbGate2/.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.2.30
-    command: ["/bin/bash", "-lc", "printenv && ./DbGate"]
-    depends_on:
-      dev_sharedb2:
-        condition: service_healthy
-    healthcheck:
-      test:
-        ["CMD-SHELL", "/bin/grpc_health_probe -addr=dbgate_container2:50000"]
-      interval: 3s
-      timeout: 5s
-      start_period: 5s
-
-  dev_sharedb2:
-    container_name: sharedb_container2
-    build:
-      context: ../
-      dockerfile: src/DbContainer/Db/Dockerfile
-      target: dev
-      args:
-        - lowercase_DB_NAME=sharedb
-    volumes:
-      - type: volume
-        source: sharedb2
-        target: /opt/couchbase/var
-      - type: volume
-        source: sharedb2-initialized
-        target: /nodestatus
-    ports:
-      - "0.0.0.0:61031:8091"
-    expose:
-      - "8091-8094"
-    env_file:
-      - ../Config/DbContainer/Db/sharedb/.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.2.31
-    depends_on:
-      dev_secrets-server:
-        condition: service_healthy
-
-  dev_dbgate3:
-    container_name: dbgate_container3
-    tty: true # 起動しっぱなし
-    expose:
-      - "50000"
-    build:
-      context: ../
-      dockerfile: src/DbContainer/DbGate/Dockerfile
-      target: dev
-      args:
-        - lowercase_DB_NAMES=sharedb
-    volumes:
-      - type: bind
-        source: ../Config/DbContainer/DbGate3
-        target: /QuickMPC/Config
-    env_file:
-      - ../Config/DbContainer/DbGate3/.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.3.30
-    command: ["/bin/bash", "-lc", "printenv && ./DbGate"]
-    depends_on:
-      dev_sharedb3:
-        condition: service_healthy
-    healthcheck:
-      test:
-        ["CMD-SHELL", "/bin/grpc_health_probe -addr=dbgate_container3:50000"]
-      interval: 3s
-      timeout: 5s
-      start_period: 5s
-
-  dev_sharedb3:
-    container_name: sharedb_container3
-    build:
-      context: ../
-      dockerfile: src/DbContainer/Db/Dockerfile
-      target: dev
-      args:
-        - lowercase_DB_NAME=sharedb
-    volumes:
-      - type: volume
-        source: sharedb3
-        target: /opt/couchbase/var
-      - type: volume
-        source: sharedb3-initialized
-        target: /nodestatus
-    ports:
-      - "0.0.0.0:62031:8091"
-    expose:
-      - "8091-8094"
-    env_file:
-      - ../Config/DbContainer/Db/sharedb/.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.3.31
-    depends_on:
-      dev_secrets-server:
-        condition: service_healthy
-
-  dev_secrets-server:
-    container_name: secrets-server
-    tty: true
-    build:
-      context: ../
-      dockerfile: src/DbContainer/secrets-server.Dockerfile
-      target: dev
-      args:
-        - lowercase_DB_NAMES=sharedb
-    expose:
-      - "80"
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.32
-
   src_cc:
     container_name: computation_container1
     tty: true # 起動しっぱなし
@@ -380,85 +173,6 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.1.120
-
-  src_dbgate:
-    container_name: dbgate_container1
-    tty: true # 起動しっぱなし
-    expose:
-      - "50000"
-    build:
-      context: ../
-      dockerfile: src/DbContainer/DbGate/Dockerfile
-      target: src
-      args:
-        - lowercase_DB_NAMES=sharedb
-    volumes:
-      - type: bind
-        source: ./../src/DbContainer/DbGate
-        target: /QuickMPC
-      - type: bind
-        source: ./../Config/DbContainer/DbGate1
-        target: /QuickMPC/Config
-      - type: bind
-        source: ./../src/Proto
-        target: /Proto
-      # 開発環境のフォーマッタを統一
-      - type: bind
-        source: ./../.vscode
-        target: /QuickMPC/.vscode
-    env_file:
-      - ../Config/DbContainer/DbGate1/.src.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.130
-    depends_on:
-      src_sharedb:
-        condition: service_started
-
-  src_sharedb:
-    container_name: sharedb_container1
-    build:
-      context: ../
-      dockerfile: src/DbContainer/Db/Dockerfile
-      target: src
-      args:
-        - lowercase_DB_NAME=sharedb
-    volumes:
-      - type: bind
-        source: ./../src/DbContainer/Db/shareDb/data
-        target: /opt/couchbase/var
-      - type: bind
-        source: ./../src/DbContainer/Db/shareDb/nodestatus
-        target: /nodestatus
-    expose:
-      - "8091-8094"
-    ports:
-      - "0.0.0.0:60131:8091"
-    env_file:
-      - ../Config/DbContainer/Db/sharedb/.env
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.131
-    depends_on:
-      src_secrets-server:
-        condition: service_healthy
-
-  src_secrets-server:
-    container_name: secrets-server
-    tty: true
-    expose:
-      - "80"
-    build:
-      context: ../
-      dockerfile: src/DbContainer/secrets-server.Dockerfile
-      target: src
-      args:
-        - lowercase_DB_NAMES=sharedb
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.132
 
   src_mc:
     container_name: manage_container1
@@ -703,50 +417,6 @@ services:
       dockerfile: src/ComputationContainer/Dockerfile
       target: small
 
-  small_dbgate:
-    container_name: dbgate_container1
-    tty: true # 起動しっぱなし
-    build:
-      context: ../
-      dockerfile: src/DbContainer/DbGate/Dockerfile
-      target: small
-      args:
-        - lowercase_DB_NAMES=sharedb
-    env_file:
-      - ../Config/DbContainer/DbGate1/.env
-    expose:
-      - "50000"
-    depends_on:
-      small_sharedb:
-        condition: service_started
-
-  small_sharedb:
-    container_name: sharedb_container
-    build:
-      context: ../
-      dockerfile: src/DbContainer/Db/Dockerfile
-      target: small
-      args:
-        - lowercase_DB_NAME=sharedb
-    env_file:
-      - ../Config/DbContainer/Db/sharedb/.env
-    expose:
-      - "8091-8094"
-    ports:
-      - "0.0.0.0:60131:8091"
-    depends_on:
-      small_secrets-server:
-        condition: service_healthy
-
-  small_secrets-server:
-    container_name: secrets-server
-    tty: true
-    build:
-      context: ../
-      dockerfile: src/DbContainer/secrets-server.Dockerfile
-      args:
-        - lowercase_DB_NAMES=sharedb
-
   small_mc:
     container_name: manage_container1
     tty: true # 起動しっぱなし
@@ -790,8 +460,6 @@ services:
       shared-network:
         ipv4_address: 10.0.1.20
     depends_on:
-      dev_dbgate1:
-        condition: service_healthy
       dev_bts:
         condition: service_healthy
     command:
@@ -823,8 +491,6 @@ services:
       shared-network:
         ipv4_address: 10.0.2.20
     depends_on:
-      dev_dbgate2:
-        condition: service_healthy
       dev_bts:
         condition: service_healthy
     command:
@@ -857,8 +523,6 @@ services:
       shared-network:
         ipv4_address: 10.0.3.20
     depends_on:
-      dev_dbgate3:
-        condition: service_healthy
       dev_bts:
         condition: service_healthy
     command:
@@ -996,11 +660,7 @@ services:
       shared-network:
         ipv4_address: 10.0.1.10
     command:
-      # dbが立ち上がりきる前に実行が始まってしまうためspeepしている
       ["/bin/bash", "-c", "printenv && go test ./IntegrationTest/... -v -cover"]
-    depends_on:
-      dev_dbgate1:
-        condition: service_healthy
 
   medium_mc2:
     container_name: manage_container2
@@ -1028,11 +688,7 @@ services:
       shared-network:
         ipv4_address: 10.0.2.10
     command:
-      # dbが立ち上がりきる前に実行が始まってしまうためspeepしている
       ["/bin/bash", "-c", "printenv && go test ./IntegrationTest/... -v -cover"]
-    depends_on:
-      dev_dbgate2:
-        condition: service_healthy
 
   medium_mc3:
     container_name: manage_container3
@@ -1061,9 +717,6 @@ services:
         ipv4_address: 10.0.3.10
     command:
       ["/bin/bash", "-c", "printenv && go test ./IntegrationTest/... -v -cover"]
-    depends_on:
-      dev_dbgate3:
-        condition: service_healthy
 
   send_share_mc1:
     container_name: manage_container1
@@ -1098,8 +751,6 @@ services:
     depends_on:
       dev_mc_envoy1:
         condition: service_started
-      dev_dbgate1:
-        condition: service_started
 
   send_share_mc2:
     container_name: manage_container2
@@ -1129,8 +780,6 @@ services:
     command: ["/bin/bash", "-c", "printenv && ./ManageContainer"]
     depends_on:
       dev_mc_envoy2:
-        condition: service_started
-      dev_dbgate2:
         condition: service_started
 
   send_share_mc3:
@@ -1162,30 +811,6 @@ services:
     depends_on:
       dev_mc_envoy3:
         condition: service_started
-      dev_dbgate3:
-        condition: service_started
-
-  medium_dbgate:
-    # tty: true
-    container_name: dbgate_container1
-    build:
-      context: ../
-      dockerfile: src/DbContainer/DbGate/Dockerfile
-      target: medium
-      args:
-        - lowercase_DB_NAMES=sharedb
-    env_file:
-      - ../Config/DbContainer/DbGate1/.env
-    expose:
-      - "50000"
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.30
-    command: ["/bin/bash", "-lc", "printenv && go test ./... -v -cover"]
-    depends_on:
-      dev_sharedb1:
-        condition: service_healthy
 
   medium-libc:
     container_name: lib_client
