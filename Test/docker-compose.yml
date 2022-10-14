@@ -126,6 +126,8 @@ services:
       - type: bind
         source: ../Config/BeaverTripleService
         target: /QuickMPC-BTS/Config
+    env_file:
+      - ../Config/BeaverTripleService/server.sample.env
     ports:
       - "0.0.0.0:60020:50020"
     networks:
