@@ -3,7 +3,6 @@ module github.com/acompany-develop/QuickMPC/src/ManageContainer
 go 1.14
 
 replace (
-	github.com/acompany-develop/QuickMPC/src/Proto/AnyToDbGate => ./../Proto/AnyToDbGate
 	github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer => ./../Proto/LibcToManageContainer
 	github.com/acompany-develop/QuickMPC/src/Proto/ManageToComputationContainer => ./../Proto/ManageToComputationContainer
 	github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer => ./../Proto/ManageToManageContainer
@@ -11,7 +10,6 @@ replace (
 )
 
 require (
-	github.com/acompany-develop/QuickMPC/src/Proto/AnyToDbGate v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/src/Proto/ManageToComputationContainer v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer v0.0.0-00010101000000-000000000000
