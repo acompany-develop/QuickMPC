@@ -9,7 +9,7 @@ bazel build //:all && ./bazel-bin/computation_container_test
 ```
 
 ## triple_recons_test
-これは 3Partyで CC,DC を建てる必要があるため現行のLargeでは実行不可能
+これは 3Partyで CC を建てる必要があるため現行のLargeでは実行不可能
 もし実行する場合は以下のようにすること
 
 - src/ComputationContainer/Test/IntegrationTest/ComputationTest/BUILD

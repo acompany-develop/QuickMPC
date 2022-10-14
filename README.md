@@ -1,5 +1,5 @@
 # QuickMPC
-[![Build CC, MC, DC and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml)
+[![Build CC, MC, and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml)
 
 <img src="https://user-images.githubusercontent.com/1694907/182115030-90fda7cf-068a-48bb-ba50-ee12be6af0b4.png" width=128>
 
@@ -52,15 +52,12 @@ make test
 make test t=./ComputationContainer/
 # Only the Manage Container test
 make test t=./ManageContainer/
-# Only the Db Container test
-make test t=./DbContainer/
 ```
 
 ## How to start each container
-This section is usefule when you want to stand 3 containers and dare to test manually.
+This section is usefule when you want to stand 2 containers and dare to test manually.
 ```sh
-make debug t=./ComputationContainer # Launch of the dev_cc{1,2,3}, dev_debgate{1,2,3}, dev_sharedb{1,2,3}, dev_secrets-server
-make debug t=./DbContainer # Launch of the dev_debgate{1,2,3}, dev_sharedb{1,2,3}, dev_secrets-server
+make debug t=./ComputationContainer # Launch of the dev_cc{1,2,3}
 make debug t=./ManageContainer # Then, all container is launched
 ```
 
@@ -115,44 +112,3 @@ go build
 go test ... -v
 ```
 
-### Db Container
-It consists of DbGate and DB.
-
-### Dbgate
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/src/DbContainer
-1. Change your current directory
-```sh
-cd src/DbContainer
-```
-2. Start the container and enter the container
-```sh
-make upd
-make login
-```
-3. Develop and bulid and test
-```sh
-# Create a vendor directory directly under QuickMPC and copy all dependent packages
-go mod vendor
-# build
-go build
-# test
-go test ... -v
-```
-### DB
-Detail https://github.com/acompany-develop/QuickMPC/tree/develop/src/DbContainer/Db#readme
-#### Enter the Couchbase Server's administration page
-Access http://localhost:8091 and create buckets
-In the development environment, the following settings are assumed and implemented.
-```bash
-username: <`CB_USERNAME` created by secrets-server>
-password: <`CB_PASSWORD` created by secrets-server>
-bucket: share
-```
-
-#### Try Query
-Access http://localhost:8091/ui/index.html#!/query/workbench?scenarioZoom=minute
-Example
-```
-CREATE PRIMARY INDEX share_sample_index ON `share`;
-SELECT * FROM `share`;
-```
