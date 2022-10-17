@@ -712,9 +712,7 @@ services:
     build:
       context: ../
       dockerfile: src/ComputationContainer/Dockerfile
-      # temporarily change build stage from `small` to `small_tmp` because it takes long time.
-      # TODO(#36): improve performance
-      target: small_tmp
+      target: small
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
 
@@ -811,8 +809,7 @@ services:
         condition: service_healthy
       dev_bts:
         condition: service_healthy
-    command:
-      ["/bin/bash", "-c", "printenv && ./computation_container_test"]
+    command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc2:
     container_name: computation_container2
@@ -841,8 +838,7 @@ services:
         condition: service_healthy
       dev_bts:
         condition: service_healthy
-    command:
-      ["/bin/bash", "-c", "printenv && ./computation_container_test"]
+    command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc3:
     tty: true # docker run -t
@@ -872,8 +868,7 @@ services:
         condition: service_healthy
       dev_bts:
         condition: service_healthy
-    command:
-      ["/bin/bash", "-c", "printenv && ./computation_container_test"]
+    command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   benchmark_cc1:
     container_name: computation_container1
@@ -901,11 +896,7 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      [
-        "/bin/bash",
-        "-c",
-        "printenv && ./computation_container_benchmark",
-      ]
+      ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
   benchmark_cc2:
     container_name: computation_container2
@@ -933,11 +924,7 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      [
-        "/bin/bash",
-        "-c",
-        "printenv && ./computation_container_benchmark",
-      ]
+      ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
   benchmark_cc3:
     tty: true # docker run -t
@@ -966,11 +953,7 @@ services:
       dev_bts:
         condition: service_healthy
     command:
-      [
-        "/bin/bash",
-        "-c",
-        "printenv && ./computation_container_benchmark",
-      ]
+      ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
   medium_mc1:
     container_name: manage_container1
@@ -1190,7 +1173,12 @@ services:
       - type: bind
         source: ./LibClient/src
         target: /LibClient/src
-    command: ["/bin/bash", "-c", "pipenv run pytest src/tests -s -v -log-cli-level=DEBUG"]
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "pipenv run pytest src/tests -s -v -log-cli-level=DEBUG",
+      ]
     network_mode: "host"
     depends_on:
       dev_mc1:
@@ -1216,7 +1204,12 @@ services:
       - type: bind
         source: ./LibClient/src
         target: /LibClient/src
-    command: ["/bin/bash", "-c", "pipenv run pytest src/benchmark -s -v -log-cli-level=DEBUG"]
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "pipenv run pytest src/benchmark -s -v -log-cli-level=DEBUG",
+      ]
     network_mode: "host"
     depends_on:
       dev_mc1:
