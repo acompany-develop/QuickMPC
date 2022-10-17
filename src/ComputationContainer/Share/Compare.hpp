@@ -6,6 +6,8 @@
 #include "FixedPoint/FixedPoint.hpp"
 #include "Networking.hpp"
 #include "Share.hpp"
+#include "libOTe/NChooseOne/Oos/OosNcoOtReceiver.h"
+#include "libOTe/NChooseOne/Oos/OosNcoOtSender.h"
 namespace qmpc::Share
 {
 

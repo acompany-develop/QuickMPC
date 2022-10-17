@@ -31,6 +31,13 @@ new_local_repository(
     build_file = "@//:sodium.BUILD"
 )
 
+# Enable libOTe
+new_local_repository(
+    name = "libOTe",
+    path = "/usr/local/lib",
+    build_file = "@//:OTe.BUILD"
+)
+
 # Enable nlohman/json
 http_archive(
     name = "nlohmann_json",
