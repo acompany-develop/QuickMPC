@@ -1,5 +1,6 @@
 #pragma once
 #include <atomic>
+#include <iostream>
 #include <mutex>
 namespace qmpc::Share
 {

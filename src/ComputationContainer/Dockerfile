@@ -25,7 +25,15 @@ RUN apt-get update && \
     curl \
     iputils-ping \
     net-tools \
-    dnsutils
+    dnsutils \
+    && apt-get -y install software-properties-common && add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    apt-get update && apt-get install  -y g++-10 && \
+    echo "export CXX='g++-10'" >> ~/.bashrc && \
+    echo "export CC='gcc-10'" >> ~/.bashrc && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10 && \
+    update-alternatives --config gcc && \
+    update-alternatives --config g++
 
 # Install cmake
 RUN CMAKE_VERSION=3.24.2 && \
@@ -57,7 +65,7 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.4.14 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 RUN cd / && git clone https://github.com/osu-crypto/libOTe.git -b v2.0.2 --depth 1 \
-    && cd libOTe && python3 build.py --install --relic -DCMAKE_PREFIX_PATH=/usr/local/lib -DENABLE_ALL_OT=ON
+    && cd libOTe && python3 build.py --install --relic --sodium -DCMAKE_PREFIX_PATH=/usr/local/lib -DENABLE_ALL_OT=ON
 
 FROM base as src
 # 開発環境のフォーマッタを統一
