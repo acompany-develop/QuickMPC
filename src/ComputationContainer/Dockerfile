@@ -113,7 +113,7 @@ FROM builder_base as small
 ENV PARTY_ID=1
 COPY Config/ComputationContainer/Compute${PARTY_ID}/.src.env /QuickMPC/Config/.env
 RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
-    bazel build //Test/UnitTest:all
+    bazel build //Test/UnitTest:all --config=debug
 RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
     tar czfP cache.tar.gz /root/.cache/bazel
 
