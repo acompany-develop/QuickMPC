@@ -163,7 +163,7 @@ protoc --go_out=. --go_opt=paths=source_relative \
 ### `go.mod` 作成
 
 ```
-module github.com/acompany-develop/QuickMPC/src/Proto/ManageToDbGate
+module github.com/acompany-develop/QuickMPC/src/Proto/ManageToComputationContainer
 
 go 1.14
 ```

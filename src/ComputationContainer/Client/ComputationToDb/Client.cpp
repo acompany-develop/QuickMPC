@@ -9,9 +9,6 @@
 namespace qmpc::ComputationToDb
 {
 
-// TODO: ValueTableのファイル移動が完了したら削除する
-using qmpc::ComputationToDbGate::ValueTable;
-
 namespace fs = std::experimental::filesystem;
 
 Client::Client() {}
