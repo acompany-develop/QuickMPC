@@ -88,6 +88,7 @@ class Config
         sp_id = getEnvInt("SP_ID");
         mc_to_cc = getEnvUrl("MC_TO_CC");
         cc_to_bts = getEnvUrl("CC_TO_BTS");
+        cc_to_bts_token = getEnvString("BTS_TOKEN");
         const std::string port_for_job = getEnvString("PORT_FOR_JOB");
         ip_addr_map[1] = getEnvUrl("PARTY_LIST1");
         ip_addr_map[2] = getEnvUrl("PARTY_LIST2");
@@ -191,6 +192,7 @@ public:
     int sp_id;
     Url mc_to_cc;
     Url cc_to_bts;
+    std::string cc_to_bts_token;
     std::unordered_map<int, Url> ip_addr_map;
     std::unordered_map<int, Url> ip_addr_for_job_map;
 

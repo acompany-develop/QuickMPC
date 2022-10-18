@@ -22,6 +22,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute1/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.20
@@ -62,6 +63,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -99,6 +101,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
@@ -123,6 +126,8 @@ services:
       - type: bind
         source: ../Config/BeaverTripleService
         target: /QuickMPC-BTS/Config
+    env_file:
+      - ../Config/BeaverTripleService/server.sample.env
     ports:
       - "0.0.0.0:60020:50020"
     networks:
@@ -170,6 +175,7 @@ services:
         target: /QuickMPC/.vscode
     env_file:
       - ../Config/ComputationContainer/Compute1/.src.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.120
@@ -455,6 +461,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute1/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       default: {}
       shared-network:
@@ -486,6 +493,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       default: {}
       shared-network:
@@ -518,6 +526,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       default: {}
       shared-network:
@@ -549,6 +558,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute1/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       default: {}
       shared-network:
@@ -584,6 +594,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute2/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       default: {}
       shared-network:
@@ -620,6 +631,7 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ComputationContainer/Compute3/.env
+      - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
       default: {}
       shared-network:
