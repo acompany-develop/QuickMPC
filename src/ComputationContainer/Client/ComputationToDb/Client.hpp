@@ -5,8 +5,7 @@
 #include <utility>
 #include <vector>
 
-// DB移植が完了したらValueTableだけComputationToDb/に移動する
-#include "Client/ComputationToDbGate/ValueTable.hpp"
+#include "ValueTable.hpp"
 #include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
 #include "nlohmann/json.hpp"
 
@@ -24,7 +23,7 @@ public:
     static std::shared_ptr<Client> getInstance();
 
     // shareの取り出し
-    qmpc::ComputationToDbGate::ValueTable readShare(const std::string &) const;
+    ValueTable readShare(const std::string &) const;
 
     // model parameterの取り出し
     std::vector<std::string> readModelparam(const std::string &) const;
@@ -37,7 +36,7 @@ public:
     void updateJobStatus(const std::string &job_uuid, const int &status) const;
 
     // tableデータを結合して取り出す
-    qmpc::ComputationToDbGate::ValueTable readTable(const managetocomputation::JoinOrder &table);
+    ValueTable readTable(const managetocomputation::JoinOrder &table);
 
     // resultの保存
     template <class T>

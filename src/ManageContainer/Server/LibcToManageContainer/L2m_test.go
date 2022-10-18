@@ -13,27 +13,27 @@ import (
 )
 
 // Test用のDbGとCCのmock
-type localDbGate struct{}
+type localDb struct{}
 type localCC struct{}
 type localMC struct{}
 type localTokenCA struct{}
 
-func (localDbGate) InsertShares(string, []string, int32, string, string) error {
+func (localDb) InsertShares(string, []string, int32, string, string) error {
 	return nil
 }
-func (localDbGate) DeleteShares([]string) error {
+func (localDb) DeleteShares([]string) error {
 	return nil
 }
-func (localDbGate) GetSchema(string) ([]string, error) {
+func (localDb) GetSchema(string) ([]string, error) {
 	return []string{"attr1"}, nil
 }
-func (localDbGate) GetComputationResult(string) ([]*m2db.ComputationResult, error) {
+func (localDb) GetComputationResult(string) ([]*m2db.ComputationResult, error) {
 	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil
 }
-func (localDbGate) InsertModelParams(string, string, int32) error {
+func (localDb) InsertModelParams(string, string, int32) error {
 	return nil
 }
-func (localDbGate) GetDataList() (string, error) {
+func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }
 func (localCC) ExecuteComputation(*pb_m2c.ExecuteComputationRequest) (string, int32, error) {
@@ -60,7 +60,7 @@ var s *utils.TestServer
 
 func init() {
 	s = &utils.TestServer{}
-	pb.RegisterLibcToManageServer(s.GetServer(), &server{m2dbclient: localDbGate{}, m2cclient: localCC{}, m2mclient: localMC{}, m2tclient: localTokenCA{}})
+	pb.RegisterLibcToManageServer(s.GetServer(), &server{m2dbclient: localDb{}, m2cclient: localCC{}, m2mclient: localMC{}, m2tclient: localTokenCA{}})
 	s.Serve()
 }
 

@@ -3,7 +3,7 @@
 
 # build処理を記述する関数
 build() {
-    docker-compose -f docker-compose.yml build medium_mc1 medium_mc2 medium_mc3 dev_dbgate1 dev_sharedb1 dev_secrets-server dev_dbgate2 dev_sharedb2 dev_dbgate3 dev_sharedb3
+    docker-compose -f docker-compose.yml build medium_mc1 medium_mc2 medium_mc3
 }
 
 # runの前に実行されるsetup処理を記述する関数

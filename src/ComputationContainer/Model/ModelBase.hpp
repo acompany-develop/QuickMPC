@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Client/ComputationToDb/Client.hpp"
-#include "Client/ComputationToDbGate/ValueTable.hpp"
+#include "Client/ComputationToDb/ValueTable.hpp"
 #include "Job/JobStatus.hpp"
 #include "Share/Share.hpp"
 #include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
@@ -21,8 +21,8 @@ class ModelBase
     predict(const std::vector<std::vector<Share>> &, const std::vector<std::string> &, const std::list<int> &, const std::string &)
         const = 0;
 
-    qmpc::ComputationToDbGate::ValueTable
-    parseRead(const std::vector<qmpc::ComputationToDbGate::ValueTable> &, const std::vector<int> &, const std::vector<int> &)
+    qmpc::ComputationToDb::ValueTable
+    parseRead(const std::vector<qmpc::ComputationToDb::ValueTable> &, const std::vector<int> &, const std::vector<int> &)
         const;
     std::pair<std::vector<std::vector<Share>>, std::vector<std::string>>
     readDb(const managetocomputation::PredictRequest &);

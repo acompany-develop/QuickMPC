@@ -49,7 +49,7 @@ func (s *server) authorize(token string, stages []string) error {
 	return errAll
 }
 
-// シェアをDBGateに送信
+// シェアをDBに送信
 func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.SendSharesResponse, error) {
 	AppLogger.Info("Send Shares;")
 	AppLogger.Info("dataID: " + in.GetDataId())
@@ -91,7 +91,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 	}, nil
 }
 
-// シェア削除リクエストをDBGateに送信
+// シェア削除リクエストをDBに送信
 func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*pb.DeleteSharesResponse, error) {
 	AppLogger.Info("Delete Shares;")
 
@@ -121,7 +121,7 @@ func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (
 	}, nil
 }
 
-// DBGateからschemaを取得
+// DBからschemaを取得
 func (s *server) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.GetSchemaResponse, error) {
 	AppLogger.Info("Get Schema;")
 	AppLogger.Info("dataID:")
@@ -213,7 +213,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	}, nil
 }
 
-// DBGateから計算結果を得る
+// DBから計算結果を得る
 func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream pb.LibcToManage_GetComputationResultServer) error {
 	AppLogger.Info("Get Computation Result;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())

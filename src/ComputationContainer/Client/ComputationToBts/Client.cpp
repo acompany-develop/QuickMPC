@@ -45,6 +45,10 @@ std::vector<Triple> Client::readTriples(const unsigned int job_id, const unsigne
     while (true)
     {
         grpc::ClientContext context;
+
+        const std::string token = Config::getInstance()->cc_to_bts_token;
+        context.AddMetadata("authorization", "bearer " + token);
+
         status = stub_->GetTriples(&context, request, &response);
         if (status.ok())
         {

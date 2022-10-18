@@ -1,4 +1,3 @@
-// 新DB作成が完了したら現存のManageToDbGateと入れ替える
 package mng2db
 
 import (

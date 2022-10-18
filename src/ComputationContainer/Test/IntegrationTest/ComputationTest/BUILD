@@ -9,7 +9,6 @@ cc_library(
     ],
     deps = [
         "@gtest//:main",
-        "//Test/IntegrationTest:computation_to_dbgate_test",
         "//Test/IntegrationTest:share_test",
         "//Test/IntegrationTest:meshcode_test",
         "//Test/IntegrationTest:share_comp_test",
@@ -20,7 +19,6 @@ cc_library(
         "//Test/IntegrationTest:read_triple_test",
         "//Test/IntegrationTest:gbdt_test",
         "//Test/IntegrationTest:value_table_test",
-        "//Test/IntegrationTest:anytodb_gate_test",
         "//ConfigParse:config_parse",
         "//Server/ComputationToComputationContainer:server",
         "//Server/ManageToComputationContainer:server",

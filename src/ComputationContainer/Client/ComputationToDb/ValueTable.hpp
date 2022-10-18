@@ -5,7 +5,7 @@
 
 #include "Share/Share.hpp"
 
-namespace qmpc::ComputationToDbGate
+namespace qmpc::ComputationToDb
 {
 class ValueTable
 {
@@ -28,4 +28,4 @@ public:
 
 ValueTable
 parseRead(const std::vector<ValueTable> &, const std::vector<int> &, const std::vector<int> &);
-}  // namespace qmpc::ComputationToDbGate
+}  // namespace qmpc::ComputationToDb

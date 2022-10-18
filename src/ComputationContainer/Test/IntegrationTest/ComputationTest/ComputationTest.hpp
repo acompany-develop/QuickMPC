@@ -10,8 +10,6 @@
 // clang-format off
 #include "Test/IntegrationTest/ShareCompTest.hpp"
 // clang-format on
-#include "Test/IntegrationTest/AnyToDbGateTest.hpp"
-#include "Test/IntegrationTest/ComputationToDbGateTest.hpp"
 #include "Test/IntegrationTest/GBDTTest.hpp"
 #include "Test/IntegrationTest/MathTest.hpp"
 #include "Test/IntegrationTest/MatrixTest.hpp"

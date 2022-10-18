@@ -18,7 +18,6 @@ type IpAddressCollection struct {
 type Containers struct {
 	Manage      *url.URL
 	Computation *url.URL
-	Dbg         *url.URL
 	PartyList   []Party
 }
 
@@ -68,15 +67,6 @@ func GetConfig() (IpAddressCollection, error) {
 		return IpAddressCollection{}, err
 	}
 	ipAddrCollection.Containers.Computation, err = url.Parse(u)
-	if err != nil {
-		return IpAddressCollection{}, err
-	}
-
-	u, err = getEnv("DBG")
-	if err != nil {
-		return IpAddressCollection{}, err
-	}
-	ipAddrCollection.Containers.Dbg, err = url.Parse(u)
 	if err != nil {
 		return IpAddressCollection{}, err
 	}

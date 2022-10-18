@@ -1,21 +1,5 @@
 
 cc_library(
-    name = "computation_to_dbgate_test",
-    hdrs = [
-        "ComputationToDbGateTest.hpp",
-    ],
-    copts = ["-Iexternal/gtest/include"],
-    deps = [
-        "@gtest//:main",
-        "@nlohmann_json//:json",
-        "//Client/ComputationToDbGate:client",
-        "//Client/AnyToDb:client",
-        "//Client/AnyToDb:n1ql",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
     name = "share_comp_test",
     hdrs = [
         "ShareCompTest.hpp",
@@ -150,23 +134,8 @@ cc_library(
     ],
     deps = [
         "@gtest//:main",
-        "//Client/ComputationToDbGate:valuetable",
+        "//Client/ComputationToDb:valuetable",
     ],
     visibility = ["//visibility:public"],
 )
 
-cc_library(
-    name = "anytodb_gate_test",
-    srcs = [
-        "AnyToDbGateTest.hpp",
-    ],
-    copts = ["-Iexternal/gtest/include"],
-    deps = [
-        "@gtest//:main",
-        "@nlohmann_json//:json",
-        "//Client/AnyToDb:client",
-        "//Client/AnyToDb:n1ql",
-        "//LogHeader:logger"
-    ],
-    visibility = ["//visibility:public"],
-)

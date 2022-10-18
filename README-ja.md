@@ -50,15 +50,12 @@ make test
 make test t=./ComputationContainer/
 # Manage Containerの場合
 make test t=./ManageContainer/
-# Db Containerの場合
-make test t=./DbContainer/
 ```
 
 ## 各コンテナの起動方法
-3コンテナ立ててあえて手動でtestしたい時に使用する
+2コンテナ立ててあえて手動でtestしたい時に使用する
 ```sh
-make debug t=./ComputationContainer # dev_cc{1,2,3}, dev_debgate{1,2,3}, dev_sharedb{1,2,3}, dev_secrets-server, dev_btsの立ち上げ
-make debug t=./DbContainer # dev_debgate{1,2,3}, dev_sharedb{1,2,3}, dev_secrets-serverの立ち上げ
+make debug t=./ComputationContainer # dev_cc{1,2,3}, dev_btsの立ち上げ
 make debug t=./ManageContainer # 全てのコンテナが起動
 ```
 
@@ -114,44 +111,3 @@ go build
 go test ... -v
 ```
 
-### Db Container
-DbGateとDBの二つで構成される．
-
-### Dbgate
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/src/DbContainer
-1. ディレクトリを移動する
-```sh
-cd src/DbContainer
-```
-2. コンテナを起動してコンテナに入る
-```sh
-make upd
-make login
-```
-3. 開発してbuildやテストを行う
-```sh
-# /QuickMPC直下にvendorディレクトリを生成し，依存パッケージを全てコピー
-go mod vendor
-# build
-go build
-# test
-go test ... -v
-```
-### DB
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/src/DbContainer/Db#readme
-#### Couchbase Serverの管理画面に入る
-http://localhost:8091 へアクセスし、バケットの作成
-開発環境では、以下の設定を前提として実装
-```bash
-username: <secrets-serverで作成した`CB_USERNAME`>
-password: <secrets-serverで作成した`CB_PASSWORD`>
-bucket: share
-```
-
-#### Queryを試す
-http://localhost:8091/ui/index.html#!/query/workbench?scenarioZoom=minute へアクセス
-例
-```
-CREATE PRIMARY INDEX share_sample_index ON `share`;
-SELECT * FROM `share`;
-```

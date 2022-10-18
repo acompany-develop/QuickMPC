@@ -8,7 +8,7 @@
 
 #include "Share/Compare.hpp"
 
-namespace qmpc::ComputationToDbGate
+namespace qmpc::ComputationToDb
 {
 ValueTable::ValueTable(
     const std::vector<std::vector<std::string>> &table, const std::vector<std::string> &schemas
@@ -355,8 +355,7 @@ ValueTable parseRead(
     const std::vector<int> &index
 )
 {
-    auto joinFunc =
-        [&](auto &&f, const qmpc::ComputationToDbGate::ValueTable &t, unsigned int it = 0)
+    auto joinFunc = [&](auto &&f, const qmpc::ComputationToDb::ValueTable &t, unsigned int it = 0)
     {
         if (it == join.size())
         {
@@ -413,4 +412,4 @@ ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx
 
     return ValueTable(new_table, new_schemas);
 }
-}  // namespace qmpc::ComputationToDbGate
+}  // namespace qmpc::ComputationToDb

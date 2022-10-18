@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Client/ComputationToDb/Client.hpp"
-#include "Client/ComputationToDbGate/ValueTable.hpp"
+#include "Client/ComputationToDb/ValueTable.hpp"
 #include "JobParameter.hpp"
 #include "JobStatus.hpp"
 #include "LogHeader/Logger.hpp"

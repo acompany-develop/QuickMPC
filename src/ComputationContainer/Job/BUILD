@@ -8,7 +8,6 @@ cc_library(
         "//Computation:computation",
         "//Share:share",
         "//Client/ComputationToDb:client",
-        "//Client/ComputationToDbGate:valuetable",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "//LogHeader:logger"
     ],
