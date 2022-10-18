@@ -64,8 +64,8 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.14 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
-RUN cd / && git clone https://github.com/osu-crypto/libOTe.git -b v2.0.2 --depth 1 \
-    && cd libOTe && python3 build.py --install --relic --sodium -DCMAKE_PREFIX_PATH=/usr/local/lib -DENABLE_ALL_OT=ON
+RUN cd / && git clone https://github.com/osu-crypto/libOTe.git --branch v2.0.2 \
+    && cd libOTe && python3 build.py --install -DENABLE_KKRT=ON
 
 FROM base as src
 # 開発環境のフォーマッタを統一
