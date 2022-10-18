@@ -4,6 +4,6 @@ exports_files(["LICENSE.ISC"])
 
 cc_library(
     name = "OTe",
-    srcs = ["liblibOTe.a"],
+    srcs = ["liblibOTe.a","libcoproto.a","libmacoro.a"],
     visibility = ["//visibility:public"],
 )

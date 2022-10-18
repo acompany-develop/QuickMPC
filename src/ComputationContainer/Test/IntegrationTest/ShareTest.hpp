@@ -1437,3 +1437,9 @@ TEST(ShareTest, equalityTest)
     EXPECT_EQ(t_rec, 1);
     EXPECT_EQ(f_rec, 0);
 }
+
+TEST(ShareTest, OTTest)
+{
+    osuCrypto::KkrtNcoOtReceiver sender;
+    osuCrypto::KkrtNcoOtSender recver;
+}
