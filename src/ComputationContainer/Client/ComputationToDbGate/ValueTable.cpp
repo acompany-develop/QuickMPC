@@ -102,7 +102,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     // parallel binary search
     // block_itの各要素 i について(v1[i]>=v2[j]) となる最小のjを求める
     // 各iとjはv1,v2のブロックの区切りをなす
-    spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", 0);
+    spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", 0.0);
     std::vector<int> lower(block_nums, -1);
     std::vector<int> upper(block_nums, len - 1);
     int iterated_num = std::log2(len) + 1;
@@ -129,11 +129,11 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         double progress = 100.0 * progress_i / iterated_num;
         spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", progress);
     }
-    spdlog::info("[progress] hjoin: binary search (1/1): {:>5.2f} %", 100);
+    spdlog::info("[progress] hjoin: binary search (1/1): {:>5.2f} %", 100.0);
 
     // parallel linear search
     // 各ブロックを並列に走査する
-    spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", 0);
+    spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", 0.0);
     std::vector<std::pair<int, int>> now_its;
     std::vector<std::pair<int, int>> limit_its;
     now_its.reserve(block_nums);
@@ -222,7 +222,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         }
         spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", progress);
     }
-    spdlog::info("[progress] hjoin: linear search (1/1): {:>5.2f} %", 100);
+    spdlog::info("[progress] hjoin: linear search (1/1): {:>5.2f} %", 100.0);
     spdlog::info("[progress] hjoin: core (1/1)");
     return it_list;
 }
