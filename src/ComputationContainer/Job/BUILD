@@ -50,3 +50,17 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "progressManager",
+    srcs = [
+        "ProgressManager.cpp",
+    ],
+    hdrs = [
+        "ProgressManager.hpp",
+    ],
+    deps = [
+        "//LogHeader:logger"
+    ],
+    visibility = ["//visibility:public"],
+)
