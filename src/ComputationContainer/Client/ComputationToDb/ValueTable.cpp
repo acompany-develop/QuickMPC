@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Job/ProgressManager.hpp"
 #include "Share/Compare.hpp"
 
 namespace qmpc::ComputationToDb
@@ -80,6 +81,10 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 {
     // v1, v2がソートされている必要あり
     spdlog::info("[progress] hjoin: core (0/1)");
+    auto progress_manager = qmpc::Job::ProgressManager::getInstance();
+    const auto job_id = sorted_v1[0].getId().getJobId();
+    const auto core_progress =
+        progress_manager->createProgress<qmpc::Job::ProgressIters>(job_id, "hjoin: core", 4);
 
     int size = sorted_v1.size();
     int len = sorted_v2.size();
@@ -106,6 +111,12 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     std::vector<int> lower(block_nums, -1);
     std::vector<int> upper(block_nums, len - 1);
     int iterated_num = std::log2(len) + 1;
+
+    const auto binary_search_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
+        job_id, "hjoin: binary search", iterated_num
+    );
+    core_progress->update(1);
+
     for (int progress_i = 0; progress_i < iterated_num; ++progress_i)
     {
         std::vector<int> mid_v(block_nums);
@@ -127,9 +138,14 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             (less_eq[i] ? upper[i] : lower[i]) = mid_v[i];
         }
         double progress = 100.0 * progress_i / iterated_num;
+        binary_search_progress->update(progress_i);
         spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", progress);
     }
+    binary_search_progress->update(iterated_num);
+    binary_search_progress->finish();
+
     spdlog::info("[progress] hjoin: binary search (1/1): {:>5.2f} %", 100);
+    core_progress->update(2);
 
     // parallel linear search
     // 各ブロックを並列に走査する
@@ -138,6 +154,10 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     std::vector<std::pair<int, int>> limit_its;
     now_its.reserve(block_nums);
     limit_its.reserve(block_nums);
+
+    const auto linear_search_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
+        job_id, "hjoin: linear search", block_size
+    );
     for (int i = 0; i < block_nums; ++i)
     {
         now_its.emplace_back(block_it[i], std::max(0, upper[i]));
@@ -150,6 +170,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             limit_its.emplace_back(size, len);
         }
     }
+    core_progress->update(3);
 
     // it_list := v1とv2の積集合のindex
     std::vector<std::pair<int, int>> it_list;
@@ -219,10 +240,17 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                 / block_size;
             progress = std::min(progress, max_progress);
             comp_it += 2;
+            linear_search_progress->update(
+                std::max(now_its[i].first - block_it[i], now_its[i].second - upper[i])
+            );
         }
         spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", progress);
     }
+    linear_search_progress->update(block_size);
+    linear_search_progress->finish();
     spdlog::info("[progress] hjoin: linear search (1/1): {:>5.2f} %", 100);
+    core_progress->update(4);
+    core_progress->finish();
     spdlog::info("[progress] hjoin: core (1/1)");
     return it_list;
 }
