@@ -36,11 +36,11 @@ def logistic_qmpc(train_x, train_y, test_x):
 
     # データをシェア化し送信(schema,idは適当)
     res_train_x = qmpc.send_share(train_x_include_id, schema_x)
-    assert(res_train_x["is_ok"])
+    assert (res_train_x["is_ok"])
     res_train_y = qmpc.send_share(train_y_include_id, ["id", "y"])
-    assert(res_train_y["is_ok"])
+    assert (res_train_y["is_ok"])
     res_test_x = qmpc.send_share(test_x_include_id, schema_x)
-    assert(res_test_x["is_ok"])
+    assert (res_test_x["is_ok"])
     id_train_x = res_train_x["data_id"]
     id_train_y = res_train_y["data_id"]
     id_test_x = res_test_x["data_id"]
@@ -49,14 +49,15 @@ def logistic_qmpc(train_x, train_y, test_x):
     table_train = [[id_train_x, id_train_y], [0], [1, 1]]
     inp_train = [[i for i in range(2, column_size+1)], [column_size+1]]
     res_train = get_result(qmpc.logistic_regression(table_train, inp_train))
-    assert(res_train["is_ok"])
+    assert (res_train["is_ok"])
     model_param_job_uuid: str = res_train["job_uuid"]
 
     # ロジスティック回帰推論
     table_pred = [[id_test_x], [], [1]]
     inp_pred = [i for i in range(2, column_size+1)]
-    res_pred = get_result(qmpc.logistic_regression_predict(model_param_job_uuid, table_pred, inp_pred))
-    assert(res_pred["is_ok"])
+    res_pred = get_result(qmpc.logistic_regression_predict(
+        model_param_job_uuid, table_pred, inp_pred))
+    assert (res_pred["is_ok"])
 
     # 冪等性のために消しておく
     qmpc.delete_share([id_train_x, id_train_y, id_test_x])
