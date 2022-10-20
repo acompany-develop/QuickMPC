@@ -6,6 +6,7 @@
 
 #include "Client/ComputationToDb/Client.hpp"
 #include "Logging/Logger.hpp"
+#include "ProgressManager.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
 namespace qmpc::Job
 {
@@ -19,7 +20,11 @@ class StatusManager
     std::optional<std::string> job_uuid;
     Status status;
 
-    void registerJob() const { db_client->registerJob(job_uuid.value(), static_cast<int>(status)); }
+    void registerJob() const
+    {
+        db_client->registerJob(job_uuid.value(), static_cast<int>(status));
+        ProgressManager::getInstance()->updateJobStatus(job_uuid.value(), status);
+    }
 
 public:
     // TODO: Model が Job に統合され、不要になったら削除する
@@ -63,6 +68,7 @@ public:
         const google::protobuf::EnumValueDescriptor *next_value = descriptor->value(next_index);
         status = static_cast<Status>(next_value->number());
         db_client->updateJobStatus(job_uuid.value(), static_cast<int>(status));
+        ProgressManager::getInstance()->updateJobStatus(job_uuid.value(), status);
     }
 
     Status getStatus() const { return status; }

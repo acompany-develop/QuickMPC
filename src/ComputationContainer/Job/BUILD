@@ -33,6 +33,7 @@ cc_library(
         "//Client/ComputationToComputationContainerForJob:client",
         "//ConfigParse:config_parse",
         "//Job/Jobs:sid3Job",
+        "//Job:progressManager",
         "//LogHeader:logger"
     ],
     visibility = ["//visibility:public"],
@@ -47,6 +48,7 @@ cc_library(
         "//Client/ComputationToDb:client",
         "@Proto//common_types:common_types_cc_proto",
         "//Logging:log",
+        "//Job:progressManager",
     ],
     visibility = ["//visibility:public"],
 )
@@ -60,7 +62,8 @@ cc_library(
         "ProgressManager.hpp",
     ],
     deps = [
-        "//LogHeader:logger"
+        "//LogHeader:logger",
+        "@Proto//common_types:common_types_cc_proto",
     ],
     visibility = ["//visibility:public"],
 )
