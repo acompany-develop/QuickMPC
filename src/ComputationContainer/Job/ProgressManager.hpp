@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <type_traits>
 
 #include "common_types/common_types.pb.h"
 
@@ -53,6 +54,9 @@ struct Progress
 
 private:
     Progress(std::size_t id, std::string description, std::shared_ptr<Observer> observer);
+
+    virtual void before_finish();
+
     std::size_t id_;
     std::string description_;
     std::shared_ptr<Observer> observer_;
@@ -68,8 +72,39 @@ struct ProgressIters : public Progress
     std::optional<std::string> details() const override;
 
 private:
+    void before_finish() override;
+
     std::size_t size;
     std::atomic<std::size_t> index;
+};
+
+template <typename T>
+class ScopedProgress
+{
+    // std::derived_from
+    static_assert(std::is_base_of_v<qmpc::Job::Progress, T>);
+    static_assert(std::is_convertible_v<const volatile T*, const volatile Progress*>);
+
+public:
+    ScopedProgress(std::shared_ptr<T> progress) : progress(progress) {}
+    ScopedProgress(const ScopedProgress<T>&) = delete;
+    ScopedProgress(ScopedProgress<T>&& rhs) : progress(rhs.progress) { rhs.progress = nullptr; }
+    ~ScopedProgress()
+    {
+        if (progress)
+        {
+            progress->finish();
+        }
+    }
+
+    ScopedProgress& operator=(const ScopedProgress<T>&) = delete;
+    ScopedProgress& operator=(const ScopedProgress<T>&&) = delete;
+
+    std::shared_ptr<T> operator->() { return progress; }
+    std::shared_ptr<const T> operator->() const { return progress; }
+
+private:
+    std::shared_ptr<T> progress;
 };
 
 class ProgressManager
@@ -96,7 +131,7 @@ public:
     void registerJob(const int& id, const std::string& uuid);
 
     template <class progress_type, class... Args>
-    std::shared_ptr<progress_type> createProgress(
+    ScopedProgress<progress_type> createProgress(
         const int& job_id, const std::string& desc, Args&&... args
     )
     {
@@ -108,7 +143,7 @@ public:
 
         push(observer, progress);
 
-        return progress;
+        return ScopedProgress<progress_type>(progress);
     }
 
     void updateJobStatus(const std::string& job_uuid, const pb_common_types::JobStatus& status);
