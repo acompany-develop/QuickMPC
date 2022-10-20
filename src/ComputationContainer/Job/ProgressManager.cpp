@@ -3,6 +3,7 @@
 #include <atomic>
 #include <chrono>
 #include <memory>
+#include <optional>
 #include <sstream>
 
 #include "LogHeader/Logger.hpp"
@@ -33,7 +34,8 @@ public:
         }();
         for (const auto& [key, value] : progress)
         {
-            spdlog::debug("[PROGRESS] {} {}: {}", key.first, key.second, value->progress());
+            auto details = value->details();
+            spdlog::debug("[PROGRESS] {} {}: {:3.2f} -- {}", key.first, key.second, value->progress(), value->details().value_or("<no details>"));
         }
     }
 
@@ -64,6 +66,8 @@ Progress::Progress(std::size_t id, std::string description, std::shared_ptr<Obse
 {
 }
 
+std::optional<std::string> Progress::details() const {return std::nullopt;}
+
 void Progress::finish() { observer_->finishProgress(*this); }
 const std::size_t& Progress::id() const { return id_; }
 const std::string& Progress::description() const { return description_; }
@@ -73,7 +77,11 @@ ProgressIters::ProgressIters(const Progress::Builder& builder, const std::size_t
 {
 }
 void ProgressIters::update(const std::size_t& index) { this->index = index; }
-std::string ProgressIters::progress() const
+float ProgressIters::progress() const
+{
+    return 100.f * index / size;
+}
+std::optional<std::string> ProgressIters::details() const
 {
     std::ostringstream os;
     os << index << "/" << size;

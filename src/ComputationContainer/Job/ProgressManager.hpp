@@ -44,7 +44,8 @@ struct Progress
 
     Progress() = delete;
     Progress(const Builder& builder);
-    virtual std::string progress() const = 0;
+    virtual float progress() const = 0;
+    virtual std::optional<std::string> details() const;
 
     virtual void finish() final;
     virtual const std::size_t& id() const final;
@@ -63,7 +64,8 @@ struct ProgressIters : public Progress
 
     void update(const std::size_t& index);
 
-    std::string progress() const override;
+    float progress() const override;
+    std::optional<std::string> details() const override;
 
 private:
     std::size_t size;
