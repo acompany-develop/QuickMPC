@@ -6,6 +6,12 @@ from utils import get_result, qmpc
 from benchmark.data import iris, penguins, titanic
 from benchmark.metrics import MetricsOutputer
 
+# types: (iterate_num, train_size)
+test_parameters = [
+    (10, 5),
+    (10, 10)
+]
+
 
 def id3_sklearn(train_x, train_y, test_x):
     """ ID3 """
@@ -71,66 +77,57 @@ def convert(test_y):
 
 
 @pytest.mark.parametrize(
-    ("train_size"),
-    [
-        (5), (10)
-    ]
+    ("iterate_num", "train_size"), test_parameters
 )
-def test_sid3_titanic(train_size):
-    # 現実時間で学習を終わらせるためサイズを小さくする
-    train_x, train_y, test_x, test_y, schema_x, schema_y = titanic(
-        is_bitvector=True)
-    train_x = train_x[:train_size]
-    train_y = train_y[:train_size]
-
-    # trainデータで学習してtestデータでの推測値を得る
-    pred_y_qmpc = sid3_qmpc(train_x, train_y, test_x, schema_x, schema_y)
-
-    # 指標を出力
+def test_sid3_titanic(iterate_num: int, train_size: int):
     mo = MetricsOutputer("classification")
-    mo.append("QuickMPC", convert(test_y), pred_y_qmpc)
+    for _ in range(iterate_num):
+        # 現実時間で学習を終わらせるためサイズを小さくする
+        train_x, train_y, test_x, test_y, schema_x, schema_y = titanic(
+            is_bitvector=True)
+        train_x = train_x[:train_size]
+        train_y = train_y[:train_size]
+
+        # trainデータで学習してtestデータでの推測値を得る
+        pred_y_qmpc = sid3_qmpc(train_x, train_y, test_x, schema_x, schema_y)
+
+        mo.append("QuickMPC", convert(test_y), pred_y_qmpc)
     mo.output()
 
 
 @pytest.mark.parametrize(
-    ("train_size"),
-    [
-        (5), (10)
-    ]
+    ("iterate_num", "train_size"), test_parameters
 )
-def test_sid3_iris(train_size):
-    # 現実時間で学習を終わらせるためサイズを小さくする
-    train_x, train_y, test_x, test_y, schema_x, schema_y = iris(
-        is_bitvector=True)
-    train_x = train_x[:train_size]
-    train_y = train_y[:train_size]
-
-    # trainデータで学習してtestデータでの推測値を得る
-    pred_y_qmpc = sid3_qmpc(train_x, train_y, test_x, schema_x, schema_y)
-
-    # 指標を出力
+def test_sid3_iris(iterate_num: int, train_size: int):
     mo = MetricsOutputer("classification")
-    mo.append("QuickMPC", convert(test_y), pred_y_qmpc)
+    for _ in range(iterate_num):
+        # 現実時間で学習を終わらせるためサイズを小さくする
+        train_x, train_y, test_x, test_y, schema_x, schema_y = iris(
+            is_bitvector=True)
+        train_x = train_x[:train_size]
+        train_y = train_y[:train_size]
+
+        # trainデータで学習してtestデータでの推測値を得る
+        pred_y_qmpc = sid3_qmpc(train_x, train_y, test_x, schema_x, schema_y)
+
+        mo.append("QuickMPC", convert(test_y), pred_y_qmpc)
     mo.output()
 
 
 @pytest.mark.parametrize(
-    ("train_size"),
-    [
-        (5), (10)
-    ]
+    ("iterate_num", "train_size"), test_parameters
 )
-def test_sid3_penguins(train_size):
-    # 現実時間で学習を終わらせるためサイズを小さくする
-    train_x, train_y, test_x, test_y, schema_x, schema_y = penguins(
-        is_bitvector=True)
-    train_x = train_x[:train_size]
-    train_y = train_y[:train_size]
-
-    # trainデータで学習してtestデータでの推測値を得る
-    pred_y_qmpc = sid3_qmpc(train_x, train_y, test_x, schema_x, schema_y)
-
-    # 指標を出力
+def test_sid3_penguins(iterate_num: int, train_size: int):
     mo = MetricsOutputer("classification")
-    mo.append("QuickMPC", convert(test_y), pred_y_qmpc)
+    for _ in range(iterate_num):
+        # 現実時間で学習を終わらせるためサイズを小さくする
+        train_x, train_y, test_x, test_y, schema_x, schema_y = penguins(
+            is_bitvector=True)
+        train_x = train_x[:train_size]
+        train_y = train_y[:train_size]
+
+        # trainデータで学習してtestデータでの推測値を得る
+        pred_y_qmpc = sid3_qmpc(train_x, train_y, test_x, schema_x, schema_y)
+
+        mo.append("QuickMPC", convert(test_y), pred_y_qmpc)
     mo.output()

@@ -7,6 +7,12 @@ from utils import get_result, qmpc
 from benchmark.data import iris, penguins, titanic
 from benchmark.metrics import MetricsOutputer
 
+# types: (iterate_num, train_size)
+test_parameters = [
+    (10, 5),
+    (10, 10)
+]
+
 
 def logistic_sklearn(train_x, train_y, test_x):
     """ sklearnのロジスティック回帰 """
@@ -69,77 +75,69 @@ def logistic_qmpc(train_x, train_y, test_x):
 
 
 @pytest.mark.parametrize(
-    ("train_size"),
-    [
-        (5), (10)
-    ]
+    ("iterate_num", "train_size"), test_parameters
 )
-def test_logistic_titanic(train_size):
-    # 現実時間で学習を終わらせるためサイズを小さくする
-    train_x, train_y, test_x, test_y, _, _ = titanic()
-    train_x = train_x[:train_size]
-    train_y = train_y[:train_size]
-
-    # trainデータで学習してtestデータでの推測値を得る
-    pred_y_qmpc = logistic_qmpc(train_x, train_y, test_x)
-    pred_y_sklearn = logistic_sklearn(train_x, train_y, test_x)
-
-    # 指標を出力
+def test_logistic_titanic(iterate_num: int, train_size: int):
     mo = MetricsOutputer("classification")
-    mo.append("sklean", test_y, pred_y_sklearn)
-    mo.append("QuickMPC", test_y, pred_y_qmpc)
+    for _ in range(iterate_num):
+        # 現実時間で学習を終わらせるためサイズを小さくする
+        train_x, train_y, test_x, test_y, _, _ = titanic()
+        train_x = train_x[:train_size]
+        train_y = train_y[:train_size]
+
+        # trainデータで学習してtestデータでの推測値を得る
+        pred_y_qmpc = logistic_qmpc(train_x, train_y, test_x)
+        pred_y_sklearn = logistic_sklearn(train_x, train_y, test_x)
+
+        mo.append("sklean", test_y, pred_y_sklearn)
+        mo.append("QuickMPC", test_y, pred_y_qmpc)
     mo.output()
 
 
 @pytest.mark.parametrize(
-    ("train_size"),
-    [
-        (5), (10)
-    ]
+    ("iterate_num", "train_size"), test_parameters
 )
-def test_logistic_iris(train_size):
-    # 現実時間で学習を終わらせるためサイズを小さくする
-    train_x, train_y_list, test_x, test_y_list, _, _ = iris()
-    train_x = train_x[:train_size]
-    train_y_list = train_y_list[:train_size]
-
+def test_logistic_iris(iterate_num: int, train_size: int):
     mo = MetricsOutputer("classification")
-    labels = ["setosa", "versicolor", "virginica"]
+    for _ in range(iterate_num):
+        # 現実時間で学習を終わらせるためサイズを小さくする
+        train_x, train_y_list, test_x, test_y_list, _, _ = iris()
+        train_x = train_x[:train_size]
+        train_y_list = train_y_list[:train_size]
 
-    # trainデータで学習してtestデータでの推測値を得る
-    for label, train_y, test_y in \
-            zip(labels, train_y_list.transpose(), test_y_list.transpose()):
-        pred_y_qmpc = logistic_qmpc(train_x, train_y, test_x)
-        pred_y_sklearn = logistic_sklearn(train_x, train_y, test_x)
+        labels = ["setosa", "versicolor", "virginica"]
 
-        mo.append(f"[{label}] sklean", test_y, pred_y_sklearn)
-        mo.append(f"[{label}] QuickMPC", test_y, pred_y_qmpc)
+        # trainデータで学習してtestデータでの推測値を得る
+        for label, train_y, test_y in \
+                zip(labels, train_y_list.transpose(), test_y_list.transpose()):
+            pred_y_qmpc = logistic_qmpc(train_x, train_y, test_x)
+            pred_y_sklearn = logistic_sklearn(train_x, train_y, test_x)
+
+            mo.append(f"[{label}] sklean", test_y, pred_y_sklearn)
+            mo.append(f"[{label}] QuickMPC", test_y, pred_y_qmpc)
 
     mo.output()
 
 
 @pytest.mark.parametrize(
-    ("train_size"),
-    [
-        (5), (10)
-    ]
+    ("iterate_num", "train_size"), test_parameters
 )
-def test_logistic_penguins(train_size):
-    # 現実時間で学習を終わらせるためサイズを小さくする
-    train_x, train_y_list, test_x, test_y_list, _, _ = penguins()
-    train_x = train_x[:train_size]
-    train_y_list = train_y_list[:train_size]
-
+def test_logistic_penguins(iterate_num: int, train_size: int):
     mo = MetricsOutputer("classification")
-    labels = ['Adelie', 'Chinstrap', 'Gentoo']
+    for _ in range(iterate_num):
+        # 現実時間で学習を終わらせるためサイズを小さくする
+        train_x, train_y_list, test_x, test_y_list, _, _ = penguins()
+        train_x = train_x[:train_size]
+        train_y_list = train_y_list[:train_size]
 
-    # trainデータで学習してtestデータでの推測値を得る
-    for label, train_y, test_y in \
-            zip(labels, train_y_list.transpose(), test_y_list.transpose()):
-        pred_y_qmpc = logistic_qmpc(train_x, train_y, test_x)
-        pred_y_sklearn = logistic_sklearn(train_x, train_y, test_x)
+        labels = ['Adelie', 'Chinstrap', 'Gentoo']
 
-        mo.append(f"[{label}] sklean", test_y, pred_y_sklearn)
-        mo.append(f"[{label}] QuickMPC", test_y, pred_y_qmpc)
+        # trainデータで学習してtestデータでの推測値を得る
+        for label, train_y, test_y in \
+                zip(labels, train_y_list.transpose(), test_y_list.transpose()):
+            pred_y_qmpc = logistic_qmpc(train_x, train_y, test_x)
+            pred_y_sklearn = logistic_sklearn(train_x, train_y, test_x)
 
+            mo.append(f"[{label}] sklean", test_y, pred_y_sklearn)
+            mo.append(f"[{label}] QuickMPC", test_y, pred_y_qmpc)
     mo.output()
