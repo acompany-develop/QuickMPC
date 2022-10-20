@@ -13,7 +13,7 @@ def send_share(filename: str) -> tuple:
 
     # データをシェア化し送信する
     send_res = qmpc.send_share(secrets, schema)
-    assert(send_res["is_ok"])
+    assert (send_res["is_ok"])
     return secrets, send_res["data_id"]
 
 
@@ -40,13 +40,13 @@ def test_mean(table_file: str):
     inp = [i for i in range(2, length+1)]
 
     res = get_result(qmpc.mean(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)[:, 1:]
     true_val = np.add.reduce(secrets_np) / len(secrets)
     for x, y in zip(res["results"], true_val):
-        assert(math.isclose(x, y, abs_tol=0.1))
+        assert (math.isclose(x, y, abs_tol=0.1))
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
@@ -75,13 +75,13 @@ def test_sum(table_file: str):
     inp = [i for i in range(2, length+1)]
 
     res = get_result(qmpc.sum(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)[:, 1:]
     true_val = np.add.reduce(secrets_np)
     for x, y in zip(res["results"], true_val):
-        assert(math.isclose(x, y, abs_tol=0.1))
+        assert (math.isclose(x, y, abs_tol=0.1))
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
@@ -110,13 +110,13 @@ def test_variance(table_file: str):
     inp = [i for i in range(2, length+1)]
 
     res = get_result(qmpc.variance(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)[:, 1:]
     true_val = np.var(secrets_np, axis=0)
     for x, y in zip(res["results"], true_val):
-        assert(math.isclose(x, y, abs_tol=0.1))
+        assert (math.isclose(x, y, abs_tol=0.1))
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
@@ -146,7 +146,7 @@ def test_correl(table_file: str):
     inp = [[i for i in range(2, length)], [length]]
 
     res = get_result(qmpc.correl(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)[:, 1:]
@@ -154,7 +154,7 @@ def test_correl(table_file: str):
     true_val = correl_matrix[:length-2, length-2].transpose()
 
     for x, y in zip(res["results"][0], true_val):
-        assert(math.isclose(x, y, abs_tol=0.1))
+        assert (math.isclose(x, y, abs_tol=0.1))
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
@@ -185,7 +185,7 @@ def test_linear_regression(table_file: str):
     inp = [[i for i in range(2, length)], [length]]
 
     res = get_result(qmpc.linear_regression(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
@@ -223,7 +223,7 @@ def test_logistic_regression(table_file: str):
     inp = [[i for i in range(2, length)], [length+1]]
 
     res = get_result(qmpc.logistic_regression(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
 
 @pytest.mark.parametrize(
@@ -247,7 +247,7 @@ def test_decision_tree(table_file: str):
     inp = ([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [19, 20])
 
     res = get_result(qmpc.decision_tree(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
 
 @pytest.mark.parametrize(
@@ -269,13 +269,13 @@ def test_table_hjoin(table_file: str, table_file_for_join: str):
     inp = [i for i in range(2, length+1)]
 
     res = get_result(qmpc.sum(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)[:, 1:]
     true_val = np.add.reduce(secrets_np)
     for x, y in zip(res["results"], true_val):
-        assert(math.isclose(x, y, abs_tol=0.1))
+        assert (math.isclose(x, y, abs_tol=0.1))
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id1, data_id2])
@@ -300,13 +300,13 @@ def test_table_wjoin(table_file: str, table_file_for_join: str):
     inp = [i for i in range(2, length+1)]
 
     res = get_result(qmpc.sum(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)[:, 1:]
     true_val = np.add.reduce(secrets_np)
     for x, y in zip(res["results"], true_val):
-        assert(math.isclose(x, y, abs_tol=0.1))
+        assert (math.isclose(x, y, abs_tol=0.1))
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id1, data_id2])
@@ -331,13 +331,13 @@ def test_table_hjoin_share(table_file: str, table_file_for_join: str):
     inp = [i for i in range(2, length+1)]
 
     res = get_result(qmpc.sum(table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 正しく計算されたか確認
     secrets_np = np.array(secrets)[:, 1:]
     true_val = np.add.reduce(secrets_np)
     for x, y in zip(res["results"], true_val):
-        assert(math.isclose(x, y, abs_tol=0.1))
+        assert (math.isclose(x, y, abs_tol=0.1))
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id1, data_id2])
@@ -360,7 +360,7 @@ def test_table_hjoin_fail(table_file: str, table_file_for_join: str):
     res = get_result(qmpc.get_join_table(table))
 
     # 結合結果が空でもエラーなくresponseが返ってくるか
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
 
 @pytest.mark.parametrize(
@@ -380,7 +380,7 @@ def test_table_wjoin_fail(table_file: str, table_file_for_join: str):
     res = get_result(qmpc.get_join_table(table))
 
     # 結合結果が空でもエラーなくresponseが返ってくるか
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
 
 @pytest.mark.parametrize(
@@ -400,4 +400,4 @@ def test_table_hjoin_share_fail(table_file: str, table_file_for_join: str):
     res = get_result(qmpc.get_join_table(table))
 
     # 結合結果が空でもエラーなくresponseが返ってくるか
-    assert(res["is_ok"])
+    assert (res["is_ok"])

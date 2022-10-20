@@ -25,7 +25,7 @@ def test_send_share(table_file: str):
 
     # データをシェア化し送信する
     res = qmpc.send_share(secrets, schema)
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 冪等性のために消しておく
     qmpc.delete_share([res["data_id"]])
@@ -49,7 +49,7 @@ def test_send_model_params_array(model_file: str):
 
     # データをシェア化し送信する
     res = qmpc.send_model_params(data)
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
 
 @pytest.mark.parametrize(
@@ -71,4 +71,4 @@ def test_send_model_params_json(model_file: str):
 
     # データをシェア化し送信する
     res = qmpc.send_model_params(data)
-    assert(res["is_ok"])
+    assert (res["is_ok"])

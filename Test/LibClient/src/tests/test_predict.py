@@ -6,7 +6,6 @@ import time
 
 import numpy as np
 import pytest
-
 from utils import get_result, qmpc
 
 
@@ -39,7 +38,7 @@ def test_linear_regression_predict(table_file: str, model_file: str):
     table = [[data_id], [], [1]]
     inp = [i for i in range(2, length+1)]
     res = get_result(qmpc.linear_regression_predict(model_uuid, table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
@@ -74,7 +73,7 @@ def test_logistic_regression_predict(table_file: str, model_file: str):
     table = [[data_id], [], [1]]
     inp = [i for i in range(2, length+1)]
     res = get_result(qmpc.logistic_regression_predict(model_uuid, table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
@@ -110,7 +109,7 @@ def test_decision_tree_predict(table_file: str, model_file: str):
     table = [[data_id], [], [1]]
     inp = [i for i in range(2, length+1)]
     res = get_result(qmpc.decision_tree_predict(model_uuid, table, inp))
-    assert(res["is_ok"])
+    assert (res["is_ok"])
 
     # 冪等性のために消しておく
     qmpc.delete_share([data_id])
