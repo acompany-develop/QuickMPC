@@ -99,7 +99,7 @@ COPY --from=builder /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
 RUN true
 COPY --from=builder /lib64 /lib64
 RUN true
-COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.13 /ko-app/grpc-health-probe /bin/grpc_health_probe
+COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.14 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
 FROM builder as small

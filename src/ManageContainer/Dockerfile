@@ -73,7 +73,7 @@ RUN apk update && \
   apk upgrade
 COPY --from=builder /QuickMPC/ManageContainer /QuickMPC/ManageContainer
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
-COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.13 /ko-app/grpc-health-probe /bin/grpc_health_probe
+COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.14 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
 FROM builder as small
