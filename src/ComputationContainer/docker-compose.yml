@@ -34,6 +34,9 @@ services:
         source: ../../.vscode
         target: /QuickMPC/.vscode
       - type: bind
+        source: ../.clang-format
+        target: /QuickMPC/.clang-format
+      - type: bind
         source: ../Db/
         target: /Db
     env_file:
