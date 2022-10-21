@@ -24,7 +24,7 @@ RUN apt-get update && \
   cmake
 
 # grpcサーバのhealthcheckをするためのツールをインストール
-RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.14 && \
   wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
   chmod +x /bin/grpc_health_probe
 
@@ -65,7 +65,7 @@ RUN go mod vendor && go build
 FROM builder as dev
 
 # image for deploy
-FROM alpine:3.15.1 as dep-runner
+FROM alpine:3.16.2 as dep-runner
 RUN apk update && \
   apk add --no-cache bash && \
   # CVE-2022-0778 対策
@@ -73,7 +73,7 @@ RUN apk update && \
   apk upgrade
 COPY --from=builder /QuickMPC/ManageContainer /QuickMPC/ManageContainer
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
-COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.13 /ko-app/grpc-health-probe /bin/grpc_health_probe
+COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.14 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
 FROM builder as small
