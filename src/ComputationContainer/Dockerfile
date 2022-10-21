@@ -81,7 +81,7 @@ RUN bazel build //:all ${BUILD_OPT}
 FROM builder as dev
 
 # image for deploy
-FROM alpine:3.15.1 as dep-runner
+FROM alpine:3.16.2 as dep-runner
 RUN apk update && \
     apk add curl && \
     apk add --no-cache bash && \

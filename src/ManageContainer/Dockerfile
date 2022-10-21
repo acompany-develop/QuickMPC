@@ -65,7 +65,7 @@ RUN go mod vendor && go build
 FROM builder as dev
 
 # image for deploy
-FROM alpine:3.15.1 as dep-runner
+FROM alpine:3.16.2 as dep-runner
 RUN apk update && \
   apk add --no-cache bash && \
   # CVE-2022-0778 対策
