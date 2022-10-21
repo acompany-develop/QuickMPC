@@ -6,11 +6,24 @@
 #include <optional>
 #include <sstream>
 
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/random_generator.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
+
 #include "LogHeader/Logger.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
 
 namespace qmpc::Job
 {
+
+static std::string generate_uuid()
+{
+    static thread_local boost::uuids::random_generator gen;
+    return boost::lexical_cast<std::string>(gen());
+}
+
 class Observer
 {
 public:
@@ -142,6 +155,18 @@ void ProgressManager::registerJob(const int& id, const std::string& uuid)
 
 std::shared_ptr<Observer> ProgressManager::getObserver(const int& id)
 {
+    const std::size_t count = [&]()
+    {
+        std::lock_guard<std::mutex> lock(dict_mtx);
+        return job_id_to_job_uuid.count(id);
+    }();
+    if (count == 0)
+    {
+        const std::string uuid = generate_uuid();
+        spdlog::info("ProgressManager: temporary uuid: {} was generated", uuid);
+        // TODO: check whether uuid is temporary or not.
+        registerJob(id, uuid);
+    }
     std::lock_guard<std::mutex> lock(dict_mtx);
     return progresses[job_id_to_job_uuid[id]];
 }
