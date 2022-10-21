@@ -11,3 +11,4 @@ AccessModifierOffset: -4
 BreakBeforeBinaryOperators: NonAssignment
 ColumnLimit: 100
 BreakBeforeBraces: Allman
+IncludeBlocks: Preserve
