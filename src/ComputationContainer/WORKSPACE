@@ -34,7 +34,7 @@ new_local_repository(
 # Enable libOTe
 new_local_repository(
     name = "libOTe",
-    path = "/usr/local/lib",
+    path = "/usr/local/",
     build_file = "@//:OTe.BUILD"
 )
 

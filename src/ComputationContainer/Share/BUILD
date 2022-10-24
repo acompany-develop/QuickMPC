@@ -29,6 +29,7 @@ cc_library(
         "//Logging:log",
         "@libOTe//:OTe",
     ],
+    linkstatic=1,
     visibility = ["//visibility:public"],
 )
 

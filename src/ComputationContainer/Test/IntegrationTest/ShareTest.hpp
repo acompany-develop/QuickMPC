@@ -11,6 +11,7 @@
 #include "Share/Compare.hpp"
 #include "Share/Share.hpp"
 #include "gtest/gtest.h"
+#include "libOTe_Tests/NcoOT_Tests.h"
 #include "unistd.h"
 
 TEST(ShareTest, IncrementShareId)
@@ -1442,4 +1443,6 @@ TEST(ShareTest, OTTest)
 {
     osuCrypto::KkrtNcoOtReceiver sender;
     osuCrypto::KkrtNcoOtSender recver;
+
+    tests_libOTe::NcoOt_Kkrt_Test();
 }
