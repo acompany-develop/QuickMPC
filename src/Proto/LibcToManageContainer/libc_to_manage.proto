@@ -118,6 +118,7 @@ message GetComputationResultResponse {
     string result = 3;
     pb_common_types.JobStatus status = 4;
     int32 piece_id = 5;
+    optional pb_common_types.JobProgress progress = 6;
 }
 
 /**
