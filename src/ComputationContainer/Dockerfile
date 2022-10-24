@@ -64,7 +64,7 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.4.14 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 RUN cd / && git clone https://github.com/osu-crypto/libOTe.git --branch v2.0.2 \
-    && cd libOTe && python3 build.py --install -DENABLE_KKRT=ON -DENABLE_IKNP=ON  --sodium
+    && cd libOTe && python3 build.py --install -DENABLE_KKRT=ON -DENABLE_IKNP=ON  --sodium -DENABLE_SSE=OFF
 
 FROM base as src
 # 開発環境のフォーマッタを統一
