@@ -12,6 +12,6 @@ cc_library(
         "lib/libmacoro.a",],
     hdrs = glob(["include/libOTe/*.h","include/liblibOTe_Tests/*.h"]),
     linkstatic=1,
-    linkopts = ["-I/usr/lcoal/include","-z muldefs"],
+    linkopts = ["-I/usr/lcoal/include"],
     visibility = ["//visibility:public"],
 )
