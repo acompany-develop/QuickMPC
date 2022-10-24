@@ -97,6 +97,7 @@ public:
     std::size_t generateId() { return counter++; }
 
     void updateJobStatus(const pb_common_types::JobStatus& status) { this->status = status; }
+    pb_common_types::JobStatus getJobStatus() const { return this->status; }
 
 private:
     std::mutex mutex;
