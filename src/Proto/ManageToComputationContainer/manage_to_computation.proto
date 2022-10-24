@@ -17,6 +17,8 @@ service ManageToComputation {
     rpc ExecuteComputation(ExecuteComputationRequest) returns (google.protobuf.Empty) {}
     // receive predict request from manage container
     rpc Predict(PredictRequest) returns (google.protobuf.Empty) {}
+    // receive progress check request from manage container
+    rpc CheckProgress(CheckProgressRequest) returns (pb_common_types.JobProgress) {}
 }
 
 /**
@@ -56,3 +58,6 @@ message PredictRequest {
     repeated int32 src = 5;
 }
 
+message CheckProgressRequest {
+    string job_uuid = 1;
+}

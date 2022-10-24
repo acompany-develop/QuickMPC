@@ -33,3 +33,16 @@ enum PredictMethod {
     PREDICT_METHOD_DECISION_TREE = 3;
     PREDICT_METHOD_SID3_TREE = 4;
 }
+
+message ProcedureProgress {
+    uint64 id = 1;                // unique id in ProgressManager context
+    string description = 2;       // describe specific process in job
+    float progress = 3;           // describe progress by [0.0, 1.0]
+    optional string details = 4;  // describe progress in details
+}
+
+message JobProgress {
+    string job_uuid = 1;
+    JobStatus status = 2;
+    repeated ProcedureProgress progresses = 3;
+}

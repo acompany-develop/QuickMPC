@@ -147,5 +147,15 @@ public:
     }
 
     void updateJobStatus(const std::string& job_uuid, const pb_common_types::JobStatus& status);
+
+    enum class StatusCode
+    {
+        OK,
+        NOT_FOUND,
+        INTERNAL_ERROR,
+    };
+    std::pair<std::optional<pb_common_types::JobProgress>, StatusCode> getProgress(
+        const std::string& job_uuid
+    );
 };
 }  // namespace qmpc::Job

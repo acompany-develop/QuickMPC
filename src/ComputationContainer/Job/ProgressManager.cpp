@@ -58,6 +58,35 @@ public:
         }
     }
 
+    std::vector<pb_common_types::ProcedureProgress> info()
+    {
+        const auto progress = [&]()
+        {
+            std::lock_guard<std::mutex> lock(mutex);
+            return this->progress;
+        }();
+
+        std::vector<pb_common_types::ProcedureProgress> ret;
+        ret.reserve(progress.size());
+
+        for (const auto& [_, elem] : progress)
+        {
+            static_cast<void>(_);  // unused
+            pb_common_types::ProcedureProgress proc;
+            proc.set_id(elem->id());
+            proc.set_description(elem->description());
+            proc.set_progress(elem->progress());
+            const std::optional<std::string> details = elem->details();
+            if (details.has_value())
+            {
+                proc.set_details(details.value());
+            }
+            ret.emplace_back(std::move(proc));
+        }
+
+        return ret;
+    }
+
     void finishProgress(const Progress& elem)
     {
         // TODO
@@ -196,6 +225,57 @@ void ProgressManager::updateJobStatus(
         job_id_to_job_uuid.erase(job_id);
         job_uuid_to_job_id.erase(job_uuid);
     }
+}
+
+std::pair<std::optional<pb_common_types::JobProgress>, ProgressManager::StatusCode>
+ProgressManager::getProgress(const std::string& job_uuid)
+{
+    const auto observer = [&]() -> std::optional<std::shared_ptr<Observer>>
+    {
+        std::lock_guard<std::mutex> lock(dict_mtx);
+        if (progresses.count(job_uuid) == 0)
+        {
+            return std::nullopt;
+        }
+        return progresses[job_uuid];
+    }();
+
+    if (!observer.has_value())
+    {
+        spdlog::warn(
+            "{}:{}:{} observer with job_uuid: {} was not found",
+            __FILE__,
+            __LINE__,
+            __func__,
+            job_uuid
+        );
+        return {std::nullopt, ProgressManager::StatusCode::NOT_FOUND};
+    }
+
+    const std::vector<pb_common_types::ProcedureProgress> procedures = observer.value()->info();
+
+    pb_common_types::JobProgress progress;
+    progress.set_job_uuid(job_uuid);
+    progress.set_status(observer.value()->getJobStatus());
+
+    for (const auto& proc : procedures)
+    {
+        auto ptr = progress.add_progresses();
+        if (ptr == nullptr)
+        {
+            spdlog::error(
+                "{}:{}:{} allocation of return value was failed -- job_uuid: {}",
+                __FILE__,
+                __LINE__,
+                __func__,
+                job_uuid
+            );
+            return {std::nullopt, ProgressManager::StatusCode::INTERNAL_ERROR};
+        }
+        *ptr = proc;
+    }
+
+    return {progress, ProgressManager::StatusCode::OK};
 }
 
 std::shared_ptr<ProgressManager> ProgressManager::getInstance()
