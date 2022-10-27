@@ -210,6 +210,19 @@ void ProgressManager::updateJobStatus(
 )
 {
     std::lock_guard<std::mutex> lock(dict_mtx);
+
+    if (progresses.count(job_uuid) == 0)
+    {
+        spdlog::error(
+            "{}:{}:{} observer with job_uuid: {} was not found",
+            __FILE__,
+            __LINE__,
+            __func__,
+            job_uuid
+        );
+        return;
+    }
+
     auto observer = progresses[job_uuid];
     observer->updateJobStatus(status);
 
