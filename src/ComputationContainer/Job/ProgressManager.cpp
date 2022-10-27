@@ -199,9 +199,11 @@ std::shared_ptr<Observer> ProgressManager::getObserver(const int& id)
     }();
     if (count == 0)
     {
+        // This block should be reached when executing integration test
         const std::string uuid = generate_uuid();
         spdlog::info("ProgressManager: temporary uuid: {} was generated", uuid);
-        // TODO: check whether uuid is temporary or not.
+        // TODO: check whether uuid is temporary or not
+        //       because generated objects were not going to be released.
         registerJob(id, uuid);
     }
     std::lock_guard<std::mutex> lock(dict_mtx);
