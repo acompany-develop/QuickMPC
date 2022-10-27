@@ -80,6 +80,11 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 )
 {
     // v1, v2がソートされている必要あり
+    if (sorted_v1.size() == 0 || sorted_v2.size() == 0)
+    {
+        return {};
+    }
+
     auto progress_manager = qmpc::Job::ProgressManager::getInstance();
     const auto job_id = sorted_v1[0].getId().getJobId();
     auto core_progress =
