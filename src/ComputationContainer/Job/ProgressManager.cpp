@@ -135,7 +135,7 @@ void ProgressManager::log()
 {
     const auto progresses = [&]()
     {
-        std::lock_guard<std::mutex> lock(dict_mtx);
+        std::lock_guard<std::recursive_mutex> lock(dict_mtx);
         return this->progresses;
     }();
 
@@ -183,7 +183,7 @@ void ProgressManager::shutdown()
 
 void ProgressManager::registerJob(const int& id, const std::string& uuid)
 {
-    std::lock_guard<std::mutex> lock(dict_mtx);
+    std::lock_guard<std::recursive_mutex> lock(dict_mtx);
 
     job_id_to_job_uuid[id] = uuid;
     job_uuid_to_job_id[uuid] = id;
@@ -192,11 +192,9 @@ void ProgressManager::registerJob(const int& id, const std::string& uuid)
 
 std::shared_ptr<Observer> ProgressManager::getObserver(const int& id)
 {
-    const std::size_t count = [&]()
-    {
-        std::lock_guard<std::mutex> lock(dict_mtx);
-        return job_id_to_job_uuid.count(id);
-    }();
+    std::lock_guard<std::recursive_mutex> lock(dict_mtx);
+
+    const std::size_t count = job_id_to_job_uuid.count(id);
     if (count == 0)
     {
         // This block should be reached when executing integration test
@@ -206,7 +204,7 @@ std::shared_ptr<Observer> ProgressManager::getObserver(const int& id)
         //       because generated objects were not going to be released.
         registerJob(id, uuid);
     }
-    std::lock_guard<std::mutex> lock(dict_mtx);
+
     return progresses[job_id_to_job_uuid[id]];
 }
 
@@ -224,7 +222,7 @@ void ProgressManager::updateJobStatus(
     const std::string& job_uuid, const pb_common_types::JobStatus& status
 )
 {
-    std::lock_guard<std::mutex> lock(dict_mtx);
+    std::lock_guard<std::recursive_mutex> lock(dict_mtx);
 
     if (progresses.count(job_uuid) == 0)
     {
@@ -255,7 +253,7 @@ ProgressManager::getProgress(const std::string& job_uuid)
 {
     const auto observer = [&]() -> std::optional<std::shared_ptr<Observer>>
     {
-        std::lock_guard<std::mutex> lock(dict_mtx);
+        std::lock_guard<std::recursive_mutex> lock(dict_mtx);
         if (progresses.count(job_uuid) == 0)
         {
             return std::nullopt;

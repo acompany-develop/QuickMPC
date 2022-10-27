@@ -115,7 +115,7 @@ class ProgressManager
     std::condition_variable shutdown_cv;
     bool shutdown_flag;
 
-    std::mutex dict_mtx;
+    std::recursive_mutex dict_mtx;
     std::map<int, std::string> job_id_to_job_uuid;
     std::map<std::string, int> job_uuid_to_job_id;
     std::map<std::string, std::shared_ptr<Observer>> progresses;
