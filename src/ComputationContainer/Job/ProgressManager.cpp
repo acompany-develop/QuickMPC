@@ -140,12 +140,12 @@ void ProgressManager::log()
 
     for (const auto& [job_uuid, observer] : progresses)
     {
-        spdlog::debug(
+        spdlog::info(
             "{}:{}:{} - [PROGRESS] Job UUID: {} -- start", __FILE__, __func__, __LINE__, job_uuid
         );
         for (const auto& proc : observer->info())
         {
-            spdlog::debug(
+            spdlog::info(
                 "{}:{}:{} - [PROGRESS] {} {}: {:3.2f} % -- {}",
                 __FILE__,
                 __func__,
@@ -156,7 +156,7 @@ void ProgressManager::log()
                 proc.has_details() ? proc.details() : "<no details>"
             );
         }
-        spdlog::debug(
+        spdlog::info(
             "{}:{}:{} - [PROGRESS] Job UUID: {} -- end", __FILE__, __func__, __LINE__, job_uuid
         );
     }
@@ -305,7 +305,6 @@ std::shared_ptr<ProgressManager> ProgressManager::getInstance()
 }
 void ProgressManager::runProgressManager()
 {
-    spdlog::set_level(spdlog::level::debug);
     auto progress_manager = getInstance();
     spdlog::info("{}:{}:{} - Progress Manager Start" __FILE__, __func__, __LINE__);
 
