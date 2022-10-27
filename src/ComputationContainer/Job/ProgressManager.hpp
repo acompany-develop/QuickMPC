@@ -64,9 +64,15 @@ private:
     bool completed_;
 };
 
-struct ProgressIters : public Progress
+enum class ProgressOrder
 {
-    ProgressIters(const Progress::Builder& builder, const std::size_t& size);
+    ASCENDING,
+    DESCENDING
+};
+template <ProgressOrder ORDER>
+struct ProgressIters_ : public Progress
+{
+    ProgressIters_(const Progress::Builder& builder, const std::size_t& size);
 
     void update(const std::size_t& index);
 
@@ -79,6 +85,9 @@ private:
     std::size_t size;
     std::atomic<std::size_t> index;
 };
+using ProgressIters = ProgressIters_<ProgressOrder::ASCENDING>;
+template struct ProgressIters_<ProgressOrder::ASCENDING>;
+template struct ProgressIters_<ProgressOrder::DESCENDING>;
 
 template <typename T>
 class ScopedProgress

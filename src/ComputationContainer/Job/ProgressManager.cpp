@@ -116,19 +116,41 @@ const std::size_t& Progress::id() const { return id_; }
 const std::string& Progress::description() const { return description_; }
 const bool& Progress::completed() const { return completed_; }
 
-ProgressIters::ProgressIters(const Progress::Builder& builder, const std::size_t& size)
+template <ProgressOrder ORDER>
+ProgressIters_<ORDER>::ProgressIters_(const Progress::Builder& builder, const std::size_t& size)
     : Progress(builder), size(size), index(0)
 {
 }
-void ProgressIters::update(const std::size_t& index) { this->index = index; }
-float ProgressIters::progress() const { return 100.f * index / size; }
-std::optional<std::string> ProgressIters::details() const
+template <ProgressOrder ORDER>
+void ProgressIters_<ORDER>::update(const std::size_t& index)
+{
+    this->index = index;
+}
+template <ProgressOrder ORDER>
+float ProgressIters_<ORDER>::progress() const
+{
+    if constexpr (ORDER == ProgressOrder::ASCENDING)
+    {
+        return 100.f * index / size;
+    }
+    else
+    {
+        const auto rev = size - index;
+        return 100.f * rev / size;
+    }
+}
+template <ProgressOrder ORDER>
+std::optional<std::string> ProgressIters_<ORDER>::details() const
 {
     std::ostringstream os;
     os << index << "/" << size;
     return os.str();
 }
-void ProgressIters::before_finish() { this->index = size; }
+template <ProgressOrder ORDER>
+void ProgressIters_<ORDER>::before_finish()
+{
+    this->index = size;
+}
 
 void ProgressManager::log()
 {
