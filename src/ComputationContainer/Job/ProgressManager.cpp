@@ -1,8 +1,6 @@
 #include "ProgressManager.hpp"
 
-#include <atomic>
 #include <chrono>
-#include <memory>
 #include <optional>
 #include <sstream>
 
