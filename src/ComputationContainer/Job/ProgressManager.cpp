@@ -38,26 +38,6 @@ public:
         }
     }
 
-    void show()
-    {
-        const auto progress = [&]()
-        {
-            std::lock_guard<std::mutex> lock(mutex);
-            return this->progress;
-        }();
-        for (const auto& [key, value] : progress)
-        {
-            auto details = value->details();
-            spdlog::debug(
-                "[PROGRESS] {} {}: {:3.2f} % -- {}",
-                key.first,
-                key.second,
-                value->progress(),
-                value->details().value_or("<no details>")
-            );
-        }
-    }
-
     std::vector<pb_common_types::ProcedureProgress> info()
     {
         const auto progress = [&]()
@@ -151,7 +131,16 @@ void ProgressManager::log()
     for (const auto& [key, value] : progresses)
     {
         spdlog::debug("[PROGRESS] {} -- start", key);
-        value->show();
+        for (const auto& proc : value->info())
+        {
+            spdlog::debug(
+                "[PROGRESS] {} {}: {:3.2f} % -- {}",
+                proc.id(),
+                proc.description(),
+                proc.progress(),
+                proc.has_details() ? proc.details() : "<no details>"
+            );
+        }
         spdlog::debug("[PROGRESS] {} -- end", key);
     }
 }
