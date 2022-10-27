@@ -70,7 +70,9 @@ public:
 
     void finishProgress(const Progress& elem)
     {
-        // TODO
+        // TODO: erase `elem` from progress which this class manages
+        //       if that procedure maybe finished quickly.
+        //       e.g., multiplication of vectors
         const process_name_type key{elem.id(), elem.description()};
         spdlog::debug("[PROGRESS] {} {} : finished", key.first, key.second);
     }
