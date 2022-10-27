@@ -74,7 +74,13 @@ public:
         //       if that procedure maybe finished quickly.
         //       e.g., multiplication of vectors
         const process_name_type key{elem.id(), elem.description()};
-        spdlog::debug("[PROGRESS] {} {} : finished", key.first, key.second);
+        spdlog::debug("{}:{}:{} - [PROGRESS] {} {} : finished",
+            __FILE__,
+            __func__,
+            __LINE__,
+            key.first,
+            key.second
+        );
     }
 
     std::size_t generateId() { return counter++; }
@@ -133,20 +139,27 @@ void ProgressManager::log()
         return this->progresses;
     }();
 
-    for (const auto& [key, value] : progresses)
+    for (const auto& [job_uuid, observer] : progresses)
     {
-        spdlog::debug("[PROGRESS] {} -- start", key);
-        for (const auto& proc : value->info())
+        spdlog::debug(
+            "{}:{}:{} - [PROGRESS] Job UUID: {} -- start", __FILE__, __func__, __LINE__, job_uuid
+        );
+        for (const auto& proc : observer->info())
         {
             spdlog::debug(
-                "[PROGRESS] {} {}: {:3.2f} % -- {}",
+                "{}:{}:{} - [PROGRESS] {} {}: {:3.2f} % -- {}",
+                __FILE__,
+                __func__,
+                __LINE__,
                 proc.id(),
                 proc.description(),
                 proc.progress(),
                 proc.has_details() ? proc.details() : "<no details>"
             );
         }
-        spdlog::debug("[PROGRESS] {} -- end", key);
+        spdlog::debug(
+            "{}:{}:{} - [PROGRESS] Job UUID: {} -- end", __FILE__, __func__, __LINE__, job_uuid
+        );
     }
 }
 
@@ -214,10 +227,10 @@ void ProgressManager::updateJobStatus(
     if (progresses.count(job_uuid) == 0)
     {
         spdlog::error(
-            "{}:{}:{} observer with job_uuid: {} was not found",
+            "{}:{}:{} - observer with job_uuid: {} was not found",
             __FILE__,
-            __LINE__,
             __func__,
+            __LINE__,
             job_uuid
         );
         return;
@@ -251,10 +264,10 @@ ProgressManager::getProgress(const std::string& job_uuid)
     if (!observer.has_value())
     {
         spdlog::warn(
-            "{}:{}:{} observer with job_uuid: {} was not found",
+            "{}:{}:{} - observer with job_uuid: {} was not found",
             __FILE__,
-            __LINE__,
             __func__,
+            __LINE__,
             job_uuid
         );
         return {std::nullopt, ProgressManager::StatusCode::NOT_FOUND};
@@ -272,10 +285,10 @@ ProgressManager::getProgress(const std::string& job_uuid)
         if (ptr == nullptr)
         {
             spdlog::error(
-                "{}:{}:{} allocation of return value was failed -- job_uuid: {}",
+                "{}:{}:{} - allocation of return value was failed -- job_uuid: {}",
                 __FILE__,
-                __LINE__,
                 __func__,
+                __LINE__,
                 job_uuid
             );
             return {std::nullopt, ProgressManager::StatusCode::INTERNAL_ERROR};
@@ -295,10 +308,10 @@ void ProgressManager::runProgressManager()
 {
     spdlog::set_level(spdlog::level::debug);
     auto progress_manager = getInstance();
-    spdlog::info("Progress Manager Start");
+    spdlog::info("{}:{}:{} - Progress Manager Start" __FILE__, __func__, __LINE__);
 
     progress_manager->run();
-    spdlog::info("Progress Manager Exit");
+    spdlog::info("{}:{}:{} - Progress Manager Exit" __FILE__, __func__, __LINE__);
 }
 
 }  // namespace qmpc::Job
