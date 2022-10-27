@@ -29,7 +29,7 @@ class Observer
 public:
     using process_name_type = std::pair<std::size_t, std::string>;
 
-    void push(const std::shared_ptr<Progress> elem)
+    void push(const std::shared_ptr<const Progress> elem)
     {
         const process_name_type key{elem->id(), elem->description()};
         {
@@ -82,7 +82,7 @@ public:
 
 private:
     std::mutex mutex;
-    std::map<process_name_type, std::shared_ptr<Progress>> progress;
+    std::map<process_name_type, std::shared_ptr<const Progress>> progress;
     std::atomic<pb_common_types::JobStatus> status;
     std::atomic<process_name_type::first_type> counter{0};
 };
