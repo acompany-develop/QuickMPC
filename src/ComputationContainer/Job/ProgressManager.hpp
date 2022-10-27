@@ -51,6 +51,7 @@ struct Progress
     virtual void finish() final;
     virtual const std::size_t& id() const final;
     virtual const std::string& description() const final;
+    virtual const bool& completed() const final;
 
 private:
     Progress(std::size_t id, std::string description, std::shared_ptr<Observer> observer);
@@ -60,6 +61,7 @@ private:
     std::size_t id_;
     std::string description_;
     std::shared_ptr<Observer> observer_;
+    bool completed_;
 };
 
 struct ProgressIters : public Progress

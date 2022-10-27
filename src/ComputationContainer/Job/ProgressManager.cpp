@@ -56,6 +56,7 @@ public:
             proc.set_id(elem->id());
             proc.set_description(elem->description());
             proc.set_progress(elem->progress());
+            proc.set_completed(elem->completed());
             const std::optional<std::string> details = elem->details();
             if (details.has_value())
             {
@@ -91,7 +92,7 @@ Progress::Progress(const Builder& builder)
 {
 }
 Progress::Progress(std::size_t id, std::string description, std::shared_ptr<Observer> observer)
-    : id_(id), description_(description), observer_(observer)
+    : id_(id), description_(description), observer_(observer), completed_(false)
 {
 }
 
@@ -101,10 +102,12 @@ void Progress::before_finish() {}
 void Progress::finish()
 {
     before_finish();
+    completed_ = true;
     observer_->finishProgress(*this);
 }
 const std::size_t& Progress::id() const { return id_; }
 const std::string& Progress::description() const { return description_; }
+const bool& Progress::completed() const { return completed_; }
 
 ProgressIters::ProgressIters(const Progress::Builder& builder, const std::size_t& size)
     : Progress(builder), size(size), index(0)
