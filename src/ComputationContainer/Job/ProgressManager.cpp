@@ -27,6 +27,9 @@ class Observer
 public:
     using process_name_type = std::pair<std::size_t, std::string>;
 
+    /**
+     * add procedure progress to management target
+     */
     void push(const std::shared_ptr<const Progress> elem)
     {
         const process_name_type key{elem->id(), elem->description()};
@@ -36,6 +39,9 @@ public:
         }
     }
 
+    /**
+     * get progress information with protobuf type
+     */
     std::vector<pb_common_types::ProcedureProgress> info()
     {
         const auto progress = [&]()
@@ -66,6 +72,9 @@ public:
         return ret;
     }
 
+    /**
+     * called from `Progress`
+     */
     void finishProgress(const Progress& elem)
     {
         // TODO: erase `elem` from progress which this class manages
@@ -82,8 +91,12 @@ public:
         );
     }
 
+    /**
+     * generate unique id for procedure in specifig job UUID context
+     */
     std::size_t generateId() { return counter++; }
 
+    // setter, getter
     void updateJobStatus(const pb_common_types::JobStatus& status) { this->status = status; }
     pb_common_types::JobStatus getJobStatus() const { return this->status; }
 

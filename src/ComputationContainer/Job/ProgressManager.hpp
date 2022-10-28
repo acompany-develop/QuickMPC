@@ -45,11 +45,32 @@ struct Progress
     };
 
     Progress() = delete;
+    /**
+     * instantiate Progress from Builder.
+     * bacause all parameters is needed,
+     * this constructor throw `std::bad_optional_access`
+     * if even one parameter is not set.
+     */
     Progress(const Builder& builder);
+
+    /**
+     * represent progress by [0.0, 1.0].
+     */
     virtual float progress() const = 0;
+    /**
+     * optional method to describe progress in details by string
+     */
     virtual std::optional<std::string> details() const;
 
+    /**
+     * this function applies followings:
+     * - call `Progress::before_finish()`
+     * - notify observer that this progress was finished
+     * - set completed flag as true
+     */
     virtual void finish() final;
+
+    // getter functions
     virtual const std::size_t& id() const final;
     virtual const std::string& description() const final;
     virtual const bool& completed() const final;
@@ -57,6 +78,12 @@ struct Progress
 private:
     Progress(std::size_t id, std::string description, std::shared_ptr<Observer> observer);
 
+    /**
+     * optional overridable function.
+     * override this function if inherited progress class has to do something before finish.
+     * e.g. set progress as completed in internal representation.
+     * this function is called from `Progress::finish()`.
+     */
     virtual void before_finish();
 
     std::size_t id_;
@@ -73,14 +100,30 @@ enum class ProgressOrder
 template <ProgressOrder ORDER>
 struct ProgressIters_ : public Progress
 {
+    /**
+     * use ProgressManager::createProgress to instantiate
+     * @param builder used for constructing Progress
+     * @param size number of iterations
+     * @see ProgressManager::createProgress
+     */
     ProgressIters_(const Progress::Builder& builder, const std::size_t& size);
 
+    /**
+     * update progress with atomic store
+     * @param index desired value
+     */
     void update(const std::size_t& index);
 
+    /**
+     * calculate progress according as `ORDER`
+     */
     float progress() const override;
     std::optional<std::string> details() const override;
 
 private:
+    /**
+     * set `index` = `size`
+     */
     void before_finish() override;
 
     std::size_t size;
@@ -90,6 +133,10 @@ using ProgressIters = ProgressIters_<ProgressOrder::ASCENDING>;
 template struct ProgressIters_<ProgressOrder::ASCENDING>;
 template struct ProgressIters_<ProgressOrder::DESCENDING>;
 
+/**
+ * utility class to manage Progress.
+ * call Progress::finish when this object becomes end of life by going out block.
+ */
 template <typename T>
 class ScopedProgress
 {
@@ -125,23 +172,64 @@ class ProgressManager
     std::condition_variable shutdown_cv;
     bool shutdown_flag;
 
-    std::recursive_mutex dict_mtx;
-    std::map<int, std::string> job_id_to_job_uuid;
-    std::map<std::string, int> job_uuid_to_job_id;
-    std::map<std::string, std::shared_ptr<Observer>> progresses;
+    std::recursive_mutex dict_mtx;  //!< mutex which is used for touching shared dictionaries
+    std::map<int, std::string> job_id_to_job_uuid;                //!< conversion table
+    std::map<std::string, int> job_uuid_to_job_id;                //!< conversion table
+    std::map<std::string, std::shared_ptr<Observer>> progresses;  //!< managing Observer by job UUID
 
+    /**
+     * wait shutdown, and call log at 5 second intervals
+     */
     void run();
+    /**
+     * log progress information each job UUID
+     */
     void log();
+    /**
+     * get Observer by job id
+     */
     std::shared_ptr<Observer> getObserver(const int& id);
+    /**
+     * request Observer to generate unique id
+     */
     std::size_t getProgressId(std::shared_ptr<Observer> observer);
+    /**
+     * request Observer to manage Progress
+     */
     void push(std::shared_ptr<Observer> observer, std::shared_ptr<Progress> elem);
 
 public:
+    /**
+     * @return singleton ProgressManager instance
+     */
     static std::shared_ptr<ProgressManager> getInstance();
+    /**
+     * call run(), this statis method is used for lauching thread
+     * @see run()
+     */
     static void runProgressManager();
+
+    /**
+     * send shutdown request
+     */
     void shutdown();
+    /**
+     * this function applies followings:
+     * - add mapping to dictionaries
+     * - instantiate Observer which has empty to manage
+     */
     void registerJob(const int& id, const std::string& uuid);
 
+    /**
+     * Progress generator. this function applies followings:
+     * - create Builder
+     * - instantiate inherited progress class with args
+     * - request Observer to manager progress
+     * - return Progress wrapped by ScopedProgress
+     * @param job_id job id associated with Share
+     * @param desc description of procedure
+     * @param args constructor arguments except Builder
+     */
     template <class progress_type, class... Args>
     ScopedProgress<progress_type> createProgress(
         const int& job_id, const std::string& desc, Args&&... args
@@ -160,12 +248,19 @@ public:
 
     void updateJobStatus(const std::string& job_uuid, const pb_common_types::JobStatus& status);
 
+    /**
+     * status code for getProgress
+     */
     enum class StatusCode
     {
         OK,
         NOT_FOUND,
         INTERNAL_ERROR,
     };
+    /**
+     * @param job_uuid job UUID generated by MC
+     * @return progress matching job UUID with status code
+     */
     std::pair<std::optional<pb_common_types::JobProgress>, StatusCode> getProgress(
         const std::string& job_uuid
     );
