@@ -5,6 +5,7 @@
 #include <map>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <type_traits>
 
@@ -18,7 +19,7 @@ struct Progress
 {
     struct Builder
     {
-        Builder() {}
+        Builder() : id(std::nullopt), description(std::nullopt), observer(std::nullopt) {}
         Builder& setId(const std::size_t& id)
         {
             this->id = id;
@@ -38,9 +39,9 @@ struct Progress
         friend Progress;
 
     private:
-        std::size_t id;
-        std::string description;
-        std::shared_ptr<Observer> observer;
+        std::optional<std::size_t> id;
+        std::optional<std::string> description;
+        std::optional<std::shared_ptr<Observer>> observer;
     };
 
     Progress() = delete;

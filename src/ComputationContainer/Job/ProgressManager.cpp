@@ -95,7 +95,7 @@ private:
 };
 
 Progress::Progress(const Builder& builder)
-    : Progress(builder.id, builder.description, builder.observer)
+    : Progress(builder.id.value(), builder.description.value(), builder.observer.value())
 {
 }
 Progress::Progress(std::size_t id, std::string description, std::shared_ptr<Observer> observer)
