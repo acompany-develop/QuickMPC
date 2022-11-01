@@ -233,10 +233,6 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                     ++now_its[i].second;
                 }
 
-                auto max_progress =
-                    std::max(now_its[i].first - block_it[i], now_its[i].second - upper[i]) * 100.0
-                    / block_size;
-                progress = std::min(progress, max_progress);
                 comp_it += 2;
                 linear_search_progress->update(
                     std::max(now_its[i].first - block_it[i], now_its[i].second - upper[i])
