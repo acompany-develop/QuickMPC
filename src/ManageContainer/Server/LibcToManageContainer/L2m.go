@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"strconv"
 
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 
 	m2c "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToComputationContainer"
 	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
@@ -230,6 +232,25 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		return errToken
 	}
 
+	progress, err := s.m2cclient.CheckProgress(JobUUID)
+
+	if err != nil {
+		st, ok := status.FromError(err)
+		if !ok {
+			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
+		}
+		switch st.Code() {
+		case codes.NotFound:
+			AppLogger.Infof("gRPC CheckProgress method with JobUUID: [%s] received status code: NotFound", JobUUID)
+		case codes.Internal:
+			AppLogger.Warningf("gRPC CheckProgress method with JobUUID: [%s] received status code: Internal", JobUUID)
+			return err
+		default:
+			AppLogger.Errorf("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%d], Message [%s]", JobUUID, st.Code(), st.Message())
+			return err
+		}
+	}
+
 	computationResults, err := s.m2dbclient.GetComputationResult(JobUUID)
 
 	if err != nil {
@@ -253,11 +274,12 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		}
 
 		stream.Send(&pb.GetComputationResultResponse{
-			Message: "ok",
-			IsOk:    true,
-			Status:  pb_types.JobStatus(result.Status),
-			Result:  string(resultBytes),
-			PieceId: result.Meta.PieceID,
+			Message:  "ok",
+			IsOk:     true,
+			Status:   pb_types.JobStatus(result.Status),
+			Result:   string(resultBytes),
+			PieceId:  result.Meta.PieceID,
+			Progress: progress,
 		})
 	}
 	return nil

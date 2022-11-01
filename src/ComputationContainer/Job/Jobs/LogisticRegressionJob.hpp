@@ -7,6 +7,7 @@
 #include "Math/Math.hpp"
 #include "Share/Matrix.hpp"
 // TODO: 最適化関数と損失関数は全て同じインクルードにまとめる
+#include "Job/ProgressManager.hpp"
 #include "LogHeader/Logger.hpp"
 #include "ObjectiveFunction/CrossEntropyError.hpp"
 #include "Optimizer/optimizer.hpp"
@@ -81,7 +82,7 @@ public:
         // 確率的勾配降下方
         int batch_size = std::size(x) / 2;
         auto opt = qmpc::Optimizer::SGD(qmpc::Share::getConstantShare(FixedPoint("1")), batch_size);
-        //ロジスティック回帰の重み
+        // ロジスティック回帰の重み
         std::vector<Share> theta(x[0].size());
         // 繰り返し回数
         // TODO:一時的に固定

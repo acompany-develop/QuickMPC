@@ -13,12 +13,14 @@ import (
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/ManageToComputationContainer"
+	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
 type Client struct{}
 type M2CClient interface {
 	ExecuteComputation(*pb.ExecuteComputationRequest) (string, int32, error)
 	Predict(*pb.PredictRequest) (string, int32, error)
+	CheckProgress(string) (*pb_types.JobProgress, error)
 }
 
 // CCへのconnecterを得る
@@ -126,4 +128,27 @@ func (Client) Predict(req *pb.PredictRequest) (string, int32, error) {
 	}
 	defer conn.Close()
 	return predict(conn, req)
+}
+
+func checkProgress(conn *grpc.ClientConn, req *pb.CheckProgressRequest) (*pb_types.JobProgress, error) {
+	client := pb.NewManageToComputationClient(conn)
+
+	res, err := client.CheckProgress(context.TODO(), req)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
+}
+
+func (Client) CheckProgress(jobUUID string) (*pb_types.JobProgress, error) {
+	conn, err := connect()
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Close()
+	return checkProgress(conn, &pb.CheckProgressRequest{
+		JobUuid: jobUUID,
+	})
 }

@@ -23,6 +23,11 @@ public:
         const managetocomputation::PredictRequest *request,
         google::protobuf::Empty *response
     ) override;
+    grpc::Status CheckProgress(
+        grpc::ServerContext *context,
+        const managetocomputation::CheckProgressRequest *request,
+        pb_common_types::JobProgress *response
+    ) override;
 };
 void runServer(std::string endpoint);
 }  // namespace qmpc::ManageToComputation
