@@ -37,7 +37,7 @@ enum PredictMethod {
 message ProcedureProgress {
     uint64 id = 1;                // unique id in ProgressManager context
     string description = 2;       // describe specific process in job
-    float progress = 3;           // describe progress by [0.0, 1.0]
+    float progress = 3;           // describe progress by [0.0, 100.0]
     bool completed = 4;           // describe that procedure is completed or not
     optional string details = 5;  // describe progress in details
 }
