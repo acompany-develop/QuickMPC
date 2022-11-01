@@ -211,7 +211,6 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             // [0th less, 0th greater, 1st less, 1st greater ....]
             auto comp = qmpc::Share::allLess(comp_l, comp_r);
             auto comp_it = 0;
-            auto progress = 100.0;
             for (int i = 0; i < block_nums; ++i)
             {
                 if (fin[i])
