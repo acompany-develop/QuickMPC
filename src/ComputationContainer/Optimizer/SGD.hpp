@@ -3,8 +3,10 @@
 #include <memory>
 #include <vector>
 
+#include "Job/ProgressManager.hpp"
 #include "OptInterface.hpp"
 #include "Share/Share.hpp"
+
 namespace qmpc::Optimizer
 {
 
@@ -14,6 +16,31 @@ class SGD : public qmpc::Optimizer::OptInterface
     using interface = qmpc::ObjectiveFunction::ObjectiveFunctionInterface;
     const Share alpha;
     const int batch_size;
+
+    std::vector<Share> optimize_(
+        int iterationNum,
+        const interface &f,
+        const std::vector<Share> &theta,
+        Job::ScopedProgress<Job::ProgressIters_<Job::ProgressOrder::DESCENDING>> &progress
+    ) const
+    {
+        progress->update(iterationNum);
+        if (iterationNum == 0)
+        {
+            return theta;
+        }
+        size_t sz = std::size(theta);
+        auto next_theta = theta;
+        auto dfx = f.df(batch_size, theta);
+        open(dfx);
+        auto test_dfx = recons(dfx);
+        for (size_t i = 0; i < sz; ++i)
+        {
+            next_theta[i] -= alpha * dfx[i];
+            // spdlog::info("df {} {}",i,test_dfx[i]);
+        }
+        return optimize_(iterationNum - 1, f, next_theta, progress);
+    }
 
 public:
     SGD(const Share &s, int batch_size) : alpha(s), batch_size(batch_size) {}
@@ -29,22 +56,11 @@ public:
         int iterationNum, const interface &f, const std::vector<Share> &theta
     ) const override
     {
-        spdlog::info("[progress] SGD optimize: remain: {}", iterationNum);
-        if (iterationNum == 0)
-        {
-            return theta;
-        }
-        size_t sz = std::size(theta);
-        auto next_theta = theta;
-        auto dfx = f.df(batch_size, theta);
-        open(dfx);
-        auto test_dfx = recons(dfx);
-        for (size_t i = 0; i < sz; ++i)
-        {
-            next_theta[i] -= alpha * dfx[i];
-            // spdlog::info("df {} {}",i,test_dfx[i]);
-        }
-        return optimize(iterationNum - 1, f, next_theta);
+        auto progress = Job::ProgressManager::getInstance()
+                            ->createProgress<Job::ProgressIters_<Job::ProgressOrder::DESCENDING>>(
+                                alpha.getId().getJobId(), "SGD optimize", iterationNum
+                            );
+        return optimize_(iterationNum, f, theta, progress);
     }
 };
 }  // namespace qmpc::Optimizer

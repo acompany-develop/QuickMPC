@@ -13,6 +13,7 @@ cc_library(
         "//Client/ComputationToDb:client",
         "//Client/ComputationToDb:valuetable",
         "//Job:jobStatus",
+        "//Job:progressManager",
         "//LogHeader:logger",
     ],
     visibility = ["//visibility:public"],

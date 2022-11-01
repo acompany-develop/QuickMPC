@@ -1,7 +1,6 @@
 #pragma once
 
 #include <boost/range/adaptor/indexed.hpp>
-#include <chrono>
 
 #include "Client/ComputationToDb/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
@@ -65,7 +64,16 @@ public:
          * 3. [1] / ([1] + [E]) を計算する
          */
 
-        spdlog::info("[progress] Logistic Regression: predict: pre-processing (0/2)");
+        if (table.size() == 0 || table[0].size() == 0)
+        {
+            return {};
+        }
+
+        auto progress_manager = qmpc::Job::ProgressManager::getInstance();
+        const auto job_id = table[0][0].getId().getJobId();
+        auto core_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
+            job_id, "Logistic Regression: predict", 2
+        );
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto a_str = db_client->readModelparam(model_param_job_uuid);
         auto a = std::vector<Share>(a_str.begin(), a_str.end());
@@ -74,31 +82,18 @@ public:
         std::vector<Share> result;
         result.reserve(a.size());
 
-        spdlog::info("[progress] Logistic Regression: predict: compute (1/2)");
-        auto time_from = std::chrono::system_clock::now();
-        for (const auto &xi : boost::adaptors::index(x))
+        core_progress->update(1);
         {
-            if (xi.index() % 1000 == 0)
+            auto compute_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
+                job_id, "Logistic Regression: predict: compute", x.size()
+            );
+            for (const auto &xi : boost::adaptors::index(x))
             {
-                auto time_to = std::chrono::system_clock::now();
-                auto dur =
-                    std::chrono::duration_cast<std::chrono::milliseconds>(time_to - time_from);
+                result.emplace_back(predict_f(a, xi.value()));
 
-                if (dur.count() >= 5000)
-                {
-                    spdlog::info(
-                        "[progress] Logistic Regression: predict: compute (1/2): {:>5.2f} %",
-                        xi.index() * 100.0 / x.size()
-                    );
-                    time_from = time_to;
-                }
+                compute_progress->update(xi.index());
             }
-
-            result.emplace_back(predict_f(a, xi.value()));
         }
-        spdlog::info("[progress] Logistic Regression: predict: compute (1/): {:>5.2f} %", 100.0);
-
-        spdlog::info("[progress] Logistic Regression: predict: post-processing (2/2)");
 
         return result;
     }

@@ -27,9 +27,9 @@ class Adam : public qmpc::Optimizer::OptInterface
     auto adapt(int iterationNum, const Shares &theta_, const interface &f) const
     {
         size_t size = std::size(theta_);
-        //勾配平均ベクトル
+        // 勾配平均ベクトル
         Shares mt(size);
-        //勾配二乗平方根ベクトル
+        // 勾配二乗平方根ベクトル
         Shares vt(size);
         Shares theta = theta_;
         double beta1_pow = 1.0;

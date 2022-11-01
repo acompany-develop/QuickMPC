@@ -62,7 +62,17 @@ public:
         const std::vector<std::list<int>> &arg
     )
     {
-        spdlog::info("[progress] Linear Regression: learning: pre-processing (0/4)");
+        if (table.size() == 0 || table[0].size() == 0)
+        {
+            return {};
+        }
+
+        auto progress_manager = qmpc::Job::ProgressManager::getInstance();
+        const auto job_id = table[0][0].getId().getJobId();
+        auto progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
+            job_id, "Linear Regression: learning", 5
+        );
+
         // 入力parse
         auto [x, y] = parse_table(table, arg);
         if (x.empty())
@@ -75,17 +85,17 @@ public:
         auto mat_y = qmpc::Share::ShareMatrix(y);
 
         // w = (X^T * X)^{-1} * X^T * y
-        spdlog::info("[progress] Linear Regression: learning: mat mul (1/4)");
+        progress->update(1);
         auto mat_x_trans = mat_x.transpose();
         auto mat_mul = (mat_x_trans * mat_x);
 
-        spdlog::info("[progress] Linear Regression: learning: mat inverse (2/4)");
+        progress->update(2);
         auto mat_mul_inv = mat_mul.inverse();
 
-        spdlog::info("[progress] Linear Regression: learning: mat mul (3/4)");
+        progress->update(3);
         auto w = mat_mul_inv * mat_x_trans * mat_y;
 
-        spdlog::info("[progress] Linear Regression: learning: post-procesing (4/4)");
+        progress->update(4);
 
         return w.transpose().get_row()[0];
     }

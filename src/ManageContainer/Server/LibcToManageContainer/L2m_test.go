@@ -10,6 +10,7 @@ import (
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer"
 	pb_m2c "github.com/acompany-develop/QuickMPC/src/Proto/ManageToComputationContainer"
+	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
 // Test用のDbGとCCのmock
@@ -41,6 +42,9 @@ func (localCC) ExecuteComputation(*pb_m2c.ExecuteComputationRequest) (string, in
 }
 func (localCC) Predict(*pb_m2c.PredictRequest) (string, int32, error) {
 	return "", 0, nil
+}
+func (localCC) CheckProgress(string) (*pb_types.JobProgress, error) {
+	return nil, nil
 }
 func (localMC) DeleteShares(string) error {
 	return nil

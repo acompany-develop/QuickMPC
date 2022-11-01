@@ -32,6 +32,8 @@ int main()
     const std::string mtoc_ip_str("0.0.0.0:" + mtoc_ip.port);
     std::thread th3(qmpc::ManageToComputation::runServer, mtoc_ip_str);
     std::thread th4(qmpc::Job::JobManager::runJobManager);
+    std::thread progress_manager_thread(qmpc::Job::ProgressManager::runProgressManager);
+
     spdlog::info(
         "My_ip_addr = [Cc2Cc] {0:<15} | [Cc2CcForJob] {1:<15} |[Mc2Cc] %{2:<15}",
         ctc_my_ip_str,
@@ -43,4 +45,6 @@ int main()
     th2.join();
     th3.join();
     th4.join();
+    qmpc::Job::ProgressManager::getInstance()->shutdown();
+    progress_manager_thread.join();
 }

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "Job/ProgressManager.hpp"
 #include "Share/Compare.hpp"
 
 namespace qmpc::ComputationToDb
@@ -79,7 +80,15 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 )
 {
     // v1, v2がソートされている必要あり
-    spdlog::info("[progress] hjoin: core (0/1)");
+    if (sorted_v1.size() == 0 || sorted_v2.size() == 0)
+    {
+        return {};
+    }
+
+    auto progress_manager = qmpc::Job::ProgressManager::getInstance();
+    const auto job_id = sorted_v1[0].getId().getJobId();
+    auto core_progress =
+        progress_manager->createProgress<qmpc::Job::ProgressIters>(job_id, "hjoin: core", 4);
 
     int size = sorted_v1.size();
     int len = sorted_v2.size();
@@ -102,42 +111,48 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     // parallel binary search
     // block_itの各要素 i について(v1[i]>=v2[j]) となる最小のjを求める
     // 各iとjはv1,v2のブロックの区切りをなす
-    spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", 0);
     std::vector<int> lower(block_nums, -1);
     std::vector<int> upper(block_nums, len - 1);
     int iterated_num = std::log2(len) + 1;
-    for (int progress_i = 0; progress_i < iterated_num; ++progress_i)
+
+    core_progress->update(1);
     {
-        std::vector<int> mid_v(block_nums);
-        for (int i = 0; i < block_nums; ++i)
+        auto binary_search_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
+            job_id, "hjoin: binary search", iterated_num
+        );
+        for (int progress_i = 0; progress_i < iterated_num; ++progress_i)
         {
-            mid_v[i] = (lower[i] + upper[i]) / 2;
-        }
+            std::vector<int> mid_v(block_nums);
+            for (int i = 0; i < block_nums; ++i)
+            {
+                mid_v[i] = (lower[i] + upper[i]) / 2;
+            }
 
-        std::vector<T> target;
-        target.reserve(block_nums);
-        for (const auto &mid : mid_v)
-        {
-            target.emplace_back(sorted_v2[mid]);
-        }
+            std::vector<T> target;
+            target.reserve(block_nums);
+            for (const auto &mid : mid_v)
+            {
+                target.emplace_back(sorted_v2[mid]);
+            }
 
-        auto less_eq = qmpc::Share::allLessEq(block_s, target);
-        for (int i = 0; i < block_nums; ++i)
-        {
-            (less_eq[i] ? upper[i] : lower[i]) = mid_v[i];
+            auto less_eq = qmpc::Share::allLessEq(block_s, target);
+            for (int i = 0; i < block_nums; ++i)
+            {
+                (less_eq[i] ? upper[i] : lower[i]) = mid_v[i];
+            }
+            binary_search_progress->update(progress_i);
         }
-        double progress = 100.0 * progress_i / iterated_num;
-        spdlog::info("[progress] hjoin: binary search (0/1): {:>5.2f} %", progress);
     }
-    spdlog::info("[progress] hjoin: binary search (1/1): {:>5.2f} %", 100);
+
+    core_progress->update(2);
 
     // parallel linear search
     // 各ブロックを並列に走査する
-    spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", 0);
     std::vector<std::pair<int, int>> now_its;
     std::vector<std::pair<int, int>> limit_its;
     now_its.reserve(block_nums);
     limit_its.reserve(block_nums);
+
     for (int i = 0; i < block_nums; ++i)
     {
         now_its.emplace_back(block_it[i], std::max(0, upper[i]));
@@ -150,80 +165,82 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             limit_its.emplace_back(size, len);
         }
     }
+    core_progress->update(3);
 
     // it_list := v1とv2の積集合のindex
     std::vector<std::pair<int, int>> it_list;
     it_list.reserve(size);
     std::vector<bool> fin(block_nums, false);
-    while (true)
     {
-        std::vector<T> comp_l;
-        comp_l.reserve(block_nums);
-        std::vector<T> comp_r;
-        comp_r.reserve(block_nums);
-        for (int i = 0; i < block_nums; ++i)
+        auto linear_search_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
+            job_id, "hjoin: linear search", block_size
+        );
+        while (true)
         {
-            // 不要な比較を減らすため探索し終えたindexを見ない
-            if (fin[i])
+            std::vector<T> comp_l;
+            comp_l.reserve(block_nums);
+            std::vector<T> comp_r;
+            comp_r.reserve(block_nums);
+            for (int i = 0; i < block_nums; ++i)
             {
-                continue;
-            }
-            auto [i1, i2] = now_its[i];
-            auto [lim1, lim2] = limit_its[i];
-            if (i1 == lim1 || i2 == lim2)
-            {
-                fin[i] = true;
-                continue;
-            }
-            // lessとgreaterも並列で行う
-            comp_l.emplace_back(sorted_v1[i1]);
-            comp_l.emplace_back(sorted_v2[i2]);
-            comp_r.emplace_back(sorted_v2[i2]);
-            comp_r.emplace_back(sorted_v1[i1]);
-        }
-
-        // comp_lが空 <=> 全てのindexでlimitまで探索し終えた
-        if (comp_l.empty())
-        {
-            break;
-        }
-
-        // [0th less, 0th greater, 1st less, 1st greater ....]
-        auto comp = qmpc::Share::allLess(comp_l, comp_r);
-        auto comp_it = 0;
-        auto progress = 100.0;
-        for (int i = 0; i < block_nums; ++i)
-        {
-            if (fin[i])
-            {
-                continue;
-            }
-            // "==" <=> "not < && not >"
-            if (!comp[comp_it] && !comp[comp_it + 1])
-            {
-                it_list.emplace_back(now_its[i]);
-                ++now_its[i].first;
-                ++now_its[i].second;
-            }
-            else if (comp[comp_it])
-            {
-                ++now_its[i].first;
-            }
-            else
-            {
-                ++now_its[i].second;
+                // 不要な比較を減らすため探索し終えたindexを見ない
+                if (fin[i])
+                {
+                    continue;
+                }
+                auto [i1, i2] = now_its[i];
+                auto [lim1, lim2] = limit_its[i];
+                if (i1 == lim1 || i2 == lim2)
+                {
+                    fin[i] = true;
+                    continue;
+                }
+                // lessとgreaterも並列で行う
+                comp_l.emplace_back(sorted_v1[i1]);
+                comp_l.emplace_back(sorted_v2[i2]);
+                comp_r.emplace_back(sorted_v2[i2]);
+                comp_r.emplace_back(sorted_v1[i1]);
             }
 
-            auto max_progress =
-                std::max(now_its[i].first - block_it[i], now_its[i].second - upper[i]) * 100.0
-                / block_size;
-            progress = std::min(progress, max_progress);
-            comp_it += 2;
+            // comp_lが空 <=> 全てのindexでlimitまで探索し終えた
+            if (comp_l.empty())
+            {
+                break;
+            }
+
+            // [0th less, 0th greater, 1st less, 1st greater ....]
+            auto comp = qmpc::Share::allLess(comp_l, comp_r);
+            auto comp_it = 0;
+            for (int i = 0; i < block_nums; ++i)
+            {
+                if (fin[i])
+                {
+                    continue;
+                }
+                // "==" <=> "not < && not >"
+                if (!comp[comp_it] && !comp[comp_it + 1])
+                {
+                    it_list.emplace_back(now_its[i]);
+                    ++now_its[i].first;
+                    ++now_its[i].second;
+                }
+                else if (comp[comp_it])
+                {
+                    ++now_its[i].first;
+                }
+                else
+                {
+                    ++now_its[i].second;
+                }
+
+                comp_it += 2;
+                linear_search_progress->update(
+                    std::max(now_its[i].first - block_it[i], now_its[i].second - upper[i])
+                );
+            }
         }
-        spdlog::info("[progress] hjoin: linear search (0/1): {:>5.2f} %", progress);
     }
-    spdlog::info("[progress] hjoin: linear search (1/1): {:>5.2f} %", 100);
-    spdlog::info("[progress] hjoin: core (1/1)");
+
     return it_list;
 }
 

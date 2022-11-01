@@ -12,6 +12,7 @@
 #include "JobParameter.hpp"
 #include "JobSelector.hpp"
 #include "LogHeader/Logger.hpp"
+#include "ProgressManager.hpp"
 #include "TransactionQueue/TransactionQueue.hpp"
 
 namespace qmpc::Job
@@ -89,6 +90,11 @@ public:
         auto job_id = job_param.getJobId();
         spdlog::info("job_id is {}", job_param.getJobId());
         spdlog::info("JobManager: method Id is {}", job_param.getRequest().method_id());
+
+        ProgressManager::getInstance()->registerJob(
+            job_param.getJobId(), job_param.getRequest().job_uuid()
+        );
+
         std::thread job_thread(
             [=]
             {
