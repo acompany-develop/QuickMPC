@@ -30,7 +30,7 @@ struct Progress
             this->description = desc;
             return *this;
         }
-        Builder& setObserver(const std::shared_ptr<Observer> observer)
+        Builder& setObserver(const std::shared_ptr<Observer>& observer)
         {
             this->observer = observer;
             return *this;
