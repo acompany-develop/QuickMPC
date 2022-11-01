@@ -54,7 +54,7 @@ struct Progress
     Progress(const Builder& builder);
 
     /**
-     * represent progress by [0.0, 1.0].
+     * represent progress by [0.0, 100.0].
      */
     virtual float progress() const = 0;
     /**
