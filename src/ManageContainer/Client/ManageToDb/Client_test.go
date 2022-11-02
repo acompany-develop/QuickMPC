@@ -342,5 +342,25 @@ func TestInsertModelParamsParallelRejectDuplicate(t *testing.T) {
 	initialize()
 }
 
+func TestGetElapsedTimeSuccess(t *testing.T) {
+	initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":"[\"1\",\"2\",\"3\"]","meta":{"piece_id":0}}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
+	clock_start := "1666942928259"
+	clock_end := "1666943026561"
+	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_PRE_JOB", defaultJobUUID), []byte(clock_start), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID), []byte(clock_end), 0666)
+
+	client := Client{}
+	_, err := client.GetElapsedTime(defaultJobUUID)
+
+	if err != nil {
+		t.Error("get elapsed time failed: " + err.Error())
+	}
+}
+
 // XXX: オブジェクトストレージへの移行に備えて廃止予定
 /* GetDataList() (string, error) */

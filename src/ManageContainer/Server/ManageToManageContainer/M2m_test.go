@@ -30,6 +30,9 @@ func (localDb) InsertModelParams(string, string, int32) error {
 func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }
+func (localDb) GetElapsedTime(string) (string, error) {
+	return "", nil
+}
 
 // Test用のサーバを起動(MC)
 var s *utils.TestServer

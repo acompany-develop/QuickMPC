@@ -52,6 +52,9 @@ func (localMC) DeleteShares(string) error {
 func (localMC) Sync(string) error {
 	return nil
 }
+func (localDb) GetElapsedTime(string) (string, error) {
+	return "", nil
+}
 func (localTokenCA) AuthorizeDep(token string) error {
 	return nil
 }
@@ -185,5 +188,25 @@ func TestGetDataList(t *testing.T) {
 
 	if result.GetResult() != "result" {
 		t.Fatal("GetDataList Failed")
+	}
+}
+
+func TestGetElapsedTime(t *testing.T) {
+
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewLibcToManageClient(conn)
+
+	result, err := client.GetElapsedTime(context.Background(), &pb.GetElapsedTimeRequest{
+		JobUuid: "id",
+		Token:   "token_dep",
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.GetResult() != "" {
+		t.Fatal("GetElapsedTime Failed")
 	}
 }
