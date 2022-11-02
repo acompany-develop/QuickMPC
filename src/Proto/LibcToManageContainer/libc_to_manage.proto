@@ -175,7 +175,6 @@ message GetElapsedTimeRequest {
 }
 
 message GetElapsedTimeResponse {
-    string message = 1;
-    bool is_ok = 2;
-    string result = 3;
+    bool is_ok = 1;
+    string result = 2;
 }
