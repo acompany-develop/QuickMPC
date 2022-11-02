@@ -120,13 +120,10 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
         resultDbPath + job_uuid + "/status_" + descriptor->FindValueByNumber(status)->name()
     );
 
-    if (descriptor->FindValueByNumber(status)->name() == "PRE_JOB"
-        || descriptor->FindValueByNumber(status)->name() == "COMPLETED")
-    {
-        std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
-        auto tp_msec = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
-        ofs << tp_msec.count();
-    }
+    std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
+    auto tp_msec = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
+    ofs << tp_msec.count();
+
 }
 
 // tableデータを結合して取り出す
