@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"sync"
 	"testing"
+	"math"
 
 	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
@@ -353,12 +354,16 @@ func TestGetElapsedTimeSuccess(t *testing.T) {
 	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_PRE_JOB", defaultJobUUID), []byte(clock_start), 0666)
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID), []byte(clock_end), 0666)
+	expect := 98.302
 
 	client := Client{}
-	_, err := client.GetElapsedTime(defaultJobUUID)
+	elapsedTime, err := client.GetElapsedTime(defaultJobUUID)
 
 	if err != nil {
 		t.Error("get elapsed time failed: " + err.Error())
+	}
+	if math.Abs(elapsedTime - expect) > 0.001 {
+		t.Errorf("get elapsed time failed: elapsed_time must be %f, but value is %f.",expect,elapsedTime)
 	}
 }
 
