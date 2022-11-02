@@ -401,13 +401,12 @@ func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeReques
 		AppLogger.Error(err)
 		return &pb.GetElapsedTimeResponse{
 			IsOk:   false,
-			Result: "",
-		}, nil
+		}, err
 	}
 
 	return &pb.GetElapsedTimeResponse{
 		IsOk:   true,
-		Result: elapsedTime,
+		ElapsedTime: elapsedTime,
 	}, nil
 }
 
