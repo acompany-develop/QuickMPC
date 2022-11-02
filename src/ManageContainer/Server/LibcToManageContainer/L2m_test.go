@@ -52,8 +52,8 @@ func (localMC) DeleteShares(string) error {
 func (localMC) Sync(string) error {
 	return nil
 }
-func (localDb) GetElapsedTime(string) (string, error) {
-	return "", nil
+func (localDb) GetElapsedTime(string) (float64, error) {
+	return 0, nil
 }
 func (localTokenCA) AuthorizeDep(token string) error {
 	return nil
@@ -206,7 +206,7 @@ func TestGetElapsedTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if result.GetResult() != "" {
+	if result.GetElapsedTime() != 0 {
 		t.Fatal("GetElapsedTime Failed")
 	}
 }

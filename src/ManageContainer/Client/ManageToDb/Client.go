@@ -55,7 +55,7 @@ type M2DbClient interface {
 	GetComputationResult(string) ([]*ComputationResult, error)
 	InsertModelParams(string, string, int32) error
 	GetDataList() (string, error)
-	GetElapsedTime(string) (string, error)
+	GetElapsedTime(string) (float64, error)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -262,19 +262,19 @@ func getTime(path string) (float64, error) {
 	return time / 1000, nil
 }
 
-func getElapsedTime(path string) (string, error) {
+func getElapsedTime(path string) (float64, error) {
 	start, startErr := getTime(fmt.Sprintf("%s/status_PRE_JOB", path))
 	if startErr != nil {
-		return "", startErr
+		return 0, startErr
 	}
 	end, endErr := getTime(fmt.Sprintf("%s/status_COMPLETED", path))
 	if endErr != nil {
-		return "", endErr
+		return 0, endErr
 	}
-	return strconv.FormatFloat(end-start, 'f', -1, 64), nil
+	return end-start, nil
 }
 
-func (c Client) GetElapsedTime(jobUUID string) (string, error) {
+func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 
