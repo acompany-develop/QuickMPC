@@ -5,14 +5,6 @@ import json
 import pytest
 from utils import qmpc
 
-"""
-def send_share(self,
-               secrets: List,
-               schema: List[str],
-               matching_column: int = 1,
-               piece_size: int = 1_000_000)
-               """
-
 
 def send_share_param(secrets=[[1, 2, 3], [4, 5, 6]],
                      schema=["a", "b", "c"],
