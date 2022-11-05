@@ -5,44 +5,29 @@ import pytest
 from utils import qmpc
 
 
-@pytest.mark.parametrize(
-    ("model_file"),
-    [
-        ("model_data_a6"),
-        ("model_data_a11"),
-    ]
-)
-def test_send_model_params_array(model_file: str):
-
-    # csv dataを読み込む
-    filename: str = f"Data/{model_file}.csv"
-    data = []
-    with open(filename) as f:
-        reader = csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)
-        data = [row for row in reader][0]
-
-    # データをシェア化し送信する
-    res = qmpc.send_model_params(data)
-    assert (res["is_ok"])
+def send_model_params_param(params=[1, 2, 3],
+                            piece_size: int = 1_000_000):
+    return (params, piece_size)
 
 
 @pytest.mark.parametrize(
-    ("model_file"),
+    ("param"),
     [
-        ("model_data_j5_1"),
-        ("model_data_j5_2"),
-        ("model_data_j10_1"),
-        ("model_data_j10_2"),
+        # usually case
+        (send_model_params_param()),
+        # json case
+        (send_model_params_param(params={"a": 1, "b": {"c": 2}})),
+        # empty array case
+        # TODO: fix ValueError
+        # (send_model_params_param(params=[])),
+        # empty json case
+        (send_model_params_param(params={})),
+        # small piece_size case
+        (send_model_params_param(piece_size=1_000)),
     ]
 )
-def test_send_model_params_json(model_file: str):
+def test_send_share(param: tuple):
 
-    # json dataを読み込む
-    filename: str = f"Data/{model_file}.json"
-    data = []
-    with open(filename) as f:
-        data = json.load(f)
-
-    # データをシェア化し送信する
-    res = qmpc.send_model_params(data)
+    # モデルデータをシェア化し送信する
+    res = qmpc.send_model_params(*param)
     assert (res["is_ok"])
