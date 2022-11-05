@@ -5,22 +5,39 @@ import json
 import pytest
 from utils import qmpc
 
+"""
+def send_share(self,
+               secrets: List,
+               schema: List[str],
+               matching_column: int = 1,
+               piece_size: int = 1_000_000)
+               """
+
+
+def send_share_param(secrets=[[1, 2, 3], [4, 5, 6]],
+                     schema=["a", "b", "c"],
+                     matching_column=1,
+                     piece_size=1_000_000):
+    return (secrets, schema, matching_column, piece_size)
+
 
 @pytest.mark.parametrize(
-    ("table_file"),
+    ("param"),
     [
-        ("table_data_5x5"),
-        ("table_data_10x10"),
+        # usually case
+        (send_share_param()),
+        # small table size case
+        (send_share_param(secrets=[[1]], schema=["a"])),
+        # nonzero matching_column case
+        (send_share_param(matching_column=3)),
+        # small piece_size case
+        (send_share_param(piece_size=1_000)),
     ]
 )
-def test_send_share(table_file: str):
-
-    # csv dataをパースする
-    filename: str = f"Data/{table_file}.csv"
-    secrets, schema = qmpc.parse_csv_file(filename)
+def test_send_share(param: tuple):
 
     # データをシェア化し送信する
-    res = qmpc.send_share(secrets, schema)
+    res = qmpc.send_share(*param)
     assert (res["is_ok"])
 
     # 冪等性のために消しておく
