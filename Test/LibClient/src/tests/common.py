@@ -10,3 +10,11 @@ def send_share(filename: str) -> tuple:
     send_res = qmpc.send_share(secrets, schema)
     assert (send_res["is_ok"])
     return secrets, send_res["data_id"]
+
+
+def data_id(secrets):
+    print(secrets)
+    schema = ["s" for _ in range(len(secrets[0]))]
+    res_send = qmpc.send_share(secrets, schema)
+    assert (res_send["is_ok"])
+    return res_send["data_id"]
