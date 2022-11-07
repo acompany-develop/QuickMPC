@@ -363,7 +363,7 @@ func TestGetElapsedTimeSuccess(t *testing.T) {
 		t.Error("get elapsed time failed: " + err.Error())
 	}
 	if math.Abs(elapsedTime - expect) > 0.001 {
-		t.Errorf("get elapsed time failed: elapsed_time must be %f, but value is %f.",expect,elapsedTime)
+		t.Errorf("get elapsed time failed: elapsedTime must be %f, but value is %f.",expect,elapsedTime)
 	}
 }
 
