@@ -35,7 +35,7 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
          []),
     ]
 )
-def test_sum_mean(param: tuple, expected: list):
+def test_mean(param: tuple, expected: list):
 
     # 総和計算リクエスト送信
     res = get_result(qmpc.mean(*param))

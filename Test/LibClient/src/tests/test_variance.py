@@ -39,7 +39,7 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 7, 10]])],
          [0]),
     ]
 )
-def test_sum_variance(param: tuple, expected: list):
+def test_variance(param: tuple, expected: list):
 
     # 総和計算リクエスト送信
     res = get_result(qmpc.variance(*param))
