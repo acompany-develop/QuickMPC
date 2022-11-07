@@ -1,29 +1,34 @@
-import numpy as np
+import math
+
 import pytest
 from utils import get_result, qmpc
 
-from .common import send_share
+from tests.common import data_id
+
+
+def execute_computation_param(dataIds=[data_id([[1, 1, 0], [1, 0, 1]],
+                                               ["a#0", "b#0", "b#1"])],
+                              join=[],
+                              index=[1],
+                              src=[1],
+                              target=[2, 3]):
+    return ((dataIds, join, index), (src, target))
 
 
 @pytest.mark.parametrize(
-    ("table_file"),
+    ("param"),
     [
-        ("table_data_5x5"),
+        # usually case
+        (execute_computation_param()),
+        # duplicated src, target case
+        (execute_computation_param(src=[1, 2, 3, 2, 3],
+                                   target=[1, 1, 2, 3])),
+        # empty src case
+        (execute_computation_param(src=[])),
     ]
 )
-def test_decision_tree(table_file: str):
-    # NOTE: 探索要素があるため，真値との比較はできない
+def test_decision_tree(param: tuple):
 
-    # share送信
-    secrets, schema = qmpc.parse_csv_file_to_bitvector(
-        f"Data/{table_file}.csv")
-    send_res = qmpc.send_share(secrets, schema)
-    data_id = send_res["data_id"]
-
-    # table情報と列指定情報を定義して計算
-    # 最後の列を目的値として計算(bitvector化しているため2列分)
-    table = [[data_id], [], [1]]
-    inp = ([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], [19, 20])
-
-    res = get_result(qmpc.decision_tree(table, inp))
+    # 決定木リクエスト送信
+    res = get_result(qmpc.decision_tree(*param))
     assert (res["is_ok"])
