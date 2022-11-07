@@ -29,7 +29,9 @@ cc_test(
         "//ConfigParse:config_parse",
         "//Server/ComputationToComputationContainer:server",
         "//Logging:log",
+        "//Share:compare",
     ],
+    visibility = ["//visibility:public"],
 )
 
 cc_test(

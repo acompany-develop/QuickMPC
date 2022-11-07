@@ -11,6 +11,7 @@ services:
       - "50120"
       - "51120"
       - "50110"
+      - "1212"
     volumes:
       - type: bind
         source: .
