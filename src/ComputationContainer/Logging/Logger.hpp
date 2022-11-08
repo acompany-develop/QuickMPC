@@ -1,19 +1,12 @@
 #pragma once
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include <boost/exception/all.hpp>
 #include <boost/format.hpp>
 #include <boost/stacktrace.hpp>
 #include <boost/stacktrace/stacktrace_fwd.hpp>
-#include <cstdio>
-#include <ctime>
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <memory>
-#include <mutex>
-#include <optional>
-#include <sstream>
-#include <utility>
-#include <variant>
 
 #include "LogHeader/Logger.hpp"
 
