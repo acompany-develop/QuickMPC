@@ -4,6 +4,7 @@
 #include "FixedPoint/FixedPoint.hpp"
 #include "Random/Random.hpp"
 #include "gtest/gtest.h"
+
 TEST(RandomTest, getRandTypeTest)
 {
     auto instance = RandGenerator::getInstance();
@@ -16,7 +17,6 @@ TEST(RandomTest, getRandTypeTest)
 
     EXPECT_TRUE(ok_ll);
     EXPECT_TRUE(ok_fp);
-    EXPECT_TRUE(ok_pf);
 }
 
 TEST(RandomTest, getRandMinMaxTest)
