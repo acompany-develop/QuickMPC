@@ -19,7 +19,6 @@
 #include "Client/ComputationToComputationContainer/Client.hpp"
 #include "Client/Helper/Helper.hpp"
 #include "Logging/Logger.hpp"
-#include "Logging/Logger.hpp"
 #include "Server/Helper/Helper.hpp"
 #include "external/Proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
 #include "unistd.h"

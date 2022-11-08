@@ -16,7 +16,6 @@
 #include "Client/Helper/Helper.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "Logging/Logger.hpp"
-#include "Logging/Logger.hpp"
 
 namespace qmpc::ComputationToBts
 {
