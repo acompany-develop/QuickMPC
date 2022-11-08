@@ -11,7 +11,6 @@ cc_library(
         "@gtest//:main",
         "//Test/IntegrationTest:share_test",
         "//Test/IntegrationTest:meshcode_test",
-        "//Test/IntegrationTest:share_comp_test",
         "//Test/IntegrationTest:math_test",
         "//Test/IntegrationTest:matrix_test",
         "//Test/IntegrationTest:model_test",
