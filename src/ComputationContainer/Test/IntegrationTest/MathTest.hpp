@@ -329,6 +329,6 @@ TEST(MathTest, correlVecExceptionTest)
     }
     catch (std::exception &e)
     {
-        qmpc::Log::Error(*boost::get_error_info<qmpc::Log::traced>(e), e.what());
+        QMPC_LOG_ERROR("{} | {}", *boost::get_error_info<qmpc::Log::traced>(e), e.what());
     }
 }
