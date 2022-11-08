@@ -58,7 +58,8 @@ public:
         }
     }
 
-    template <typename SV auto getTriple(size_t needCount = 1)
+    template <typename SV>
+    auto getTriple(size_t needCount = 1)
     {
         using Result = Triple<SV>;
         std::vector<Result> ret;
