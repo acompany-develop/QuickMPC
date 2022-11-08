@@ -897,7 +897,7 @@ TEST(ShareTest, RandomComparisonOperation)
     }
 }
 
-//定数値Shareテスト
+// 定数値Shareテスト
 TEST(ShareTest, ConstantShare)
 {
     auto fp = FixedPoint("12");
@@ -907,7 +907,7 @@ TEST(ShareTest, ConstantShare)
     EXPECT_EQ(fp, fp_r);
 }
 
-//一括open,reconsテスト
+// 一括open,reconsテスト
 TEST(ShareTest, ReconsBulk)
 {
     Config *conf = Config::getInstance();
@@ -933,7 +933,7 @@ TEST(ShareTest, ReconsBulk)
     EXPECT_TRUE(not ng);
 }
 
-//一括加算のテスト
+// 一括加算のテスト
 TEST(ShareTest, AddBulk)
 {
     Config *conf = Config::getInstance();
@@ -952,7 +952,7 @@ TEST(ShareTest, AddBulk)
     EXPECT_EQ(target, expected);
 }
 
-//一括減算のテスト
+// 一括減算のテスト
 TEST(ShareTest, SubBulk)
 {
     Config *conf = Config::getInstance();
@@ -971,7 +971,7 @@ TEST(ShareTest, SubBulk)
     EXPECT_EQ(target, expected);
 }
 
-//一括乗算のテスト
+// 一括乗算のテスト
 TEST(ShareTest, MulBulk)
 {
     Config *conf = Config::getInstance();
@@ -1189,16 +1189,6 @@ TEST(ShareTest, GenericSendShare)
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
         spdlog::info("sendshare fixedPoint time = {0} ms", elapsed_time_ms);
-    }
-    {
-        const auto clock_start = std::chrono::system_clock::now();
-        qmpc::Share::Share<PrimeField> f{};
-        open(f);
-        [[maybe_unused]] auto _ = recons(f);
-        const auto clock_end = std::chrono::system_clock::now();
-        const auto elapsed_time_ms =
-            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
-        spdlog::info("sendshare primefield time = {0} ms", elapsed_time_ms);
     }
 }
 TEST(ShareTest, addIntShare)

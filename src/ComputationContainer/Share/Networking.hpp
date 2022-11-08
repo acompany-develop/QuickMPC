@@ -10,7 +10,6 @@
 #include "AddressId.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "FixedPoint/FixedPoint.hpp"
-#include "PrimeField/PrimeField.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 namespace qmpc::Share
 {
@@ -113,7 +112,7 @@ auto recons(const T &share)
     Config *conf = Config::getInstance();
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
-    //単一
+    // 単一
     using Result = typename T::value_type;
     Result ret{};
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
@@ -159,7 +158,7 @@ auto recons(const T &share)
     Config *conf = Config::getInstance();
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
-    //一括部分
+    // 一括部分
     using Result = typename T::value_type::value_type;
     size_t length = std::size(share);
     std::vector<Result> ret(length);

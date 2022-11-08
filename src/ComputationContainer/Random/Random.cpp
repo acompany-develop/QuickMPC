@@ -36,15 +36,3 @@ FixedPoint RandGenerator::getRand<FixedPoint>(long long min_val, long long max_v
     FixedPoint val{std::abs(rnd_mod) + min_val};
     return val;
 }
-template <>
-PrimeField RandGenerator::getRand<PrimeField>(long long min_val, long long max_val)
-{
-    // 1. long long int → unsigned long long (0 <= unsigned_rnd <= 2^{64}-1)
-    auto unsigned_rnd = RandGenerator::getInstance()->generateRand();
-    unsigned_rnd = (unsigned_rnd % (max_val - min_val) + min_val);
-    // 2. unsigned long long → boost::multiprecision::uint128_t
-    boost::multiprecision::uint128_t rnd =
-        static_cast<boost::multiprecision::uint128_t>(unsigned_rnd);
-    PrimeField val(rnd);
-    return val;
-}

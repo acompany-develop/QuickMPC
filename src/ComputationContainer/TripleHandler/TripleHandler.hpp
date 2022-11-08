@@ -5,7 +5,6 @@
 
 #include "Client/ComputationToBts/Client.hpp"
 #include "FixedPoint/FixedPoint.hpp"
-#include "PrimeField/PrimeField.hpp"
 #include "Share/AddressId.hpp"
 
 namespace qmpc::TripleHandler
@@ -59,24 +58,14 @@ public:
         }
     }
 
-    template <typename SV>
-    auto getTriple(size_t needCount = 1)
+    template <typename SV auto getTriple(size_t needCount = 1)
     {
         using Result = Triple<SV>;
         std::vector<Result> ret;
 
         for (size_t count = 0; count < needCount; count++)
         {
-            if constexpr (std::is_same_v<SV, ::PrimeField>)
-            {
-                Config *conf = Config::getInstance();
-                int n = conf->n_parties;
-                ret.emplace_back(std::make_tuple<::PrimeField>(1, 1, n));
-            }
-            else
-            {
-                ret.emplace_back(takeOutTriple<SV>(this->triple_queue));
-            }
+            ret.emplace_back(takeOutTriple<SV>(this->triple_queue));
         }
         return ret;
     }

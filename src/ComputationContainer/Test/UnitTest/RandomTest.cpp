@@ -2,7 +2,6 @@
 #include <type_traits>
 
 #include "FixedPoint/FixedPoint.hpp"
-#include "PrimeField/PrimeField.hpp"
 #include "Random/Random.hpp"
 #include "gtest/gtest.h"
 TEST(RandomTest, getRandTypeTest)
@@ -11,11 +10,9 @@ TEST(RandomTest, getRandTypeTest)
 
     auto ll = instance->getRand<long long>();
     auto fp = instance->getRand<FixedPoint>();
-    auto pf = instance->getRand<PrimeField>();
 
     bool ok_ll = std::is_same<decltype(ll), long long>::value;
     bool ok_fp = std::is_same<decltype(fp), FixedPoint>::value;
-    bool ok_pf = std::is_same<decltype(pf), PrimeField>::value;
 
     EXPECT_TRUE(ok_ll);
     EXPECT_TRUE(ok_fp);
@@ -35,9 +32,5 @@ TEST(RandomTest, getRandMinMaxTest)
         auto rnd_fp = instance->getRand<FixedPoint>(0, 10);
         EXPECT_GE(rnd_fp, 0);
         EXPECT_LE(rnd_fp, 10);
-
-        auto rnd_pf = instance->getRand<PrimeField>(0, 10);
-        EXPECT_GE(rnd_pf, 0);
-        EXPECT_LE(rnd_pf, 10);
     }
 }
