@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Job/Jobs/MeshCodeJob.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Math/Math.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/Share.hpp"

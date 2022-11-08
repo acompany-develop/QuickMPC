@@ -9,7 +9,7 @@
 
 #include "ConfigParse/ConfigParse.hpp"
 #include "Job/JobManager.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Server/ComputationToComputationContainerForJob/Server.hpp"
 #include "Server/ManageToComputationContainer/Server.hpp"

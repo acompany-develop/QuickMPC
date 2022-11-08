@@ -6,7 +6,7 @@
 #include "GBDT/SGBM.hpp"
 #include "GBDT/SID3.hpp"
 #include "GBDT/SID3Regression.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "gtest/gtest.h"
 
 auto bitVecCreater = [](const std::vector<std::vector<int>> &data)

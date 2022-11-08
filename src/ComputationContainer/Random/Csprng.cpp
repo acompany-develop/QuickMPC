@@ -1,6 +1,6 @@
 #include "Random/Csprng.hpp"
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Logging/Logger.hpp"
 // randombytes_buf_deterministic の内部はChaCha20
 // ((2**32[ctrが4byte長])*64[byte/block])/10**9[byte->GB] = 274GB[俗にいう256GB]

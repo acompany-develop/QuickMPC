@@ -1,5 +1,5 @@
 #include "Client/ComputationToBts/Client.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 

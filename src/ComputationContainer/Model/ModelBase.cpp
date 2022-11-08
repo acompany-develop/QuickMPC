@@ -1,7 +1,7 @@
 #include "ModelBase.hpp"
 
 #include "Job/ProgressManager.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "nlohmann/json.hpp"
 
 namespace qmpc::Model

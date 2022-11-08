@@ -9,7 +9,7 @@
 #include "Jobs/MathJob.hpp"
 #include "Jobs/MeshCodeJob.hpp"
 #include "Jobs/SID3Job.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Math/Math.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
 

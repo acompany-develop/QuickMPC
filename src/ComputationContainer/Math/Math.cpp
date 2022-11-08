@@ -1,6 +1,6 @@
 #include "Math.hpp"
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Logging/Logger.hpp"
 namespace qmpc::Math
 {

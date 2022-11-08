@@ -6,7 +6,7 @@
 #include <string>
 #include <thread>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/AddressId.hpp"
 namespace qmpc::ComputationToComputationForJob
 {

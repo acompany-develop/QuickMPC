@@ -1,6 +1,6 @@
 #include "Computation.hpp"
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 
 bool is_computing = false;
 

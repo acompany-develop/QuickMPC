@@ -3,7 +3,7 @@
 #include <string>
 #include <thread>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/Compare.hpp"
 #include "Share/Share.hpp"

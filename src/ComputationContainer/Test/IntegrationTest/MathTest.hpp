@@ -3,7 +3,7 @@
 #include <random>
 #include <vector>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Math/Math.hpp"
 #include "gtest/gtest.h"
 

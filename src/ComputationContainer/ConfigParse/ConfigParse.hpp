@@ -75,8 +75,6 @@ public:
     std::string getAddress() const { return host + ':' + port; }
 };
 
-#include "LogHeader/Logger.hpp"
-
 class Config
 {
     std::unordered_map<std::string, std::string> env_map;

@@ -2,7 +2,7 @@
 #include "Compare.hpp"
 
 #include "ConfigParse/ConfigParse.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 
 namespace qmpc::Share
 {

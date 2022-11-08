@@ -11,7 +11,7 @@
 #include "JobBase.hpp"
 #include "JobParameter.hpp"
 #include "JobSelector.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "ProgressManager.hpp"
 #include "TransactionQueue/TransactionQueue.hpp"
 

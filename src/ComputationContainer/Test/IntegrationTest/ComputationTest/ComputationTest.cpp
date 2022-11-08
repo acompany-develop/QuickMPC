@@ -1,7 +1,7 @@
 #include "ComputationTest.hpp"
 
 #include "ConfigParse/ConfigParse.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "external/com_github_grpc_grpc/src/proto/grpc/health/v1/health.grpc.pb.h"
 #include "gtest/gtest.h"
 

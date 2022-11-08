@@ -6,7 +6,7 @@
 #include <grpcpp/server_builder.h>
 #include <grpcpp/server_context.h>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 
 class LoggingServerInterceptor : public grpc::experimental::Interceptor
 {
@@ -30,7 +30,7 @@ public:
             // if this was hooked `POST_RECV_MESSAGE`
             // and ServerRpcInfo::Type was `CLIENT_STREAMING`,
             // this was going to be called multiple.
-            QMPC_LOG_INFO("{} - [server:{}] received", grpc_method_full_name, server_name);
+            QMPC_LOG_DEBUG("{} - [server:{}] received", grpc_method_full_name, server_name);
         }
 
         if (methods->QueryInterceptionHookPoint(
@@ -41,7 +41,7 @@ public:
 
             if (status.ok())
             {
-                QMPC_LOG_INFO(
+                QMPC_LOG_DEBUG(
                     "{} - [server:{}] send, gRPC status: {}",
                     grpc_method_full_name,
                     server_name,
@@ -50,7 +50,7 @@ public:
             }
             else
             {
-                QMPC_LOG_INFO(
+                QMPC_LOG_WARN(
                     "{} - [server:{}] send, gRPC status: {}, message: {}, details: {}",
                     grpc_method_full_name,
                     server_name,
@@ -115,7 +115,7 @@ inline void runServerCore(
     }
     else
     {
-        QMPC_LOG_INFO(
+        QMPC_LOG_DEBUG(
             "[{:<15 }] grpc::DefaultHealthCheckService "
             "is not enabled on {:<30}",
             logSource,
@@ -123,6 +123,6 @@ inline void runServerCore(
         );
     }
 
-    QMPC_LOG_INFO("[{:<15}] Server listening on {:<30}", logSource, endpoint);
+    QMPC_LOG_DEBUG("[{:<15}] Server listening on {:<30}", logSource, endpoint);
     listener->Wait();
 }

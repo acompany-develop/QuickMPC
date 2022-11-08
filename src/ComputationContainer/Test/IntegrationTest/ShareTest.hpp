@@ -5,7 +5,7 @@
 #include <string>
 #include <thread>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Random/Random.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/Compare.hpp"

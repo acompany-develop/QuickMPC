@@ -8,7 +8,7 @@
 #include "Share/Matrix.hpp"
 // TODO: 最適化関数と損失関数は全て同じインクルードにまとめる
 #include "Job/ProgressManager.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "ObjectiveFunction/CrossEntropyError.hpp"
 #include "Optimizer/optimizer.hpp"
 

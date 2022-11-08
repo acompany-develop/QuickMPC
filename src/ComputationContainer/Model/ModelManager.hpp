@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Model/ModelBase.hpp"
 #include "Model/Models/DecisionTree.hpp"
 #include "Model/Models/LinearRegression.hpp"

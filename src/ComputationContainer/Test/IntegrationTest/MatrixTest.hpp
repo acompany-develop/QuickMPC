@@ -3,7 +3,7 @@
 #include <list>
 #include <random>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/Matrix.hpp"
 #include "gtest/gtest.h"
 

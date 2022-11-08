@@ -9,7 +9,7 @@
 #include "Client/ComputationToDb/ValueTable.hpp"
 #include "JobParameter.hpp"
 #include "JobStatus.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/Share.hpp"
 #include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
 

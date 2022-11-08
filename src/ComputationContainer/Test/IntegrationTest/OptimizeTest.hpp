@@ -3,7 +3,7 @@
 #include <iomanip>
 #include <vector>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "ObjectiveFunction/ObjectiveFunctionInterface.hpp"
 #include "Optimizer/optimizer.hpp"
 #include "gtest/gtest.h"

@@ -2,7 +2,7 @@
 
 #include <set>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Random/Csprng.hpp"
 #include "gtest/gtest.h"
 

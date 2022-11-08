@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ConfigParse/ConfigParse.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/AddressId.hpp"
 #include "external/Proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
