@@ -147,8 +147,8 @@ public:
             // {}",share_id,party_id,value);
             if (!status.ok())
             {
-                spdlog::error("{:<30} GetFeature rpc failed.", "[exchangeShare]");
-                spdlog::error(
+                QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[exchangeShare]");
+                QMPC_LOG_ERROR(
                     "ERROR({0}): {1}\n{2}",
                     status.error_code(),
                     status.error_message(),
@@ -191,8 +191,8 @@ public:
             grpc::Status status = stream->Finish();
             if (!status.ok())
             {
-                spdlog::error("{:<30} GetFeature rpc failed.", "[exchangeShares]");
-                spdlog::error(
+                QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[exchangeShares]");
+                QMPC_LOG_ERROR(
                     "ERROR({}): {}\n{}",
                     status.error_code(),
                     status.error_message(),

@@ -59,7 +59,7 @@ public:
     {
         if (ccClients.count(pt_id) == 0)
         {
-            spdlog::error("pt_id: {} Client is non existant.", pt_id);
+            QMPC_LOG_ERROR("pt_id: {} Client is non existant.", pt_id);
             qmpc::Log::throw_with_trace(std::runtime_error("Client non-existant"));
         }
         return ccClients.at(pt_id);

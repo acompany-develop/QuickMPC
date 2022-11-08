@@ -60,15 +60,15 @@ int ModelBase::run(const managetocomputation::PredictRequest &request)
     }
     catch (const std::runtime_error &e)
     {
-        spdlog::error("{}", static_cast<int>(statusManager.getStatus()));
-        spdlog::error(e.what());
-        spdlog::error("Predict Error");
+        QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
+        QMPC_LOG_ERROR(e.what());
+        QMPC_LOG_ERROR("Predict Error");
     }
     catch (const std::exception &e)
     {
-        spdlog::error("unexpected Error");
-        spdlog::error(e.what());
-        spdlog::error("Predict Error");
+        QMPC_LOG_ERROR("unexpected Error");
+        QMPC_LOG_ERROR(e.what());
+        QMPC_LOG_ERROR("Predict Error");
     }
 
     return static_cast<int>(statusManager.getStatus());

@@ -69,8 +69,8 @@ std::vector<Triple> Client::readTriples(const unsigned int job_id, const unsigne
         else
         {
             grpc::StatusCode error_code = status.error_code();
-            spdlog::error("{:<30} GetFeature rpc failed.", "[readTriples]");
-            spdlog::error(
+            QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[readTriples]");
+            QMPC_LOG_ERROR(
                 "ERROR({}): {}\n{}", error_code, status.error_message(), status.error_details()
             );
 
@@ -93,7 +93,7 @@ std::vector<Triple> Client::readTriples(const unsigned int job_id, const unsigne
     1. statusがretryPolicyに即した場合に再試行し切ってもOKにならなかった時
     2. retryPolicyに則さずにOK以外の異常なstatusが返ってきた時
     */
-    spdlog::error(
+    QMPC_LOG_ERROR(
         "To Bts GetTriples Failed, Error Code: {}, Message: {}",
         status.error_code(),
         status.error_message()

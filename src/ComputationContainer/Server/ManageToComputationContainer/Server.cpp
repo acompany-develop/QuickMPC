@@ -74,15 +74,15 @@ grpc::Status Server::Predict(
     switch (status)
     {
         case 0:
-            spdlog::error("Error predict");
-            spdlog::error("Can not Create Predictor");
+            QMPC_LOG_ERROR("Error predict");
+            QMPC_LOG_ERROR("Can not Create Predictor");
             return grpc::Status{
                 grpc::StatusCode::INVALID_ARGUMENT, grpc::string{"Predict Method Error"}};
         case 1:
-            spdlog::error("ReadDB Error");
+            QMPC_LOG_ERROR("ReadDB Error");
             return grpc::Status{grpc::StatusCode::INTERNAL, grpc::string{"Read Db Error"}};
         case 2:
-            spdlog::error("Predict Error");
+            QMPC_LOG_ERROR("Predict Error");
             return grpc::Status{grpc::StatusCode::ABORTED, grpc::string{"Computation Error"}};
     }
 

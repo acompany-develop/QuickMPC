@@ -103,8 +103,8 @@ public:
                     auto job = this->selector(job_param);
                     if (job == nullptr)
                     {
-                        spdlog::error("unknown Method Id");
-                        spdlog::error("Request Failed");
+                        QMPC_LOG_ERROR("unknown Method Id");
+                        QMPC_LOG_ERROR("Request Failed");
                     }
                     else
                     {
@@ -113,7 +113,7 @@ public:
                 }
                 catch (...)
                 {
-                    spdlog::error("Job Failed");
+                    QMPC_LOG_ERROR("Job Failed");
                 }
                 QMPC_LOG_INFO("end_job_id is {}", job_id);
                 if (is_job_trigger_party) pushJobId(job_id);

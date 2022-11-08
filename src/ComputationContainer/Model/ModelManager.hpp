@@ -48,8 +48,8 @@ public:
         auto model = select(request.model_id());
         if (!model)
         {
-            spdlog::error("unknown Model Id");
-            spdlog::error("Request Failed");
+            QMPC_LOG_ERROR("unknown Model Id");
+            QMPC_LOG_ERROR("Request Failed");
             return 0;
         }
 

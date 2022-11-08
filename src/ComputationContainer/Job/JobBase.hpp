@@ -129,7 +129,7 @@ public:
         }
         catch (const std::runtime_error &e)
         {
-            spdlog::error("{}", static_cast<int>(statusManager.getStatus()));
+            QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
             QMPC_LOG_ERROR("{} | Job Error", e.what());
 
             auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
@@ -144,7 +144,7 @@ public:
         }
         catch (const std::exception &e)
         {
-            spdlog::error("unexpected Error");
+            QMPC_LOG_ERROR("unexpected Error");
             QMPC_LOG_ERROR("{} | Job Error", e.what());
 
             auto *error_info = boost::get_error_info<qmpc::Log::traced>(e);

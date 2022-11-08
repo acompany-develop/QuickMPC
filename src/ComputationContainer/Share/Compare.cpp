@@ -15,8 +15,8 @@ auto convertFpToBool(const FixedPoint &fp, const std::string &op_name)
     }
     else if (fp.getDoubleVal() >= 0.5)
     {
-        spdlog::error("This operation (%s) determined to be true, but it could be false.", op_name);
-        spdlog::error(
+        QMPC_LOG_ERROR("This operation (%s) determined to be true, but it could be false.", op_name);
+        QMPC_LOG_ERROR(
             "If you want to ignore the error and continue the calculation, replace 'exit' with "
             "'return true;'. "
         );
@@ -25,8 +25,8 @@ auto convertFpToBool(const FixedPoint &fp, const std::string &op_name)
     }
     else if (fp.getDoubleVal() >= 0.05)
     {
-        spdlog::error("This operation (%s) determined to be false, but it could be true.", op_name);
-        spdlog::error(
+        QMPC_LOG_ERROR("This operation (%s) determined to be false, but it could be true.", op_name);
+        QMPC_LOG_ERROR(
             "If you want to ignore the error and continue the calculation, replace 'exit' with "
             "'return false;'. "
         );

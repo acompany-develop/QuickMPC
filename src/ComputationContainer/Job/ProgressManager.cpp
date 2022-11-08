@@ -260,7 +260,7 @@ void ProgressManager::updateJobStatus(
 
     if (progresses.count(job_uuid) == 0)
     {
-        spdlog::error(
+        QMPC_LOG_ERROR(
             "{}:{}:{} - observer with job_uuid: {} was not found",
             __FILE__,
             __func__,
@@ -318,7 +318,7 @@ ProgressManager::getProgress(const std::string& job_uuid)
         auto ptr = progress.add_progresses();
         if (ptr == nullptr)
         {
-            spdlog::error(
+            QMPC_LOG_ERROR(
                 "{}:{}:{} - allocation of return value was failed -- job_uuid: {}",
                 __FILE__,
                 __func__,
