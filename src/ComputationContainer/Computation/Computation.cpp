@@ -62,7 +62,7 @@ void parseData(
         for (int j = 0; j < n; j++)
         {
             Share a(FixedPoint(std::stod(json[data_id][0][j].get<std::string>())));
-            spdlog::debug("Share: {}", a.getVal().getStrVal());
+            QMPC_LOG_DEBUG("Share: {}", a.getVal().getStrVal());
             shares.emplace_back(a);
         }
     }

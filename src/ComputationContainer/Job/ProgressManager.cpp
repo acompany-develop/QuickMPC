@@ -81,7 +81,7 @@ public:
         //       if that procedure maybe finished quickly.
         //       e.g., multiplication of vectors
         const process_name_type key{elem.id(), elem.description()};
-        spdlog::debug(
+        QMPC_LOG_DEBUG(
             "{}:{}:{} - [PROGRESS] {} {} : finished",
             __FILE__,
             __func__,
