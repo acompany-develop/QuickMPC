@@ -3,16 +3,27 @@
 #include <boost/format.hpp>
 #include <boost/stacktrace.hpp>
 #include <boost/stacktrace/stacktrace_fwd.hpp>
+#include <cstdio>
 #include <ctime>
 #include <functional>
 #include <iomanip>
 #include <iostream>
 #include <memory>
 #include <mutex>
+#include <optional>
 #include <sstream>
+#include <utility>
 #include <variant>
 
 #include "LogHeader/Logger.hpp"
+
+#define QMPC_LOG_LOCATION() \
+    spdlog::source_loc { __FILE__, __LINE__, SPDLOG_FUNCTION }
+#define QMPC_LOGGER_CALL(func, ...) func(QMPC_LOG_LOCATION(), __VA_ARGS__)
+#define QMPC_LOG_INFO(...) QMPC_LOGGER_CALL(qmpc::Log::Info, __VA_ARGS__)
+#define QMPC_LOG_DEBUG(...) QMPC_LOGGER_CALL(qmpc::Log::Debug, __VA_ARGS__)
+#define QMPC_LOG_ERROR(...) QMPC_LOGGER_CALL(qmpc::Log::Error, __VA_ARGS__)
+#define QMPC_LOG_WARN(...) QMPC_LOGGER_CALL(qmpc::Log::Warn, __VA_ARGS__)
 
 namespace qmpc
 {
@@ -40,6 +51,22 @@ public:
     [[noreturn]] static void throw_with_trace(const E &e)
     {
         throw boost::enable_error_info(e) << traced(boost::stacktrace::stacktrace());
+    }
+
+    static void loadLogLevel(const std::optional<std::string> &log_level_name)
+    {
+        getInstance().logger->set_level(spdlog::level::info);
+        const spdlog::level::level_enum level = [&log_level_name]()
+        {
+            if (log_level_name.has_value())
+            {
+                return spdlog::level::from_str(log_level_name.value());
+            }
+            QMPC_LOG_INFO("log level was not set, QMPC uses default value");
+            return spdlog::level::info;
+        }();
+        QMPC_LOG_INFO("log level: {}", spdlog::level::to_string_view(level));
+        getInstance().logger->set_level(level);
     }
 
     template <typename... Args>
@@ -74,11 +101,3 @@ public:
 
 };  // end Log
 }  // namespace qmpc
-
-#define QMPC_LOG_LOCATION() \
-    spdlog::source_loc { __FILE__, __LINE__, SPDLOG_FUNCTION }
-#define QMPC_LOGGER_CALL(func, ...) func(QMPC_LOG_LOCATION(), __VA_ARGS__)
-#define QMPC_LOG_INFO(...) QMPC_LOGGER_CALL(qmpc::Log::Info, __VA_ARGS__)
-#define QMPC_LOG_DEBUG(...) QMPC_LOGGER_CALL(qmpc::Log::Debug, __VA_ARGS__)
-#define QMPC_LOG_ERROR(...) QMPC_LOGGER_CALL(qmpc::Log::Error, __VA_ARGS__)
-#define QMPC_LOG_WARN(...) QMPC_LOGGER_CALL(qmpc::Log::Warn, __VA_ARGS__)

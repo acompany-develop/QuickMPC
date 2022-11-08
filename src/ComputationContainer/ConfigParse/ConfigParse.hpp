@@ -2,6 +2,7 @@
 #include <algorithm>  // find
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -81,6 +82,9 @@ class Config
 
     Config()
     {
+        const auto log_level_opt = getEnvOptionalString("LOG_LEVEL");
+        qmpc::Log::loadLogLevel(log_level_opt);
+
         party_id = getEnvInt("PARTY_ID");
         n_parties = getEnvInt("N_PARTIES");
         sp_id = getEnvInt("SP_ID");
@@ -161,6 +165,18 @@ class Config
             }
         }
         qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
+    }
+    std::optional<std::string> getEnvOptionalString(const char *s)
+    {
+        const char *tmp = std::getenv(s);
+        if (tmp)
+        {
+            return std::string(tmp);
+        }
+        else
+        {
+            return std::nullopt;
+        }
     }
     Url getEnvUrl(const char *s)
     {
