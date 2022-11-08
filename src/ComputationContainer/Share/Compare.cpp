@@ -196,3 +196,4 @@ std::vector<Share<FixedPoint>> LTZ(const std::vector<Share<FixedPoint>> &s)
     }
     return (z - x) / FixedPoint(std::to_string(1LL << k));
 }
+}  // namespace qmpc::Share
