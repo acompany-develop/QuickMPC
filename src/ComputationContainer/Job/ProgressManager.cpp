@@ -297,7 +297,7 @@ ProgressManager::getProgress(const std::string& job_uuid)
 
     if (!observer.has_value())
     {
-        spdlog::warn(
+        QMPC_LOG_WARN(
             "{}:{}:{} - observer with job_uuid: {} was not found",
             __FILE__,
             __func__,

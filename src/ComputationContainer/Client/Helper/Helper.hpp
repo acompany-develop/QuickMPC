@@ -45,7 +45,7 @@ public:
 
             if (status == nullptr)
             {
-                spdlog::warn("{} - [client] received, gRPC status: nullptr", grpc_method_full_name);
+                QMPC_LOG_WARN("{} - [client] received, gRPC status: nullptr", grpc_method_full_name);
             }
             else
             {

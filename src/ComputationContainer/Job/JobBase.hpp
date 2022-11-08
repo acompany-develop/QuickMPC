@@ -43,7 +43,7 @@ class JobBase : public Interface
         auto values = joinTable.getTable();
         if (values.empty())
         {
-            spdlog::warn("Join table is empty. Check the table ID and the specified columns.");
+            QMPC_LOG_WARN("Join table is empty. Check the table ID and the specified columns.");
         }
 
         // シェア型に変換
