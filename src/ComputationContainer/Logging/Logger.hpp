@@ -64,6 +64,13 @@ public:
     {
         getInstance().logger->log(loc, spdlog::level::err, fmt, std::forward<Args>(message)...);
     }
+    template <typename... Args>
+    static void Warn(
+        const spdlog::source_loc loc, fmt::format_string<Args...> fmt, Args &&...message
+    )
+    {
+        getInstance().logger->log(loc, spdlog::level::warn, fmt, std::forward<Args>(message)...);
+    }
 
 };  // end Log
 }  // namespace qmpc
@@ -74,3 +81,4 @@ public:
 #define QMPC_LOG_INFO(...) QMPC_LOGGER_CALL(qmpc::Log::Info, __VA_ARGS__)
 #define QMPC_LOG_DEBUG(...) QMPC_LOGGER_CALL(qmpc::Log::Debug, __VA_ARGS__)
 #define QMPC_LOG_ERROR(...) QMPC_LOGGER_CALL(qmpc::Log::Error, __VA_ARGS__)
+#define QMPC_LOG_WARN(...) QMPC_LOGGER_CALL(qmpc::Log::Warn, __VA_ARGS__)
