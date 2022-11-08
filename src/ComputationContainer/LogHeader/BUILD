@@ -7,5 +7,5 @@ cc_library(
     deps = [
         "@libspdlog//:spdlog"
     ],
-    visibility = ["//visibility:public"],
+    visibility = ["//Logging:__pkg__"],
 )
