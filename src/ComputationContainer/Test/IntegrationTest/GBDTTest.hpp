@@ -103,8 +103,8 @@ TEST(SID3Test, sid3test)
         R.insert(i);
     }
     auto tree = qmpc::GBDT::SID3::createTree(T, x, t, R);
-    spdlog::info("create tree end");
-    spdlog::info("{}", tree->createTreeJson());
+    QMPC_LOG_INFO("create tree end");
+    QMPC_LOG_INFO("{}", tree->createTreeJson());
 
     // predict test
     std::vector<std::vector<FixedPoint>> test_data1 = {{0, 1, 0}, {1, 0}, {0, 1}};
@@ -124,13 +124,13 @@ TEST(SID3Test, sid3test)
         return stest_data;
     };
 
-    spdlog::info("tree predict1 start ");
+    QMPC_LOG_INFO("tree predict1 start ");
     auto target1 = tree->predict(convertToShare(test_data1));
     open(target1);
     auto rec1 = recons(target1);
     EXPECT_EQ(rec1, FixedPoint("0.0"));
 
-    spdlog::info("tree predict2 start ");
+    QMPC_LOG_INFO("tree predict2 start ");
     auto target = tree->predict(convertToShare(test_data2));
     open(target);
     auto rec = recons(target);
@@ -175,7 +175,7 @@ TEST(SID3RegTest, categoryError)
         R.insert(i);
     }
     auto tree = qmpc::GBDT::SID3Regression::createTree(T, x, t, R);
-    spdlog::info("{}", tree->createTreeJson());
+    QMPC_LOG_INFO("{}", tree->createTreeJson());
 
     // predict test
     std::vector<std::vector<FixedPoint>> test_data1 = {{0, 1, 0}, {1, 0}, {0, 1}};
@@ -197,23 +197,23 @@ TEST(SID3RegTest, categoryError)
         return stest_data;
     };
 
-    spdlog::info("tree predict1 start ");
+    QMPC_LOG_INFO("tree predict1 start ");
     auto target1 = tree->predict(convertToShare(test_data1));
     open(target1);
     auto rec1 = recons(target1);
-    spdlog::info("1 test predict ");
+    QMPC_LOG_INFO("1 test predict ");
 
-    spdlog::info("tree predict2 start ");
+    QMPC_LOG_INFO("tree predict2 start ");
     auto target = tree->predict(convertToShare(test_data2));
     open(target);
     auto rec = recons(target);
-    spdlog::info("2 test predict {}", rec);
+    QMPC_LOG_INFO("2 test predict {}", rec);
 
-    spdlog::info("tree predict3 start ");
+    QMPC_LOG_INFO("tree predict3 start ");
     auto target3 = tree->predict(convertToShare(test_data3));
     open(target3);
     auto rec3 = recons(target3);
-    spdlog::info("3 test predict {}", rec3);
+    QMPC_LOG_INFO("3 test predict {}", rec3);
 }
 
 TEST(SGBMTest, treeGradTest)
@@ -252,7 +252,7 @@ TEST(SGBMTest, treeGradTest)
     auto t_rec = recons(t);
     for (auto &a : t_rec)
     {
-        spdlog::info("t is {}", a);
+        QMPC_LOG_INFO("t is {}", a);
     }
     std::vector<Share> T(t.size());
     for (auto &tt : T)
@@ -265,13 +265,13 @@ TEST(SGBMTest, treeGradTest)
         R.insert(i);
     }
     auto tree = qmpc::GBDT::SID3Regression::createTree(T, x, t, R);
-    spdlog::info("{}", tree->createTreeJson());
+    QMPC_LOG_INFO("{}", tree->createTreeJson());
     auto tree_grads = tree->grad();
     open(tree_grads);
     auto grads = recons(tree_grads);
     for (size_t i = 0; i < T.size(); ++i)
     {
-        spdlog::info("grad {} is {}", i, grads[i]);
+        QMPC_LOG_INFO("grad {} is {}", i, grads[i]);
     }
     // predict test
     std::vector<std::vector<FixedPoint>> test_data1 = {{0, 1, 0}, {1, 0}, {0, 1}};
@@ -293,23 +293,23 @@ TEST(SGBMTest, treeGradTest)
         return stest_data;
     };
 
-    spdlog::info("tree predict1 start ");
+    QMPC_LOG_INFO("tree predict1 start ");
     auto target1 = tree->predict(convertToShare(test_data1));
     open(target1);
     auto rec1 = recons(target1);
-    spdlog::info("1 test predict {}", rec1);
+    QMPC_LOG_INFO("1 test predict {}", rec1);
 
-    spdlog::info("tree predict2 start ");
+    QMPC_LOG_INFO("tree predict2 start ");
     auto target = tree->predict(convertToShare(test_data2));
     open(target);
     auto rec = recons(target);
-    spdlog::info("2 test predict {}", rec);
+    QMPC_LOG_INFO("2 test predict {}", rec);
 
-    spdlog::info("tree predict3 start ");
+    QMPC_LOG_INFO("tree predict3 start ");
     auto target3 = tree->predict(convertToShare(test_data3));
     open(target3);
     auto rec3 = recons(target3);
-    spdlog::info("3 test predict {}", rec3);
+    QMPC_LOG_INFO("3 test predict {}", rec3);
 }
 
 TEST(SGBMTest, GBDTRegressionTest)
@@ -357,13 +357,13 @@ TEST(SGBMTest, GBDTRegressionTest)
     auto p_rec = recons(pred);
     for (size_t i = 0; i < t.size(); ++i)
     {
-        spdlog::info("pred is {}", p_rec[i]);
-        spdlog::info("t is {}", t_rec[i]);
+        QMPC_LOG_INFO("pred is {}", p_rec[i]);
+        QMPC_LOG_INFO("t is {}", t_rec[i]);
     }
     // for (const auto &json : gt.getJson())
     // {
-    //     spdlog::info("tree");
-    //     spdlog::info("{}",json);
+    //     QMPC_LOG_INFO("tree");
+    //     QMPC_LOG_INFO("{}",json);
     // }
 
     // predict test
@@ -389,20 +389,20 @@ TEST(SGBMTest, GBDTRegressionTest)
     auto target1 = gt.predict(convertToShare(test_data1));
     open(target1);
     auto rec1 = recons(target1);
-    spdlog::info("1 test predict {}", rec1);
+    QMPC_LOG_INFO("1 test predict {}", rec1);
     auto target = gt.predict(convertToShare(test_data2));
     open(target);
     auto rec = recons(target);
-    spdlog::info("2 test predict {}", rec);
+    QMPC_LOG_INFO("2 test predict {}", rec);
     auto target3 = gt.predict(convertToShare(test_data3));
     open(target3);
     auto rec3 = recons(target3);
-    spdlog::info("3 test predict {}", rec3);
+    QMPC_LOG_INFO("3 test predict {}", rec3);
 
     auto target4 = gt.predict(convertToShare(test_data4));
     open(target4);
     auto rec4 = recons(target4);
-    spdlog::info("4 test predict {}", rec4);
+    QMPC_LOG_INFO("4 test predict {}", rec4);
 }
 
 TEST(SID3Test, sid3JsonConstructorTest)
@@ -508,8 +508,8 @@ TEST(SID3Test, sid3JsonPredictTest)
         R.insert(i);
     }
     auto tree = qmpc::GBDT::SID3::createTree(T, x, t, R);
-    spdlog::info("create tree end ");
-    spdlog::info("{}", tree->createTreeJson());
+    QMPC_LOG_INFO("create tree end ");
+    QMPC_LOG_INFO("{}", tree->createTreeJson());
 
     // predict test
     std::vector<std::vector<FixedPoint>> test_data1 = {{0, 1, 0}, {1, 0}, {0, 1}};
@@ -531,7 +531,7 @@ TEST(SID3Test, sid3JsonPredictTest)
         return stest_data;
     };
 
-    spdlog::info("tree predict1 start ");
+    QMPC_LOG_INFO("tree predict1 start ");
     auto target1 = tree->predict(convertToShare(test_data1));
     auto target2 = tree2->predict(convertToShare(test_data1));
     open(target1);
@@ -540,7 +540,7 @@ TEST(SID3Test, sid3JsonPredictTest)
     auto rec2 = recons(target2);
     EXPECT_EQ(rec1, rec2);
 
-    spdlog::info("tree predict2 start ");
+    QMPC_LOG_INFO("tree predict2 start ");
     auto target3 = tree->predict(convertToShare(test_data2));
     auto target4 = tree2->predict(convertToShare(test_data2));
     open(target3);

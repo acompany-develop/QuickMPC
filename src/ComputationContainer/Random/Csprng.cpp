@@ -16,7 +16,7 @@ bool CSPRNG::entropyCheck()
         ctr++;
         if (ctr > 3000)  // エントロピーが出来上がるのに最大3分程度待つ
         {
-            spdlog::info("There is a serious lack of entropy.");
+            QMPC_LOG_INFO("There is a serious lack of entropy.");
             // 例外を送出
             // throw "There is a serious lack of entropy.";
             return false;
@@ -24,7 +24,7 @@ bool CSPRNG::entropyCheck()
         else if (ctr % 1000 == 0)  // 10秒溜まってなかったら1分待つ
         {
             // あまりにもエントロピーがたまらないので1分待機
-            spdlog::info("Standing by for one minute due to lack of entropy...");
+            QMPC_LOG_INFO("Standing by for one minute due to lack of entropy...");
             std::this_thread::sleep_for(std::chrono::minutes(1));  // 1分待機
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(3));  // 3 マイクロ秒待機

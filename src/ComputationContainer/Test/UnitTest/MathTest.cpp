@@ -19,7 +19,7 @@ TEST(MathTest, MeanBetweenShares)
     FixedPoint expected("2.0");
 
     avg = qmpc::Math::smean(v);
-    spdlog::info(avg.getVal().getStrVal());
+    QMPC_LOG_INFO(avg.getVal().getStrVal());
 
     EXPECT_NEAR(expected.getDoubleVal(), avg.getDoubleVal(), 0.01);
 }

@@ -33,7 +33,7 @@ grpc::Status Server::ExecuteComputeFromSP(
     google::protobuf::Empty *response
 )
 {
-    spdlog::info("{:<30} Received", "[ExecuteComputeFromSP]");
+    QMPC_LOG_INFO("{:<30} Received", "[ExecuteComputeFromSP]");
 
     auto job_manager = qmpc::Job::JobManager::getInstance();
     bool is_job_trigger_party = request->is_job_trigger_party();
@@ -46,7 +46,7 @@ grpc::Status Server::ExecuteComputeFromSP(
     // Jobを走らせる
     job_manager->asyncRun(job_param, is_job_trigger_party);
 
-    spdlog::info("{:<30} End grpc", "[ExecuteComputeFromSP]");
+    QMPC_LOG_INFO("{:<30} End grpc", "[ExecuteComputeFromSP]");
     return grpc::Status::OK;
 }
 

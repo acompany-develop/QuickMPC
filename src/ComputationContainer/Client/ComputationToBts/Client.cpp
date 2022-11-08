@@ -24,7 +24,7 @@ Client::Client() noexcept
 {
     auto dest = Config::getInstance()->cc_to_bts;
     stub_ = createStub<enginetobts::EngineToBts>(dest);
-    spdlog::info("{:<15} Client {:<30} is Active", "[Cc2Bts]", dest.url);
+    QMPC_LOG_INFO("{:<15} Client {:<30} is Active", "[Cc2Bts]", dest.url);
 }
 
 std::shared_ptr<Client> Client::getInstance()

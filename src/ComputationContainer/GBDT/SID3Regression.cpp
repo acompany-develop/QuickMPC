@@ -151,9 +151,9 @@ Share SID3Regression::predict(const std::vector<std::vector<Share>> &data) const
     int index = 0;
     auto attribute_value = data[att_class];
     Share ret;
-    // spdlog::info("att class is {}",att_class);
-    // spdlog::info("sttribute size {}",attribute_value.size());
-    // spdlog::info("children size is {}",children.size());
+    // QMPC_LOG_INFO("att class is {}",att_class);
+    // QMPC_LOG_INFO("sttribute size {}",attribute_value.size());
+    // QMPC_LOG_INFO("children size is {}",children.size());
     for (const auto &child : children)
     {
         ret += attribute_value[index] * child->predict(data);

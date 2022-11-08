@@ -34,7 +34,7 @@ int main()
     std::thread th4(qmpc::Job::JobManager::runJobManager);
     std::thread progress_manager_thread(qmpc::Job::ProgressManager::runProgressManager);
 
-    spdlog::info(
+    QMPC_LOG_INFO(
         "My_ip_addr = [Cc2Cc] {0:<15} | [Cc2CcForJob] {1:<15} |[Mc2Cc] %{2:<15}",
         ctc_my_ip_str,
         ctc_for_j_my_ip_str,

@@ -61,7 +61,7 @@ TEST(MeshCodeTest, BulkMeshCode)
     end = std::chrono::system_clock::now();  // 計測終了時間
     double elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start)
                          .count();  //処理に要した時間をミリ秒に変換
-    spdlog::info("meshcode took {0} ms.", elapsed);
+    QMPC_LOG_INFO("meshcode took {0} ms.", elapsed);
 
     for (const auto &meshcode : ret)
     {

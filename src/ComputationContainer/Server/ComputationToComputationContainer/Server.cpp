@@ -15,7 +15,7 @@ Server::Server() noexcept
         {
             auto client = Client::getPtr(conf->ip_addr_map[pt_id]);
             ccClients[pt_id] = std::move(client);
-            spdlog::info("{:<15} Client {:<30} is Active", "[Cc2Cc]", pt_id);
+            QMPC_LOG_INFO("{:<15} Client {:<30} is Active", "[Cc2Cc]", pt_id);
         }
     }
 }
@@ -28,7 +28,7 @@ grpc::Status Server::ExchangeShare(
 )
 {
     std::lock_guard<std::mutex> lock(mtx);  // mutex発動
-    // spdlog::info("log: server get share_id is {}, party_id is {}, value is {}",
+    // QMPC_LOG_INFO("log: server get share_id is {}, party_id is {}, value is {}",
     //              share->share_id(),
     //              share->party_id(),
     //              share->value());

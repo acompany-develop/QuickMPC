@@ -34,7 +34,7 @@ public:
                 grpc::experimental::InterceptionHookPoints::PRE_SEND_MESSAGE
             ))
         {
-            spdlog::info("{} - [client] send", grpc_method_full_name);
+            QMPC_LOG_INFO("{} - [client] send", grpc_method_full_name);
         }
 
         if (methods->QueryInterceptionHookPoint(
@@ -51,7 +51,7 @@ public:
             {
                 if (status->ok())
                 {
-                    spdlog::info(
+                    QMPC_LOG_INFO(
                         "{} - [client] received, gRPC status: {}",
                         grpc_method_full_name,
                         status->error_code()
@@ -59,7 +59,7 @@ public:
                 }
                 else
                 {
-                    spdlog::info(
+                    QMPC_LOG_INFO(
                         "{} - [client] received, gRPC status: {}, message: {}, details: {}",
                         grpc_method_full_name,
                         status->error_code(),

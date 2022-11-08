@@ -31,7 +31,7 @@ void runServer(std::string endpoint)
     builder.AddListeningPort(endpoint, grpc::InsecureServerCredentials());
     builder.RegisterService(server);
     std::unique_ptr<grpc::Server> listener(builder.BuildAndStart());
-    spdlog::info("[CcToCc_test] Server listening on {}", endpoint);
+    QMPC_LOG_INFO("[CcToCc_test] Server listening on {}", endpoint);
     listener->Wait();
 }
 

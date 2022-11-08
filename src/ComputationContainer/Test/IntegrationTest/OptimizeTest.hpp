@@ -97,7 +97,7 @@ TEST(OptimizeTest, optimizer)
 
     for (auto &&[name, opt] : opts)
     {
-        spdlog::info("start opt is", name);
+        QMPC_LOG_INFO("start opt is", name);
         std::vector<Share> ret;
         // if (name == "newton")
         //     iterateNum = 10;
@@ -107,7 +107,7 @@ TEST(OptimizeTest, optimizer)
         auto dur = end - start;  // 要した時間を計算
         auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
         // 要した時間をミリ秒（1/1000秒）に変換して表示
-        spdlog::info("{} milli sec", msec);
+        QMPC_LOG_INFO("{} milli sec", msec);
         open(t);
         auto t_rec = recons(t);
         //係数
@@ -115,7 +115,7 @@ TEST(OptimizeTest, optimizer)
         auto ret_rec = recons(ret);
         for (size_t i = 0; i < ret.size(); ++i)
         {
-            spdlog::info("theta {} {}", i, ret_rec[i]);
+            QMPC_LOG_INFO("theta {} {}", i, ret_rec[i]);
         }
         std::vector<Share> y(data_size);
         for (int i = 0; i < data_size; ++i)
@@ -134,16 +134,16 @@ TEST(OptimizeTest, optimizer)
                 accuracy++;
             }
         }
-        spdlog::info("{} accuracy: {:.10f}", name, accuracy / data_size);
+        QMPC_LOG_INFO("{} accuracy: {:.10f}", name, accuracy / data_size);
 #ifdef DEBUG
 
         for (auto a : t_rec)
         {
-            spdlog::info("t is {}", a);
+            QMPC_LOG_INFO("t is {}", a);
         }
         for (auto a : y_rec)
         {
-            spdlog::info("y is {}", a);
+            QMPC_LOG_INFO("y is {}", a);
         }
 #endif
     }

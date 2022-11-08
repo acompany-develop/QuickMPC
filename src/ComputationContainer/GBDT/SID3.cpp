@@ -62,8 +62,8 @@ auto SID3::getMaxGini(const std::vector<std::vector<Share>> &U) const
     auto gini_indexies = calcGini(U, R);
     // for (const auto &[gini_, index] : gini_indexies)
     // {
-    //     spdlog::info("gini_ is {}",gini_);
-    //     spdlog::info("index is {}",index);
+    //     QMPC_LOG_INFO("gini_ is {}",gini_);
+    //     QMPC_LOG_INFO("index is {}",index);
     // }
     if (gini_indexies.empty()) return std::make_pair<double, int>(-1, -1);
     auto ret = *std::max_element(gini_indexies.begin(), gini_indexies.end());
@@ -133,7 +133,7 @@ std::vector<std::pair<double, int>> SID3::calcGini(
 //     {
 //         infoGain -= child->I();
 //     }
-//     spdlog::info("information gain is {}",infoGain);
+//     QMPC_LOG_INFO("information gain is {}",infoGain);
 //     return infoGain;
 // }
 // /**
@@ -201,9 +201,9 @@ Share SID3::predict(const std::vector<std::vector<Share>> &data) const
     int index = 0;
     auto attribute_value = data[att_class];
     Share ret;
-    // spdlog::info("att class is {}",att_class);
-    // spdlog::info("attribute size {}",attribute_value.size());
-    // spdlog::info("children size is {}",children.size());
+    // QMPC_LOG_INFO("att class is {}",att_class);
+    // QMPC_LOG_INFO("attribute size {}",attribute_value.size());
+    // QMPC_LOG_INFO("children size is {}",children.size());
     for (const auto &child : children)
     {
         ret += attribute_value[index] * child->predict(data);
@@ -226,13 +226,13 @@ std::shared_ptr<SID3> SID3::createTree(
     auto current = std::make_shared<SID3>(T, S, targets, R);
     auto U = current->splitTransaction();
     current->y = current->majorityClass(U);
-    // spdlog::info("T is {}",current->size);
-    // spdlog::info("R size is {}",R.size());
+    // QMPC_LOG_INFO("T is {}",current->size);
+    // QMPC_LOG_INFO("R size is {}",R.size());
 
     std::tie(current->gini_index, current->att_class) = current->getMaxGini(U);
 
-    // spdlog::info("max gini is {}",current->gini_index);
-    // spdlog::info("gini index is {}",current->att_class);
+    // QMPC_LOG_INFO("max gini is {}",current->gini_index);
+    // QMPC_LOG_INFO("gini index is {}",current->att_class);
     // TODO:ここではデータ数に対してうまく調整したほうが良いかも
     if (R.empty() or T.size() / 2u >= (unsigned int)(current->size) or 0 == current->size
         or current->gini_index <= eps)

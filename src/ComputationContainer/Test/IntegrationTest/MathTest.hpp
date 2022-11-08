@@ -26,7 +26,7 @@ TEST(MathTest, Smean)
     int n_parties = conf->n_parties;
     FixedPoint expected(std::to_string((1.0 + 3.0) / 2.0 * n_parties));
 
-    spdlog::info("avg_rec: {}", avg_rec.getStrVal());
+    QMPC_LOG_INFO("avg_rec: {}", avg_rec.getStrVal());
     EXPECT_NEAR(expected.getDoubleVal(), avg_rec.getDoubleVal(), 0.001);
 }
 
@@ -50,7 +50,7 @@ TEST(MathTest, Smean2)
     int n_parties = conf->n_parties;
     FixedPoint expected(std::to_string((1.0 + 30000.0) / 2.0 * n_parties));
 
-    spdlog::info("avg_rec: {}", avg_rec.getStrVal());
+    QMPC_LOG_INFO("avg_rec: {}", avg_rec.getStrVal());
     EXPECT_NEAR(expected.getDoubleVal(), avg_rec.getDoubleVal(), 0.001);
 }
 
@@ -84,7 +84,7 @@ TEST(MathTest, Variance)
     }
     FixedPoint expected(std::to_string(vari_sum / v_double.size()));
 
-    spdlog::info("var_rec: {}", var_rec.getStrVal());
+    QMPC_LOG_INFO("var_rec: {}", var_rec.getStrVal());
     EXPECT_NEAR(expected.getDoubleVal(), var_rec.getDoubleVal(), 0.001);
 }
 
@@ -118,7 +118,7 @@ TEST(MathTest, Variance2)
     }
     FixedPoint expected(std::to_string(vari_sum / v_double.size()));
 
-    spdlog::info("var_rec: {}", var_rec.getStrVal());
+    QMPC_LOG_INFO("var_rec: {}", var_rec.getStrVal());
     EXPECT_NEAR(expected.getDoubleVal(), var_rec.getDoubleVal(), 0.001);
 }
 
@@ -187,13 +187,13 @@ TEST(MathTest, Correl_size)
     }
     catch (std::exception e)
     {
-        spdlog::info(e.what());
+        QMPC_LOG_INFO(e.what());
         EXPECT_TRUE(true);
-        spdlog::info("TestCorrel_size \033[32m Succeed \033[m");
+        QMPC_LOG_INFO("TestCorrel_size \033[32m Succeed \033[m");
         return;
     }
     EXPECT_TRUE(false);
-    spdlog::info("TestCorrel_size \033[32m Fail \033[m");
+    QMPC_LOG_INFO("TestCorrel_size \033[32m Fail \033[m");
 }
 
 // 28000個の要素を持つベクトル2つの相関係数の計算時間測定
@@ -228,8 +228,8 @@ TEST(MathTest, Correl_large)
     // 計算に要した時間をミリ秒（1/1000秒）に変換して表示
     auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-    spdlog::info("28000個の要素を持つベクトル2つの相関係数の計算時間: {} milli sec", msec);
-    spdlog::info(correl_rec.getStrVal());
+    QMPC_LOG_INFO("28000個の要素を持つベクトル2つの相関係数の計算時間: {} milli sec", msec);
+    QMPC_LOG_INFO(correl_rec.getStrVal());
 }
 
 TEST(MathTest, ExpTest)
@@ -251,9 +251,9 @@ TEST(MathTest, ExpTest)
     // 計算に要した時間をミリ秒（1/1000秒）に変換して表示
     auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-    spdlog::info("share exp time is {}", msec);
-    spdlog::info("share exp_n is {}", exp_n_rec);
-    spdlog::info("expect exp_n is {}", expect);
+    QMPC_LOG_INFO("share exp time is {}", msec);
+    QMPC_LOG_INFO("share exp_n is {}", exp_n_rec);
+    QMPC_LOG_INFO("expect exp_n is {}", expect);
 
     EXPECT_NEAR(expect, exp_n_rec.getDoubleVal(), 0.001);
 }
@@ -279,9 +279,9 @@ TEST(MathTest, SigmoidTest)
     // 計算に要した時間をミリ秒（1/1000秒）に変換して表示
     auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-    spdlog::info("share sigmoid time is {}", msec);
-    spdlog::info("share sigmoid_n is ", sigmoid_n_rec);
-    spdlog::info("expect sigmoid_n is {}", expect);
+    QMPC_LOG_INFO("share sigmoid time is {}", msec);
+    QMPC_LOG_INFO("share sigmoid_n is ", sigmoid_n_rec);
+    QMPC_LOG_INFO("expect sigmoid_n is {}", expect);
     EXPECT_NEAR(expect, sigmoid_n_rec.getDoubleVal(), 0.01);
 }
 

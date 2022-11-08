@@ -43,8 +43,8 @@ bool compute(
     // 計算に要した時間をミリ秒（1/1000秒）に変換して表示
     auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-    spdlog::info("method ID: {}", methodId);
-    spdlog::info("culc time: {} milli sec", msec);
+    QMPC_LOG_INFO("method ID: {}", methodId);
+    QMPC_LOG_INFO("culc time: {} milli sec", msec);
     return true;
 }
 

@@ -131,7 +131,7 @@ auto logistic(std::vector<std::vector<int>> &x_fp, std::vector<int> &y_fp)
 
         cnt += (val_01 == y[i]);
     }
-    spdlog::info("ロジスティック回帰 正解率: {} ({} / {})",1.0 * cnt / h,cnt,h);
+    QMPC_LOG_INFO("ロジスティック回帰 正解率: {} ({} / {})",1.0 * cnt / h,cnt,h);
 }
 
 TEST(ModelTest, LogisticGradientDescentTest)

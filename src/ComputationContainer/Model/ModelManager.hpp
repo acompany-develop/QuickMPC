@@ -44,7 +44,7 @@ public:
     */
     auto push(const managetocomputation::PredictRequest &request) const
     {
-        spdlog::info("Model Manager: Model Id is {}", request.model_id());
+        QMPC_LOG_INFO("Model Manager: Model Id is {}", request.model_id());
         auto model = select(request.model_id());
         if (!model)
         {

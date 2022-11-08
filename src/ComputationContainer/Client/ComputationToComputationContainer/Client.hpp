@@ -143,7 +143,7 @@ public:
         {
             grpc::ClientContext context;
             grpc::Status status = stub_->ExchangeShare(&context, share, &response);
-            // spdlog::info("exchange message : share_id is {} party_id is {}, value is
+            // QMPC_LOG_INFO("exchange message : share_id is {} party_id is {}, value is
             // {}",share_id,party_id,value);
             if (!status.ok())
             {

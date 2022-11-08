@@ -28,7 +28,7 @@ Share smean(const std::vector<Share> &v)
     int size = std::size(v);
     ret /= FixedPoint(size);
 
-    spdlog::info("avg_s: {}", ret.getVal().getStrVal());
+    QMPC_LOG_INFO("avg_s: {}", ret.getVal().getStrVal());
     return ret;
 }
 
@@ -53,7 +53,7 @@ Share variance(std::vector<Share> &v)
     int size = std::size(v);
     ret /= FixedPoint(size);
 
-    spdlog::info("var_s: {}", ret.getVal());
+    QMPC_LOG_INFO("var_s: {}", ret.getVal());
     return ret;
 }
 
@@ -65,16 +65,16 @@ FixedPoint stdev(std::vector<Share> &v)
     open(var);
 
     FixedPoint stdev = recons(var);
-    spdlog::info("recons_varv: {}", stdev.getStrVal());
+    QMPC_LOG_INFO("recons_varv: {}", stdev.getStrVal());
     auto value = boost::multiprecision::cpp_dec_float_100(stdev.getStrVal());
     if (value < 0)
     {
         value = 0;
     }
     auto r = sqrt(value);
-    spdlog::info("stdev: {}", r);
+    QMPC_LOG_INFO("stdev: {}", r);
     FixedPoint ret{r};
-    spdlog::info("stdev_ret: {}", ret.getStrVal());
+    QMPC_LOG_INFO("stdev_ret: {}", ret.getStrVal());
     return ret;
 }
 Share correl(std::vector<Share> &x, std::vector<Share> &y)

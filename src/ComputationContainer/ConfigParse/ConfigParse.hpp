@@ -100,7 +100,7 @@ class Config
             ip_address_for_job.port = port_for_job;
             ip_addr_for_job_map[party_id] = ip_address_for_job;
 
-            spdlog::info(
+            QMPC_LOG_INFO(
                 "{0} maps to {1} and {2}", party_id, value.second.url, ip_address_for_job.url
             );
         }

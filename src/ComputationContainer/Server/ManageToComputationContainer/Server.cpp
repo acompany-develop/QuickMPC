@@ -32,7 +32,7 @@ grpc::Status Server::ExecuteComputation(
     google::protobuf::Empty *response
 )
 {
-    spdlog::info("{:<30} Received", "[ExecuteComputation]");
+    QMPC_LOG_INFO("{:<30} Received", "[ExecuteComputation]");
     Config *conf = Config::getInstance();
 
     // SPだけ処理
@@ -41,7 +41,7 @@ grpc::Status Server::ExecuteComputation(
         auto job_manager = qmpc::Job::JobManager::getInstance();
         job_manager->pushJobReq(*request);
 
-        spdlog::info("{:<30} End grpc", "[ExecuteComputation]");
+        QMPC_LOG_INFO("{:<30} End grpc", "[ExecuteComputation]");
         return grpc::Status::OK;
     }
     else
@@ -66,7 +66,7 @@ grpc::Status Server::Predict(
     google::protobuf::Empty *response
 )
 {
-    spdlog::info("{:<30} Received", "[Predict]");
+    QMPC_LOG_INFO("{:<30} Received", "[Predict]");
     auto manager = qmpc::Model::ModelManager();
 
     auto status = manager.push(*request);
@@ -86,7 +86,7 @@ grpc::Status Server::Predict(
             return grpc::Status{grpc::StatusCode::ABORTED, grpc::string{"Computation Error"}};
     }
 
-    spdlog::info("{:<30} End grpd", "[Predict]");
+    QMPC_LOG_INFO("{:<30} End grpd", "[Predict]");
     return grpc::Status::OK;
 }
 
@@ -96,7 +96,7 @@ grpc::Status Server::CheckProgress(
     pb_common_types::JobProgress *response
 )
 {
-    spdlog::info("{:<30} Received", "[CheckProgress]");
+    QMPC_LOG_INFO("{:<30} Received", "[CheckProgress]");
     auto manager = qmpc::Job::ProgressManager::getInstance();
 
     const std::string &job_uuid = request->job_uuid();

@@ -28,7 +28,7 @@ public:
     std::unique_ptr<Interface> operator()(const JobParameter &request)
     {
         ComputationMethod method_id = request.getRequest().method_id();
-        spdlog::info("method id is: {}", method_id);
+        QMPC_LOG_INFO("method id is: {}", method_id);
         switch (method_id)
         {
             case ComputationMethod::COMPUTATION_METHOD_MEAN:

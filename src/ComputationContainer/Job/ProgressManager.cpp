@@ -10,7 +10,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
 
 namespace qmpc::Job
@@ -175,12 +175,12 @@ void ProgressManager::log()
 
     for (const auto& [job_uuid, observer] : progresses)
     {
-        spdlog::info(
+        QMPC_LOG_INFO(
             "{}:{}:{} - [PROGRESS] Job UUID: {} -- start", __FILE__, __func__, __LINE__, job_uuid
         );
         for (const auto& proc : observer->info())
         {
-            spdlog::info(
+            QMPC_LOG_INFO(
                 "{}:{}:{} - [PROGRESS] {} {}: {:3.2f} % -- {}",
                 __FILE__,
                 __func__,
@@ -191,7 +191,7 @@ void ProgressManager::log()
                 proc.has_details() ? proc.details() : "<no details>"
             );
         }
-        spdlog::info(
+        QMPC_LOG_INFO(
             "{}:{}:{} - [PROGRESS] Job UUID: {} -- end", __FILE__, __func__, __LINE__, job_uuid
         );
     }
@@ -233,7 +233,7 @@ std::shared_ptr<Observer> ProgressManager::getObserver(const int& id)
     {
         // This block should be reached when executing integration test
         const std::string uuid = generate_uuid();
-        spdlog::info("ProgressManager: temporary uuid: {} was generated", uuid);
+        QMPC_LOG_INFO("ProgressManager: temporary uuid: {} was generated", uuid);
         // TODO: check whether uuid is temporary or not
         //       because generated objects were not going to be released.
         registerJob(id, uuid);
@@ -341,10 +341,10 @@ std::shared_ptr<ProgressManager> ProgressManager::getInstance()
 void ProgressManager::runProgressManager()
 {
     auto progress_manager = getInstance();
-    spdlog::info("{}:{}:{} - Progress Manager Start" __FILE__, __func__, __LINE__);
+    QMPC_LOG_INFO("{}:{}:{} - Progress Manager Start" __FILE__, __func__, __LINE__);
 
     progress_manager->run();
-    spdlog::info("{}:{}:{} - Progress Manager Exit" __FILE__, __func__, __LINE__);
+    QMPC_LOG_INFO("{}:{}:{} - Progress Manager Exit" __FILE__, __func__, __LINE__);
 }
 
 }  // namespace qmpc::Job
