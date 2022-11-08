@@ -7,6 +7,7 @@ cc_library(
     defines=["BOOST_STACKTRACE_LINK",
         "BOOST_STACKTRACE_USE_BACKTRACE"],
     deps = [
+        "//LogHeader:logger",
     ],
     visibility = ["//visibility:public"],
 )

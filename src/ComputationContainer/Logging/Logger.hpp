@@ -2,59 +2,40 @@
 #include <boost/exception/all.hpp>
 #include <boost/format.hpp>
 #include <boost/stacktrace.hpp>
+#include <boost/stacktrace/stacktrace_fwd.hpp>
 #include <ctime>
+#include <functional>
 #include <iomanip>
 #include <iostream>
+#include <memory>
+#include <mutex>
 #include <sstream>
 #include <variant>
 
+#include "LogHeader/Logger.hpp"
+
 namespace qmpc
 {
-// TODO: std::coutをspdlogに差し替え
-// TODO: クラスにする必要がないが念のためクラス構造にしておく
 class Log
 {
-    enum class LogLevel
-    {
-        Info,
-        Debug,
-        Error
-    };
-    Log::LogLevel level;
-    static inline std::unordered_map<qmpc::Log::LogLevel, std::string> logLevelStr = {
-        {Log::LogLevel::Info, "INFO"},
-        {Log::LogLevel::Debug, "DEBUG"},
-        {Log::LogLevel::Error, "ERROR"}};
-
 private:
-    std::string getTime() const
+    std::shared_ptr<spdlog::logger> logger;
+    Log() : logger(spdlog::default_logger())
     {
-        char tt[100];
-        auto t = time(nullptr);
-        tm local;
-        [[maybe_unused]] auto ret =
-            localtime_r(&t, &local);  // ローカル時間(タイムゾーンに合わせた時間)を取得
-        // TODO:osの環境変数にタイムゾーンの設定がない場合は時間がずれる
-        strftime(tt, 256, "%Y-%m-%d %H:%M:%S%z", &local);
-        return std::string(tt);
+        logger->set_pattern("%Y-%m-%d %T %z | %^%-5l%$ | %g:%!:%# - %v");
     }
-    template <typename First, typename... Args>
-    void write(std::ostream &os, First &&first, Args &&...args) const
+    Log &operator=(Log &&) = delete;
+    Log &operator=(const Log &) = delete;
+
+    static Log &getInstance()
     {
-        std::stringstream ss;
-        const char *delim = "|";
-        ss << first;
-        ((ss << delim << args), ...);
-        os << ss.str() << std::endl;
+        static Log instance{};
+        return instance;
     }
 
 public:
     using traced = boost::error_info<struct tag_stacktrace, boost::stacktrace::stacktrace>;
-    Log() = delete;
-    Log &operator=(Log &&) = delete;
-    Log &operator=(const Log &) = delete;
-    constexpr Log(Log::LogLevel level) : level(level) {}
-    //例外生成用関数
+    // 例外生成用関数
     template <class E>
     [[noreturn]] static void throw_with_trace(const E &e)
     {
@@ -62,32 +43,34 @@ public:
     }
 
     template <typename... Args>
-    static void writeLog(Log::LogLevel level, std::ostream &os, Args &&...args)
+    static void Info(
+        const spdlog::source_loc loc, fmt::format_string<Args...> fmt, Args &&...message
+    )
     {
-        Log log(level);
-        log.write(os, log.getTime(), Log::logLevelStr[level], std::forward<Args>(args)...);
-    }
-    template <typename... Args>
-    static void Info(Args &&...message)
-    {
-        writeLog(Log::LogLevel::Info, std::cout, std::forward<Args>(message)...);
+        getInstance().logger->log(loc, spdlog::level::info, fmt, std::forward<Args>(message)...);
     }
 
     template <typename... Args>
-    static void Debug(Args &&...message)
+    static void Debug(
+        const spdlog::source_loc loc, fmt::format_string<Args...> fmt, Args &&...message
+    )
     {
-        writeLog(
-            Log::LogLevel::Debug,
-            std::cout,
-            boost::stacktrace::stacktrace()[0],
-            std::forward<Args>(message)...
-        );
+        getInstance().logger->log(loc, spdlog::level::debug, fmt, std::forward<Args>(message)...);
     }
     template <typename... Args>
-    static void Error(Args &&...message)
+    static void Error(
+        const spdlog::source_loc loc, fmt::format_string<Args...> fmt, Args &&...message
+    )
     {
-        writeLog(Log::LogLevel::Error, std::cerr, std::forward<Args>(message)...);
+        getInstance().logger->log(loc, spdlog::level::err, fmt, std::forward<Args>(message)...);
     }
 
 };  // end Log
 }  // namespace qmpc
+
+#define QMPC_LOG_LOCATION() \
+    spdlog::source_loc { __FILE__, __LINE__, SPDLOG_FUNCTION }
+#define QMPC_LOGGER_CALL(func, ...) func(QMPC_LOG_LOCATION(), __VA_ARGS__)
+#define QMPC_LOG_INFO(...) QMPC_LOGGER_CALL(qmpc::Log::Info, __VA_ARGS__)
+#define QMPC_LOG_DEBUG(...) QMPC_LOGGER_CALL(qmpc::Log::Debug, __VA_ARGS__)
+#define QMPC_LOG_ERROR(...) QMPC_LOGGER_CALL(qmpc::Log::Error, __VA_ARGS__)
