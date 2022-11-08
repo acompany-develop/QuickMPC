@@ -18,6 +18,7 @@ service LibcToManage {
     rpc SendModelParam(SendModelParamRequest) returns (SendModelParamResponse) {}                    // モデルパラメータ送信リクエスト
     rpc Predict(PredictRequest) returns (PredictResponse) {}                                         // モデル値予測リクエスト
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
+    rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                    // 計算時間取得リクエスト
 }
 
 /**
@@ -166,4 +167,14 @@ message GetDataListRequest {
 message GetDataListResponse {
     string result = 1;
     bool is_ok = 2;
+}
+
+message GetElapsedTimeRequest {
+    string job_uuid = 1;
+    string token = 2;
+}
+
+message GetElapsedTimeResponse {
+    bool is_ok = 1;
+    double elapsed_time = 2;
 }

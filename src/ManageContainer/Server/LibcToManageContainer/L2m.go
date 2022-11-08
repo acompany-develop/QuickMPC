@@ -384,6 +384,32 @@ func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*p
 	}, nil
 }
 
+func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeRequest) (*pb.GetElapsedTimeResponse, error) {
+	AppLogger.Info("Get Elapsed time;")
+	AppLogger.Info("jobUUID: " + in.GetJobUuid())
+	JobUUID := in.GetJobUuid()
+	token := in.GetToken()
+
+	errToken := s.authorize(token, []string{"demo", "dep"})
+	if errToken != nil {
+		return &pb.GetElapsedTimeResponse{
+			IsOk: false,
+		}, errToken
+	}
+	elapsedTime, err := s.m2dbclient.GetElapsedTime(JobUUID)
+	if err != nil {
+		AppLogger.Error(err)
+		return &pb.GetElapsedTimeResponse{
+			IsOk:   false,
+		}, err
+	}
+
+	return &pb.GetElapsedTimeResponse{
+		IsOk:   true,
+		ElapsedTime: elapsedTime,
+	}, nil
+}
+
 // LibtoMCサーバ起動
 func RunServer() {
 	config, err := utils.GetConfig()

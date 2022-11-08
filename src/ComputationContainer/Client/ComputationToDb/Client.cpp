@@ -1,5 +1,6 @@
 #include "Client.hpp"
 
+#include <chrono>
 #include <experimental/filesystem>
 #include <fstream>
 #include <regex>
@@ -114,9 +115,14 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
 {
     const google::protobuf::EnumDescriptor *descriptor =
         google::protobuf::GetEnumDescriptor<pb_common_types::JobStatus>();
-    std::ofstream(
+
+    std::ofstream ofs(
         resultDbPath + job_uuid + "/status_" + descriptor->FindValueByNumber(status)->name()
     );
+
+    std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
+    auto tp_msec = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
+    ofs << tp_msec.count();
 }
 
 // tableデータを結合して取り出す

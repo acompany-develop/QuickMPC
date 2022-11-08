@@ -55,6 +55,7 @@ type M2DbClient interface {
 	GetComputationResult(string) ([]*ComputationResult, error)
 	InsertModelParams(string, string, int32) error
 	GetDataList() (string, error)
+	GetElapsedTime(string) (float64, error)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -247,4 +248,36 @@ func (c Client) GetDataList() (string, error) {
 	AppLogger.Warning("GetDataList()は削除予定の非推奨機能です．")
 	// NOTE: 一部のテストで使用しているため削除まではnilを返す
 	return "", nil
+}
+
+func getTime(path string) (float64, error) {
+	raw, errRead := ioutil.ReadFile(path)
+	if errRead != nil {
+		return 0, errRead
+	}
+	time, err := strconv.ParseFloat(string(raw), 64)
+	if err != nil {
+		return 0, err
+	}
+	return time / 1000, nil
+}
+
+func getElapsedTime(path string) (float64, error) {
+	start, startErr := getTime(fmt.Sprintf("%s/status_PRE_JOB", path))
+	if startErr != nil {
+		return 0, startErr
+	}
+	end, endErr := getTime(fmt.Sprintf("%s/status_COMPLETED", path))
+	if endErr != nil {
+		return 0, endErr
+	}
+	return end-start, nil
+}
+
+func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
+
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+	return getElapsedTime(path)
 }
