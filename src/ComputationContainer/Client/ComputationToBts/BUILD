@@ -10,7 +10,6 @@ cc_library(
         "//Client/Helper:helper",
         "//ConfigParse:config_parse",
         "@Proto//EngineToBts:engine_to_bts_cc_grpc",
-        "//LogHeader:logger",
         "//Logging:log",
     ],
     visibility = ["//visibility:public"],

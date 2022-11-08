@@ -11,7 +11,7 @@ cc_test(
         "//Share:share",
         "//ConfigParse:config_parse",
         "//Server/ComputationToComputationContainer:server",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -28,7 +28,7 @@ cc_test(
         "//Share:share",
         "//ConfigParse:config_parse",
         "//Server/ComputationToComputationContainer:server",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
 )
 
@@ -58,7 +58,7 @@ cc_test(
         "//ConfigParse:config_parse",
         "@Proto//ComputationToComputationContainer:computation_to_computation_cc_grpc",
         "//Share:address",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     linkopts = ["-pthread"],
 )
@@ -97,7 +97,7 @@ cc_test(
     deps = [
         "@gtest//:main",
         "//Random:csprng",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
 )
 

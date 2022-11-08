@@ -4,7 +4,7 @@ cc_library(
         "Benchmark.hpp",
     ],
     deps =[
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )

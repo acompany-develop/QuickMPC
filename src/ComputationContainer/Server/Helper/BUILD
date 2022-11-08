@@ -4,7 +4,7 @@ cc_library(
         "Helper.hpp"
     ],
     deps = [
-        "//LogHeader:logger",
+        "//Logging:log",
         "@Proto//ComputationToComputationContainer:computation_to_computation_cc_grpc",
     ],
     visibility = ["//visibility:public"],

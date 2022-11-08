@@ -9,7 +9,7 @@ cc_library(
         "//Share:share",
         "//Client/ComputationToDb:client",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -34,7 +34,7 @@ cc_library(
         "//ConfigParse:config_parse",
         "//Job/Jobs:sid3Job",
         "//Job:progressManager",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -62,7 +62,7 @@ cc_library(
         "ProgressManager.hpp",
     ],
     deps = [
-        "//LogHeader:logger",
+        "//Logging:log",
         "@Proto//common_types:common_types_cc_proto",
     ],
     visibility = ["//visibility:public"],

@@ -14,7 +14,7 @@ cc_library(
         "//Client/ComputationToDb:valuetable",
         "//Job:jobStatus",
         "//Job:progressManager",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -31,7 +31,7 @@ cc_library(
         "//Model/Models:logisticregression",
         "//Model/Models:decisiontree",
         "//Model/Models:sid3",
-        "//LogHeader:logger",
+        "//Logging:log",
         "@Proto//common_types:common_types_cc_proto",
     ],
     visibility = ["//visibility:public"],

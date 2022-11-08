@@ -24,7 +24,6 @@ cc_library(
     ],
     deps = [
         "@libsodium//:sodium",
-        "//LogHeader:logger",
         "//Logging:log",
     ],
     visibility = ["//visibility:public"],

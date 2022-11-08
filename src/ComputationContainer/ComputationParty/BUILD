@@ -12,7 +12,7 @@ cc_library(
         "//Server/ComputationToComputationContainerForJob:server",
         "//Server/ManageToComputationContainer:server",
         "//Job:jobManager",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )
