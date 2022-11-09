@@ -1,160 +1,117 @@
 import math
 
-import numpy as np
 import pytest
 from utils import get_result, qmpc
 
-from .common import send_share
+from tests.common import data_id
+
+
+def execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 1, 2]],
+                                               ["id", "s1", "s2"]),
+                                       data_id([[1000, 1, 2], [1002, 1, 2]],
+                                               ["id", "s1", "s3"])],
+                              join=[1],
+                              index=[1, 1]):
+    return ((dataIds, join, index))
 
 
 @pytest.mark.parametrize(
-    ("table_file", "table_file_for_join"),
+    ("param", "expected"),
     [
-        ("table_data_5x5", "table_data_5x5_for_join"),
+        # not share join case
+        (execute_computation_param(join=[0]),
+         [[1, 2, 2]]),
+        # all match case
+        (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],
+                                                    ["id", "s1", "s2"]),
+                                            data_id([[1000, 1, 2], [1001, 3, 4]],
+                                                    ["id", "s3", "s4"])], join=[0]),
+            [[1, 2, 1, 2], [3, 4, 3, 4]]),
+        # not match case
+        (execute_computation_param(dataIds=[data_id([[1000, 1, 2]], ["id", "s1", "s2"]),
+                                            data_id([[1001, 1, 2]], ["id", "s3", "s4"])], join=[0]),
+            [[]]),
+        # empty table case
+        (execute_computation_param(dataIds=[data_id([[1000]], ["id"]),
+                                            data_id([[1000]], ["id"])], join=[0]),
+         [[]]),
     ]
 )
-def test_table_hjoin(table_file: str, table_file_for_join: str):
+def test_hjoin(param: tuple, expected: list):
 
-    # share送信
-    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
-    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
-    secrets = [r1 + r2[4:] for r1, r2 in zip(secrets1, secrets2)][:3]
-
-    # table情報と列指定情報を定義して計算
-    length: int = len(secrets[0])
-    table = [[data_id1, data_id2], [0], [1, 1]]
-    inp = [i for i in range(2, length+1)]
-
-    res = get_result(qmpc.sum(table, inp))
+    # 非Shareの横結合リクエスト送信
+    res = get_result(qmpc.get_join_table(param))
     assert (res["is_ok"])
 
     # 正しく計算されたか確認
-    secrets_np = np.array(secrets)[:, 1:]
-    true_val = np.add.reduce(secrets_np)
-    for x, y in zip(res["results"], true_val):
-        assert (math.isclose(x, y, abs_tol=0.1))
-
-    # 冪等性のために消しておく
-    qmpc.delete_share([data_id1, data_id2])
+    for xl, yl in zip(res["results"]["table"], expected):
+        for x, y in zip(xl, yl):
+            assert (math.isclose(x, y, abs_tol=0.1))
 
 
-@pytest.mark.parametrize(
-    ("table_file", "table_file_for_join"),
+@ pytest.mark.parametrize(
+    ("param", "expected"),
     [
-        ("table_data_5x5", "table_data_5x5_for_join"),
+        # not share join
+        (execute_computation_param(join=[1]),
+         [[1], [1]]),
+        # all match case
+        (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],
+                                                    ["id", "s1", "s2"]),
+                                            data_id([[1003, 1, 2], [1004, 3, 4]],
+                                                    ["id", "s1", "s2"])], join=[1]),
+            [[1, 2], [3, 4], [1, 2], [3, 4]]),
+        # not match case
+        (execute_computation_param(dataIds=[data_id([[1000, 1, 2]], ["id", "s1", "s2"]),
+                                            data_id([[1001, 1, 2]], ["id", "s3", "s4"])], join=[0]),
+            [[]]),
+        # empty table case
+        (execute_computation_param(dataIds=[data_id([[1000]], ["id"]),
+                                            data_id([[1000]], ["id"])], join=[1]),
+         [[]]),
     ]
 )
-def test_table_wjoin(table_file: str, table_file_for_join: str):
+def test_vjoin(param: tuple, expected: list):
 
-    # share送信
-    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
-    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
-    secrets = [r[:4] for r in secrets1] + [r[:4] for r in secrets2[3:]]
-
-    # table情報と列指定情報を定義して計算
-    length: int = len(secrets[0])
-    table = [[data_id1, data_id2], [1], [1, 1]]
-    inp = [i for i in range(2, length+1)]
-
-    res = get_result(qmpc.sum(table, inp))
+    # 非Shareの縦結合リクエスト送信
+    res = get_result(qmpc.get_join_table(param))
     assert (res["is_ok"])
 
     # 正しく計算されたか確認
-    secrets_np = np.array(secrets)[:, 1:]
-    true_val = np.add.reduce(secrets_np)
-    for x, y in zip(res["results"], true_val):
-        assert (math.isclose(x, y, abs_tol=0.1))
-
-    # 冪等性のために消しておく
-    qmpc.delete_share([data_id1, data_id2])
+    for xl, yl in zip(res["results"]["table"], expected):
+        for x, y in zip(xl, yl):
+            assert (math.isclose(x, y, abs_tol=0.1))
 
 
-@pytest.mark.parametrize(
-    ("table_file", "table_file_for_join"),
+@ pytest.mark.parametrize(
+    ("param", "expected"),
     [
-        ("table_data_5x5", "table_data_5x5_for_join"),
+        # not share join case
+        (execute_computation_param(join=[2]),
+         [[1, 2, 2]]),
+        # all match case
+        (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],
+                                                    ["id", "s1", "s2"]),
+                                            data_id([[1000, 1, 2], [1001, 3, 4]],
+                                                    ["id", "s3", "s4"])], join=[2]),
+            [[1, 2, 1, 2], [3, 4, 3, 4]]),
+        # not match case
+        (execute_computation_param(dataIds=[data_id([[1000, 1, 2]], ["id", "s1", "s2"]),
+                                            data_id([[1001, 1, 2]], ["id", "s3", "s4"])], join=[0]),
+            [[]]),
+        # empty table case
+        (execute_computation_param(dataIds=[data_id([[1000]], ["id"]),
+                                            data_id([[1000]], ["id"])], join=[2]),
+         [[]]),
     ]
 )
-def test_table_hjoin_share(table_file: str, table_file_for_join: str):
+def test_hjoin_share(param: tuple, expected: list):
 
-    # share送信
-    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
-    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
-    secrets = [r1 + r2[4:] for r1, r2 in zip(secrets1, secrets2)][:3]
-
-    # table情報と列指定情報を定義して計算
-    length: int = len(secrets[0])
-    table = [[data_id1, data_id2], [2], [1, 1]]
-    inp = [i for i in range(2, length+1)]
-
-    res = get_result(qmpc.sum(table, inp))
+    # Shareの横結合リクエスト送信
+    res = get_result(qmpc.get_join_table(param))
     assert (res["is_ok"])
 
     # 正しく計算されたか確認
-    secrets_np = np.array(secrets)[:, 1:]
-    true_val = np.add.reduce(secrets_np)
-    for x, y in zip(res["results"], true_val):
-        assert (math.isclose(x, y, abs_tol=0.1))
-
-    # 冪等性のために消しておく
-    qmpc.delete_share([data_id1, data_id2])
-
-
-@pytest.mark.parametrize(
-    ("table_file", "table_file_for_join"),
-    [
-        ("table_data_5x5", "table_data_5x5_for_failjoin"),
-    ]
-)
-def test_table_hjoin_fail(table_file: str, table_file_for_join: str):
-
-    # share送信
-    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
-    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
-
-    # table情報を定義してテーブル結合リクエスト送信
-    table = [[data_id1, data_id2], [0], [1, 1]]
-    res = get_result(qmpc.get_join_table(table))
-
-    # 結合結果が空でもエラーなくresponseが返ってくるか
-    assert (res["is_ok"])
-
-
-@pytest.mark.parametrize(
-    ("table_file", "table_file_for_join"),
-    [
-        ("table_data_5x5", "table_data_5x5_for_failjoin"),
-    ]
-)
-def test_table_wjoin_fail(table_file: str, table_file_for_join: str):
-
-    # share送信
-    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
-    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
-
-    # table情報を定義してテーブル結合リクエスト送信
-    table = [[data_id1, data_id2], [1], [1, 1]]
-    res = get_result(qmpc.get_join_table(table))
-
-    # 結合結果が空でもエラーなくresponseが返ってくるか
-    assert (res["is_ok"])
-
-
-@pytest.mark.parametrize(
-    ("table_file", "table_file_for_join"),
-    [
-        ("table_data_5x5", "table_data_5x5_for_failjoin"),
-    ]
-)
-def test_table_hjoin_share_fail(table_file: str, table_file_for_join: str):
-
-    # share送信
-    secrets1, data_id1 = send_share(f"Data/{table_file}.csv")
-    secrets2, data_id2 = send_share(f"Data/{table_file_for_join}.csv")
-
-    # table情報を定義してテーブル結合リクエスト送信
-    table = [[data_id1, data_id2], [2], [1, 1]]
-    res = get_result(qmpc.get_join_table(table))
-
-    # 結合結果が空でもエラーなくresponseが返ってくるか
-    assert (res["is_ok"])
+    for xl, yl in zip(res["results"]["table"], expected):
+        for x, y in zip(xl, yl):
+            assert (math.isclose(x, y, abs_tol=0.1))
