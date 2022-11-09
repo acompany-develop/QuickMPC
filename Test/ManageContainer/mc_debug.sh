@@ -7,5 +7,5 @@ setup() {
 }
 
 run() {
-    docker-compose -f docker-compose.yml up --build dev_mc1 dev_mc_envoy1 dev_mc2 dev_mc_envoy2 dev_mc3 dev_mc_envoy3
+    docker-compose -f docker-compose.yml up dev_mc1 dev_mc_envoy1 dev_mc2 dev_mc_envoy2 dev_mc3 dev_mc_envoy3
 }

@@ -15,7 +15,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose -f docker-compose.yml up --build dev_mc1 dev_mc2 dev_mc3
+    docker-compose -f docker-compose.yml up dev_mc1 dev_mc2 dev_mc3
 }
 
 # runの後に実行されるteardown処理を記述する関数

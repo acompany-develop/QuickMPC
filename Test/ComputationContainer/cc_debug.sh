@@ -8,5 +8,5 @@ setup() {
 }
 
 run() {
-    docker-compose -f docker-compose.yml up --build dev_cc1 dev_cc2 dev_cc3
+    docker-compose -f docker-compose.yml up dev_cc1 dev_cc2 dev_cc3
 }

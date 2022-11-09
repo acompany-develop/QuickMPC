@@ -15,7 +15,6 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    build
     docker-compose -f docker-compose.yml up medium_cc1 medium_cc2 medium_cc3
 }
 

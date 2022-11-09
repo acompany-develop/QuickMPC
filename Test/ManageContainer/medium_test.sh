@@ -16,7 +16,7 @@ setup() {
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
     # TODO: healthcheckをN1QLのheartbeatに変更
-    docker-compose -f docker-compose.yml up --build medium_mc1 medium_mc2 medium_mc3
+    docker-compose -f docker-compose.yml up medium_mc1 medium_mc2 medium_mc3
 }
 
 # runの後に実行されるteardown処理を記述する関数
