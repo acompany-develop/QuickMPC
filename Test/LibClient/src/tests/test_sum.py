@@ -19,17 +19,21 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
         # usually case
         (execute_computation_param(),
          [5, 7, 9]),
+
         # small table size case
         (execute_computation_param(dataIds=[data_id([[1]])],
                                    src=[1]),
          [1]),
+
         # large data case
         (execute_computation_param(dataIds=[data_id([[10**18], [10**18]])],
                                    src=[1]),
             [2*10**18]),
+
         # duplicated src case
         (execute_computation_param(src=[1, 2, 2, 3, 3, 3]),
          [5, 7, 7, 9, 9, 9]),
+
         # empty src case
         (execute_computation_param(src=[]),
          []),

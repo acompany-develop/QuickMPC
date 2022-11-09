@@ -18,10 +18,13 @@ def send_share_param(secrets=[[1, 2, 3], [4, 5, 6]],
     [
         # usually case
         (send_share_param()),
+
         # small table size case
         (send_share_param(secrets=[[1]], schema=["a"])),
+
         # nonzero matching_column case
         (send_share_param(matching_column=3)),
+
         # small piece_size case
         (send_share_param(piece_size=1_000)),
     ]

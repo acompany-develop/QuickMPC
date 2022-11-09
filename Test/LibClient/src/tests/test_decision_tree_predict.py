@@ -39,7 +39,7 @@ def predict_param(model_param_job_uuid=job_uuid(usually_tree),
 )
 def test_decision_tree_predict(param: tuple, expected: list):
 
-    # 決定木リクエスト送信
+    # 決定木推論リクエスト送信
     res = get_result(qmpc.decision_tree_predict(*param))
     assert (res["is_ok"])
 

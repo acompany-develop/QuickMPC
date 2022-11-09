@@ -19,19 +19,23 @@ def predict_param(model_param_job_uuid=job_uuid([1, 2, 3, 4]),
     [
         # usually case
         (predict_param(), [21, 48]),
+
         # large data case
         (predict_param(job_uuid([10**18, 10**9, 10**9]),
                        dataIds=[data_id([[10**9, 10**9+5],
                                          [10**9+10, 10**9+10]])],
                        src=[1, 2]),
          [3*10**18+5*10**9, 3*10**18+20*10**9]),
+
         # duplicated src case
         (predict_param(job_uuid([1, 2, 3, 4, 5, 6, 7]),
                        src=[1, 2, 2, 3, 3, 3]),
          [71, 152]),
+
         # param is 0 case
         (predict_param(job_uuid([0, 0, 0, 0])),
          [0, 0]),
+
         # empty src case
         # TODO: 空のsrcで動作するようにする(or エラーを出す)
         # (predict_param(src=[]),

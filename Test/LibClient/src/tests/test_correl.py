@@ -20,18 +20,21 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 7, 10], [2, 9, 3]
         # usually case
         (execute_computation_param(),
          [[0.94491118, 0.24019223]]),
+
         # large data case
         (execute_computation_param(dataIds=[data_id([[10**9, 10**9+5],
                                                      [10**9+10, 10**9+10]])],
                                    src=[1],
                                    target=[2]),
             [[1, 1]]),
+
         # duplicated src, target case
         (execute_computation_param(src=[2, 3, 3],
                                    target=[1, 1, 3]),
          [[0.54470478, 0.94491118, 0.94491118],
           [0.54470478, 0.94491118, 0.94491118],
             [0.24019223, 1, 1]]),
+
         # empty src case
         (execute_computation_param(src=[]),
          [[]]),
@@ -39,7 +42,7 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 7, 10], [2, 9, 3]
 )
 def test_correl(param: tuple, expected: list):
 
-    # 総和計算リクエスト送信
+    # 相関係数計算リクエスト送信
     res = get_result(qmpc.correl(*param))
     assert (res["is_ok"])
 

@@ -20,9 +20,11 @@ def execute_computation_param(dataIds=[data_id([[1, 1, 0], [1, 0, 1]],
     [
         # usually case
         (execute_computation_param()),
+
         # duplicated src, target case
         (execute_computation_param(src=[1, 2, 3, 2, 3],
                                    target=[1, 1, 2, 3])),
+
         # empty src case
         (execute_computation_param(src=[])),
     ]

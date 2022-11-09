@@ -21,16 +21,19 @@ def execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 1, 2]],
         # not share join case
         (execute_computation_param(join=[0]),
          [[1, 2, 2]]),
+
         # all match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],
                                                     ["id", "s1", "s2"]),
                                             data_id([[1000, 1, 2], [1001, 3, 4]],
                                                     ["id", "s3", "s4"])], join=[0]),
             [[1, 2, 1, 2], [3, 4, 3, 4]]),
+
         # not match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2]], ["id", "s1", "s2"]),
                                             data_id([[1001, 1, 2]], ["id", "s3", "s4"])], join=[0]),
             [[]]),
+
         # empty table case
         (execute_computation_param(dataIds=[data_id([[1000]], ["id"]),
                                             data_id([[1000]], ["id"])], join=[0]),
@@ -55,16 +58,19 @@ def test_hjoin(param: tuple, expected: list):
         # not share join
         (execute_computation_param(join=[1]),
          [[1], [1]]),
+
         # all match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],
                                                     ["id", "s1", "s2"]),
                                             data_id([[1003, 1, 2], [1004, 3, 4]],
                                                     ["id", "s1", "s2"])], join=[1]),
             [[1, 2], [3, 4], [1, 2], [3, 4]]),
+
         # not match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2]], ["id", "s1", "s2"]),
                                             data_id([[1001, 1, 2]], ["id", "s3", "s4"])], join=[0]),
             [[]]),
+
         # empty table case
         (execute_computation_param(dataIds=[data_id([[1000]], ["id"]),
                                             data_id([[1000]], ["id"])], join=[1]),
@@ -89,16 +95,19 @@ def test_vjoin(param: tuple, expected: list):
         # not share join case
         (execute_computation_param(join=[2]),
          [[1, 2, 2]]),
+
         # all match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],
                                                     ["id", "s1", "s2"]),
                                             data_id([[1000, 1, 2], [1001, 3, 4]],
                                                     ["id", "s3", "s4"])], join=[2]),
             [[1, 2, 1, 2], [3, 4, 3, 4]]),
+
         # not match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2]], ["id", "s1", "s2"]),
                                             data_id([[1001, 1, 2]], ["id", "s3", "s4"])], join=[0]),
             [[]]),
+
         # empty table case
         (execute_computation_param(dataIds=[data_id([[1000]], ["id"]),
                                             data_id([[1000]], ["id"])], join=[2]),

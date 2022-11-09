@@ -19,17 +19,21 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
         # usually case
         (execute_computation_param(),
          [2.5, 3.5, 4.5]),
+
         # small table size case
         (execute_computation_param(dataIds=[data_id([[1]])],
                                    src=[1]),
          [1]),
+
         # large data case
         (execute_computation_param(dataIds=[data_id([[10**18], [10**18+10]])],
                                    src=[1]),
             [10**18+5]),
+
         # duplicated src case
         (execute_computation_param(src=[1, 2, 2, 3, 3, 3]),
          [2.5, 3.5, 3.5, 4.5, 4.5, 4.5]),
+
         # empty src case
         (execute_computation_param(src=[]),
          []),
@@ -37,7 +41,7 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
 )
 def test_mean(param: tuple, expected: list):
 
-    # 総和計算リクエスト送信
+    # 平均計算リクエスト送信
     res = get_result(qmpc.mean(*param))
     assert (res["is_ok"])
 
