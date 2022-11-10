@@ -10,7 +10,7 @@
  * 計測を n_iterations 回行い，各回の実行時間を表示し，
  * 最後に平均実行時間を表示する．
  */
-template <typename LAMBDA>
+template <typename T = std::chrono::milliseconds, typename LAMBDA>
 static void measureExecTime(
     const std::string test_name, const int n_iterations, LAMBDA &&operation_func
 )
@@ -21,8 +21,7 @@ static void measureExecTime(
         const auto clock_start = std::chrono::system_clock::now();
         operation_func();
         const auto clock_end = std::chrono::system_clock::now();
-        const auto elapsed_time_ms =
-            std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
+        const auto elapsed_time_ms = std::chrono::duration_cast<T>(clock_end - clock_start).count();
         spdlog::info(
             "[{0} {1}/{2}] Elapsed time = {3} ms", test_name, i, n_iterations, elapsed_time_ms
         );
