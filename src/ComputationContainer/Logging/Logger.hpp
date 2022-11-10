@@ -13,7 +13,7 @@
 #include "spdlog/sinks/dist_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-#include "LogHeader/Logger.hpp"
+#include "LogHeader.hpp"
 
 #define QMPC_LOG_LOCATION() \
     spdlog::source_loc { __FILE__, __LINE__, SPDLOG_FUNCTION }

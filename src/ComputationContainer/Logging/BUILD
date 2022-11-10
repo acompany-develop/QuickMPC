@@ -1,4 +1,15 @@
 cc_library(
+    name = "log_header",
+    hdrs = [
+        "LogHeader.hpp"
+    ],
+    deps = [
+        "@libspdlog//:spdlog"
+    ],
+    visibility = ["//visibility:private"],
+)
+
+cc_library(
     name = "log",
     hdrs = [
         "Logger.hpp",
@@ -7,7 +18,7 @@ cc_library(
     defines=["BOOST_STACKTRACE_LINK",
         "BOOST_STACKTRACE_USE_BACKTRACE"],
     deps = [
-        "//LogHeader:logger",
+        ":log_header",
     ],
     visibility = ["//visibility:public"],
 )
