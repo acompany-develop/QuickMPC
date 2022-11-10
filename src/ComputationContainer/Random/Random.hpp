@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "FixedPoint/FixedPoint.hpp"
-#include "PrimeField/PrimeField.hpp"
 
 class RandGenerator
 {

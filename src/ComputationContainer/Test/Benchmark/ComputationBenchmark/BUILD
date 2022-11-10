@@ -10,7 +10,6 @@ cc_library(
     deps = [
         "@gtest//:main",
         "//Test/Benchmark:benchmark",
-        "//Test/Benchmark:share_comp_benchmark",
         "//Test/Benchmark:share_benchmark",
         "//Server/ComputationToComputationContainer:server",
         "//Server/ManageToComputationContainer:server",

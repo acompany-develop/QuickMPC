@@ -1,20 +1,5 @@
 
 cc_library(
-    name = "share_comp_test",
-    hdrs = [
-        "ShareCompTest.hpp",
-    ],
-    copts = ["-Iexternal/gtest/include"],
-    deps = [
-        "@gtest//:main",
-        "//Share:share",
-        "//Share:compare",
-        "//LogHeader:logger"
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
     name = "share_test",
     srcs = [
         "ShareTest.hpp",
@@ -138,4 +123,3 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
-

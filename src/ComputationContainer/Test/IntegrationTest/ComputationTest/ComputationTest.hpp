@@ -6,10 +6,6 @@
 #include "ConfigParse/ConfigParse.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Server/ManageToComputationContainer/Server.hpp"
-#include "unistd.h"
-// clang-format off
-#include "Test/IntegrationTest/ShareCompTest.hpp"
-// clang-format on
 #include "Test/IntegrationTest/GBDTTest.hpp"
 #include "Test/IntegrationTest/MathTest.hpp"
 #include "Test/IntegrationTest/MatrixTest.hpp"
@@ -19,5 +15,6 @@
 #include "Test/IntegrationTest/ReadTripleFromBtsTest.hpp"
 #include "Test/IntegrationTest/ShareTest.hpp"
 #include "Test/IntegrationTest/ValueTableTest.hpp"
+#include "unistd.h"
 
 int main(int argc, char **argv);

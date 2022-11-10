@@ -420,7 +420,7 @@ Share<T> sqrt(const Share<T> &share)
 {
     // epsの代わり
     Share<T> x = (share + FixedPoint(1)) / FixedPoint(2);
-    //回数は適当
+    // 回数は適当
     for (size_t i = 0; i < 50; ++i)
     {
         x = (x + share / x) / FixedPoint(2);
@@ -566,4 +566,3 @@ std::vector<Share<T>> getFloor(const std::vector<Share<T>> &s)
 }  // namespace qmpc::Share
 
 using Share = qmpc::Share::Share<FixedPoint>;
-using ShareComp = qmpc::Share::Share<PrimeField>;

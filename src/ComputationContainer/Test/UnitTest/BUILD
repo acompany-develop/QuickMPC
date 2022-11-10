@@ -41,8 +41,7 @@ cc_test(
     deps = [
         "@gtest//:main",
         "//Random:random",
-        "//FixedPoint:fixed_point",
-        "//PrimeField:prime_field",
+        "//FixedPoint:fixed_point"
     ],
 )
 
@@ -74,18 +73,6 @@ cc_test(
         "@gtest//:main",
         "//FixedPoint:fixed_point",
         "//FixedPoint:math_lib"
-    ],
-)
-
-cc_test(
-    name = "PrimeFieldTest",
-    srcs = [
-        "PrimeFieldTest.cpp",
-    ],
-    copts = ["-Iexternal/gtest/include"],
-    deps = [
-        "@gtest//:main",
-        "//PrimeField:prime_field"
     ],
 )
 
