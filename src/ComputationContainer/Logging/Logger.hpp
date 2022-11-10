@@ -31,10 +31,10 @@ private:
     static constexpr auto LOG_FORMAT =
         std::string_view("%Y-%m-%d %T %z | %^%-5l%$ | %g:%!:%# - %v");
     std::shared_ptr<spdlog::sinks::dist_sink_mt> sinks;
-    std::shared_ptr<spdlog::logger> logger;
+    std::unique_ptr<spdlog::logger> logger;
     Log()
         : sinks(std::make_shared<spdlog::sinks::dist_sink_mt>())
-        , logger(std::make_shared<spdlog::logger>("QMPC Logger", sinks))
+        , logger(std::make_unique<spdlog::logger>("QMPC Logger", sinks))
     {
         auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks->add_sink(stdout_sink);
