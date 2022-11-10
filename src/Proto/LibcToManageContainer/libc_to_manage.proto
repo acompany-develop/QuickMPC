@@ -30,7 +30,8 @@ message SendSharesRequest {
     repeated string schema = 3;
     int32 piece_id = 4;
     string sent_at = 5;
-    string token = 6;
+    int32 matching_column = 6;
+    string token = 7;
 }
 
 /**
