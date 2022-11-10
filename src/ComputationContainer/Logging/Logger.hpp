@@ -1,12 +1,17 @@
 #pragma once
+#include <iostream>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include <boost/exception/all.hpp>
 #include <boost/format.hpp>
 #include <boost/stacktrace.hpp>
 #include <boost/stacktrace/stacktrace_fwd.hpp>
+
+#include "spdlog/sinks/dist_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 #include "LogHeader/Logger.hpp"
 
@@ -23,10 +28,17 @@ namespace qmpc
 class Log
 {
 private:
+    static constexpr auto LOG_FORMAT =
+        std::string_view("%Y-%m-%d %T %z | %^%-5l%$ | %g:%!:%# - %v");
+    std::shared_ptr<spdlog::sinks::dist_sink_mt> sinks;
     std::shared_ptr<spdlog::logger> logger;
-    Log() : logger(spdlog::default_logger())
+    Log()
+        : sinks(std::make_shared<spdlog::sinks::dist_sink_mt>())
+        , logger(std::make_shared<spdlog::logger>("QMPC Logger", sinks))
     {
-        logger->set_pattern("%Y-%m-%d %T %z | %^%-5l%$ | %g:%!:%# - %v");
+        auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+        sinks->add_sink(stdout_sink);
+        sinks->set_pattern({LOG_FORMAT.begin(), LOG_FORMAT.end()});
     }
     Log &operator=(Log &&) = delete;
     Log &operator=(const Log &) = delete;
@@ -60,6 +72,16 @@ public:
         }();
         QMPC_LOG_INFO("log level: {}", spdlog::level::to_string_view(level));
         getInstance().logger->set_level(level);
+    }
+
+    static void addSink(const std::shared_ptr<spdlog::sinks::sink> sink)
+    {
+        sink->set_pattern(std::string(LOG_FORMAT));
+        getInstance().sinks->add_sink(sink);
+    }
+    static void removeSink(const std::shared_ptr<spdlog::sinks::sink> sink)
+    {
+        getInstance().sinks->remove_sink(sink);
     }
 
     template <typename... Args>
