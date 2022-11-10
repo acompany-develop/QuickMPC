@@ -69,6 +69,11 @@ public:
     {
         getInstance().logger->log(loc, spdlog::level::info, fmt, std::forward<Args>(message)...);
     }
+    template <typename T>
+    static void Info(const spdlog::source_loc loc, const T &value)
+    {
+        getInstance().logger->log(loc, spdlog::level::info, value);
+    }
 
     template <typename... Args>
     static void Debug(
@@ -77,6 +82,12 @@ public:
     {
         getInstance().logger->log(loc, spdlog::level::debug, fmt, std::forward<Args>(message)...);
     }
+    template <typename T>
+    static void Debug(const spdlog::source_loc loc, const T &value)
+    {
+        getInstance().logger->log(loc, spdlog::level::debug, value);
+    }
+
     template <typename... Args>
     static void Error(
         const spdlog::source_loc loc, fmt::format_string<Args...> fmt, Args &&...message
@@ -84,12 +95,23 @@ public:
     {
         getInstance().logger->log(loc, spdlog::level::err, fmt, std::forward<Args>(message)...);
     }
+    template <typename T>
+    static void Error(const spdlog::source_loc loc, const T &value)
+    {
+        getInstance().logger->log(loc, spdlog::level::err, value);
+    }
+
     template <typename... Args>
     static void Warn(
         const spdlog::source_loc loc, fmt::format_string<Args...> fmt, Args &&...message
     )
     {
         getInstance().logger->log(loc, spdlog::level::warn, fmt, std::forward<Args>(message)...);
+    }
+    template <typename T>
+    static void Warn(const spdlog::source_loc loc, const T &value)
+    {
+        getInstance().logger->log(loc, spdlog::level::warn, value);
     }
 
 };  // end Log
