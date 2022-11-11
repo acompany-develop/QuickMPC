@@ -15,6 +15,9 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Set current date as env variable
         id: date
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
@@ -49,6 +52,9 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Set current date as env variable
         id: date
