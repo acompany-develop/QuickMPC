@@ -3,7 +3,7 @@
 
 # build処理を記述する関数
 build() {
-    docker-compose -f docker-compose.yml build --build-arg BUILD_OPT="--config=debug" medium_cc1 medium_cc2 medium_cc3 dev_bts
+    docker buildx bake -f docker-compose.yml medium_cc1 medium_cc2 medium_cc3 --load
 }
 
 # runの前に実行されるsetup処理を記述する関数

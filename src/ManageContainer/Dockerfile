@@ -60,7 +60,11 @@ COPY src/ManageContainer/ /QuickMPC
 RUN true
 COPY src/Proto/ /Proto
 WORKDIR /QuickMPC
-RUN go mod vendor && go build
+RUN --mount=type=cache,target=/root/go/pkg/mod \
+  go mod download
+RUN --mount=type=cache,target=/root/go/pkg/mod \
+  --mount=type=cache,target=/root/.cache \
+  go build
 
 FROM builder as dev
 

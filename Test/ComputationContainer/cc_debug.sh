@@ -1,6 +1,6 @@
 # src/<path>/*_test.*の実行方法をTest/<path>/test.shに記述する
 build() {
-    docker-compose -f docker-compose.yml build dev_cc1 dev_cc2 dev_cc3 dev_bts
+    docker buildx bake -f docker-compose.yml dev_cc1 dev_cc2 dev_cc3 --load
 }
 
 setup() {

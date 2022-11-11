@@ -3,7 +3,7 @@
 # build処理を記述する関数
 build() {
     git submodule update --init --recursive && \
-    docker-compose -f docker-compose.yml build --build-arg BUILD_OPT="--config=debug" benchmark-libc dev_mc1 dev_mc2 dev_mc3 dev_mc_envoy3 dev_cc3 dev_mc_envoy2 dev_cc2 dev_mc_envoy1 dev_cc1 dev_bts 
+    docker buildx bake -f docker-compose.yml benchmark-libc dev_mc1 dev_mc2 dev_mc3 dev_cc3 dev_cc2 dev_cc1 --load
 }
 
 # runの前に実行されるsetup処理を記述する関数

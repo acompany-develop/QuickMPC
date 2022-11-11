@@ -3,7 +3,7 @@
 
 # build処理を記述する関数
 build() {
-    docker-compose -f docker-compose.yml build small_mc
+    docker buildx bake -f docker-compose.yml small_mc --load
 }
 
 # runの前に実行されるsetup処理を記述する関数
