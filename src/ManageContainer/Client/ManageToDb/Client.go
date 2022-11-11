@@ -36,8 +36,9 @@ type ComputationResult struct {
 
 // Share形式
 type ShareMeta struct {
-	Schema  []string `json:"schema"`
-	PieceID int32    `json:"piece_id"`
+	Schema  []string     `json:"schema"`
+	PieceID int32        `json:"piece_id"`
+	MatchingColumn int32 `json:"matching_column"`
 }
 type Share struct {
 	DataID string      `json:"data_id"`
@@ -49,7 +50,7 @@ type Share struct {
 // 外部から呼ばれるinterface
 type Client struct{}
 type M2DbClient interface {
-	InsertShares(string, []string, int32, string, string) error
+	InsertShares(string, []string, int32, string, string, int32)error
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
 	GetComputationResult(string) ([]*ComputationResult, error)
@@ -65,7 +66,7 @@ func isExists(path string) bool {
 }
 
 // DBにシェアを保存する
-func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shares string, sentAt string) error {
+func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shares string, sentAt string, matchingColumn int32) error {
 	dataPath := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, pieceID)
 	ls.Lock(dataPath)
 	defer ls.Unlock(dataPath)
@@ -85,6 +86,7 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 		Meta: ShareMeta{
 			Schema:  schema,
 			PieceID: pieceID,
+			MatchingColumn: matchingColumn,
 		},
 		Value:  sharesJson,
 		SentAt: sentAt,
