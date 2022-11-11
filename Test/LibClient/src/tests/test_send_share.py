@@ -6,69 +6,34 @@ import pytest
 from utils import qmpc
 
 
+def send_share_param(secrets=[[1, 2, 3], [4, 5, 6]],
+                     schema=["a", "b", "c"],
+                     matching_column=1,
+                     piece_size=1_000_000):
+    return (secrets, schema, matching_column, piece_size)
+
+
 @pytest.mark.parametrize(
-    ("table_file"),
+    ("param"),
     [
-        ("table_data_5x5"),
-        ("table_data_10x10"),
-        ("table_data_100x10"),
-        ("table_data_1000x10"),
-        ("table_data_10000x10"),
-        ("table_data_100x100"),
+        # usually case
+        (send_share_param()),
+
+        # small table size case
+        (send_share_param(secrets=[[1]], schema=["a"])),
+
+        # nonzero matching_column case
+        (send_share_param(matching_column=3)),
+
+        # small piece_size case
+        (send_share_param(piece_size=1_000)),
     ]
 )
-def test_send_share(table_file: str):
-
-    # csv dataをパースする
-    filename: str = f"Data/{table_file}.csv"
-    secrets, schema = qmpc.parse_csv_file(filename)
+def test_send_share(param: tuple):
 
     # データをシェア化し送信する
-    res = qmpc.send_share(secrets, schema)
-    assert(res["is_ok"])
+    res = qmpc.send_share(*param)
+    assert (res["is_ok"])
 
     # 冪等性のために消しておく
     qmpc.delete_share([res["data_id"]])
-
-
-@pytest.mark.parametrize(
-    ("model_file"),
-    [
-        ("model_data_a6"),
-        ("model_data_a11"),
-    ]
-)
-def test_send_model_params_array(model_file: str):
-
-    # csv dataを読み込む
-    filename: str = f"Data/{model_file}.csv"
-    data = []
-    with open(filename) as f:
-        reader = csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)
-        data = [row for row in reader][0]
-
-    # データをシェア化し送信する
-    res = qmpc.send_model_params(data)
-    assert(res["is_ok"])
-
-
-@pytest.mark.parametrize(
-    ("model_file"),
-    [
-        ("model_data_j5_1"),
-        ("model_data_j5_2"),
-        ("model_data_j10_1"),
-        ("model_data_j10_2"),
-    ]
-)
-def test_send_model_params_json(model_file: str):
-
-    # json dataを読み込む
-    filename: str = f"Data/{model_file}.json"
-    data = []
-    with open(filename) as f:
-        data = json.load(f)
-
-    # データをシェア化し送信する
-    res = qmpc.send_model_params(data)
-    assert(res["is_ok"])
