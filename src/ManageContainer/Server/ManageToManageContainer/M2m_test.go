@@ -12,7 +12,7 @@ import (
 // Test用のDbGとCCのmock
 type localDb struct{}
 
-func (localDb) InsertShares(string, []string, int32, string, string) error {
+func (localDb) InsertShares(string, []string, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {

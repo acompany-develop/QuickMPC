@@ -19,7 +19,7 @@ type localCC struct{}
 type localMC struct{}
 type localTokenCA struct{}
 
-func (localDb) InsertShares(string, []string, int32, string, string) error {
+func (localDb) InsertShares(string, []string, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
