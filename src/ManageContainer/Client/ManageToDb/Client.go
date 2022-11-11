@@ -57,6 +57,7 @@ type M2DbClient interface {
 	InsertModelParams(string, string, int32) error
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
+	GetMatchingColumn(string) (int32, error)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -282,4 +283,32 @@ func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
 
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 	return getElapsedTime(path)
+}
+
+
+func (c Client) GetMatchingColumn(dataID string) (int32, error) {
+	ls.Lock(dataID)
+	defer ls.Unlock(dataID)
+
+	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
+	ls.Lock(path)
+	defer ls.Unlock(path)
+
+	if !isExists(path) {
+		errMessage := "データ未登録エラー: " + dataID + "は登録されていません．"
+		return 0, errors.New(errMessage)
+	}
+
+	raw, errRead := ioutil.ReadFile(path)
+	if errRead != nil {
+		return 0, errRead
+	}
+
+	var data Share
+	errUnmarshal := json.Unmarshal(raw, &data)
+	if errUnmarshal != nil {
+		return 0, errUnmarshal
+	}
+
+	return data.Meta.MatchingColumn, nil
 }
