@@ -1,5 +1,7 @@
 #include "Random/Csprng.hpp"
 
+#include <memory>
+
 #include "Logging/Logger.hpp"
 // randombytes_buf_deterministic の内部はChaCha20
 // ((2**32[ctrが4byte長])*64[byte/block])/10**9[byte->GB] = 274GB[俗にいう256GB]
@@ -31,7 +33,7 @@ bool CSPRNG::entropyCheck()
     return true;
 };
 
-void CSPRNG::GetRand(unsigned char *buf, unsigned int byteSize)
+void CSPRNG::GetRand(unsigned char* buf, unsigned int byteSize)
 {
     if (!this->CSPRNG::entropyCheck())
     {
@@ -47,23 +49,25 @@ void CSPRNG::GetRand(unsigned char *buf, unsigned int byteSize)
     }
     else
     {
-        unsigned char *seed = new unsigned char[randombytes_SEEDBYTES];
-        syscall(SYS_getrandom, seed, randombytes_SEEDBYTES, 1);
-        randombytes_buf_deterministic(buf, byteSize, seed);
+        std::unique_ptr<unsigned char[]> seed =
+            std::make_unique<unsigned char[]>(randombytes_SEEDBYTES);
+        syscall(SYS_getrandom, seed.get(), randombytes_SEEDBYTES, 1);
+        randombytes_buf_deterministic(buf, byteSize, seed.get());
     }
 };
 
 long long int CSPRNG::GetRandLL()
 {
-    constexpr unsigned int LL_SIZE = sizeof(long long int);  // 8byte = 64bit
+    constexpr std::size_t LL_SIZE = sizeof(long long int);  // 8byte = 64bit
 
-    unsigned char *rnd = new unsigned char[LL_SIZE];
+    // std::make_shared<unsigned char[]> is available in C++20
+    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(LL_SIZE);
     // 64bit乱数[unsigned char*]生成
-    this->CSPRNG::GetRand(rnd, LL_SIZE);
+    this->CSPRNG::GetRand(rnd.get(), LL_SIZE);
 
     // unsiged char* -> str(bin)
     std::stringstream str;
-    for (unsigned int i = 0; i < LL_SIZE; i++)
+    for (std::size_t i = 0; i < LL_SIZE; i++)
     {
         str << std::bitset<LL_SIZE>(rnd[i]);
     }
@@ -77,12 +81,13 @@ std::vector<long long int> CSPRNG::GetRandLLVec(unsigned int size)
 {
     std::vector<long long int> randLLVec = {};
 
-    constexpr unsigned int LL_SIZE = sizeof(long long int);  // 8byte
-    const unsigned int byteSize = size * LL_SIZE;            // size * 8[byte/llsize]
+    constexpr std::size_t LL_SIZE = sizeof(long long int);  // 8byte
+    const std::size_t byteSize = size * LL_SIZE;            // size * 8[byte/llsize]
 
-    unsigned char *rnd = new unsigned char[byteSize];
+    // std::make_shared<unsigned char[]> is available in C++20
+    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(byteSize);
     // 64bit乱数[unsigned char*]生成
-    this->CSPRNG::GetRand(rnd, byteSize);
+    this->CSPRNG::GetRand(rnd.get(), byteSize);
 
     // unsiged char* -> str(bin)
     for (unsigned int i = 0; i < byteSize; i += LL_SIZE)
