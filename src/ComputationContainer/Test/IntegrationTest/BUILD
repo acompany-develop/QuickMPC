@@ -9,7 +9,7 @@ cc_library(
         "@gtest//:main",
         "//Random:random",
         "//Share:compare",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -22,7 +22,7 @@ cc_library(
     deps = [
         "@gtest//:main",
         "//Math:math",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -35,7 +35,7 @@ cc_library(
     deps = [
         "@gtest//:main",
         "//Share:matrix",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -66,7 +66,7 @@ cc_library(
         "//Model/Models:decisiontree",
         "//Job/Jobs:logisticregressionJob",
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -80,7 +80,7 @@ cc_library(
         "//ObjectiveFunction:objective_function",
         "//Optimizer:optimizer",
         "//Client/ComputationToBts:client",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -94,7 +94,7 @@ cc_library(
     deps = [
         "@gtest//:main",
         "//TripleHandler:triple_handler",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -107,7 +107,7 @@ cc_library(
     deps = [
         "//GBDT:gbdt",
         "//Share:share",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )

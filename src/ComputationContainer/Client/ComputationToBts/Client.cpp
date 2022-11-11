@@ -15,7 +15,6 @@
 
 #include "Client/Helper/Helper.hpp"
 #include "ConfigParse/ConfigParse.hpp"
-#include "LogHeader/Logger.hpp"
 #include "Logging/Logger.hpp"
 
 namespace qmpc::ComputationToBts
@@ -24,7 +23,7 @@ Client::Client() noexcept
 {
     auto dest = Config::getInstance()->cc_to_bts;
     stub_ = createStub<enginetobts::EngineToBts>(dest);
-    spdlog::info("{:<15} Client {:<30} is Active", "[Cc2Bts]", dest.url);
+    QMPC_LOG_INFO("{:<15} Client {:<30} is Active", "[Cc2Bts]", dest.url);
 }
 
 std::shared_ptr<Client> Client::getInstance()
@@ -69,8 +68,8 @@ std::vector<Triple> Client::readTriples(const unsigned int job_id, const unsigne
         else
         {
             grpc::StatusCode error_code = status.error_code();
-            spdlog::error("{:<30} GetFeature rpc failed.", "[readTriples]");
-            spdlog::error(
+            QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[readTriples]");
+            QMPC_LOG_ERROR(
                 "ERROR({}): {}\n{}", error_code, status.error_message(), status.error_details()
             );
 
@@ -93,7 +92,7 @@ std::vector<Triple> Client::readTriples(const unsigned int job_id, const unsigne
     1. statusがretryPolicyに即した場合に再試行し切ってもOKにならなかった時
     2. retryPolicyに則さずにOK以外の異常なstatusが返ってきた時
     */
-    spdlog::error(
+    QMPC_LOG_ERROR(
         "To Bts GetTriples Failed, Error Code: {}, Message: {}",
         status.error_code(),
         status.error_message()

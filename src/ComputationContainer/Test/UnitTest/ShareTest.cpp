@@ -1,4 +1,4 @@
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/Share.hpp"
 #include "gtest/gtest.h"
 
@@ -77,6 +77,6 @@ TEST(ShareTest, GetVarDoubleOfShare)
     FixedPoint a("12.2"), b("1.355");
     Share sa(a), sb(b);
     Share result = sa + sb;
-    spdlog::info("{}", result.getDoubleVal());
+    QMPC_LOG_INFO("{}", result.getDoubleVal());
     EXPECT_NEAR(result.getDoubleVal(), 13.555, 0.001);
 }

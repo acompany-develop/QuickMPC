@@ -41,7 +41,7 @@ public:
         for (size_t i = 0; i < sz; ++i)
         {
             next_theta[i] -= alpha * dfx[i];
-            // spdlog::info("df {} {}",i,test_dfx[i]);
+            // QMPC_LOG_INFO("df {} {}",i,test_dfx[i]);
         }
         return optimize(iterationNum - 1, f, next_theta);
     }

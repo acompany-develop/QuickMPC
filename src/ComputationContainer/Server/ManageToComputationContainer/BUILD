@@ -17,7 +17,7 @@ cc_library(
         "//Model:modelManager",
         "@com_github_grpc_grpc//:grpc++",
         "@com_github_grpc_grpc//:grpc++_reflection",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )

@@ -7,7 +7,7 @@
 
 #include "ConfigParse/ConfigParse.hpp"
 #include "Job/JobManager.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Model/ModelManager.hpp"
 #include "Server/ComputationToComputationContainerForJob/Server.hpp"
 #include "Share/Share.hpp"
@@ -32,7 +32,7 @@ grpc::Status Server::ExecuteComputation(
     google::protobuf::Empty *response
 )
 {
-    spdlog::info("{:<30} Received", "[ExecuteComputation]");
+    QMPC_LOG_INFO("{:<30} Received", "[ExecuteComputation]");
     Config *conf = Config::getInstance();
 
     // SPだけ処理
@@ -41,7 +41,7 @@ grpc::Status Server::ExecuteComputation(
         auto job_manager = qmpc::Job::JobManager::getInstance();
         job_manager->pushJobReq(*request);
 
-        spdlog::info("{:<30} End grpc", "[ExecuteComputation]");
+        QMPC_LOG_INFO("{:<30} End grpc", "[ExecuteComputation]");
         return grpc::Status::OK;
     }
     else
@@ -66,7 +66,7 @@ grpc::Status Server::Predict(
     google::protobuf::Empty *response
 )
 {
-    spdlog::info("{:<30} Received", "[Predict]");
+    QMPC_LOG_INFO("{:<30} Received", "[Predict]");
     auto manager = qmpc::Model::ModelManager();
 
     auto status = manager.push(*request);
@@ -74,19 +74,19 @@ grpc::Status Server::Predict(
     switch (status)
     {
         case 0:
-            spdlog::error("Error predict");
-            spdlog::error("Can not Create Predictor");
+            QMPC_LOG_ERROR("Error predict");
+            QMPC_LOG_ERROR("Can not Create Predictor");
             return grpc::Status{
                 grpc::StatusCode::INVALID_ARGUMENT, grpc::string{"Predict Method Error"}};
         case 1:
-            spdlog::error("ReadDB Error");
+            QMPC_LOG_ERROR("ReadDB Error");
             return grpc::Status{grpc::StatusCode::INTERNAL, grpc::string{"Read Db Error"}};
         case 2:
-            spdlog::error("Predict Error");
+            QMPC_LOG_ERROR("Predict Error");
             return grpc::Status{grpc::StatusCode::ABORTED, grpc::string{"Computation Error"}};
     }
 
-    spdlog::info("{:<30} End grpd", "[Predict]");
+    QMPC_LOG_INFO("{:<30} End grpd", "[Predict]");
     return grpc::Status::OK;
 }
 
@@ -96,7 +96,7 @@ grpc::Status Server::CheckProgress(
     pb_common_types::JobProgress *response
 )
 {
-    spdlog::info("{:<30} Received", "[CheckProgress]");
+    QMPC_LOG_INFO("{:<30} Received", "[CheckProgress]");
     auto manager = qmpc::Job::ProgressManager::getInstance();
 
     const std::string &job_uuid = request->job_uuid();

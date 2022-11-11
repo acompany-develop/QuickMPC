@@ -3,7 +3,7 @@
 #include <list>
 #include <random>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/Matrix.hpp"
 #include "gtest/gtest.h"
 
@@ -113,7 +113,7 @@ TEST(ShareMatrixTest, MulTest_Large)
         auto mul_mat = share_mat1 * share_mat2;
         auto end = std::chrono::system_clock::now();
         auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        spdlog::info("{0}x{0}行列の積: {1} milli sec", size, msec);
+        QMPC_LOG_INFO("{0}x{0}行列の積: {1} milli sec", size, msec);
     }
 }
 
@@ -180,7 +180,7 @@ TEST(ShareMatrixTest, InverseTest_Large)
         auto share_mat_inv = share_mat.inverse();
         auto end = std::chrono::system_clock::now();
         auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        spdlog::info("{0}x{0}行列の逆行列計算: {1} milli sec", size, msec);
+        QMPC_LOG_INFO("{0}x{0}行列の逆行列計算: {1} milli sec", size, msec);
 
         /*
         sizeが15を超えると誤差が0.01を超えてしまう

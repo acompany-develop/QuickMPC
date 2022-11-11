@@ -2,7 +2,7 @@
 
 #include <set>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Random/Csprng.hpp"
 #include "gtest/gtest.h"
 
@@ -18,7 +18,7 @@ TEST(CsprngTest, GetRand)
     for (unsigned int i = 0; i < byteSize; i++)
     {
         unsigned int r = (unsigned int)rnd[i];
-        spdlog::info("{:d}", r);
+        QMPC_LOG_INFO("{:d}", r);
         ASSERT_TRUE((r >= 0) && (r <= 255));
     }
     delete[] rnd;
@@ -63,40 +63,40 @@ TEST(CsprngTest, HowUse)
     unsigned char *rnd = new unsigned char[byteSize];
     rng.GetRand(rnd, byteSize);
 
-    spdlog::info("変換前");
-    spdlog::info("[bin] unsigned char*: ");
+    QMPC_LOG_INFO("変換前");
+    QMPC_LOG_INFO("[bin] unsigned char*: ");
     std::string rnd_bin_str = "";
     for (unsigned int i = 0; i < byteSize; i++)
     {
-        spdlog::info(std::bitset<8>(rnd[i]));
+        QMPC_LOG_INFO(std::bitset<8>(rnd[i]));
         std::stringstream str;
         str << std::bitset<8>(rnd[i]);
         rnd_bin_str += str.str();
     }
 
-    spdlog::info("[hex] unsigned char*: ");
+    QMPC_LOG_INFO("[hex] unsigned char*: ");
     for (unsigned int i = 0; i < byteSize; i++)
     {
-        spdlog::info("{:x}", (unsigned int)rnd[i]);
+        QMPC_LOG_INFO("{:x}", (unsigned int)rnd[i]);
     }
 
-    spdlog::info("[dec] unsigned char*: ");
+    QMPC_LOG_INFO("[dec] unsigned char*: ");
     for (unsigned int i = 0; i < byteSize; i++)
     {
-        spdlog::info((unsigned int)rnd[i]);
+        QMPC_LOG_INFO((unsigned int)rnd[i]);
     }
-    spdlog::info("\n");
+    QMPC_LOG_INFO("\n");
     delete[] rnd;
 
-    spdlog::info("変換");
-    spdlog::info("[bin] unsigned char* -> string: ");
-    spdlog::info("{}\n", rnd_bin_str);
+    QMPC_LOG_INFO("変換");
+    QMPC_LOG_INFO("[bin] unsigned char* -> string: ");
+    QMPC_LOG_INFO("{}\n", rnd_bin_str);
 
     // unsigned char* から long longへキャスト
     long long val = std::stoull(rnd_bin_str, nullptr, 2);
     unsigned long long uval = std::stoull(rnd_bin_str, nullptr, 2);
 
-    spdlog::info("変換後");
+    QMPC_LOG_INFO("変換後");
     std::stringstream str;
     str << std::bitset<bitSize>(val);
     std::string val_bin_str = str.str();
@@ -107,10 +107,10 @@ TEST(CsprngTest, HowUse)
     str.str("");
     str.clear(std::stringstream::goodbit);
 
-    spdlog::info("[bin] ll: ");
-    spdlog::info(val_bin_str);
-    spdlog::info("[bin] ull: ");
-    spdlog::info(uval_bin_str);
+    QMPC_LOG_INFO("[bin] ll: ");
+    QMPC_LOG_INFO(val_bin_str);
+    QMPC_LOG_INFO("[bin] ull: ");
+    QMPC_LOG_INFO(uval_bin_str);
     str << std::hex << val;
     std::string val_hex_str = str.str();
     str.str("");
@@ -118,15 +118,15 @@ TEST(CsprngTest, HowUse)
     str << std::hex << uval;
     std::string uval_hex_str = str.str();
 
-    spdlog::info("[hex] ll: ");
-    spdlog::info(val_hex_str);
-    spdlog::info("[hex] ull: ");
-    spdlog::info(uval_hex_str);
+    QMPC_LOG_INFO("[hex] ll: ");
+    QMPC_LOG_INFO(val_hex_str);
+    QMPC_LOG_INFO("[hex] ull: ");
+    QMPC_LOG_INFO(uval_hex_str);
 
-    spdlog::info("[dec] ll");
-    spdlog::info("{:d}", val);
-    spdlog::info("[dec] ull");
-    spdlog::info(uval);
+    QMPC_LOG_INFO("[dec] ll");
+    QMPC_LOG_INFO("{:d}", val);
+    QMPC_LOG_INFO("[dec] ull");
+    QMPC_LOG_INFO(uval);
 
     // 元のrnd-ll-ull bin比較
     ASSERT_TRUE((rnd_bin_str == val_bin_str && rnd_bin_str == uval_bin_str));

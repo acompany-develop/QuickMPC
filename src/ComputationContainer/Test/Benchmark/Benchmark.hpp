@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 
 /**
  * 演算 operation_func の実行時間を計測する．
@@ -23,13 +23,13 @@ static void measureExecTime(
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
-        spdlog::info(
+        QMPC_LOG_INFO(
             "[{0} {1}/{2}] Elapsed time = {3} ms", test_name, i, n_iterations, elapsed_time_ms
         );
         sum_time_ms += elapsed_time_ms;
     }
     const auto mean_time_ms = sum_time_ms / n_iterations;
-    spdlog::info("[{0}] Mean elapsed time = {1} ms", test_name, mean_time_ms);
+    QMPC_LOG_INFO("[{0}] Mean elapsed time = {1} ms", test_name, mean_time_ms);
 }
 
 /**

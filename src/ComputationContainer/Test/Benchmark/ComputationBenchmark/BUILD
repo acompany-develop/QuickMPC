@@ -13,7 +13,7 @@ cc_library(
         "//Test/Benchmark:share_benchmark",
         "//Server/ComputationToComputationContainer:server",
         "//Server/ManageToComputationContainer:server",
-        "//LogHeader:logger",
+        "//Logging:log",
         "@com_github_grpc_grpc//src/proto/grpc/health/v1:health_proto",
     ],
     visibility = ["//visibility:public"],

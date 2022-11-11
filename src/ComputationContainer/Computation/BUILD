@@ -9,7 +9,7 @@ cc_library(
     deps = [
         "//Math:math",
         "@nlohmann_json//:json",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )

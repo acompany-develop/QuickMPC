@@ -1,5 +1,5 @@
 #include "Client/ComputationToBts/Client.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 
@@ -9,7 +9,7 @@ void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
     auto cc_to_db = qmpc::ComputationToBts::Client::getInstance();
     for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
     {
-        spdlog::info("jobId[{}]: ...", jobId);
+        QMPC_LOG_INFO("jobId[{}]: ...", jobId);
         auto triples = cc_to_db->readTriples(jobId, amount);
         EXPECT_EQ(triples.size(), amount);
         // TODO: Party間で足並みを揃えてa*b=cのチェック
@@ -33,7 +33,7 @@ void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
             auto c_rec = triple_rec[i + 2];
             EXPECT_EQ(a_rec * b_rec, c_rec);
         }
-        spdlog::info("end");
+        QMPC_LOG_INFO("end");
     }
 }
 

@@ -1,6 +1,6 @@
 #include "Computation.hpp"
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 
 bool is_computing = false;
 
@@ -43,8 +43,8 @@ bool compute(
     // 計算に要した時間をミリ秒（1/1000秒）に変換して表示
     auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
 
-    spdlog::info("method ID: {}", methodId);
-    spdlog::info("culc time: {} milli sec", msec);
+    QMPC_LOG_INFO("method ID: {}", methodId);
+    QMPC_LOG_INFO("culc time: {} milli sec", msec);
     return true;
 }
 
@@ -62,7 +62,7 @@ void parseData(
         for (int j = 0; j < n; j++)
         {
             Share a(FixedPoint(std::stod(json[data_id][0][j].get<std::string>())));
-            spdlog::debug("Share: {}", a.getVal().getStrVal());
+            QMPC_LOG_DEBUG("Share: {}", a.getVal().getStrVal());
             shares.emplace_back(a);
         }
     }

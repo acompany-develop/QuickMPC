@@ -26,7 +26,7 @@ cc_library(
         "//TripleHandler:triple_handler",
         "//Random:random",
         "//Share:share",
-        "//LogHeader:logger"
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )

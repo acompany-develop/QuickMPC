@@ -134,7 +134,7 @@ public:
     }
     ~SID3()
     {
-        // spdlog::info("destructor {}",size);
+        // QMPC_LOG_INFO("destructor {}",size);
     }
     nlohmann::json createTreeJson() const;
     Share predict(const std::vector<std::vector<Share>> &data) const;

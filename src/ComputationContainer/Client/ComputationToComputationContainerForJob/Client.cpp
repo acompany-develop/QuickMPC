@@ -6,14 +6,14 @@
 #include <string>
 #include <thread>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/AddressId.hpp"
 namespace qmpc::ComputationToComputationForJob
 {
 Client::Client(const Url &endpoint) noexcept
 {
     stub_ = createStub<computationtocomputationforjob::ComputationToComputationForJob>(endpoint);
-    spdlog::info("{:<15} Client {:<30} is Active", "[Cc2CcForJob]", endpoint.url);
+    QMPC_LOG_INFO("{:<15} Client {:<30} is Active", "[Cc2CcForJob]", endpoint.url);
 }
 
 std::shared_ptr<Client> Client::getPtr(const Url &endpoint)
@@ -50,15 +50,15 @@ bool Client::executeComputeFromSP(
         grpc::ClientContext context;
         grpc::Status status =
             stub_->ExecuteComputeFromSP(&context, execute_compute_from_sp_request, &response);
-        // spdlog::info("exchange message: share_id is {}, party_id is {}, value is
+        // QMPC_LOG_INFO("exchange message: share_id is {}, party_id is {}, value is
         // {}",share_id,party_id,share_id);
 
         if (!status.ok())
         {
-            spdlog::error(
+            QMPC_LOG_ERROR(
                 "{:<30} GetFeature rpc failed. or job not finished yet.", "[executeComputeFromSP]"
             );
-            spdlog::error(
+            QMPC_LOG_ERROR(
                 "ERROR({0}): {1}\n{2}",
                 status.error_code(),
                 status.error_message(),

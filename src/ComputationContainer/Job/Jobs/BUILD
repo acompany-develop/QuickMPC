@@ -45,7 +45,7 @@ cc_library(
         "//Share:matrix",
         "//Optimizer:optimizer",
         "//ObjectiveFunction:cross_entropy",
-        "//LogHeader:logger",
+        "//Logging:log",
     ],
     visibility = ["//visibility:public"],
 )

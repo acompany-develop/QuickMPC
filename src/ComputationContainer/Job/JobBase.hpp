@@ -9,7 +9,7 @@
 #include "Client/ComputationToDb/ValueTable.hpp"
 #include "JobParameter.hpp"
 #include "JobStatus.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/Share.hpp"
 #include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
 
@@ -43,7 +43,7 @@ class JobBase : public Interface
         auto values = joinTable.getTable();
         if (values.empty())
         {
-            spdlog::warn("Join table is empty. Check the table ID and the specified columns.");
+            QMPC_LOG_WARN("Join table is empty. Check the table ID and the specified columns.");
         }
 
         // シェア型に変換
@@ -129,32 +129,32 @@ public:
         }
         catch (const std::runtime_error &e)
         {
-            spdlog::error("{}", static_cast<int>(statusManager.getStatus()));
-            qmpc::Log::Error(e.what(), "Job Error");
+            QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
+            QMPC_LOG_ERROR("{} | Job Error", e.what());
 
             auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
             if (error_info)
             {
-                qmpc::Log::Error(*error_info);
+                QMPC_LOG_ERROR("{}", *error_info);
             }
             else
             {
-                qmpc::Log::Error("thrown exception has no stack trace information");
+                QMPC_LOG_ERROR("thrown exception has no stack trace information");
             }
         }
         catch (const std::exception &e)
         {
-            spdlog::error("unexpected Error");
-            qmpc::Log::Error(e.what(), "Job Error");
+            QMPC_LOG_ERROR("unexpected Error");
+            QMPC_LOG_ERROR("{} | Job Error", e.what());
 
             auto *error_info = boost::get_error_info<qmpc::Log::traced>(e);
             if (error_info)
             {
-                qmpc::Log::Error(*error_info);
+                QMPC_LOG_ERROR("{}", *error_info);
             }
             else
             {
-                qmpc::Log::Error("thrown exception has no stack trace information");
+                QMPC_LOG_ERROR("thrown exception has no stack trace information");
             }
         }
         return static_cast<int>(statusManager.getStatus());

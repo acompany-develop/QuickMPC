@@ -1,7 +1,7 @@
 #include "ComputationTest.hpp"
 
 #include "ConfigParse/ConfigParse.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "external/com_github_grpc_grpc/src/proto/grpc/health/v1/health.grpc.pb.h"
 #include "gtest/gtest.h"
 
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
     std::thread cc_server_thread(qmpc::ComputationToComputation::Server::runServer, ctc_my_ip_str);
     const std::string mtoc_ip_str("0.0.0.0:" + mtoc_ip.port);
     std::thread mc_server_thread(qmpc::ManageToComputation::runServer, mtoc_ip_str);
-    spdlog::info("ip_addr: {}", ctc_my_ip_str);
+    QMPC_LOG_INFO("ip_addr: {}", ctc_my_ip_str);
 
     // healthcheck 用のスレッド
     std::vector<std::thread> healthcheck_threads;

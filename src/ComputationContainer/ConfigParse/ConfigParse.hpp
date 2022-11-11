@@ -2,6 +2,7 @@
 #include <algorithm>  // find
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <regex>
 #include <sstream>
 #include <stdexcept>
@@ -75,14 +76,15 @@ public:
     std::string getAddress() const { return host + ':' + port; }
 };
 
-#include "LogHeader/Logger.hpp"
-
 class Config
 {
     std::unordered_map<std::string, std::string> env_map;
 
     Config()
     {
+        const auto log_level_opt = getEnvOptionalString("LOG_LEVEL");
+        qmpc::Log::loadLogLevel(log_level_opt);
+
         party_id = getEnvInt("PARTY_ID");
         n_parties = getEnvInt("N_PARTIES");
         sp_id = getEnvInt("SP_ID");
@@ -100,7 +102,7 @@ class Config
             ip_address_for_job.port = port_for_job;
             ip_addr_for_job_map[party_id] = ip_address_for_job;
 
-            spdlog::info(
+            QMPC_LOG_INFO(
                 "{0} maps to {1} and {2}", party_id, value.second.url, ip_address_for_job.url
             );
         }
@@ -163,6 +165,18 @@ class Config
             }
         }
         qmpc::Log::throw_with_trace(std::runtime_error(std::string(s) + " is not defined"));
+    }
+    std::optional<std::string> getEnvOptionalString(const char *s)
+    {
+        const char *tmp = std::getenv(s);
+        if (tmp)
+        {
+            return std::string(tmp);
+        }
+        else
+        {
+            return std::nullopt;
+        }
     }
     Url getEnvUrl(const char *s)
     {

@@ -122,12 +122,12 @@ public:
         // open(y);
         // auto rec = recons(y);
 
-        // spdlog::info("y is {}",rec);
+        // QMPC_LOG_INFO("y is {}",rec);
         // end
     }
     ~SID3Regression()
     {
-        // spdlog::info("destructor {}",size);
+        // QMPC_LOG_INFO("destructor {}",size);
     }
     nlohmann::json createTreeJson() const;
     std::vector<Share> grad() const;

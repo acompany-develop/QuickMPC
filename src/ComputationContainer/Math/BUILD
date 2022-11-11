@@ -8,7 +8,6 @@ cc_library(
     ],
     deps = [
         "//Share:share",
-        "//LogHeader:logger",
         "//Logging:log",
     ],
     visibility = ["//visibility:public"],

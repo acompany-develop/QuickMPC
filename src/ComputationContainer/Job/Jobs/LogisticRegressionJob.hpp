@@ -8,7 +8,7 @@
 #include "Share/Matrix.hpp"
 // TODO: 最適化関数と損失関数は全て同じインクルードにまとめる
 #include "Job/ProgressManager.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "ObjectiveFunction/CrossEntropyError.hpp"
 #include "Optimizer/optimizer.hpp"
 
@@ -93,14 +93,14 @@ public:
         auto y_rec = recons(y);
         for (auto a : y_rec)
         {
-            spdlog::info("t is {}", a);
+            QMPC_LOG_INFO("t is {}", a);
         }
         for (size_t i = 0; i < x.size(); ++i)
         {
             auto yy = qmpc::Math::open_sigmoid_vector(x[i] * ret);
             open(yy);
             auto yy_rec = recons(yy);
-            spdlog::info("y is {}", yy_rec);
+            QMPC_LOG_INFO("y is {}", yy_rec);
         }
 #endif
         return ret;

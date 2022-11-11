@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ConfigParse/ConfigParse.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/AddressId.hpp"
 #include "external/Proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
@@ -31,7 +31,7 @@ void runServer(std::string endpoint)
     builder.AddListeningPort(endpoint, grpc::InsecureServerCredentials());
     builder.RegisterService(server);
     std::unique_ptr<grpc::Server> listener(builder.BuildAndStart());
-    spdlog::info("[CcToCc_test] Server listening on {}", endpoint);
+    QMPC_LOG_INFO("[CcToCc_test] Server listening on {}", endpoint);
     listener->Wait();
 }
 

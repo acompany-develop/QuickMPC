@@ -10,7 +10,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "external/Proto/common_types/common_types.pb.h"
 
 namespace qmpc::Job
@@ -81,14 +81,7 @@ public:
         //       if that procedure maybe finished quickly.
         //       e.g., multiplication of vectors
         const process_name_type key{elem.id(), elem.description()};
-        spdlog::debug(
-            "{}:{}:{} - [PROGRESS] {} {} : finished",
-            __FILE__,
-            __func__,
-            __LINE__,
-            key.first,
-            key.second
-        );
+        QMPC_LOG_DEBUG("[PROGRESS] {} {} : finished", key.first, key.second);
     }
 
     /**
@@ -175,25 +168,18 @@ void ProgressManager::log()
 
     for (const auto& [job_uuid, observer] : progresses)
     {
-        spdlog::info(
-            "{}:{}:{} - [PROGRESS] Job UUID: {} -- start", __FILE__, __func__, __LINE__, job_uuid
-        );
+        QMPC_LOG_INFO("[PROGRESS] Job UUID: {} -- start", job_uuid);
         for (const auto& proc : observer->info())
         {
-            spdlog::info(
-                "{}:{}:{} - [PROGRESS] {} {}: {:3.2f} % -- {}",
-                __FILE__,
-                __func__,
-                __LINE__,
+            QMPC_LOG_INFO(
+                "[PROGRESS] {} {}: {:3.2f} % -- {}",
                 proc.id(),
                 proc.description(),
                 proc.progress(),
                 proc.has_details() ? proc.details() : "<no details>"
             );
         }
-        spdlog::info(
-            "{}:{}:{} - [PROGRESS] Job UUID: {} -- end", __FILE__, __func__, __LINE__, job_uuid
-        );
+        QMPC_LOG_INFO("[PROGRESS] Job UUID: {} -- end", job_uuid);
     }
 }
 
@@ -233,7 +219,7 @@ std::shared_ptr<Observer> ProgressManager::getObserver(const int& id)
     {
         // This block should be reached when executing integration test
         const std::string uuid = generate_uuid();
-        spdlog::info("ProgressManager: temporary uuid: {} was generated", uuid);
+        QMPC_LOG_INFO("ProgressManager: temporary uuid: {} was generated", uuid);
         // TODO: check whether uuid is temporary or not
         //       because generated objects were not going to be released.
         registerJob(id, uuid);
@@ -260,13 +246,7 @@ void ProgressManager::updateJobStatus(
 
     if (progresses.count(job_uuid) == 0)
     {
-        spdlog::error(
-            "{}:{}:{} - observer with job_uuid: {} was not found",
-            __FILE__,
-            __func__,
-            __LINE__,
-            job_uuid
-        );
+        QMPC_LOG_ERROR("observer with job_uuid: {} was not found", job_uuid);
         return;
     }
 
@@ -297,13 +277,7 @@ ProgressManager::getProgress(const std::string& job_uuid)
 
     if (!observer.has_value())
     {
-        spdlog::warn(
-            "{}:{}:{} - observer with job_uuid: {} was not found",
-            __FILE__,
-            __func__,
-            __LINE__,
-            job_uuid
-        );
+        QMPC_LOG_WARN("observer with job_uuid: {} was not found", job_uuid);
         return {std::nullopt, ProgressManager::StatusCode::NOT_FOUND};
     }
 
@@ -318,13 +292,7 @@ ProgressManager::getProgress(const std::string& job_uuid)
         auto ptr = progress.add_progresses();
         if (ptr == nullptr)
         {
-            spdlog::error(
-                "{}:{}:{} - allocation of return value was failed -- job_uuid: {}",
-                __FILE__,
-                __func__,
-                __LINE__,
-                job_uuid
-            );
+            QMPC_LOG_ERROR("allocation of return value was failed -- job_uuid: {}", job_uuid);
             return {std::nullopt, ProgressManager::StatusCode::INTERNAL_ERROR};
         }
         *ptr = proc;
@@ -341,10 +309,10 @@ std::shared_ptr<ProgressManager> ProgressManager::getInstance()
 void ProgressManager::runProgressManager()
 {
     auto progress_manager = getInstance();
-    spdlog::info("{}:{}:{} - Progress Manager Start" __FILE__, __func__, __LINE__);
+    QMPC_LOG_INFO("Progress Manager Start");
 
     progress_manager->run();
-    spdlog::info("{}:{}:{} - Progress Manager Exit" __FILE__, __func__, __LINE__);
+    QMPC_LOG_INFO("Progress Manager Exit");
 }
 
 }  // namespace qmpc::Job

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Model/ModelBase.hpp"
 #include "Model/Models/DecisionTree.hpp"
 #include "Model/Models/LinearRegression.hpp"
@@ -44,12 +44,12 @@ public:
     */
     auto push(const managetocomputation::PredictRequest &request) const
     {
-        spdlog::info("Model Manager: Model Id is {}", request.model_id());
+        QMPC_LOG_INFO("Model Manager: Model Id is {}", request.model_id());
         auto model = select(request.model_id());
         if (!model)
         {
-            spdlog::error("unknown Model Id");
-            spdlog::error("Request Failed");
+            QMPC_LOG_ERROR("unknown Model Id");
+            QMPC_LOG_ERROR("Request Failed");
             return 0;
         }
 

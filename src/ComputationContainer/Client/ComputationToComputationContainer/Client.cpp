@@ -6,7 +6,7 @@
 #include <string>
 #include <thread>
 
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "Share/AddressId.hpp"
 
 namespace qmpc::ComputationToComputation
@@ -15,7 +15,7 @@ namespace qmpc::ComputationToComputation
 Client::Client(const Url &endpoint) noexcept
 {
     stub_ = createStub<computationtocomputation::ComputationToComputation>(endpoint);
-    spdlog::info("{:<15} Client {:<30} is Active", "[Cc2Cc]", endpoint.url);
+    QMPC_LOG_INFO("{:<15} Client {:<30} is Active", "[Cc2Cc]", endpoint.url);
 }
 
 std::shared_ptr<Client> Client::getPtr(const Url &endpoint)

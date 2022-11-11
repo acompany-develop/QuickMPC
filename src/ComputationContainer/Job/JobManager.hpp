@@ -11,7 +11,7 @@
 #include "JobBase.hpp"
 #include "JobParameter.hpp"
 #include "JobSelector.hpp"
-#include "LogHeader/Logger.hpp"
+#include "Logging/Logger.hpp"
 #include "ProgressManager.hpp"
 #include "TransactionQueue/TransactionQueue.hpp"
 
@@ -53,7 +53,7 @@ public:
                 conf->ip_addr_for_job_map[pt_id]
             );
             cc_for_job_clients[pt_id] = std::move(client);
-            spdlog::info("{:<15} Client {:<30} is Active", "[Cc2CcForJob]", pt_id);
+            QMPC_LOG_INFO("{:<15} Client {:<30} is Active", "[Cc2CcForJob]", pt_id);
         }
     };
 
@@ -88,8 +88,8 @@ public:
         // TODO status を DB に書き込むようにする（エラー等も）
         // TODO:DB操作に関してはDBClientのgrpcエラーコードをそのまま返す方が良いかも
         auto job_id = job_param.getJobId();
-        spdlog::info("job_id is {}", job_param.getJobId());
-        spdlog::info("JobManager: method Id is {}", job_param.getRequest().method_id());
+        QMPC_LOG_INFO("job_id is {}", job_param.getJobId());
+        QMPC_LOG_INFO("JobManager: method Id is {}", job_param.getRequest().method_id());
 
         ProgressManager::getInstance()->registerJob(
             job_param.getJobId(), job_param.getRequest().job_uuid()
@@ -103,8 +103,8 @@ public:
                     auto job = this->selector(job_param);
                     if (job == nullptr)
                     {
-                        spdlog::error("unknown Method Id");
-                        spdlog::error("Request Failed");
+                        QMPC_LOG_ERROR("unknown Method Id");
+                        QMPC_LOG_ERROR("Request Failed");
                     }
                     else
                     {
@@ -113,9 +113,9 @@ public:
                 }
                 catch (...)
                 {
-                    spdlog::error("Job Failed");
+                    QMPC_LOG_ERROR("Job Failed");
                 }
-                spdlog::info("end_job_id is {}", job_id);
+                QMPC_LOG_INFO("end_job_id is {}", job_id);
                 if (is_job_trigger_party) pushJobId(job_id);
                 return;
             }
@@ -147,7 +147,7 @@ public:
     static void runJobManager()
     {
         auto job_manager = getInstance();
-        spdlog::info("Job Manager Start");
+        QMPC_LOG_INFO("Job Manager Start");
         while (true)
         {
             // 1. JobReqQueueに何かが入ってくるまで待機してそれを取ってくる
