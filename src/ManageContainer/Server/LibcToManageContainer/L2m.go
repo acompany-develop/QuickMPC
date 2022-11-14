@@ -175,7 +175,6 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		}, errToken
 	}
 
-	// ユーザーがindexを指定する必要がない?
 	dataIds :=  in.GetTable().GetDataIds()
 	index := in.GetTable().GetIndex()
 	for i := 0; i < len(dataIds); i++{
