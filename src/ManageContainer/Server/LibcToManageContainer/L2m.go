@@ -71,8 +71,6 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 			IsOk:    false,
 		}, errToken
 	}
-	if errToken != nil {
-	}
 
 	err := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at)
 	s.m2mclient.Sync(fmt.Sprintf("%s%d", dataID, pieceID))
@@ -198,14 +196,6 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 			IsOk:    false,
 			JobUuid: jobUUID,
 		}, nil
-	}
-
-	if err != nil {
-		return &pb.ExecuteComputationResponse{
-			Message: "Internal Server Error",
-			IsOk:    false,
-			JobUuid: jobUUID,
-		}, err
 	}
 
 	return &pb.ExecuteComputationResponse{
@@ -344,14 +334,6 @@ func (s *server) Predict(ctx context.Context, in *pb.PredictRequest) (*pb.Predic
 			Message: message,
 			IsOk:    false,
 		}, nil
-	}
-
-	if err != nil {
-		AppLogger.Error(err)
-		return &pb.PredictResponse{
-			Message: "Internal Server Error",
-			IsOk:    false,
-		}, err
 	}
 
 	return &pb.PredictResponse{
