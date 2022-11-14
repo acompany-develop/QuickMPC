@@ -7,6 +7,7 @@
 
 #include "ValueTable.hpp"
 #include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
+#include "external/Proto/common_types/common_types.pb.h"
 #include "nlohmann/json.hpp"
 
 namespace qmpc::ComputationToDb
@@ -34,6 +35,9 @@ public:
 
     // Job の実行状態を更新する
     void updateJobStatus(const std::string &job_uuid, const int &status) const;
+
+    void saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
+        const;
 
     // tableデータを結合して取り出す
     ValueTable readTable(const managetocomputation::JoinOrder &table);

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <regex>
 
-#include "external/Proto/common_types/common_types.pb.h"
+#include <google/protobuf/util/json_util.h>
 
 namespace qmpc::ComputationToDb
 {
@@ -123,6 +123,33 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
     std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
     auto tp_msec = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
     ofs << tp_msec.count();
+}
+
+void Client::saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
+    const
+{
+    const google::protobuf::EnumDescriptor *descriptor =
+        google::protobuf::GetEnumDescriptor<pb_common_types::JobStatus>();
+
+    std::ofstream ofs(
+        resultDbPath + job_uuid + "/status_"
+        + descriptor->FindValueByNumber(pb_common_types::JobStatus::ERROR)->name()
+    );
+
+    static const auto options = []()
+    {
+        google::protobuf::util::JsonPrintOptions options;
+        options.add_whitespace = true;
+        options.always_print_enums_as_ints = false;
+        options.always_print_primitive_fields = false;
+        options.preserve_proto_field_names = true;
+        return options;
+    }();
+
+    std::string dst;
+    google::protobuf::util::MessageToJsonString(info, &dst, options);
+
+    ofs << dst;
 }
 
 // tableデータを結合して取り出す

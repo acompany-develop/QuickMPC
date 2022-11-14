@@ -136,10 +136,12 @@ public:
             if (error_info)
             {
                 QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
             }
             else
             {
                 QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
             }
         }
         catch (const std::exception &e)
@@ -151,10 +153,12 @@ public:
             if (error_info)
             {
                 QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
             }
             else
             {
                 QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
             }
         }
         return static_cast<int>(statusManager.getStatus());
