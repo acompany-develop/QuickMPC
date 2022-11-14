@@ -33,7 +33,7 @@ bool CSPRNG::entropyCheck()
     return true;
 };
 
-void CSPRNG::GetRand(unsigned char* buf, unsigned int byteSize)
+void CSPRNG::GetRand(unsigned char* buf, std::size_t byteSize)
 {
     if (!this->CSPRNG::entropyCheck())
     {
@@ -77,7 +77,7 @@ long long int CSPRNG::GetRandLL()
     return rndVal;
 };
 
-std::vector<long long int> CSPRNG::GetRandLLVec(unsigned int size)
+std::vector<long long int> CSPRNG::GetRandLLVec(std::size_t size)
 {
     std::vector<long long int> randLLVec = {};
 
@@ -90,10 +90,10 @@ std::vector<long long int> CSPRNG::GetRandLLVec(unsigned int size)
     this->CSPRNG::GetRand(rnd.get(), byteSize);
 
     // unsiged char* -> str(bin)
-    for (unsigned int i = 0; i < byteSize; i += LL_SIZE)
+    for (std::size_t i = 0; i < byteSize; i += LL_SIZE)
     {
         std::stringstream str;
-        for (unsigned int j = 0; j < LL_SIZE; j++)
+        for (std::size_t j = 0; j < LL_SIZE; j++)
         {
             str << std::bitset<LL_SIZE>(rnd[i + j]);
         }
