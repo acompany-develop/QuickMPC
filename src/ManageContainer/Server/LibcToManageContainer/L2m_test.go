@@ -180,6 +180,22 @@ func TestPredict(t *testing.T) {
 	}
 }
 
+// id列が異なる場合にエラーがでるかTest
+func TestPredictFailed(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewLibcToManageClient(conn)
+	_, err := client.Predict(context.Background(), &pb.PredictRequest{
+		JobUuid: "id",
+		ModelId: 1,
+		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{2}},
+		Src:     []int32{}})
+
+	if err == nil {
+		t.Error("predict must be failed, but success.")
+	}
+}
+
 func TestSendModelParam(t *testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
