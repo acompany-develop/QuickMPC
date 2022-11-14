@@ -36,6 +36,7 @@ public:
     // Job の実行状態を更新する
     void updateJobStatus(const std::string &job_uuid, const int &status) const;
 
+    // Job 実行中に発生したエラーに関する情報を保存する
     void saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
         const;
 
