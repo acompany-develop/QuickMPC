@@ -368,5 +368,42 @@ func TestGetElapsedTimeSuccess(t *testing.T) {
 	}
 }
 
+/* GetMatchingColumn(string) (int32, error) */
+// MatchingColumnが取得できるかTest
+func TestGetMatchingColumnSuccess(t *testing.T) {
+	initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/share/%s", defaultDataID), 0777)
+	data := `{"meta":{"matching_column":1}}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
+
+	client := Client{}
+	matching_column, err := client.GetMatchingColumn(defaultDataID)
+
+	if err != nil {
+		t.Error("get matching column failed: " + err.Error())
+	}
+
+	var expect int32 = 1
+	if matching_column != expect{
+		t.Errorf("get matching column failed: matching column must be %v, but value is %v", expect, matching_column)
+	}
+
+	initialize()
+}
+
+// 保存されていないdata_idでのリクエストでエラーがでるかTest
+func TestGetMatchingColumnFailedEmptyID(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	_, err := client.GetMatchingColumn(defaultDataID)
+
+	if err == nil {
+		t.Error("get matching column must be failed: data is not registered.")
+	}
+
+	initialize()
+}
 // XXX: オブジェクトストレージへの移行に備えて廃止予定
 /* GetDataList() (string, error) */
