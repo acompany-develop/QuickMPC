@@ -65,7 +65,11 @@ public:
                 value = static_cast<T>(std::numeric_limits<U>::max());
             }
             else
-                value = static_cast<T>(v * shift);
+            {
+                // cast to `D` first to avoid going infinity
+                const D value_float = static_cast<D>(v);
+                value = static_cast<T>(value_float * shift);
+            }
         }
         else
             value = static_cast<T>(v * shift);

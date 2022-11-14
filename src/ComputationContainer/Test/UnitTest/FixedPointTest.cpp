@@ -287,3 +287,17 @@ TEST(FixedPointTest, Abs)
     FixedPoint b("-1.45");
     EXPECT_EQ(qmpc::Utils::abs(b), a);
 }
+
+TEST(FixedPointTest, Inf)
+{
+    try
+    {
+        FixedPoint a(1e301);
+    }
+    catch (const std::exception &e)
+    {
+        EXPECT_TRUE(false);  // failed
+        return;
+    }
+    EXPECT_TRUE(true);  // succeed
+}
