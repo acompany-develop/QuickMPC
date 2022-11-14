@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include <memory>
 #include <set>
 
 #include "Logging/Logger.hpp"
@@ -10,7 +11,7 @@ TEST(CsprngTest, GetRand)
 {
     const unsigned int byteSize = 8;  // 8byte = 64bit
 
-    unsigned char *rnd = new unsigned char[byteSize];
+    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(byteSize);
 
     Utility::CSPRNG rng = Utility::CSPRNG();
     rng.GetRand(rnd, byteSize);
@@ -21,7 +22,6 @@ TEST(CsprngTest, GetRand)
         QMPC_LOG_INFO("{:d}", r);
         ASSERT_TRUE((r >= 0) && (r <= 255));
     }
-    delete[] rnd;
 }
 
 TEST(CsprngTest, GetRandLL)
@@ -60,7 +60,7 @@ TEST(CsprngTest, HowUse)
     const unsigned int byteSize = 8;  // 8byte = 64bit
     const unsigned int bitSize = byteSize * 8;
 
-    unsigned char *rnd = new unsigned char[byteSize];
+    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(byteSize);
     rng.GetRand(rnd, byteSize);
 
     QMPC_LOG_INFO("変換前");
@@ -86,7 +86,6 @@ TEST(CsprngTest, HowUse)
         QMPC_LOG_INFO((unsigned int)rnd[i]);
     }
     QMPC_LOG_INFO("\n");
-    delete[] rnd;
 
     QMPC_LOG_INFO("変換");
     QMPC_LOG_INFO("[bin] unsigned char* -> string: ");

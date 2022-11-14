@@ -10,6 +10,7 @@
 #include <bitset>
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -28,9 +29,9 @@ public:
 
     // size is the byte size of random (ex. 128bit -> size is 16)
     // byteSizeが256bit以下だと/dev/urandomを使用
-    void GetRand(unsigned char *buf, unsigned int byteSize);
+    void GetRand(const std::unique_ptr<unsigned char[]> &buf, const std::size_t byteSize);
     long long int GetRandLL();
-    std::vector<long long int> GetRandLLVec(unsigned int size);
+    std::vector<long long int> GetRandLLVec(const std::size_t size);
 };
 }  // namespace Utility
 
