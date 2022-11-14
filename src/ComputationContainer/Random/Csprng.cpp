@@ -76,7 +76,7 @@ long long int CSPRNG::GetRandLL()
     return rndVal;
 };
 
-std::vector<long long int> CSPRNG::GetRandLLVec(std::size_t size)
+std::vector<long long int> CSPRNG::GetRandLLVec(const std::size_t size)
 {
     std::vector<long long int> randLLVec = {};
 
