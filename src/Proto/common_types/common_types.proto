@@ -48,3 +48,17 @@ message JobProgress {
     JobStatus status = 2;
     repeated ProcedureProgress progresses = 3;
 }
+
+message Stacktrace {
+    message Frame {
+        string source_location = 1;
+        uint64 source_line = 2;
+        string function_name = 3;
+    }
+    repeated Frame frames = 1;
+}
+
+message JobErrorInfo {
+    string what = 1;
+    optional Stacktrace stacktrace = 2;
+}
