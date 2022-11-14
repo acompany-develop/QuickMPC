@@ -55,6 +55,9 @@ func (localMC) Sync(string) error {
 func (localDb) GetElapsedTime(string) (float64, error) {
 	return 0, nil
 }
+func (localDb) GetMatchingColumn(string) (int32, error) {
+	return 1, nil
+}
 func (localTokenCA) AuthorizeDep(token string) error {
 	return nil
 }
