@@ -33,7 +33,7 @@ bool CSPRNG::entropyCheck()
     return true;
 };
 
-void CSPRNG::GetRand(unsigned char* buf, std::size_t byteSize)
+void CSPRNG::GetRand(const std::unique_ptr<unsigned char[]>& buf, const std::size_t byteSize)
 {
     if (!this->CSPRNG::entropyCheck())
     {
@@ -45,14 +45,14 @@ void CSPRNG::GetRand(unsigned char* buf, std::size_t byteSize)
     if (byteSize
         <= 32)  // seedで32byteの乱数を使うので、seed以下のサイズの場合はseedを乱数として返す。
     {
-        randombytes_buf(buf, byteSize);
+        randombytes_buf(buf.get(), byteSize);
     }
     else
     {
         std::unique_ptr<unsigned char[]> seed =
             std::make_unique<unsigned char[]>(randombytes_SEEDBYTES);
         syscall(SYS_getrandom, seed.get(), randombytes_SEEDBYTES, 1);
-        randombytes_buf_deterministic(buf, byteSize, seed.get());
+        randombytes_buf_deterministic(buf.get(), byteSize, seed.get());
     }
 };
 
@@ -60,10 +60,9 @@ long long int CSPRNG::GetRandLL()
 {
     constexpr std::size_t LL_SIZE = sizeof(long long int);  // 8byte = 64bit
 
-    // std::make_shared<unsigned char[]> is available in C++20
     std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(LL_SIZE);
     // 64bit乱数[unsigned char*]生成
-    this->CSPRNG::GetRand(rnd.get(), LL_SIZE);
+    this->CSPRNG::GetRand(rnd, LL_SIZE);
 
     // unsiged char* -> str(bin)
     std::stringstream str;
@@ -84,10 +83,9 @@ std::vector<long long int> CSPRNG::GetRandLLVec(std::size_t size)
     constexpr std::size_t LL_SIZE = sizeof(long long int);  // 8byte
     const std::size_t byteSize = size * LL_SIZE;            // size * 8[byte/llsize]
 
-    // std::make_shared<unsigned char[]> is available in C++20
     std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(byteSize);
     // 64bit乱数[unsigned char*]生成
-    this->CSPRNG::GetRand(rnd.get(), byteSize);
+    this->CSPRNG::GetRand(rnd, byteSize);
 
     // unsiged char* -> str(bin)
     for (std::size_t i = 0; i < byteSize; i += LL_SIZE)
