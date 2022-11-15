@@ -132,3 +132,17 @@ cc_test(
     ],
     visibility = ["//visibility:public"],
 )
+
+
+cc_test(
+    name = "OTTest",
+    srcs = [
+        "OTTest.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    deps = [
+        "@gtest//:main",
+        "//Share:compare",
+    ],
+    visibility = ["//visibility:public"],
+)
