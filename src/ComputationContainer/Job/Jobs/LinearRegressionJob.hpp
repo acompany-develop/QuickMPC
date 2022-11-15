@@ -70,7 +70,7 @@ public:
         auto progress_manager = qmpc::Job::ProgressManager::getInstance();
         const auto job_id = table[0][0].getId().getJobId();
         auto progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
-            job_id, "Linear Regression: learning", 5
+            job_id, "Linear Regression: learning", 6
         );
 
         // 入力parse
@@ -84,18 +84,24 @@ public:
         auto mat_x = qmpc::Share::ShareMatrix(x);
         auto mat_y = qmpc::Share::ShareMatrix(y);
 
-        // w = (X^T * X)^{-1} * X^T * y
+        // w = (X^T * X + λI)^{-1} * X^T * y
         progress->update(1);
         auto mat_x_trans = mat_x.transpose();
         auto mat_mul = (mat_x_trans * mat_x);
 
         progress->update(2);
-        auto mat_mul_inv = mat_mul.inverse();
+        constexpr double lambda = 0.0001;
+        int size = x[0].size();
+        auto identity = qmpc::Share::ShareMatrix::identity(size, size);
+        auto mat_mul_i = mat_mul + lambda * identity;
 
         progress->update(3);
-        auto w = mat_mul_inv * mat_x_trans * mat_y;
+        auto mat_mul_inv = mat_mul_i.inverse();
 
         progress->update(4);
+        auto w = mat_mul_inv * mat_x_trans * mat_y;
+
+        progress->update(5);
 
         return w.transpose().get_row()[0];
     }
