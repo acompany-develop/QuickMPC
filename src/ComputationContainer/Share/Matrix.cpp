@@ -110,6 +110,19 @@ ShareMatrix ShareMatrix::operator*(const ShareMatrix &obj) const
     return ShareMatrix(ret);
 }
 
+ShareMatrix operator*(double d, const ShareMatrix &smat)
+{
+    auto m = smat.mat;
+    for (int i = 0; i < m.rows(); ++i)
+    {
+        for (int j = 0; j < m.cols(); ++j)
+        {
+            m(i, j) *= d;
+        }
+    }
+    return ShareMatrix(m);
+}
+
 ShareMatrix ShareMatrix::identity(int h, int w)
 {
     auto identity = std::vector<std::vector<Share>>(h, std::vector<Share>(w));

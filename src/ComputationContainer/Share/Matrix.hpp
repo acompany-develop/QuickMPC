@@ -62,6 +62,7 @@ public:
     ShareMatrix operator+(const ShareMatrix &) const;
     ShareMatrix operator-(const ShareMatrix &) const;
     ShareMatrix operator*(const ShareMatrix &) const;
+    friend ShareMatrix operator*(double, const ShareMatrix &);
 
     static ShareMatrix identity(int h, int w);
     ShareMatrix transpose() const;
