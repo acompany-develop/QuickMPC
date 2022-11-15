@@ -92,9 +92,11 @@ class Config
         cc_to_bts = getEnvUrl("CC_TO_BTS");
         cc_to_bts_token = getEnvString("BTS_TOKEN");
         const std::string port_for_job = getEnvString("PORT_FOR_JOB");
-        ip_addr_map[1] = getEnvUrl("PARTY_LIST1");
-        ip_addr_map[2] = getEnvUrl("PARTY_LIST2");
-        ip_addr_map[3] = getEnvUrl("PARTY_LIST3");
+        for (int i = 1; i <= n_parties; i++)
+        {
+            const std::string party_list_str = "PARTY_LIST" + std::to_string(i);
+            ip_addr_map[i] = getEnvUrl(party_list_str.c_str());
+        }
         for (auto &value : ip_addr_map)
         {
             int party_id = value.first;
