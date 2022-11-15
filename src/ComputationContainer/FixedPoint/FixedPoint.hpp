@@ -54,7 +54,7 @@ public:
         typename U,
         std::enable_if_t<
             std::is_arithmetic_v<
-                std::remove_reference_t<U>> or std::is_convertible_v<T, std::remove_reference_t<U>>,
+                std::remove_reference_t<U>> or std::is_convertible_v<std::remove_reference_t<U>, T>,
             std::nullptr_t> = nullptr>
     FixedPointImpl(const U &v)
     {
