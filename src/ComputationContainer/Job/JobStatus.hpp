@@ -1,8 +1,10 @@
 #pragma once
 
-#include <boost/format.hpp>
 #include <optional>
 #include <stdexcept>
+
+#include <boost/format.hpp>
+#include <boost/stacktrace/stacktrace.hpp>
 
 #include "Client/ComputationToDb/Client.hpp"
 #include "Logging/Logger.hpp"
@@ -68,6 +70,38 @@ public:
         const google::protobuf::EnumValueDescriptor *next_value = descriptor->value(next_index);
         status = static_cast<Status>(next_value->number());
         db_client->updateJobStatus(job_uuid.value(), static_cast<int>(status));
+        ProgressManager::getInstance()->updateJobStatus(job_uuid.value(), status);
+    }
+
+    /**
+     * when an error occured, StatusManager holder should call this method.
+     * this method save error information via db client.
+     */
+    void error(
+        const std::exception &e, const std::optional<boost::stacktrace::stacktrace> &stacktrace
+    )
+    {
+        pb_common_types::JobErrorInfo info;
+        info.set_what(e.what());
+        if (stacktrace.has_value())
+        {
+            pb_common_types::Stacktrace stacktrace_pb;
+            for (const auto &frame : stacktrace.value())
+            {
+                // if frame has missing info, it will skip
+                if (frame.source_line() == 0)
+                {
+                    continue;
+                }
+                pb_common_types::Stacktrace::Frame *frame_pb = stacktrace_pb.add_frames();
+                frame_pb->set_source_location(frame.source_file());
+                frame_pb->set_source_line(frame.source_line());
+                frame_pb->set_function_name(frame.name());
+            }
+            *info.mutable_stacktrace() = stacktrace_pb;
+        }
+        status = Status::ERROR;
+        db_client->saveErrorInfo(job_uuid.value(), info);
         ProgressManager::getInstance()->updateJobStatus(job_uuid.value(), status);
     }
 

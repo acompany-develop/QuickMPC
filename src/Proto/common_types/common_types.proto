@@ -6,11 +6,12 @@ option go_package = "github.com/acompany-develop/QuickMPC/src/Proto/common_types
 
 enum JobStatus {
     UNKNOWN = 0;
-    PRE_JOB = 1;
-    READ_DB = 2;
-    COMPUTE = 3;
-    WRITE_DB = 4;
-    COMPLETED = 5;
+    ERROR = 1;
+    PRE_JOB = 2;
+    READ_DB = 3;
+    COMPUTE = 4;
+    WRITE_DB = 5;
+    COMPLETED = 6;
 }
 
 enum ComputationMethod {
@@ -46,4 +47,18 @@ message JobProgress {
     string job_uuid = 1;
     JobStatus status = 2;
     repeated ProcedureProgress progresses = 3;
+}
+
+message Stacktrace {
+    message Frame {
+        string source_location = 1;
+        uint64 source_line = 2;
+        string function_name = 3;
+    }
+    repeated Frame frames = 1;
+}
+
+message JobErrorInfo {
+    string what = 1;
+    optional Stacktrace stacktrace = 2;
 }

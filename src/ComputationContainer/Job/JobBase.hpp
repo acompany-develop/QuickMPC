@@ -1,9 +1,16 @@
 #pragma once
 
 #include <atomic>
+#include <iomanip>
 #include <list>
 #include <map>
+#include <sstream>
+#include <stdexcept>
 #include <vector>
+
+#include <boost/algorithm/string/join.hpp>
+#include <boost/range/adaptor/indexed.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 #include "Client/ComputationToDb/Client.hpp"
 #include "Client/ComputationToDb/ValueTable.hpp"
@@ -88,6 +95,40 @@ class JobBase : public Interface
         return values;
     }
 
+    static void validate_cols(
+        const std::vector<std::string> &schemas, const std::vector<std::list<int>> &arg
+    )
+    {
+        for (const auto &iter_arg : arg | boost::adaptors::indexed(0))
+        {
+            for (const auto &iter_col : iter_arg.value() | boost::adaptors::indexed(0))
+            {
+                const int col = iter_col.value();
+                if (col <= 0 || schemas.size() < static_cast<std::size_t>(col))
+                {
+                    qmpc::Log::throw_with_trace(std::invalid_argument(
+                        (boost::format("inp[%1%][%2%] = %3% is out of range where column range = "
+                                       "[1, %4%], schemas = [%5%]")
+                         % iter_arg.index() % iter_col.index() % col % schemas.size()
+                         % boost::algorithm::join(
+                             schemas
+                                 | boost::adaptors::transformed(
+                                     [](const std::string &s)
+                                     {
+                                         std::ostringstream ss;
+                                         ss << std::quoted(s);
+                                         return ss.str();
+                                     }
+                                 ),
+                             ", "
+                         ))
+                            .str()
+                    ));
+                }
+            }
+        }
+    }
+
     template <typename U>
     void writeDb(U &&values)
     {
@@ -124,6 +165,7 @@ public:
         try
         {
             auto [share_table, schemas] = readDb();
+            validate_cols(schemas, arg);
             auto result = static_cast<T *>(this)->compute(share_table, schemas, arg);
             writeDb(result);
         }
@@ -136,10 +178,12 @@ public:
             if (error_info)
             {
                 QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
             }
             else
             {
                 QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
             }
         }
         catch (const std::exception &e)
@@ -151,10 +195,12 @@ public:
             if (error_info)
             {
                 QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
             }
             else
             {
                 QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
             }
         }
         return static_cast<int>(statusManager.getStatus());
