@@ -117,6 +117,26 @@ TEST(ShareMatrixTest, MulTest_Large)
     }
 }
 
+TEST(ShareMatrixTest, IdentityTest)
+{
+    std::cout << "called" << std::endl;
+    auto identity = qmpc::Share::ShareMatrix::identity(3, 3);
+    auto recons_mat = identity.open_and_recons();
+
+    auto true_mat = std::vector<std::vector<FixedPoint>>{
+        {FixedPoint(1.0), FixedPoint(0.0), FixedPoint(0.0)},
+        {FixedPoint(0.0), FixedPoint(1.0), FixedPoint(0.0)},
+        {FixedPoint(0.0), FixedPoint(0.0), FixedPoint(1.0)}};
+
+    for (int h = 0; h < 3; ++h)
+    {
+        for (int w = 0; w < 3; ++w)
+        {
+            EXPECT_NEAR(recons_mat[h][w].getDoubleVal(), true_mat[h][w].getDoubleVal(), 0.01);
+        }
+    }
+}
+
 TEST(ShareMatrixTest, TransposeTest)
 {
     Config *conf = Config::getInstance();

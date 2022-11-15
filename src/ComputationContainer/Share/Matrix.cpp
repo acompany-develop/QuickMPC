@@ -110,6 +110,16 @@ ShareMatrix ShareMatrix::operator*(const ShareMatrix &obj) const
     return ShareMatrix(ret);
 }
 
+ShareMatrix ShareMatrix::identity(int h, int w)
+{
+    auto identity = std::vector<std::vector<Share>>(h, std::vector<Share>(w));
+    for (int i = 0; i < h; ++i)
+    {
+        identity[i][i] += FixedPoint("1");
+    }
+    return identity;
+}
+
 ShareMatrix ShareMatrix::inverse() const
 {
     auto R_ = std::vector<std::vector<Share>>(h, std::vector<Share>(w));
