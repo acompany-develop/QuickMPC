@@ -287,9 +287,6 @@ func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
 
 
 func (c Client) GetMatchingColumn(dataID string) (int32, error) {
-	ls.Lock(dataID)
-	defer ls.Unlock(dataID)
-
 	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
 	ls.Lock(path)
 	defer ls.Unlock(path)
