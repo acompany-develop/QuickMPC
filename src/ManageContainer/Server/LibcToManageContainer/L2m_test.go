@@ -115,7 +115,7 @@ func TestExecuteComputation(t *testing.T) {
 }
 
 // id列が異なっていた場合にエラーがでるかテスト
-func TestExecuteComputationFailed(t *testing.T) {
+func TestExecuteComputationFailedDifferentIdColumn(t *testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
 
@@ -181,7 +181,7 @@ func TestPredict(t *testing.T) {
 }
 
 // id列が異なる場合にエラーがでるかTest
-func TestPredictFailed(t *testing.T) {
+func TestPredictFailedDifferentIdColumn(t *testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
 	client := pb.NewLibcToManageClient(conn)
