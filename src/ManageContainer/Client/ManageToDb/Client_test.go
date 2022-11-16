@@ -31,6 +31,7 @@ const defaultDataID = "m2db_test_dataid"
 const defaultPieceID = 0
 const defaultShares = `[["1","2","3"],["4","5","6"]]`
 const defaultSentAt = ""
+const defaultMatchingColumn = 1
 const defaultJobUUID = "m2db_test_jobuuid"
 const defaultParams = `["1","2","3"]`
 const defaultResult = `["1","2","3"]`
@@ -41,7 +42,7 @@ func TestInsertSharesSuccess(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+	errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt, defaultMatchingColumn)
 
 	if errInsert != nil {
 		t.Error("insert shares failed: " + errInsert.Error())
@@ -59,8 +60,8 @@ func TestInsertSharesRejectDuplicate(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
-	errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt, defaultMatchingColumn)
+	errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt, defaultMatchingColumn)
 
 	if errInsert == nil {
 		t.Error("insert duplicate shares must be failed, but success.")
@@ -78,7 +79,7 @@ func TestInsertSharesParallelSuccess(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		wg.Add(1)
 		go func(pieceId int32) {
-			errInsert := client.InsertShares(defaultDataID, defaultSchema, pieceId, defaultShares, defaultSentAt)
+			errInsert := client.InsertShares(defaultDataID, defaultSchema, pieceId, defaultShares, defaultSentAt, defaultMatchingColumn)
 			if errInsert != nil {
 				t.Error("insert shares failed: " + errInsert.Error())
 			}
@@ -99,12 +100,12 @@ func TestInsertSharesParallelRejectDuplicate(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+	client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt, defaultMatchingColumn)
 	wg := sync.WaitGroup{}
 	for i := 0; i < 100; i++ {
 		wg.Add(1)
 		go func() {
-			errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt)
+			errInsert := client.InsertShares(defaultDataID, defaultSchema, defaultPieceID, defaultShares, defaultSentAt, defaultMatchingColumn)
 			if errInsert == nil {
 				t.Error("insert duplicate shares must be failed, but success.")
 			}
@@ -367,5 +368,42 @@ func TestGetElapsedTimeSuccess(t *testing.T) {
 	}
 }
 
+/* GetMatchingColumn(string) (int32, error) */
+// MatchingColumnが取得できるかTest
+func TestGetMatchingColumnSuccess(t *testing.T) {
+	initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/share/%s", defaultDataID), 0777)
+	data := `{"meta":{"matching_column":1}}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
+
+	client := Client{}
+	matching_column, err := client.GetMatchingColumn(defaultDataID)
+
+	if err != nil {
+		t.Error("get matching column failed: " + err.Error())
+	}
+
+	var expect int32 = 1
+	if matching_column != expect{
+		t.Errorf("get matching column failed: matching column must be %v, but value is %v", expect, matching_column)
+	}
+
+	initialize()
+}
+
+// 保存されていないdata_idでのリクエストでエラーがでるかTest
+func TestGetMatchingColumnFailedEmptyID(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	_, err := client.GetMatchingColumn(defaultDataID)
+
+	if err == nil {
+		t.Error("get matching column must be failed: data is not registered.")
+	}
+
+	initialize()
+}
 // XXX: オブジェクトストレージへの移行に備えて廃止予定
 /* GetDataList() (string, error) */

@@ -36,8 +36,9 @@ type ComputationResult struct {
 
 // Share形式
 type ShareMeta struct {
-	Schema  []string `json:"schema"`
-	PieceID int32    `json:"piece_id"`
+	Schema  []string     `json:"schema"`
+	PieceID int32        `json:"piece_id"`
+	MatchingColumn int32 `json:"matching_column"`
 }
 type Share struct {
 	DataID string      `json:"data_id"`
@@ -49,13 +50,14 @@ type Share struct {
 // 外部から呼ばれるinterface
 type Client struct{}
 type M2DbClient interface {
-	InsertShares(string, []string, int32, string, string) error
+	InsertShares(string, []string, int32, string, string, int32)error
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
 	GetComputationResult(string) ([]*ComputationResult, error)
 	InsertModelParams(string, string, int32) error
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
+	GetMatchingColumn(string) (int32, error)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -65,7 +67,7 @@ func isExists(path string) bool {
 }
 
 // DBにシェアを保存する
-func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shares string, sentAt string) error {
+func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shares string, sentAt string, matchingColumn int32) error {
 	dataPath := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, pieceID)
 	ls.Lock(dataPath)
 	defer ls.Unlock(dataPath)
@@ -85,6 +87,7 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 		Meta: ShareMeta{
 			Schema:  schema,
 			PieceID: pieceID,
+			MatchingColumn: matchingColumn,
 		},
 		Value:  sharesJson,
 		SentAt: sentAt,
@@ -280,4 +283,29 @@ func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
 
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 	return getElapsedTime(path)
+}
+
+
+func (c Client) GetMatchingColumn(dataID string) (int32, error) {
+	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
+	ls.Lock(path)
+	defer ls.Unlock(path)
+
+	if !isExists(path) {
+		errMessage := "データ未登録エラー: " + dataID + "は登録されていません．"
+		return 0, errors.New(errMessage)
+	}
+
+	raw, errRead := ioutil.ReadFile(path)
+	if errRead != nil {
+		return 0, errRead
+	}
+
+	var data Share
+	errUnmarshal := json.Unmarshal(raw, &data)
+	if errUnmarshal != nil {
+		return 0, errUnmarshal
+	}
+
+	return data.Meta.MatchingColumn, nil
 }

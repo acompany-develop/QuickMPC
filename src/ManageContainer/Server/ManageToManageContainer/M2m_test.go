@@ -12,7 +12,7 @@ import (
 // Test用のDbGとCCのmock
 type localDb struct{}
 
-func (localDb) InsertShares(string, []string, int32, string, string) error {
+func (localDb) InsertShares(string, []string, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
@@ -32,6 +32,9 @@ func (localDb) GetDataList() (string, error) {
 }
 func (localDb) GetElapsedTime(string) (float64, error) {
 	return 0, nil
+}
+func (localDb) GetMatchingColumn(string) (int32, error) {
+	return 1, nil
 }
 
 // Test用のサーバを起動(MC)

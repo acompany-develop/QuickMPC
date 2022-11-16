@@ -3,6 +3,7 @@ package l2mserver
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -62,6 +63,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 	pieceID := int32(in.GetPieceId())
 	shares := in.GetShares()
 	sent_at := in.GetSentAt()
+	machingColumn := in.GetMatchingColumn()
 	token := in.GetToken()
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
@@ -72,7 +74,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 		}, errToken
 	}
 
-	err := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at)
+	err := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at, machingColumn)
 	s.m2mclient.Sync(fmt.Sprintf("%s%d", dataID, pieceID))
 
 	if err != nil {
@@ -171,6 +173,26 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 			Message: errToken.Error(),
 			IsOk:    false,
 		}, errToken
+	}
+
+	dataIds :=  in.GetTable().GetDataIds()
+	index := in.GetTable().GetIndex()
+	for i := 0; i < len(dataIds); i++{
+		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
+		if err != nil {
+			AppLogger.Error(err)
+			return &pb.ExecuteComputationResponse{
+				IsOk:    false,
+			}, err
+		}
+
+		if matchingColumn != index[i]{
+			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
+			AppLogger.Error(errMessage)
+			return &pb.ExecuteComputationResponse{
+				IsOk:    false,
+			}, errors.New(errMessage)
+		}
 	}
 
 	// JobUUIDを生成
@@ -322,6 +344,26 @@ func (s *server) Predict(ctx context.Context, in *pb.PredictRequest) (*pb.Predic
 			Message: errToken.Error(),
 			IsOk:    false,
 		}, errToken
+	}
+
+	dataIds :=  in.GetTable().GetDataIds()
+	index := in.GetTable().GetIndex()
+	for i := 0; i < len(dataIds); i++{
+		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
+		if err != nil {
+			AppLogger.Error(err)
+			return &pb.PredictResponse{
+				IsOk:    false,
+			}, err
+		}
+
+		if matchingColumn != index[i]{
+			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
+			AppLogger.Error(errMessage)
+			return &pb.PredictResponse{
+				IsOk:    false,
+			}, errors.New(errMessage)
+		}
 	}
 
 	out := utils.ConvertPredictRequest(in)

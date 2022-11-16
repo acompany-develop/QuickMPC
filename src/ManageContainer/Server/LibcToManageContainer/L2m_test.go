@@ -19,7 +19,7 @@ type localCC struct{}
 type localMC struct{}
 type localTokenCA struct{}
 
-func (localDb) InsertShares(string, []string, int32, string, string) error {
+func (localDb) InsertShares(string, []string, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
@@ -54,6 +54,9 @@ func (localMC) Sync(string) error {
 }
 func (localDb) GetElapsedTime(string) (float64, error) {
 	return 0, nil
+}
+func (localDb) GetMatchingColumn(string) (int32, error) {
+	return 1, nil
 }
 func (localTokenCA) AuthorizeDep(token string) error {
 	return nil
@@ -102,12 +105,33 @@ func TestExecuteComputation(t *testing.T) {
 		Table: &pb.JoinOrder{
 			DataIds: []string{"id"},
 			Join:    []int32{},
-			Index:   []int32{}},
+			Index:   []int32{1}},
 		Arg: &pb.Input{
 			Src:    []int32{},
 			Target: []int32{}}})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+// id列が異なっていた場合にエラーがでるかテスト
+func TestExecuteComputationFailedDifferentIdColumn(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+
+	client := pb.NewLibcToManageClient(conn)
+
+	_, err := client.ExecuteComputation(context.Background(), &pb.ExecuteComputationRequest{
+		MethodId: 1,
+		Table: &pb.JoinOrder{
+			DataIds: []string{"id"},
+			Join:    []int32{},
+			Index:   []int32{2}},
+		Arg: &pb.Input{
+			Src:    []int32{},
+			Target: []int32{}}})
+	if err == nil {
+		t.Error("exucute computation must be failed, but success.")
 	}
 }
 
@@ -148,11 +172,27 @@ func TestPredict(t *testing.T) {
 	_, err := client.Predict(context.Background(), &pb.PredictRequest{
 		JobUuid: "id",
 		ModelId: 1,
-		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{}},
+		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{1}},
 		Src:     []int32{}})
 
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+// id列が異なる場合にエラーがでるかTest
+func TestPredictFailedDifferentIdColumn(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewLibcToManageClient(conn)
+	_, err := client.Predict(context.Background(), &pb.PredictRequest{
+		JobUuid: "id",
+		ModelId: 1,
+		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{2}},
+		Src:     []int32{}})
+
+	if err == nil {
+		t.Error("predict must be failed, but success.")
 	}
 }
 
