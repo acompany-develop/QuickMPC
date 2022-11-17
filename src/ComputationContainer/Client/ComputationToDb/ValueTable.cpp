@@ -92,11 +92,12 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 
     int size = sorted_v1.size();
     int len = sorted_v2.size();
-    // ブロックサイズ(S)とブロック数(N):N:=size/S
+    // ブロックサイズ(S)と暫定のブロック数(N):N:=size/S
     // サイズO(N)のBulk比較をO(log(len) + S)回行う
     int block_size = std::min(100, size);
     int block_nums = (size + block_size - 1) / block_size;
 
+    // 各ブロックの始点indexとその値
     std::vector<int> block_it;
     std::vector<T> block_s;
     block_it.reserve(block_nums);
@@ -110,6 +111,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 
     // parallel binary search
     // block_itの各要素 i について(v1[i]>=v2[j]) となる最小のjを求める
+    // 求めた j はupperに格納される
     // 各iとjはv1,v2のブロックの区切りをなす
     std::vector<int> lower(block_nums, -1);
     std::vector<int> upper(block_nums, len - 1);
@@ -148,6 +150,8 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 
     // parallel linear search
     // 各ブロックを並列に走査する
+    // sorted_v1は各ブロック i について [begin_its[i].first,  end_its[i].first ) を走査
+    // sorted_v2は各ブロック i について [begin_its[i].second, end_its[i].second) を走査
     std::vector<std::pair<int, int>> begin_its;
     std::vector<std::pair<int, int>> end_its;
     begin_its.reserve(block_nums);
@@ -173,7 +177,8 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     // intersection_it_list:= v1とv2の積集合のindex
     std::vector<std::pair<int, int>> intersection_it_list;
     intersection_it_list.reserve(size);
-    int parallel_size = now_its.size();
+    // 並列比較するブロックの数
+    int parallel_nums = now_its.size();
     std::vector<bool> fin(block_nums, false);
     {
         auto linear_search_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
@@ -181,11 +186,12 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         );
         while (true)
         {
+            // l < r を実行したい全てのl, rをcomp_l,comp_rに入れる
             std::vector<T> comp_l;
             std::vector<T> comp_r;
-            comp_l.reserve(parallel_size);
-            comp_r.reserve(parallel_size);
-            for (int i = 0; i < parallel_size; ++i)
+            comp_l.reserve(parallel_nums);
+            comp_r.reserve(parallel_nums);
+            for (int i = 0; i < parallel_nums; ++i)
             {
                 // 不要な比較を減らすため探索し終えたindexを見ない
                 if (fin[i])
@@ -215,7 +221,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             // [0th less, 0th greater, 1st less, 1st greater ....]
             auto comp = qmpc::Share::allLess(comp_l, comp_r);
             auto comp_it = 0;
-            for (int i = 0; i < parallel_size; ++i)
+            for (int i = 0; i < parallel_nums; ++i)
             {
                 if (fin[i])
                 {
@@ -237,7 +243,9 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                     ++now_its[i].second;
                 }
 
+                // 1回の等値比較でlessとgreaterの2つ取り出すので2つ進める
                 comp_it += 2;
+
                 linear_search_progress->update(std::max(
                     now_its[i].first - begin_its[i].first, now_its[i].second - begin_its[i].second
                 ));
