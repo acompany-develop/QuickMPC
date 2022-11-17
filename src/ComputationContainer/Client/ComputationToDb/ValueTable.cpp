@@ -148,28 +148,32 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
 
     // parallel linear search
     // 各ブロックを並列に走査する
-    std::vector<std::pair<int, int>> now_its;
-    std::vector<std::pair<int, int>> limit_its;
-    now_its.reserve(block_nums);
-    limit_its.reserve(block_nums);
+    std::vector<std::pair<int, int>> begin_its;
+    std::vector<std::pair<int, int>> end_its;
+    begin_its.reserve(block_nums);
+    end_its.reserve(block_nums);
 
     for (int i = 0; i < block_nums; ++i)
     {
-        now_its.emplace_back(block_it[i], std::max(0, upper[i]));
-        if (i + 1 < block_nums)
+        auto v1_l = block_it[i];
+        auto v1_r = (i + 1 < block_nums) ? block_it[i + 1] : size;
+        auto v2_l = std::max(0, upper[i]);
+        auto v2_r = (i + 1 < block_nums) ? std::max(0, upper[i + 1]) : len;
+
+        for (int l = v2_l; l < v2_r; l += block_size)
         {
-            limit_its.emplace_back(block_it[i + 1], std::max(0, upper[i + 1]));
-        }
-        else
-        {
-            limit_its.emplace_back(size, len);
+            int r = std::min(l + block_size, v2_r);
+            begin_its.emplace_back(v1_l, l);
+            end_its.emplace_back(v1_r, r);
         }
     }
+    auto now_its = begin_its;
     core_progress->update(3);
 
-    // it_list := v1とv2の積集合のindex
-    std::vector<std::pair<int, int>> it_list;
-    it_list.reserve(size);
+    // intersection_it_list:= v1とv2の積集合のindex
+    std::vector<std::pair<int, int>> intersection_it_list;
+    intersection_it_list.reserve(size);
+    int parallel_size = now_its.size();
     std::vector<bool> fin(block_nums, false);
     {
         auto linear_search_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
@@ -178,10 +182,10 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         while (true)
         {
             std::vector<T> comp_l;
-            comp_l.reserve(block_nums);
             std::vector<T> comp_r;
-            comp_r.reserve(block_nums);
-            for (int i = 0; i < block_nums; ++i)
+            comp_l.reserve(parallel_size);
+            comp_r.reserve(parallel_size);
+            for (int i = 0; i < parallel_size; ++i)
             {
                 // 不要な比較を減らすため探索し終えたindexを見ない
                 if (fin[i])
@@ -189,7 +193,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                     continue;
                 }
                 auto [i1, i2] = now_its[i];
-                auto [lim1, lim2] = limit_its[i];
+                auto [lim1, lim2] = end_its[i];
                 if (i1 == lim1 || i2 == lim2)
                 {
                     fin[i] = true;
@@ -202,7 +206,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                 comp_r.emplace_back(sorted_v1[i1]);
             }
 
-            // comp_lが空 <=> 全てのindexでlimitまで探索し終えた
+            // comp_lが空 <=> 全てのindexでendまで探索し終えた
             if (comp_l.empty())
             {
                 break;
@@ -211,7 +215,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             // [0th less, 0th greater, 1st less, 1st greater ....]
             auto comp = qmpc::Share::allLess(comp_l, comp_r);
             auto comp_it = 0;
-            for (int i = 0; i < block_nums; ++i)
+            for (int i = 0; i < parallel_size; ++i)
             {
                 if (fin[i])
                 {
@@ -220,7 +224,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                 // "==" <=> "not < && not >"
                 if (!comp[comp_it] && !comp[comp_it + 1])
                 {
-                    it_list.emplace_back(now_its[i]);
+                    intersection_it_list.emplace_back(now_its[i]);
                     ++now_its[i].first;
                     ++now_its[i].second;
                 }
@@ -234,14 +238,14 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                 }
 
                 comp_it += 2;
-                linear_search_progress->update(
-                    std::max(now_its[i].first - block_it[i], now_its[i].second - upper[i])
-                );
+                linear_search_progress->update(std::max(
+                    now_its[i].first - begin_its[i].first, now_its[i].second - begin_its[i].second
+                ));
             }
         }
     }
 
-    return it_list;
+    return intersection_it_list;
 }
 
 template <class T>
