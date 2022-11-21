@@ -339,7 +339,7 @@ Share<T> sharize(const T &secret)
             {
                 continue;
             }
-            auto r = RandGenerator::getInstance()->getRand<T>(1, 1000);
+            auto r = RandGenerator::getInstance()->getRand<T>(1, (1LL << 60));
 
             r_sum += r;
             send(r, s.getId(), pt_id);
