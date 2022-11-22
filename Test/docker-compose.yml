@@ -128,7 +128,12 @@ services:
 
   dev_bts:
     container_name: beaver_triple_service
-    image: ghcr.io/acompany-develop/quickmpc-bts:s20221121
+    # TODO: QuickMPC-BTSを更新して書き換える
+    # image: ghcr.io/acompany-develop/quickmpc-bts:s20221121
+    build:
+      context: ../../QuickMPC-BTS
+      dockerfile: src/BeaverTripleService/Dockerfile
+      target: dev
     environment:
       - STAGE=dev
     volumes:
@@ -136,6 +141,7 @@ services:
         source: ../Config/BeaverTripleService
         target: /QuickMPC-BTS/Config
     env_file:
+      - ../Config/BeaverTripleService/.env
       - ../Config/BeaverTripleService/server.sample.env
     ports:
       - "0.0.0.0:60020:50020"
@@ -150,7 +156,9 @@ services:
       test:
         [
           "CMD-SHELL",
-          "/bin/grpc_health_probe -addr=beaver_triple_service:50020",
+          '/bin/grpc_health_probe
+          -addr=beaver_triple_service:50020
+          -rpc-header=authorization:"bearer $$BTS_TOKEN"'
         ]
       interval: 3s
       timeout: 5s
