@@ -1295,6 +1295,8 @@ TEST(ShareTest, IntMulExtraLarge)
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
 
+// 現状乱数範囲(セキュリティ)の都合上64bit浮動小数の積は使用できない
+/*
 TEST(ShareTest, doubleMulExtraLarge)
 {
     Config *conf = Config::getInstance();
@@ -1317,6 +1319,7 @@ TEST(ShareTest, floatMulExtraLarge)
     auto rec = recons(a);
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
+*/
 
 TEST(ShareTest, FPMulExtraLarge)
 {
