@@ -46,7 +46,7 @@ public:
         triple_queue.pop();
         if constexpr (std::is_integral_v<TV>)
         {
-            return Triple<TV>(std::stoi(a), std::stoi(b), std::stoi(c));
+            return Triple<TV>(std::stoll(a), std::stoll(b), std::stoll(c));
         }
         else if constexpr (std::is_floating_point_v<TV>)
         {
