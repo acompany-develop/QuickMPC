@@ -128,12 +128,7 @@ services:
 
   dev_bts:
     container_name: beaver_triple_service
-    # TODO: QuickMPC-BTSを更新して書き換える
-    # image: ghcr.io/acompany-develop/quickmpc-bts:s20221121
-    build:
-      context: ../../QuickMPC-BTS
-      dockerfile: src/BeaverTripleService/Dockerfile
-      target: dev
+    image: ghcr.io/acompany-develop/quickmpc-bts:s20221122
     environment:
       - STAGE=dev
     volumes:
