@@ -163,13 +163,8 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         auto v1_r = (i + 1 < block_nums) ? block_it[i + 1] : size;
         auto v2_l = std::max(0, upper[i]);
         auto v2_r = (i + 1 < block_nums) ? std::max(0, upper[i + 1]) : len;
-
-        for (int l = v2_l; l < v2_r; l += block_size)
-        {
-            int r = std::min(l + block_size, v2_r);
-            begin_its.emplace_back(v1_l, l);
-            end_its.emplace_back(v1_r, r);
-        }
+        begin_its.emplace_back(v1_l, v2_l);
+        end_its.emplace_back(v1_r, v2_r);
     }
     auto now_its = begin_its;
     core_progress->update(3);
@@ -181,8 +176,9 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     int parallel_nums = now_its.size();
     std::vector<bool> fin(block_nums, false);
     {
+        // 進捗最大値は動的に変わりうるため便宜上100に固定
         auto linear_search_progress = progress_manager->createProgress<qmpc::Job::ProgressIters>(
-            job_id, "hjoin: linear search", block_size
+            job_id, "hjoin: linear search", 100
         );
         while (true)
         {
@@ -221,6 +217,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             // [0th less, 0th greater, 1st less, 1st greater ....]
             auto comp = qmpc::Share::allLess(comp_l, comp_r);
             auto comp_it = 0;
+            int min_progress = 100;
             for (int i = 0; i < parallel_nums; ++i)
             {
                 if (fin[i])
@@ -246,10 +243,16 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                 // 1回の等値比較でlessとgreaterの2つ取り出すので2つ進める
                 comp_it += 2;
 
-                linear_search_progress->update(std::max(
-                    now_its[i].first - begin_its[i].first, now_its[i].second - begin_its[i].second
-                ));
+                // begin->endに何%移動しているか
+                // v1,v2の大さい方をこのindexでの進捗とする(どちらかが100%で終了のため)
+                auto [b1, b2] = begin_its[i];
+                auto [e1, e2] = end_its[i];
+                auto [i1, i2] = now_its[i];
+                auto progress1 = 100 * (i1 - b1) / (e1 - b1);
+                auto progress2 = 100 * (i2 - b2) / (e2 - b2);
+                min_progress = std::min(min_progress, std::max(progress1, progress2));
             }
+            linear_search_progress->update(min_progress);
         }
     }
 
