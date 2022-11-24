@@ -11,6 +11,7 @@
 #include "Share/Compare.hpp"
 #include "Share/Share.hpp"
 #include "gtest/gtest.h"
+#include "libOTe_Tests/NcoOT_Tests.h"
 #include "unistd.h"
 
 TEST(ShareTest, IncrementShareId)
@@ -1439,4 +1440,12 @@ TEST(ShareTest, equalityTest)
     auto f_rec = recons(f);
     EXPECT_EQ(t_rec, 1);
     EXPECT_EQ(f_rec, 0);
+}
+
+TEST(ShareTest, OTTest)
+{
+    osuCrypto::KkrtNcoOtReceiver sender;
+    osuCrypto::KkrtNcoOtSender recver;
+
+    tests_libOTe::NcoOt_Kkrt_Test();
 }

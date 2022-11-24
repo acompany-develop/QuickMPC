@@ -70,9 +70,9 @@ FixedPoint stdev(std::vector<Share> &v)
     {
         value = 0;
     }
-    auto r = sqrt(value);
+    boost::multiprecision::cpp_dec_float_100 r = sqrt(value);
     QMPC_LOG_INFO("stdev: {}", r);
-    FixedPoint ret{r};
+    FixedPoint ret{r.str()};
     QMPC_LOG_INFO("stdev_ret: {}", ret.getStrVal());
     return ret;
 }

@@ -29,7 +29,9 @@ cc_test(
         "//ConfigParse:config_parse",
         "//Server/ComputationToComputationContainer:server",
         "//Logging:log",
+        "//Share:compare",
     ],
+    visibility = ["//visibility:public"],
 )
 
 cc_test(
@@ -127,6 +129,20 @@ cc_test(
     ],
     linkopts = [
         "-lstdc++fs"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+
+cc_test(
+    name = "OTTest",
+    srcs = [
+        "OTTest.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    deps = [
+        "@gtest//:main",
+        "//Share:compare",
     ],
     visibility = ["//visibility:public"],
 )

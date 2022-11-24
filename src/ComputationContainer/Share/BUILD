@@ -26,8 +26,10 @@ cc_library(
         "//TripleHandler:triple_handler",
         "//Random:random",
         "//Share:share",
-        "//Logging:log"
+        "//Logging:log",
+        "@libOTe//:OTe",
     ],
+    linkstatic=1,
     visibility = ["//visibility:public"],
 )
 

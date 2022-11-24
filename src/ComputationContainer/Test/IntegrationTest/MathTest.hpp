@@ -173,7 +173,7 @@ TEST(MathTest, Correl_0div)
     Share correl_rec = qmpc::Math::correl(x, y);
     open(correl_rec);
     FixedPoint target = recons(correl_rec);
-    EXPECT_NEAR(target.getDoubleVal(), 0.0, 0.001);
+    EXPECT_NEAR(target.getDoubleVal(), 0.0, 0.01);
 }
 
 TEST(MathTest, Correl_size)

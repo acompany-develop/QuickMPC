@@ -25,10 +25,19 @@ RUN apt-get update && \
     curl \
     iputils-ping \
     net-tools \
-    dnsutils
+    dnsutils \
+    && apt-get -y install software-properties-common && add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
+    apt-get update && apt-get install  -y g++-10 && \
+    echo "export CXX='g++-10'" >> ~/.bashrc && \
+    echo "export CC='gcc-10'" >> ~/.bashrc && \
+    update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10 && \
+    update-alternatives --config gcc && \
+    update-alternatives --config g++
 
 # Install cmake
-RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.sh && \
+RUN CMAKE_VERSION=3.24.2 && \
+    wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh && \
     mkdir -p $CMAKE_INSTALL_DIR && \
     sh cmake-linux.sh -- --skip-license --prefix=$CMAKE_INSTALL_DIR && \
     rm cmake-linux.sh && \
@@ -41,11 +50,10 @@ RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download
     ln -s /usr/bin/bazel-5.0.0 /usr/bin/bazel
 
 # Install libsodium
-RUN cd / && git clone https://github.com/jedisct1/libsodium --branch stable && \
-    cd libsodium && ./configure && make -j && make -j check && make -j install && \
-    cp -r /libsodium/src/libsodium/include /usr/local/lib/libsodium && \
-    echo "/usr/local/lib" > /etc/ld.so.conf.d/libsodium.conf && \
-    ldconfig
+# RUN cd / && git clone https://github.com/jedisct1/libsodium --branch stable && \
+#     cd libsodium && ./configure && make -j && make -j check && make -j install && \
+#     echo "/usr/local/lib" > /etc/ld.so.conf.d/libsodium.conf && \
+#     ldconfig
 
 # Install spdlog
 RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.gz && \
@@ -55,6 +63,8 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.14 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
+RUN cd / && git clone https://github.com/osu-crypto/libOTe.git --branch v2.0.2 \
+    && cd libOTe && python3 build.py --install -DENABLE_ALL_OT=ON  --sodium -DENABLE_SODIUM=ON -DENABLE_SSE=OFF -DCOPROTO_ENABLE_BOOST=ON -DENABLE_BOOST=ON
 
 FROM base as src
 # 開発環境のフォーマッタを統一
