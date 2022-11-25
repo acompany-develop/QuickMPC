@@ -7,11 +7,9 @@ import (
 	"fmt"
 	"strconv"
 
-	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/anypb"
 
 	m2c "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToComputationContainer"
 	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
@@ -276,17 +274,11 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 	}
 
 	if computationErrInfo != nil {
-		details, err := anypb.New(computationErrInfo)
+		status, err := status.New(codes.Unknown, "computation result has error info").WithDetails(computationErrInfo)
 		if err != nil {
 			return err
 		}
-		return status.ErrorProto(&spb.Status{
-			Code:    int32(codes.Unknown),
-			Message: "computation result has error info",
-			Details: []*anypb.Any{
-				details,
-			},
-		})
+		return status.Err()
 	}
 
 	for _, result := range computationResults {
