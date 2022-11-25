@@ -21,7 +21,7 @@ fi
 if [ $# -le 0 ]
 then
   echo "Usage: $0 [env_setting]... [executable_file]"
-  echo "Example: $0 LD_PRELOAD=./bazel-bin/libexception_handler.so ./bazel-bin/computation_container"
+  echo "Example: $0 ./bazel-bin/computation_container"
   exit 1
 fi
 
