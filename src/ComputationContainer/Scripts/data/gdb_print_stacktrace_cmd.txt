@@ -1,0 +1,3 @@
+backtrace full
+info threads
+thread apply all backtrace full

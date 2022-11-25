@@ -25,7 +25,8 @@ RUN apt-get update && \
     curl \
     iputils-ping \
     net-tools \
-    dnsutils
+    dnsutils \
+    gdb
 
 # Install cmake
 RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.sh && \
@@ -55,6 +56,9 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.14 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
+
+# Create directory to save core dump file
+RUN mkdir -p /tmp/cores
 
 FROM base as src
 # 開発環境のフォーマッタを統一
@@ -92,11 +96,14 @@ FROM alpine:3.16.2 as dep-runner
 RUN apk update && \
     apk add curl && \
     apk add --no-cache bash && \
+    apk add gdb && \
     # CVE-2022-0778 対策
     # 公式イメージの upgrade がされていないため
     apk upgrade
 RUN true
 COPY --from=builder /QuickMPC/computation_container /QuickMPC/bazel-bin/computation_container
+RUN true
+COPY --from=builder /QuickMPC/Scripts /QuickMPC/Scripts
 RUN true
 COPY --from=builder /usr/local/lib /usr/local/lib
 RUN true
@@ -107,6 +114,8 @@ RUN true
 COPY --from=builder /lib64 /lib64
 RUN true
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.14 /ko-app/grpc-health-probe /bin/grpc_health_probe
+# Create directory to save core dump file
+RUN mkdir -p /tmp/cores
 WORKDIR /QuickMPC
 
 FROM builder_debug as small
@@ -124,6 +133,9 @@ FROM alpine:latest as large-runner
 RUN apk update && apk add curl
 RUN true
 COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bin/computation_container
+RUN true
+COPY --from=builder /QuickMPC/Scripts /QuickMPC/Scripts
+RUN true
 # テスト用バイナリ
 COPY --from=builder /QuickMPC/bazel-bin/computation_container_test /QuickMPC/bazel-bin/computation_container_test
 RUN true
@@ -134,4 +146,6 @@ RUN true
 COPY --from=builder /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
 RUN true
 COPY --from=builder /lib64 /lib64
+# Create directory to save core dump file
+RUN mkdir -p /tmp/cores
 WORKDIR /QuickMPC

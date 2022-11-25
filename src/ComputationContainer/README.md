@@ -44,3 +44,24 @@ make rm # docker-compose rm -fs
 ```bash
 make down # docker-compose down
 ```
+
+### How to start Computation Container
+
+#### Host side settings
+
+This is an optional instruction.  
+If it is skipped, logging stack trace will be skipped when Comutation Container is killed with signal.
+
+Set core dump file destination using shell script.
+
+```bash
+./Scripts/host_core_setting.sh  # needs permission to write /proc/sys/kernel/core_pattern
+```
+
+#### Start Computation Container inside a container
+
+Launch Computation Container executable using shell script.
+
+```bash
+/QuickMPC/Scripts/wrapped_run.sh /QuickMPC/bazel-bin/computation_container
+```
