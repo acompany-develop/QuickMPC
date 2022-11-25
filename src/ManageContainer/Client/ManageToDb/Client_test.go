@@ -263,6 +263,71 @@ func TestGetComputationResultSuccessGetStatus(t *testing.T) {
 	initialize()
 }
 
+// ERROR の status が存在する時にエラー情報を取得できるかTest
+func TestGetComputationResultFailedJobErrorInfo(t *testing.T) {
+	initialize()
+	defer initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	data := `{"what": "test"}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+
+	client := Client{}
+	_, info, err := client.GetComputationResult(defaultJobUUID)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if info == nil {
+		t.Error("there are no job error info")
+	}
+
+	expected := "test"
+	if info.What != expected {
+		t.Errorf("error information could not be parsed expectedly: required property What: %s, expected: %s", info.What, expected)
+	}
+
+	if info.Stacktrace != nil {
+		t.Error("error information could not be parsed expectedly: optional property Stacktrace is not nil")
+	}
+}
+
+// ERROR の status が存在する時にエラー情報(Stacktrace付き)を取得できるかTest
+func TestGetComputationResultFailedJobErrorInfoWithStacktrace(t *testing.T) {
+	initialize()
+	defer initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	data := `{
+		"what": "test",
+		"stacktrace": {
+			"frames": []
+		}
+	}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+
+	client := Client{}
+	_, info, err := client.GetComputationResult(defaultJobUUID)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if info == nil {
+		t.Error("there are no job error info")
+	}
+
+	expected := "test"
+	if info.What != expected {
+		t.Errorf("error information could not be parsed expectedly: required property What: %s, expected: %s", info.What, expected)
+	}
+
+	if info.Stacktrace == nil {
+		t.Error("error information could not be parsed expectedly: optional property Stacktrace is nil")
+	}
+}
+
 /* InsertModelParams(string, string, int32) error */
 // モデルパラメータが送れるかTest
 func TestInsertModelParamsSuccess(t *testing.T) {
