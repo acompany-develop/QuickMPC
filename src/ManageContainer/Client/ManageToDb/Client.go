@@ -181,11 +181,7 @@ func getComputationStatus(path string) (pb_types.JobStatus, *pb_types.JobErrorIn
 			continue
 		}
 
-		if err != nil {
-			return status, nil, err
-		}
-
-		return status, nil, nil
+		return status, nil, err
 	}
 
 	return pb_types.JobStatus_UNKNOWN, nil, errorAnyStatusFileNotFound
