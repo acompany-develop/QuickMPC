@@ -23,19 +23,23 @@ class RetryManager
 
     int count = 0;
     const std::string request_name;
+    const std::string target_name;
 
 public:
-    RetryManager(const std::string &request_name) : request_name(request_name) {}
+    RetryManager(const std::string &target_name, const std::string &request_name)
+        : request_name(request_name), target_name(target_name)
+    {
+    }
 
     auto canRetry(const grpc::StatusCode &error_code)
     {
-        // リトライ回数が規定回数未満
+        // リトライ回数が規定回数以上ならリトライしない
         ++count;
-        if (count < retry_num)
+        if (count >= retry_num)
         {
-            return true;
+            return false;
         }
-        // リトライする余地のあるエラーコード
+        // 該当のエラーコードであればリトライする
         if (error_code == grpc::StatusCode::DEADLINE_EXCEEDED
             || error_code == grpc::StatusCode::UNAVAILABLE
             || error_code == grpc::StatusCode::RESOURCE_EXHAUSTED)
@@ -54,7 +58,8 @@ public:
         2. retryPolicyに則さずにOK以外の異常なstatusが返ってきた時
         */
         QMPC_LOG_ERROR(
-            "To Bts {} Failed, Error Code: {}, Message: {}",
+            "To {} {} Failed, Error Code: {}, Message: {}",
+            target_name,
             request_name,
             status.error_code(),
             status.error_message()
@@ -70,7 +75,7 @@ public:
             return false;
         }
 
-        grpc::StatusCode error_code = status.error_code();
+        auto error_code = status.error_code();
         QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[" + request_name + "]");
         QMPC_LOG_ERROR(
             "ERROR({}): {}\n{}", error_code, status.error_message(), status.error_details()
