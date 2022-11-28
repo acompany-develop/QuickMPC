@@ -25,12 +25,6 @@ class RetryManager
     const std::string request_name;
     const std::string target_name;
 
-public:
-    RetryManager(const std::string &target_name, const std::string &request_name)
-        : request_name(request_name), target_name(target_name)
-    {
-    }
-
     auto canRetry(const grpc::StatusCode &error_code)
     {
         // リトライ回数が規定回数以上ならリトライしない
@@ -65,6 +59,12 @@ public:
             status.error_message()
         );
         qmpc::Log::throw_with_trace(std::runtime_error("リカバリー不能なエラーが発生"));
+    }
+
+public:
+    RetryManager(const std::string &target_name, const std::string &request_name)
+        : request_name(request_name), target_name(target_name)
+    {
     }
 
     auto retry(const grpc::Status &status)
