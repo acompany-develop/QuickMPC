@@ -66,4 +66,3 @@ std::vector<Triple> Client::readTriples(const unsigned int job_id, const unsigne
     return triples;
 }
 }  // namespace qmpc::ComputationToBts
-
