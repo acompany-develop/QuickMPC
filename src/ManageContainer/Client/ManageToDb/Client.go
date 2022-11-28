@@ -10,6 +10,8 @@ import (
 	"regexp"
 	"strconv"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
@@ -29,16 +31,16 @@ type ComputationResultMeta struct {
 type ComputationResult struct {
 	ID      string                `json:"id"`
 	JobUUID string                `json:"job_uuid"`
-	Status  int32                 `json:"status"`
+	Status  pb_types.JobStatus    `json:"status"`
 	Result  string                `json:"result"`
 	Meta    ComputationResultMeta `json:"meta"`
 }
 
 // Share形式
 type ShareMeta struct {
-	Schema  []string     `json:"schema"`
-	PieceID int32        `json:"piece_id"`
-	MatchingColumn int32 `json:"matching_column"`
+	Schema         []string `json:"schema"`
+	PieceID        int32    `json:"piece_id"`
+	MatchingColumn int32    `json:"matching_column"`
 }
 type Share struct {
 	DataID string      `json:"data_id"`
@@ -50,10 +52,10 @@ type Share struct {
 // 外部から呼ばれるinterface
 type Client struct{}
 type M2DbClient interface {
-	InsertShares(string, []string, int32, string, string, int32)error
+	InsertShares(string, []string, int32, string, string, int32) error
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
-	GetComputationResult(string) ([]*ComputationResult, error)
+	GetComputationResult(string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
 	InsertModelParams(string, string, int32) error
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
@@ -85,8 +87,8 @@ func (c Client) InsertShares(dataID string, schema []string, pieceID int32, shar
 	share := Share{
 		DataID: dataID,
 		Meta: ShareMeta{
-			Schema:  schema,
-			PieceID: pieceID,
+			Schema:         schema,
+			PieceID:        pieceID,
 			MatchingColumn: matchingColumn,
 		},
 		Value:  sharesJson,
@@ -147,33 +149,63 @@ func (c Client) GetSchema(dataID string) ([]string, error) {
 	return data.Meta.Schema, nil
 }
 
-func getComputationStatus(path string) (int32, error) {
+var (
+	errorSpecificStatusFileNotFound = errors.New("specific status file not found")
+	errorAnyStatusFileNotFound      = errors.New("any status file not found")
+)
+
+func readStatusFile(root string, status pb_types.JobStatus) ([]byte, error) {
+	path := fmt.Sprintf("%s/status_%s", root, pb_types.JobStatus_name[int32(status)])
+	if isExists(path) {
+		return ioutil.ReadFile(path)
+	}
+	return nil, fmt.Errorf(`file: "%#v" is not found, error: %w`, path, errorSpecificStatusFileNotFound)
+}
+
+func getComputationStatus(path string) (pb_types.JobStatus, *pb_types.JobErrorInfo, error) {
+	// ERROR が存在する場合は先に返す
+	raw, err := readStatusFile(path, pb_types.JobStatus_ERROR)
+	if err == nil {
+		info := &pb_types.JobErrorInfo{}
+		err = protojson.Unmarshal(raw, info)
+		return pb_types.JobStatus_ERROR, info, err
+	}
+
+	// JobStatus を降順で探す
 	statusSize := len(pb_types.JobStatus_value)
 	for i := statusSize - 1; i > 0; i-- {
-		status := pb_types.JobStatus_name[int32(i)]
-		if isExists(fmt.Sprintf("%s/status_%s", path, status)) {
-			return int32(i), nil
+		status := pb_types.JobStatus(i)
+		_, err = readStatusFile(path, status)
+
+		if errors.Is(err, errorSpecificStatusFileNotFound) {
+			continue
 		}
+
+		return status, nil, err
 	}
-	errMessage := fmt.Sprintf("computation result status is not found")
-	return 0, errors.New(errMessage)
+
+	return pb_types.JobStatus_UNKNOWN, nil, errorAnyStatusFileNotFound
 }
 
 // DBから計算結果を得る
-func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, error) {
+func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 
-	status, errStatus := getComputationStatus(path)
+	status, errInfo, errStatus := getComputationStatus(path)
 	if errStatus != nil {
-		return nil, errStatus
+		return nil, nil, errStatus
+	}
+
+	if errInfo != nil {
+		return nil, errInfo, nil
 	}
 
 	if !isExists(path + "/completed") {
 		// statusが存在する場合はstatusだけ返してエラーはnilとする
-		return []*ComputationResult{{Status: status}}, nil
+		return []*ComputationResult{{Status: status}}, nil, nil
 	}
 
 	var computationResults []*ComputationResult
@@ -185,24 +217,24 @@ func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, erro
 		}
 		raw, errRead := ioutil.ReadFile(piecePath)
 		if errRead != nil {
-			return nil, errRead
+			return nil, nil, errRead
 		}
 
 		var result *ComputationResult
 		errUnmarshal := json.Unmarshal(raw, &result)
 		if errUnmarshal != nil {
-			return nil, errUnmarshal
+			return nil, nil, errUnmarshal
 		}
 		computationResults = append(computationResults, result)
 	}
 
 	if len(computationResults) == 0 {
-		return nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
+		return nil, nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
 	}
 
 	// CC側でStatusが更新されないためここで更新する
 	computationResults[0].Status = status
-	return computationResults, nil
+	return computationResults, nil, nil
 }
 
 // DBにモデルパラメータを保存する
@@ -228,7 +260,7 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 			PieceID: pieceId,
 		},
 		Result: params,
-		Status: int32(pb_types.JobStatus_COMPLETED),
+		Status: pb_types.JobStatus_COMPLETED,
 	}
 	bytes, errMarshal := json.Marshal(saveParams)
 	if errMarshal != nil {
@@ -274,7 +306,7 @@ func getElapsedTime(path string) (float64, error) {
 	if endErr != nil {
 		return 0, endErr
 	}
-	return end-start, nil
+	return end - start, nil
 }
 
 func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
@@ -284,7 +316,6 @@ func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 	return getElapsedTime(path)
 }
-
 
 func (c Client) GetMatchingColumn(dataID string) (int32, error) {
 	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)

@@ -19,7 +19,6 @@ import (
 	common "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer"
-	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
 // ServerのInterface定義
@@ -175,22 +174,22 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		}, errToken
 	}
 
-	dataIds :=  in.GetTable().GetDataIds()
+	dataIds := in.GetTable().GetDataIds()
 	index := in.GetTable().GetIndex()
-	for i := 0; i < len(dataIds); i++{
+	for i := 0; i < len(dataIds); i++ {
 		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
 		if err != nil {
 			AppLogger.Error(err)
 			return &pb.ExecuteComputationResponse{
-				IsOk:    false,
+				IsOk: false,
 			}, err
 		}
 
-		if matchingColumn != index[i]{
+		if matchingColumn != index[i] {
 			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
 			AppLogger.Error(errMessage)
 			return &pb.ExecuteComputationResponse{
-				IsOk:    false,
+				IsOk: false,
 			}, errors.New(errMessage)
 		}
 	}
@@ -263,7 +262,7 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		}
 	}
 
-	computationResults, err := s.m2dbclient.GetComputationResult(JobUUID)
+	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID)
 
 	if err != nil {
 		stream.Send(&pb.GetComputationResultResponse{
@@ -272,6 +271,14 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 			Result:  "",
 		})
 		return err
+	}
+
+	if computationErrInfo != nil {
+		status, err := status.New(codes.Unknown, "computation result has error info").WithDetails(computationErrInfo)
+		if err != nil {
+			return err
+		}
+		return status.Err()
 	}
 
 	for _, result := range computationResults {
@@ -288,7 +295,7 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		stream.Send(&pb.GetComputationResultResponse{
 			Message:  "ok",
 			IsOk:     true,
-			Status:   pb_types.JobStatus(result.Status),
+			Status:   result.Status,
 			Result:   string(resultBytes),
 			PieceId:  result.Meta.PieceID,
 			Progress: progress,
@@ -346,22 +353,22 @@ func (s *server) Predict(ctx context.Context, in *pb.PredictRequest) (*pb.Predic
 		}, errToken
 	}
 
-	dataIds :=  in.GetTable().GetDataIds()
+	dataIds := in.GetTable().GetDataIds()
 	index := in.GetTable().GetIndex()
-	for i := 0; i < len(dataIds); i++{
+	for i := 0; i < len(dataIds); i++ {
 		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
 		if err != nil {
 			AppLogger.Error(err)
 			return &pb.PredictResponse{
-				IsOk:    false,
+				IsOk: false,
 			}, err
 		}
 
-		if matchingColumn != index[i]{
+		if matchingColumn != index[i] {
 			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
 			AppLogger.Error(errMessage)
 			return &pb.PredictResponse{
-				IsOk:    false,
+				IsOk: false,
 			}, errors.New(errMessage)
 		}
 	}
@@ -424,12 +431,12 @@ func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeReques
 	if err != nil {
 		AppLogger.Error(err)
 		return &pb.GetElapsedTimeResponse{
-			IsOk:   false,
+			IsOk: false,
 		}, err
 	}
 
 	return &pb.GetElapsedTimeResponse{
-		IsOk:   true,
+		IsOk:        true,
 		ElapsedTime: elapsedTime,
 	}, nil
 }

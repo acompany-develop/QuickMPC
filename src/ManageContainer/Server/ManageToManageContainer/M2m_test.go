@@ -7,6 +7,7 @@ import (
 	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer"
+	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
 // Test用のDbGとCCのmock
@@ -21,8 +22,8 @@ func (localDb) DeleteShares([]string) error {
 func (localDb) GetSchema(string) ([]string, error) {
 	return []string{""}, nil
 }
-func (localDb) GetComputationResult(string) ([]*m2db.ComputationResult, error) {
-	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil
+func (localDb) GetComputationResult(string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
+	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil, nil
 }
 func (localDb) InsertModelParams(string, string, int32) error {
 	return nil

@@ -3,13 +3,13 @@ package mng2db
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
 	"sync"
 	"testing"
-	"math"
 
 	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
@@ -184,7 +184,7 @@ func TestGetComputationResultSuccess(t *testing.T) {
 	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, err := client.GetComputationResult(defaultJobUUID)
+	result, _, err := client.GetComputationResult(defaultJobUUID)
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
@@ -198,7 +198,7 @@ func TestGetComputationResultSuccess(t *testing.T) {
 	if result[0].Meta.PieceID != defaultPieceID {
 		t.Error(fmt.Sprintf("get computation result failed: PieceID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
 	}
-	if result[0].Status != int32(pb_types.JobStatus_COMPLETED) {
+	if result[0].Status != pb_types.JobStatus_COMPLETED {
 		t.Error(fmt.Sprintf("get computation result failed: Status must be %d, but value is %d", pb_types.JobStatus_COMPLETED, result[0].Status))
 	}
 
@@ -210,7 +210,7 @@ func TestGetComputationResultFailedEmptyResult(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	_, err := client.GetComputationResult(defaultJobUUID)
+	_, _, err := client.GetComputationResult(defaultJobUUID)
 
 	if err == nil {
 		t.Error("get computation result must be failed: result is not registered.")
@@ -228,7 +228,7 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
-	_, err := client.GetComputationResult(defaultJobUUID)
+	_, _, err := client.GetComputationResult(defaultJobUUID)
 
 	if err == nil {
 		t.Error("get computation result must be failed: computation is running(complated file is not found).")
@@ -243,24 +243,89 @@ func TestGetComputationResultSuccessGetStatus(t *testing.T) {
 
 	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
 	statusSize := len(pb_types.JobStatus_value)
-	// UNKNOWNを除く各Statusについて昇順にチェック
-	for i := 1; i < statusSize; i++ {
+	// UNKNOWN, ERRORを除く各Statusについて昇順にチェック
+	for i := 2; i < statusSize; i++ {
 		status := pb_types.JobStatus_name[int32(i)]
 		os.Create(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, status))
 
 		client := Client{}
-		result, err := client.GetComputationResult(defaultJobUUID)
+		result, _, err := client.GetComputationResult(defaultJobUUID)
 
 		if err != nil {
 			t.Error("get computation result failed: " + err.Error())
 		}
-		resultIndex := result[0].Status
+		resultIndex := int32(result[0].Status)
 		if resultIndex != int32(i) {
 			t.Errorf("get computation result failed: status must be %s, but value is %s.", status, pb_types.JobStatus_name[resultIndex])
 		}
 	}
 
 	initialize()
+}
+
+// ERROR の status が存在する時にエラー情報を取得できるかTest
+func TestGetComputationResultFailedJobErrorInfo(t *testing.T) {
+	initialize()
+	defer initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	data := `{"what": "test"}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+
+	client := Client{}
+	_, info, err := client.GetComputationResult(defaultJobUUID)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if info == nil {
+		t.Error("there are no job error info")
+	}
+
+	expected := "test"
+	if info.What != expected {
+		t.Errorf("error information could not be parsed expectedly: required property What: %s, expected: %s", info.What, expected)
+	}
+
+	if info.Stacktrace != nil {
+		t.Error("error information could not be parsed expectedly: optional property Stacktrace is not nil")
+	}
+}
+
+// ERROR の status が存在する時にエラー情報(Stacktrace付き)を取得できるかTest
+func TestGetComputationResultFailedJobErrorInfoWithStacktrace(t *testing.T) {
+	initialize()
+	defer initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	data := `{
+		"what": "test",
+		"stacktrace": {
+			"frames": []
+		}
+	}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+
+	client := Client{}
+	_, info, err := client.GetComputationResult(defaultJobUUID)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if info == nil {
+		t.Error("there are no job error info")
+	}
+
+	expected := "test"
+	if info.What != expected {
+		t.Errorf("error information could not be parsed expectedly: required property What: %s, expected: %s", info.What, expected)
+	}
+
+	if info.Stacktrace == nil {
+		t.Error("error information could not be parsed expectedly: optional property Stacktrace is nil")
+	}
 }
 
 /* InsertModelParams(string, string, int32) error */
@@ -363,8 +428,8 @@ func TestGetElapsedTimeSuccess(t *testing.T) {
 	if err != nil {
 		t.Error("get elapsed time failed: " + err.Error())
 	}
-	if math.Abs(elapsedTime - expect) > 0.001 {
-		t.Errorf("get elapsed time failed: elapsedTime must be %f, but value is %f.",expect,elapsedTime)
+	if math.Abs(elapsedTime-expect) > 0.001 {
+		t.Errorf("get elapsed time failed: elapsedTime must be %f, but value is %f.", expect, elapsedTime)
 	}
 }
 
@@ -385,7 +450,7 @@ func TestGetMatchingColumnSuccess(t *testing.T) {
 	}
 
 	var expect int32 = 1
-	if matching_column != expect{
+	if matching_column != expect {
 		t.Errorf("get matching column failed: matching column must be %v, but value is %v", expect, matching_column)
 	}
 
@@ -405,5 +470,6 @@ func TestGetMatchingColumnFailedEmptyID(t *testing.T) {
 
 	initialize()
 }
+
 // XXX: オブジェクトストレージへの移行に備えて廃止予定
 /* GetDataList() (string, error) */
