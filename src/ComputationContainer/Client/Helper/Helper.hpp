@@ -14,6 +14,80 @@
 
 #include "ConfigParse/ConfigParse.hpp"
 
+class RetryManager
+{
+    // リトライ回数
+    static constexpr int retry_num = 10;
+    // リトライ間隔
+    static constexpr int retry_wait_time = 5;
+
+    int count = 0;
+    const std::string request_name;
+
+public:
+    RetryManager(const std::string &request_name) : request_name(request_name) {}
+
+    auto canRetry(const grpc::StatusCode &error_code)
+    {
+        // リトライ回数が規定回数未満
+        ++count;
+        if (count < retry_num)
+        {
+            return true;
+        }
+        // リトライする余地のあるエラーコード
+        if (error_code == grpc::StatusCode::DEADLINE_EXCEEDED
+            || error_code == grpc::StatusCode::UNAVAILABLE
+            || error_code == grpc::StatusCode::RESOURCE_EXHAUSTED)
+        {
+            return true;
+        }
+        // retryの余地なし
+        return false;
+    }
+
+    [[noreturn]] auto throwError(const grpc::Status &status) const
+    {
+        /*
+        ここに到達するのは以下の2パターン
+        1. statusがretryPolicyに即した場合に再試行し切ってもOKにならなかった時
+        2. retryPolicyに則さずにOK以外の異常なstatusが返ってきた時
+        */
+        QMPC_LOG_ERROR(
+            "To Bts {} Failed, Error Code: {}, Message: {}",
+            request_name,
+            status.error_code(),
+            status.error_message()
+        );
+        qmpc::Log::throw_with_trace(std::runtime_error("リカバリー不能なエラーが発生"));
+    }
+
+    auto retry(const grpc::Status &status)
+    {
+        if (status.ok())
+        {
+            // 正常に通信できたためリトライ不要
+            return false;
+        }
+
+        grpc::StatusCode error_code = status.error_code();
+        QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[" + request_name + "]");
+        QMPC_LOG_ERROR(
+            "ERROR({}): {}\n{}", error_code, status.error_message(), status.error_details()
+        );
+
+        if (canRetry(error_code))
+        {
+            // リトライ可能と判断してsleepの後にリトライ
+            std::this_thread::sleep_for(std::chrono::seconds(retry_wait_time));
+            return true;
+        }
+
+        // リトライ不能と判断してthrow
+        throwError(status);
+    }
+};
+
 class LoggingClientInterceptor : public grpc::experimental::Interceptor
 {
     std::string grpc_method_full_name;
