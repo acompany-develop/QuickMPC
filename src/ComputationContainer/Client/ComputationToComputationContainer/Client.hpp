@@ -140,13 +140,14 @@ public:
         computationtocomputation::Share share;
         google::protobuf::Empty response;
         share = makeShare(value, share_id, party_id);
+        grpc::Status status;
 
         // リトライポリシーに従ってリクエストを送る
         auto retry_manager = RetryManager("CC", "exchangeShare");
         do
         {
             grpc::ClientContext context;
-            grpc::Status status = stub_->ExchangeShare(&context, share, &response);
+            status = stub_->ExchangeShare(&context, share, &response);
         } while (retry_manager.retry(status));
 
         // 送信に成功
@@ -166,6 +167,7 @@ public:
         std::vector<computationtocomputation::Shares> shares;
         google::protobuf::Empty response;
         shares = makeShares(values, share_ids, length, party_id);
+        grpc::Status status;
 
         // リトライポリシーに従ってリクエストを送る
         auto retry_manager = RetryManager("CC", "exchangeShares");
@@ -184,7 +186,7 @@ public:
                 }
             }
             stream->WritesDone();
-            grpc::Status status = stream->Finish();
+            status = stream->Finish();
         } while (retry_manager.retry(status));
 
         // 送信に成功
