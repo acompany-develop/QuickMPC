@@ -1,17 +1,15 @@
 #!/bin/bash
 
-set -euo pipefail
+set -uo pipefail
 
 KERNEL_CORE_PATTERN_FILE="/proc/sys/kernel/core_pattern"
 
-SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
+SCRIPT_DIR=$(cd "$(dirname "$0")" || exit 1; pwd)
 CORE_PATTERN_FILE="${SCRIPT_DIR}/data/core_pattern.txt"
 GDB_CMD_FILE="${SCRIPT_DIR}/data/gdb_print_stacktrace_cmd.txt"
 
 function core_pattern_check() {
-  set +e
   result="$(grep "^$(tr -d '\n' < "${CORE_PATTERN_FILE}")$" "${KERNEL_CORE_PATTERN_FILE}")"
-  set -e
 
   if [ -z "${result}" ]
   then
@@ -26,11 +24,9 @@ function core_pattern_check() {
 
 function run()
 {
-  set +e
   env "${@:1:$(($#-1))}" "${@: -1}"
 
   status=$?
-  set -e
 
   if [ $status -eq 0 ]
   then
@@ -79,5 +75,5 @@ core_pattern_check
 
 while true
 do
-  run
+  run "$@"
 done
