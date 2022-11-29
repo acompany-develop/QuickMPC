@@ -62,7 +62,7 @@ public:
         {
             if (boost::math::isinf(v))
             {
-                value = static_cast<T>(std::numeric_limits<U>::max());
+                value = static_cast<T>(maxInt);
             }
             else
             {
@@ -79,7 +79,7 @@ public:
         D v_{str};
         if (boost::math::isinf(v_))
         {
-            value = static_cast<T>(std::numeric_limits<D>::max());
+            value = static_cast<T>(maxInt);
         }
         else
             value = static_cast<T>(v_ * shift);
@@ -104,7 +104,7 @@ public:
         D ret{this->getVal<D>()};
         if (boost::math::isinf(ret))
         {
-            ret = std::numeric_limits<D>::max();
+            ret = static_cast<D>(maxInt);
         }
         ret /= shift;
         return ret.str(20, std::ios_base::fixed);
@@ -114,7 +114,7 @@ public:
         D ret{this->getVal<D>()};
         if (boost::math::isinf(ret))
         {
-            ret = std::numeric_limits<D>::max();
+            ret = static_cast<D>(maxInt);
         }
         ret /= shift;
         ret = mp::round(ret);
@@ -126,7 +126,7 @@ public:
         D ret{this->getVal<D>()};
         if (boost::math::isinf(ret))
         {
-            ret = std::numeric_limits<D>::max();
+            ret = static_cast<D>(maxInt);
         }
         ret /= shift;
         ret = mp::sqrt(ret);
@@ -137,7 +137,7 @@ public:
         auto ret{this->getVal<double>()};
         if (boost::math::isinf(ret))
         {
-            ret = std::numeric_limits<double>::max();
+            ret = static_cast<double>(maxInt);
         }
         return ret / shift;
     }
@@ -148,7 +148,7 @@ public:
         D inv{this->getVal<D>()};
         if (boost::math::isinf(inv))
         {
-            inv = std::numeric_limits<D>::max();
+            inv = static_cast<D>(maxInt);
         }
         return FixedPointImpl(D{shift} / inv);
     }
@@ -190,7 +190,7 @@ public:
         D inv{obj.getVal<D>()};
         if (boost::math::isinf(inv))
         {
-            inv = std::numeric_limits<D>::max();
+            inv = static_cast<D>(maxInt);
         }
         D v = (this->getVal<D>() / inv) * shift;
         value = v.template convert_to<T>();
