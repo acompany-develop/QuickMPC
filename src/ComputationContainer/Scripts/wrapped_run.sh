@@ -2,26 +2,27 @@
 
 set -uo pipefail
 
-KERNEL_CORE_PATTERN_FILE="/proc/sys/kernel/core_pattern"
+readonly KERNEL_CORE_PATTERN_FILE="/proc/sys/kernel/core_pattern"
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" || exit 1; pwd)
-CORE_PATTERN_FILE="${SCRIPT_DIR}/data/core_pattern.txt"
-GDB_CMD_FILE="${SCRIPT_DIR}/data/gdb_print_stacktrace_cmd.txt"
+readonly SCRIPT_DIR
+readonly CORE_PATTERN_FILE="${SCRIPT_DIR}/data/core_pattern.txt"
+readonly GDB_CMD_FILE="${SCRIPT_DIR}/data/gdb_print_stacktrace_cmd.txt"
+
+readonly JOB_RESULT_ROOT='/Db/result'
+readonly ERROR_JSON='{"what": "Unexpected error occured.  Contact your administrator."}'
 
 function write_status_error()
 {
-  JOB_RESULT_ROOT='/Db/result'
-  ERROR_JSON='{"what": "Unexpected error occured.  Contact your administrator."}'
-
   for job_result_dir in "${JOB_RESULT_ROOT}"/*
   do
-    completed_file_path="${job_result_dir}/status_COMPLETED"
+    local completed_file_path="${job_result_dir}/status_COMPLETED"
     if [[ -f "$completed_file_path" ]]
     then
       continue
     fi
 
-    error_file_path="${job_result_dir}/status_ERROR"
+    local error_file_path="${job_result_dir}/status_ERROR"
     if [[ -f "$error_file_path" ]]
     then
       continue
@@ -32,7 +33,7 @@ function write_status_error()
 }
 
 function core_pattern_check() {
-  result="$(grep "^$(tr -d '\n' < "${CORE_PATTERN_FILE}")$" "${KERNEL_CORE_PATTERN_FILE}")"
+  declare -r result="$(grep "^$(tr -d '\n' < "${CORE_PATTERN_FILE}")$" "${KERNEL_CORE_PATTERN_FILE}")"
 
   if [ -z "${result}" ]
   then
@@ -49,7 +50,7 @@ function run()
 {
   env "${@:1:$(($#-1))}" "${@: -1}"
 
-  status=$?
+  declare -r status=$?
 
   if [ $status -eq 0 ]
   then
@@ -64,7 +65,7 @@ function run()
   fi
 
   # find executable file
-  executable_file=""
+  local executable_file=""
 
   for arg in "$@"
   do
@@ -75,7 +76,7 @@ function run()
   done
 
   # find latest core file
-  core_file=$(find /tmp/cores/ -maxdepth 1 -type f -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1,NR==3 {print $2}' | head -1)
+  declare -r core_file=$(find /tmp/cores/ -maxdepth 1 -type f -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1,NR==3 {print $2}' | head -1)
 
   if [[ "$core_file" == "" ]]
   then
