@@ -39,36 +39,24 @@ bool Client::executeComputeFromSP(
     const bool is_job_trigger_party
 ) const
 {
+    // リクエスト設定
     computationtocomputationforjob::ExecuteComputeFromSPRequest execute_compute_from_sp_request;
     google::protobuf::Empty response;
     execute_compute_from_sp_request = convertExecuteComputationRequest(mc2cc_exec_comp_request);
     execute_compute_from_sp_request.set_job_id(job_id);
     execute_compute_from_sp_request.set_is_job_trigger_party(is_job_trigger_party);
+    grpc::Status status;
 
-    while (true)
+    // リトライポリシーに従ってリクエストを送る
+    auto retry_manager = RetryManager("CC", "executeComputeFromSP");
+    do
     {
         grpc::ClientContext context;
-        grpc::Status status =
-            stub_->ExecuteComputeFromSP(&context, execute_compute_from_sp_request, &response);
-        // QMPC_LOG_INFO("exchange message: share_id is {}, party_id is {}, value is
-        // {}",share_id,party_id,share_id);
+        status = stub_->ExecuteComputeFromSP(&context, execute_compute_from_sp_request, &response);
+    } while (retry_manager.retry(status));
 
-        if (!status.ok())
-        {
-            QMPC_LOG_ERROR(
-                "{:<30} GetFeature rpc failed. or job not finished yet.", "[executeComputeFromSP]"
-            );
-            QMPC_LOG_ERROR(
-                "ERROR({0}): {1}\n{2}",
-                status.error_code(),
-                status.error_message(),
-                status.error_details()
-            );
-        }
-        else
-            return true;
-        std::this_thread::sleep_for(std::chrono::seconds(10));
-    }
+    // 送信に成功
+    return true;
 }
 
 // MC2CCのExecuteComputationRequestをCC2CCのexecuteComputeFromSPRequestに変換するやつ

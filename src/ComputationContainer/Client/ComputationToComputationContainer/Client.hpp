@@ -136,29 +136,22 @@ public:
     template <typename T>
     bool exchangeShare(T &&value, qmpc::Share::AddressId share_id, int party_id) const
     {
+        // リクエスト設定
         computationtocomputation::Share share;
         google::protobuf::Empty response;
         share = makeShare(value, share_id, party_id);
-        while (true)
+        grpc::Status status;
+
+        // リトライポリシーに従ってリクエストを送る
+        auto retry_manager = RetryManager("CC", "exchangeShare");
+        do
         {
             grpc::ClientContext context;
-            grpc::Status status = stub_->ExchangeShare(&context, share, &response);
-            // QMPC_LOG_INFO("exchange message : share_id is {} party_id is {}, value is
-            // {}",share_id,party_id,value);
-            if (!status.ok())
-            {
-                QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[exchangeShare]");
-                QMPC_LOG_ERROR(
-                    "ERROR({0}): {1}\n{2}",
-                    status.error_code(),
-                    status.error_message(),
-                    status.error_details()
-                );
-            }
-            else
-                return true;
-            std::this_thread::sleep_for(std::chrono::seconds(10));
-        }
+            status = stub_->ExchangeShare(&context, share, &response);
+        } while (retry_manager.retry(status));
+
+        // 送信に成功
+        return true;
     }
 
     // 複数シェアを一括exchangeする場合
@@ -170,10 +163,15 @@ public:
         int party_id
     ) const
     {
+        // リクエスト設定
         std::vector<computationtocomputation::Shares> shares;
         google::protobuf::Empty response;
         shares = makeShares(values, share_ids, length, party_id);
-        while (true)
+        grpc::Status status;
+
+        // リトライポリシーに従ってリクエストを送る
+        auto retry_manager = RetryManager("CC", "exchangeShares");
+        do
         {
             grpc::ClientContext context;
             std::shared_ptr<grpc::ClientWriter<computationtocomputation::Shares>> stream(
@@ -188,21 +186,11 @@ public:
                 }
             }
             stream->WritesDone();
-            grpc::Status status = stream->Finish();
-            if (!status.ok())
-            {
-                QMPC_LOG_ERROR("{:<30} GetFeature rpc failed.", "[exchangeShares]");
-                QMPC_LOG_ERROR(
-                    "ERROR({}): {}\n{}",
-                    status.error_code(),
-                    status.error_message(),
-                    status.error_details()
-                );
-            }
-            else
-                return true;
-            std::this_thread::sleep_for(std::chrono::seconds(10));
-        }
+            status = stream->Finish();
+        } while (retry_manager.retry(status));
+
+        // 送信に成功
+        return true;
     }
 };
 }  // namespace qmpc::ComputationToComputation
