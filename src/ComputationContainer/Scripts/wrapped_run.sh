@@ -48,7 +48,14 @@ function core_pattern_check() {
 
 function run()
 {
-  env "${@:1:$(($#-1))}" "${@: -1}"
+  declare -r executable_file="${*: -1}"
+  if [[ ! -x "$executable_file" ]]
+  then
+    echo "ERROR: ${executable_file} is not executable file"
+    exit 1
+  fi
+
+  env "${@:1:$(($#-1))}" "${executable_file}"
 
   declare -r status=$?
 
@@ -64,21 +71,10 @@ function run()
     return 1
   fi
 
-  # find executable file
-  local executable_file=""
-
-  for arg in "$@"
-  do
-    if [[ -x "$arg" ]]
-    then
-      executable_file="$arg"
-    fi
-  done
-
   # find latest core file
   declare -r core_file=$(find /tmp/cores/ -maxdepth 1 -type f -exec stat -c '%Y %n' {} \; | sort -nr | awk 'NR==1,NR==3 {print $2}' | head -1)
 
-  if [[ "$core_file" == "" ]]
+  if [[ -z "${core_file}" ]]
   then
     echo 'WARNING: core file was not found'
     return 1
