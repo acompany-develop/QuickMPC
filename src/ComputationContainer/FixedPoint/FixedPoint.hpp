@@ -137,7 +137,7 @@ public:
         auto ret{this->getVal<double>()};
         if (boost::math::isinf(ret))
         {
-            ret = static_cast<double>(maxInt);;
+            ret = static_cast<double>(maxInt);
         }
         return ret / shift;
     }
