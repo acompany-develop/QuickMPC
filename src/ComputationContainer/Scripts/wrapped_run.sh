@@ -93,8 +93,6 @@ fi
 
 core_pattern_check
 
-while true
-do
-  write_status_error
-  run "$@"
-done
+write_status_error
+run "$@"
+write_status_error
