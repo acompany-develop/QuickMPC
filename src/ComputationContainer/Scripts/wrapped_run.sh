@@ -8,6 +8,29 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" || exit 1; pwd)
 CORE_PATTERN_FILE="${SCRIPT_DIR}/data/core_pattern.txt"
 GDB_CMD_FILE="${SCRIPT_DIR}/data/gdb_print_stacktrace_cmd.txt"
 
+function write_status_error()
+{
+  JOB_RESULT_ROOT='/Db/result'
+  ERROR_JSON='{"what": "Unexpected error occured.  Contact your administrator."}'
+
+  for job_result_dir in "${JOB_RESULT_ROOT}"/*
+  do
+    completed_file_path="${job_result_dir}/status_COMPLETED"
+    if [[ -f "$completed_file_path" ]]
+    then
+      continue
+    fi
+
+    error_file_path="${job_result_dir}/status_ERROR"
+    if [[ -f "$error_file_path" ]]
+    then
+      continue
+    fi
+
+    echo "$ERROR_JSON" > "$error_file_path"
+  done
+}
+
 function core_pattern_check() {
   result="$(grep "^$(tr -d '\n' < "${CORE_PATTERN_FILE}")$" "${KERNEL_CORE_PATTERN_FILE}")"
 
@@ -75,5 +98,6 @@ core_pattern_check
 
 while true
 do
+  write_status_error
   run "$@"
 done
