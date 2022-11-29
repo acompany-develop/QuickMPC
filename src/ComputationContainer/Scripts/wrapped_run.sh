@@ -81,6 +81,8 @@ function run()
   fi
 
   gdb "${executable_file}" "${core_file}" -x "${GDB_CMD_FILE}" -batch -quiet
+
+  return $status
 }
 
 
@@ -95,4 +97,7 @@ core_pattern_check
 
 write_status_error
 run "$@"
+declare -r status=$?
 write_status_error
+
+exit $status
