@@ -250,16 +250,19 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		if !ok {
 			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
 		}
+		// optional な情報のためロガーに残すのみでエラーを返さない
+		logger_func := func(template string, args ...interface{}) {}
 		switch st.Code() {
 		case codes.NotFound:
-			AppLogger.Infof("gRPC CheckProgress method with JobUUID: [%s] received status code: NotFound", JobUUID)
-		case codes.Internal:
-			AppLogger.Warningf("gRPC CheckProgress method with JobUUID: [%s] received status code: Internal", JobUUID)
-			return err
+			logger_func = AppLogger.Infof
+		case
+			codes.Internal,
+			codes.Unavailable:
+			logger_func = AppLogger.Warningf
 		default:
-			AppLogger.Errorf("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%d], Message [%s]", JobUUID, st.Code(), st.Message())
-			return err
+			logger_func = AppLogger.Errorf
 		}
+		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
 	}
 
 	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID)
