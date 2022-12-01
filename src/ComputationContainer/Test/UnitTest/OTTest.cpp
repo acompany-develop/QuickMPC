@@ -28,9 +28,10 @@ int64_t prime = 1000000007ll;
 int64_t g = 2;
 int64_t h = 3;
 
-int64_t pow(int64_t base, int64_t a, int64_t prime)
+template <typename T>
+T pow(T base, T a, T prime)
 {
-    int64_t ret{1};
+    T ret{1};
     while (a > 0)
     {
         if (a & 1) (ret *= base) %= prime;
@@ -52,17 +53,19 @@ string sha256(const string str)
     for (int i = 0; i < SHA256_DIGEST_LENGTH; i++)
     {
         ss << hex << setw(2) << setfill('0') << (int)hash[i];
+        // std::cout << setw(3) << setfill('0') << (int)hash[i] << std::endl;
     }
     return ss.str();
 }
 
-void send(const std::string &msg)
+template <typename T>
+void send(T &msg, const std::string &port, const std::string &ip)
 {
     asio::io_service io_service;
     tcp::socket socket(io_service);
 
     tcp::resolver resolver(io_service);
-    tcp::resolver::query query("computation_container1", "31400");
+    tcp::resolver::query query(ip, port);
     auto endpoint = resolver.resolve(query)->endpoint();
     // 接続
     socket.connect(endpoint);
@@ -85,11 +88,11 @@ void send(const std::string &msg)
     }
 }
 
-std::string recv()
+std::string recv(int port)
 {
     asio::io_service io_service;
 
-    tcp::acceptor acc(io_service, tcp::endpoint(tcp::v4(), 31400));
+    tcp::acceptor acc(io_service, tcp::endpoint(tcp::v4(), port));
     tcp::socket socket(io_service);
 
     // 接続待機
@@ -99,16 +102,6 @@ std::string recv()
     asio::streambuf receive_buffer;
     boost::system::error_code error;
     asio::read(socket, receive_buffer, asio::transfer_all(), error);
-    std::vector<int> x = {10, 11, 12, 13};
-    std::vector<long long> k(x.size());
-    std::random_device rnd;  // 非決定的な乱数生成器を生成
-    std::mt19937 mt(rnd());  //  メルセンヌ・ツイスタの32ビット版、引数は初期シード値
-    std::uniform_int_distribution<> rand100(0, 100000);  // [0, 99] 範囲の一様乱数
-    for (auto &a : k)
-    {
-        a = rand100(mt);
-        std::cout << a << std::endl;
-    }
     if (error && error != asio::error::eof)
     {
         std::cout << "receive failed: " << error.message() << std::endl;
@@ -123,8 +116,17 @@ std::string recv()
 }
 TEST(OTTest, boost)
 {
-    std::thread th([&]() { send("ping"); });
-    std::cout << recv() << std::endl;
+    std::thread th(
+        [&]()
+        {
+            send("ping", "31400", "computation_container1");
+            recv(31401);
+            send("ping3", "31402", "computation_container1");
+        }
+    );
+    std::cout << recv(31400) << std::endl;
+    send("ping2", "31401", "computation_container1");
+    std::cout << recv(31402) << std::endl;
     th.join();
 }
 TEST(OTTest, ot1)
@@ -203,19 +205,19 @@ TEST(OTTest, ot1)
 }
 TEST(OTTest, OT4)
 {
-    int r = 3;
+    int64_t r = 3;
 
     std::vector<int> x = {10, 11, 12, 13, 14};
     std::random_device rnd;  // 非決定的な乱数生成器を生成
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<> rand(0, 100000);
-    int s = rand(mt);
+    int64_t s = rand(mt);
     auto beta = pow(g, s, prime);   // 4
     auto beta2 = pow(h, r, prime);  // 27
     (beta *= beta2) %= prime;
     std::cout << beta << std::endl;
 
-    std::vector<int> k(x.size());
+    std::vector<int64_t> k(x.size());
     int i = 1;
     std::vector<std::pair<int64_t, int64_t>> ab;
     for (auto &a : k)
@@ -237,9 +239,9 @@ TEST(OTTest, OT4)
 }
 TEST(OTTest, ot5)
 {
-    int r = 3;
+    int64_t r = 3;
 
-    std::vector<int> x = {1, 0, 1, 1, 0, 1};
+    std::vector<int64_t> x = {1, 0, 1, 1, 0, 1};
 
     std::random_device rnd;  // 非決定的な乱数生成器を生成
     std::mt19937 mt(rnd());
@@ -279,7 +281,7 @@ TEST(OTTest, ot5)
         return;
     }
 
-    std::vector<int> k(x.size());
+    std::vector<int64_t> k(x.size());
     int i = 1;
     std::vector<std::pair<int64_t, int64_t>> ab;
     for (auto &a : k)
@@ -301,21 +303,21 @@ TEST(OTTest, ot5)
 }
 TEST(OTTest, ot7)
 {
-    int r = 3;
+    int64_t r = 3;
 
-    std::vector<int> x = {11, 12, 13, 14, 15, 16};
+    std::vector<int64_t> x = {11, 12, 13, 14, 15, 16};
 
     std::random_device rnd;  // 非決定的な乱数生成器を生成
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<> rand(0, 100000);
     std::uniform_int_distribution<> rand_ast(1, 100000);
-    int s = rand(mt);
+    int64_t s = rand(mt);
     auto beta = pow(g, s, prime);   // 4
     auto beta2 = pow(h, r, prime);  // 27
     (beta *= beta2) %= prime;
     std::cout << beta << std::endl;
 
-    int k = rand(mt);
+    int64_t k = rand(mt);
     auto a = pow(g, k, prime);
     std::vector<std::pair<bm::cpp_int, int64_t>> ab;
     for (int i = 1; i <= x.size(); ++i)
