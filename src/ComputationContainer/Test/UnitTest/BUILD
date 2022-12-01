@@ -130,3 +130,18 @@ cc_test(
     ],
     visibility = ["//visibility:public"],
 )
+
+
+cc_test(
+    name = "OTTest",
+    srcs = [
+        "OTTest.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include","-std=c++11 -march=native -msse4.1 -msse4.2 -madx"],
+    linkopts=["-lboost_system", "-lboost_thread","-lcrypto"],
+    deps = [
+        "@gtest//:main",
+        "//ConfigParse:config_parse",
+        "@libsodium//:sodium",
+    ],
+)
