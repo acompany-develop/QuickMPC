@@ -69,8 +69,8 @@ void send(T &msg, const std::string &port, const std::string &ip)
     auto endpoint = resolver.resolve(query)->endpoint();
     // 接続
     socket.connect(endpoint);
-    std::cout << endpoint.address().to_string() << std::endl;
-    // メッセージ送信
+    // std::cout << endpoint.address().to_string() << std::endl;
+    //  メッセージ送信
     asio::streambuf receive_buffer;
     boost::system::error_code error;
     asio::write(socket, asio::buffer(msg), error);
@@ -81,14 +81,15 @@ void send(T &msg, const std::string &port, const std::string &ip)
     }
     else
     {
-        std::cout << "first send correct!" << std::endl;
-        // asio::read(socket, receive_buffer, asio::transfer_all(), error);
-        // const char *data = asio::buffer_cast<const char *>(receive_buffer.data());
-        // std::cout << data << std::endl;
+        // std::cout << msg << std::endl;
+        //  asio::read(socket, receive_buffer, asio::transfer_all(), error);
+        //  const char *data = asio::buffer_cast<const char *>(receive_buffer.data());
+        //  std::cout << data << std::endl;
     }
 }
 
-std::string recv(int port)
+template <typename T>
+T recv(size_t size, int port)
 {
     asio::io_service io_service;
 
@@ -99,19 +100,20 @@ std::string recv(int port)
     acc.accept(socket);
 
     // メッセージ受信
+    T msg;
+    msg.resize(size);
     asio::streambuf receive_buffer;
     boost::system::error_code error;
-    asio::read(socket, receive_buffer, asio::transfer_all(), error);
+    asio::read(socket, asio::buffer(msg), error);
     if (error && error != asio::error::eof)
     {
         std::cout << "receive failed: " << error.message() << std::endl;
     }
     else
     {
-        const char *data = asio::buffer_cast<const char *>(receive_buffer.data());
-        std::cout << data << std::endl;
-        // asio::write(socket, asio::buffer(k), error);
-        return data;
+        // const char *data = asio::buffer_cast<const char *>(receive_buffer.data());
+        //  asio::write(socket, asio::buffer(k), error);
+        return msg;
     }
 }
 TEST(OTTest, boost)
@@ -119,14 +121,26 @@ TEST(OTTest, boost)
     std::thread th(
         [&]()
         {
+            string rec;
+            // std::vector<int> vec(100);
+            rec.resize(10);
             send("ping", "31400", "computation_container1");
-            recv(31401);
+            auto vec = recv<std::vector<int>>(32, 31401);
+            for (auto a : vec)
+            {
+                std::cout << "recv vec is " << a << std::endl;
+            }
             send("ping3", "31402", "computation_container1");
         }
     );
-    std::cout << recv(31400) << std::endl;
-    send("ping2", "31401", "computation_container1");
-    std::cout << recv(31402) << std::endl;
+    string pin1, pin2;
+    pin1.resize(10);
+    pin2.resize(10);
+    std::cout << recv<string>(10, 31400) << std::endl;
+    std::vector<int> vec = {11, 12, 13, 14, 15};
+    vec.resize(32);
+    send(vec, "31401", "computation_container1");
+    std::cout << recv<string>(10, 31402) << std::endl;
     th.join();
 }
 TEST(OTTest, ot1)
