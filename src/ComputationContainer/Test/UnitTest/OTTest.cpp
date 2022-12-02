@@ -9,6 +9,7 @@
 #include <boost/integer/mod_inverse.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/integer.hpp>
+#include <chrono>
 #include <functional>
 #include <iostream>
 #include <random>
@@ -28,10 +29,10 @@ int64_t prime = 1000000007ll;
 int64_t g = 2;
 int64_t h = 3;
 
-template <typename T>
-T pow(T base, T a, T prime)
+template <typename B, typename T, typename P>
+B pow(B base, T a, P prime)
 {
-    T ret{1};
+    B ret{1};
     while (a > 0)
     {
         if (a & 1) (ret *= base) %= prime;
@@ -311,52 +312,82 @@ TEST(OTTest, ot5)
 }
 TEST(OTTest, ot7)
 {
-    int64_t r = 3;
+    constexpr size_t size = 6;
+    std::thread th(
+        [&]()
+        {
+            const auto clock_start = std::chrono::system_clock::now();
+            int64_t r = 4;
 
+            std::random_device rnd;  // 非決定的な乱数生成器を生成
+            std::mt19937 mt(rnd());
+            std::uniform_int_distribution<> rand(0, 100000);
+            std::uniform_int_distribution<> rand_ast(1, 100000);
+            int64_t s = rand(mt);
+            auto beta = pow(g, s, prime);   // 4
+            auto beta2 = pow(h, r, prime);  // 27
+            (beta *= beta2) %= prime;
+            std::cout << beta << std::endl;
+            std::vector<int64_t> b;
+            b.emplace_back(beta);
+            send(b, "30000", "computation_container1");
+            auto ab = recv<std::vector<std::pair<bm::cpp_int, int64_t>>>(size, 30001);
+            for (int i = 0; i < size; ++i)
+            {
+                bm::cpp_int e = ab[i].first;
+                int64_t a = ab[i].second;
+                bm::cpp_int as = pow(a, s, prime);
+                auto hash = sha256(as.str() + std::to_string(i + 1));
+                // std::cout << "recv " << i << " hash is " << hash << std::endl;
+                std::string hash_int;
+                boost::algorithm::hex(hash, std::back_inserter(hash_int));
+                bm::cpp_int value(hash_int);
+                auto xr = e ^ value;
+                std::cout << "ans is " << xr << std::endl;
+            }
+            const auto clock_end = std::chrono::system_clock::now();
+            const auto elapsed_time_ms =
+                std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start)
+                    .count();
+            std::cout << "recv Elapsed time =" << elapsed_time_ms << std::endl;
+        }
+    );
+
+    const auto clock_start = std::chrono::system_clock::now();
     std::vector<int64_t> x = {11, 12, 13, 14, 15, 16};
-
     std::random_device rnd;  // 非決定的な乱数生成器を生成
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<> rand(0, 100000);
     std::uniform_int_distribution<> rand_ast(1, 100000);
-    int64_t s = rand(mt);
-    auto beta = pow(g, s, prime);   // 4
-    auto beta2 = pow(h, r, prime);  // 27
-    (beta *= beta2) %= prime;
-    std::cout << beta << std::endl;
-
+    auto b = recv<std::vector<int64_t>>(1, 30000);
+    int64_t beta = b.back();
     int64_t k = rand(mt);
     auto a = pow(g, k, prime);
     std::vector<std::pair<bm::cpp_int, int64_t>> ab;
-    for (int i = 1; i <= x.size(); ++i)
+    for (int i = 1; i <= size; ++i)
     {
         auto bk = pow(beta, k, prime);
         auto hinv = pow(h, i * k * (prime - 2), prime);
-        auto bh = (bk * hinv) % prime;
+        bm::cpp_int bh = (bk * hinv) % prime;
 
-        auto hash = sha256(std::to_string(bh) + std::to_string(i));
-        std::cout << "hash is " << hash << std::endl;
+        auto hash = sha256(bh.str() + std::to_string(i));
+        // std::cout << "hash is " << i << " " << hash << std::endl;
 
         std::string hash_int;
         boost::algorithm::hex(hash, std::back_inserter(hash_int));
         bm::cpp_int value(hash_int);
-        std::cout << value << std::endl;
+        // std::cout << value << std::endl;
 
         auto ei = x[i - 1] ^ value;
         ab.emplace_back(ei, a);
     }
+    send(ab, "30001", "computation_container1");
 
-    for (int i = 0; i < x.size(); ++i)
-    {
-        auto as = pow(a, s, prime);
-        auto hash = sha256(std::to_string(as) + std::to_string(i + 1));
-        // std::cout << "hash is " << hash << std::endl;
-        std::string hash_int;
-        boost::algorithm::hex(hash, std::back_inserter(hash_int));
-        bm::cpp_int value(hash_int);
-        auto xr = ab[i].first ^ value;
-        std::cout << "ans is " << xr << std::endl;
-    }
+    const auto clock_end = std::chrono::system_clock::now();
+    const auto elapsed_time_ms =
+        std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+    std::cout << "sender Elapsed time =" << elapsed_time_ms << std::endl;
+    th.join();
 }
 using namespace emp;
 
