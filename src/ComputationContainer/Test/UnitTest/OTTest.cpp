@@ -121,9 +121,6 @@ TEST(OTTest, boost)
     std::thread th(
         [&]()
         {
-            string rec;
-            // std::vector<int> vec(100);
-            rec.resize(10);
             send("ping", "31400", "computation_container1");
             auto vec = recv<std::vector<int>>(32, 31401);
             for (auto a : vec)
@@ -133,9 +130,6 @@ TEST(OTTest, boost)
             send("ping3", "31402", "computation_container1");
         }
     );
-    string pin1, pin2;
-    pin1.resize(10);
-    pin2.resize(10);
     std::cout << recv<string>(10, 31400) << std::endl;
     std::vector<int> vec = {11, 12, 13, 14, 15};
     vec.resize(32);
