@@ -25,9 +25,9 @@ namespace bm = boost::multiprecision;
 // bm::cpp_int prime = 1000000007;
 // bm::cpp_int g = 20000;
 // bm::cpp_int h = 300001;
-int64_t prime = 1000000007ll;
-int64_t g = 2;
-int64_t h = 3;
+constexpr int64_t prime = 1000000007ll;
+constexpr int64_t g = 2;
+constexpr int64_t h = 3;
 
 template <typename B, typename T, typename P>
 B pow(B base, T a, P prime)
@@ -312,13 +312,13 @@ TEST(OTTest, ot5)
 }
 TEST(OTTest, ot7)
 {
-    constexpr size_t size = 6;
+    constexpr size_t size = 32;
+    constexpr size_t N = prime;
+    int64_t r = 4;
     std::thread th(
         [&]()
         {
             const auto clock_start = std::chrono::system_clock::now();
-            int64_t r = 4;
-
             std::random_device rnd;  // 非決定的な乱数生成器を生成
             std::mt19937 mt(rnd());
             std::uniform_int_distribution<> rand(0, 100000);
@@ -343,7 +343,7 @@ TEST(OTTest, ot7)
                 boost::algorithm::hex(hash, std::back_inserter(hash_int));
                 bm::cpp_int value(hash_int);
                 auto xr = e ^ value;
-                std::cout << "ans is " << xr << std::endl;
+                if (i == (r - 1)) std::cout << "ans is " << xr << std::endl;
             }
             const auto clock_end = std::chrono::system_clock::now();
             const auto elapsed_time_ms =
@@ -354,7 +354,13 @@ TEST(OTTest, ot7)
     );
 
     const auto clock_start = std::chrono::system_clock::now();
-    std::vector<int64_t> x = {11, 12, 13, 14, 15, 16};
+    // std::vector<int64_t> x = {11, 12, 13, 14, 15, 16};
+    std::vector<int64_t> x;
+    for (int i = 0; i < 32; ++i)
+    {
+        x.emplace_back(1 << i);
+    }
+    // std::rotate(x.begin(), x.begin() + 4, x.end());
     std::random_device rnd;  // 非決定的な乱数生成器を生成
     std::mt19937 mt(rnd());
     std::uniform_int_distribution<> rand(0, 100000);

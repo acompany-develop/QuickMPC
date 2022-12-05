@@ -10,15 +10,16 @@ namespace qmpc
 {
 class OT
 {
-    struct sender_tag
-    {
-    };
-    struct reciever_tag
-    {
-    };
-    std::vector<Socket> socket;
-
 public:
     OT() = default;
+    template <typename T>
+    void send(int to_id, const std::vector<T>& messages)
+    {
+    }
+    template <typename T>
+    T recieve()
+    {
+        T ret;
+    }
 };
 }  // namespace qmpc
