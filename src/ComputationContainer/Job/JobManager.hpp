@@ -141,25 +141,17 @@ public:
         std::thread job_thread(
             [=]
             {
-                try_catch_run(
-                    job_uuid,
-                    [=]()
-                    {
-                        // TODO: hogehogehugahuga~~~!!!
-                        auto job = this->selector(job_param);
-                        if (job == nullptr)
-                        {
-                            QMPC_LOG_ERROR("unknown Method Id");
-                            QMPC_LOG_ERROR("Request Failed");
-                            // TODO: statusをERRORにする
-                        }
-                        else
-                        {
-                            job->run();
-                        }
-                    }
-                );
-
+                auto job = this->selector(job_param);
+                if (job == nullptr)
+                {
+                    QMPC_LOG_ERROR("unknown Method Id");
+                    QMPC_LOG_ERROR("Request Failed");
+                    // TODO: statusをERRORにする
+                }
+                else
+                {
+                    try_catch_run(job_uuid, [&]() { job->run(); });
+                }
                 QMPC_LOG_INFO("end_job_id is {}", job_id);
                 if (is_job_trigger_party) pushJobId(job_id);
             }
