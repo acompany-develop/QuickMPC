@@ -84,6 +84,7 @@ public:
         else
             value = static_cast<T>(v_ * shift);
     }
+    FixedPointImpl(const D &float_value) { value = T(D(floor(float_value * shift)).str()); }
     FixedPointImpl &operator=(const FixedPointImpl &obj)
     {
         value = obj.value;

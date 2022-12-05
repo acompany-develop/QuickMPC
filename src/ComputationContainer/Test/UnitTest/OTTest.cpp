@@ -1,12 +1,9 @@
 #include "gtest/gtest.h"
 
-#include <emp-ot/emp-ot.h>
-#include <emp-tool/emp-tool.h>
 #include <openssl/sha.h>
 #include <sodium.h>
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio.hpp>
-#include <boost/integer/mod_inverse.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/integer.hpp>
 #include <chrono>
@@ -42,7 +39,7 @@ B pow(B base, T a, P prime)
     return ret % prime;
 }
 
-string sha256(const string str)
+std::string sha256(const std::string str)
 {
     using namespace std;
     unsigned char hash[SHA256_DIGEST_LENGTH];
@@ -131,11 +128,11 @@ TEST(OTTest, boost)
             send("ping3", "31402", "computation_container1");
         }
     );
-    std::cout << recv<string>(10, 31400) << std::endl;
+    std::cout << recv<std::string>(10, 31400) << std::endl;
     std::vector<int> vec = {11, 12, 13, 14, 15};
     vec.resize(32);
     send(vec, "31401", "computation_container1");
-    std::cout << recv<string>(10, 31402) << std::endl;
+    std::cout << recv<std::string>(10, 31402) << std::endl;
     th.join();
 }
 TEST(OTTest, ot1)
@@ -395,259 +392,3 @@ TEST(OTTest, ot7)
     std::cout << "sender Elapsed time =" << elapsed_time_ms << std::endl;
     th.join();
 }
-using namespace emp;
-
-template <typename T>
-double test_ot(T *ot, NetIO *io, int party, int64_t length)
-{
-    block *b0 = new block[length], *b1 = new block[length], *r = new block[length];
-    PRG prg(fix_key);
-    prg.random_block(b0, length);
-    prg.random_block(b1, length);
-    bool *b = new bool[length];
-    PRG prg2;
-    prg2.random_bool(b, length);
-
-    auto start = clock_start();
-    if (party == ALICE)
-    {
-        ot->send(b0, b1, length);
-    }
-    else
-    {
-        ot->recv(r, b, length);
-    }
-    io->flush();
-    long long t = time_from(start);
-    if (party == BOB)
-    {
-        for (int64_t i = 0; i < length; ++i)
-        {
-            if (b[i])
-            {
-                if (!cmpBlock(&r[i], &b1[i], 1))
-                {
-                    std::cout << i << "\n";
-                    error("wrong!\n");
-                }
-            }
-            else
-            {
-                if (!cmpBlock(&r[i], &b0[i], 1))
-                {
-                    std::cout << i << "\n";
-                    error("wrong!\n");
-                }
-            }
-        }
-    }
-    std::cout << "Tests passed.\t";
-    delete[] b0;
-    delete[] b1;
-    delete[] r;
-    delete[] b;
-    return t;
-}
-
-template <typename T>
-double test_cot(T *ot, NetIO *io, int party, int64_t length)
-{
-    block *b0 = new block[length], *r = new block[length];
-    bool *b = new bool[length];
-    block delta;
-    PRG prg;
-    prg.random_block(&delta, 1);
-    prg.random_bool(b, length);
-
-    io->sync();
-    auto start = clock_start();
-    if (party == ALICE)
-    {
-        ot->send_cot(b0, length);
-        delta = ot->Delta;
-    }
-    else
-    {
-        ot->recv_cot(r, b, length);
-    }
-    io->flush();
-    long long t = time_from(start);
-    if (party == ALICE)
-    {
-        io->send_block(&delta, 1);
-        io->send_block(b0, length);
-    }
-    else if (party == BOB)
-    {
-        io->recv_block(&delta, 1);
-        io->recv_block(b0, length);
-        for (int64_t i = 0; i < length; ++i)
-        {
-            block b1 = b0[i] ^ delta;
-            if (b[i])
-            {
-                if (!cmpBlock(&r[i], &b1, 1)) error("COT failed!");
-            }
-            else
-            {
-                if (!cmpBlock(&r[i], &b0[i], 1)) error("COT failed!");
-            }
-        }
-    }
-    std::cout << "Tests passed.\t";
-    io->flush();
-    delete[] b0;
-    delete[] r;
-    delete[] b;
-    return t;
-}
-
-template <typename T>
-double test_rot(T *ot, NetIO *io, int party, int64_t length)
-{
-    block *b0 = new block[length], *r = new block[length];
-    block *b1 = new block[length];
-    bool *b = new bool[length];
-    PRG prg;
-    prg.random_bool(b, length);
-
-    io->sync();
-    auto start = clock_start();
-    if (party == ALICE)
-    {
-        ot->send_rot(b0, b1, length);
-    }
-    else
-    {
-        ot->recv_rot(r, b, length);
-    }
-    io->flush();
-    long long t = time_from(start);
-    if (party == ALICE)
-    {
-        io->send_block(b0, length);
-        io->send_block(b1, length);
-    }
-    else if (party == BOB)
-    {
-        io->recv_block(b0, length);
-        io->recv_block(b1, length);
-        for (int64_t i = 0; i < length; ++i)
-        {
-            if (b[i])
-                assert(cmpBlock(&r[i], &b1[i], 1));
-            else
-                assert(cmpBlock(&r[i], &b0[i], 1));
-        }
-    }
-    std::cout << "Tests passed.\t";
-    io->flush();
-    delete[] b0;
-    delete[] b1;
-    delete[] r;
-    delete[] b;
-    return t;
-}
-
-template <typename T>
-double test_rcot(T *ot, NetIO *io, int party, int64_t length, bool inplace)
-{
-    block *b = nullptr;
-    PRG prg;
-
-    io->sync();
-    auto start = clock_start();
-    int64_t mem_size;
-    if (!inplace)
-    {
-        mem_size = length;
-        b = new block[length];
-
-        // The RCOTs will be generated in the internal buffer
-        // then be copied to the user buffer
-        ot->rcot(b, length);
-    }
-    else
-    {
-        // Call byte_memory_need_inplace() to get the buffer size needed
-        mem_size = ot->byte_memory_need_inplace((uint64_t)length);
-        b = new block[mem_size];
-
-        // The RCOTs will be generated directly to this buffer
-        ot->rcot_inplace(b, mem_size);
-    }
-    long long t = time_from(start);
-    io->sync();
-    if (party == ALICE)
-    {
-        io->send_block(&ot->Delta, 1);
-        io->send_block(b, mem_size);
-    }
-    else if (party == BOB)
-    {
-        block ch[2];
-        ch[0] = zero_block;
-        block *b0 = new block[mem_size];
-        io->recv_block(ch + 1, 1);
-        io->recv_block(b0, mem_size);
-        for (int64_t i = 0; i < mem_size; ++i)
-        {
-            b[i] = b[i] ^ ch[getLSB(b[i])];
-        }
-        if (!cmpBlock(b, b0, mem_size)) error("RCOT failed");
-        delete[] b0;
-    }
-    std::cout << "Tests passed.\t";
-    delete[] b;
-    return t;
-}
-
-int port, party;
-const static int threads = 2;
-
-void test_ferret(int party, NetIO *ios[threads], int64_t num_ot)
-{
-    using namespace std;
-    auto start = clock_start();
-    FerretCOT<NetIO> *ferretcot = new FerretCOT<NetIO>(party, threads, ios, true, true, ferret_b13);
-    double timeused = time_from(start);
-    std::cout << party << "\tsetup\t" << timeused / 1000 << "ms" << std::endl;
-
-    // RCOT
-    // The RCOTs will be generated at internal memory, and copied to user buffer
-    int64_t num = 1 << num_ot;
-    cout << "Active FERRET RCOT\t"
-         << double(num) / test_rcot<FerretCOT<NetIO>>(ferretcot, ios[0], party, num, false) * 1e6
-         << " OTps" << endl;
-
-    // RCOT inplace
-    // The RCOTs will be generated at user buffer
-    // Get the buffer size needed by calling byte_memory_need_inplace()
-    uint64_t batch_size = ferretcot->ot_limit;
-    cout << "Active FERRET RCOT inplace\t"
-         << double(batch_size)
-                / test_rcot<FerretCOT<NetIO>>(ferretcot, ios[0], party, batch_size, true) * 1e6
-         << " OTps" << endl;
-    delete ferretcot;
-}
-// TEST(OTTest, ot2)
-// {
-//     port = 30000;
-//     party = BOB;
-//     NetIO *ios[threads];
-//     for (int i = 0; i < threads; ++i) ios[i] = new NetIO("127.0.0.1", port + i);
-
-//     int64_t length = 24;
-//     std::thread th([&]() { test_ferret(party, ios, length); });
-
-//     NetIO *alice[threads];
-//     for (int i = 0; i < threads; ++i) alice[i] = new NetIO(nullptr, port + i);
-//     test_ferret(ALICE, alice, length);
-
-//     th.join();
-//     for (int i = 0; i < threads; ++i)
-//     {
-//         delete ios[i];
-//         delete alice[i];
-//     }
-// }

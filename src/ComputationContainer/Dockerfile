@@ -49,17 +49,17 @@ RUN cd / && git clone https://github.com/jedisct1/libsodium --branch stable && \
     cp -r /libsodium/src/libsodium/include /usr/local/lib/libsodium && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/libsodium.conf && \
     ldconfig
-#g++10 install
-RUN add-apt-repository ppa:ubuntu-toolchain-r/test &&\
-    apt install -y gcc-10 \
-    g++-10
+# #g++10 install
+# RUN add-apt-repository ppa:ubuntu-toolchain-r/test &&\
+#     apt install -y gcc-10 \
+#     g++-10
 
-RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10\
-    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+# RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10\
+#     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
 ARG boost_version=1.79.0
 ARG boost_file=boost_1_79_0
 RUN cd /tmp \
-    && wget https://boostorg.jfrog.io/artifactory/main/release/1.77.0/source/${boost_file}.tar.gz --no-check-certificate \
+    && wget https://boostorg.jfrog.io/artifactory/main/release/${boost_version}/source/${boost_file}.tar.gz --no-check-certificate \
     && tar xfz ${boost_file}.tar.gz \
     && rm ${boost_file}.tar.gz \
     && cd ${boost_file} \
@@ -78,9 +78,9 @@ RUN GRPC_HEALTH_PROBE_VERSION=v0.4.14 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
-RUN CMAKE_CXX_FLAGS=" -std=c++11 -march=native -msse4.1 -msse4.2 -madx" && \
-    wget https://raw.githubusercontent.com/emp-toolkit/emp-readme/master/scripts/install.py && \
-    python install.py --install --tool --ot
+# RUN CMAKE_CXX_FLAGS=" -std=c++11 -march=native -msse4.1 -msse4.2 -madx" && \
+#     wget https://raw.githubusercontent.com/emp-toolkit/emp-readme/master/scripts/install.py && \
+#     python install.py --install --tool --ot
 
 FROM base as src
 # 開発環境のフォーマッタを統一
