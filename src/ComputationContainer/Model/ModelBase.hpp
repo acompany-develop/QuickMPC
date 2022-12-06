@@ -48,6 +48,8 @@ class ModelBase
         statusManager.nextStatus();
     }
 
+    static void validate_cols(const std::vector<std::string> &schemas, const std::list<int> &src);
+
 public:
     virtual ~ModelBase() {}
 

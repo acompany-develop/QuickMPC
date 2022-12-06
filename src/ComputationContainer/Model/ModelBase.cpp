@@ -1,6 +1,8 @@
 #include "ModelBase.hpp"
+#include <boost/algorithm/string/join.hpp>
+#include <boost/range/adaptor/indexed.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
-#include "Job/ProgressManager.hpp"
 #include "Logging/Logger.hpp"
 #include "nlohmann/json.hpp"
 
@@ -36,6 +38,35 @@ std::pair<std::vector<std::vector<Share>>, std::vector<std::string>> ModelBase::
     );
 }
 
+void ModelBase::validate_cols(const std::vector<std::string> &schemas, const std::list<int> &src)
+{
+    for (const auto &iter_col : src | boost::adaptors::indexed(0))
+    {
+        const int col = iter_col.value();
+        if (col <= 0 || schemas.size() < static_cast<std::size_t>(col))
+        {
+            qmpc::Log::throw_with_trace(std::invalid_argument(
+                (boost::format("src[%1%] = %3% is out of range where column range = "
+                               "[1, %4%], schemas = [%5%]")
+                 % iter_col.index() % col % schemas.size()
+                 % boost::algorithm::join(
+                     schemas
+                         | boost::adaptors::transformed(
+                             [](const std::string &s)
+                             {
+                                 std::ostringstream ss;
+                                 ss << std::quoted(s);
+                                 return ss.str();
+                             }
+                         ),
+                     ", "
+                 ))
+                    .str()
+            ));
+        }
+    }
+}
+
 int ModelBase::run(const managetocomputation::PredictRequest &request)
 {
     constexpr int JOB_ID = 1000;  // JobIDのCompetitionを防ぐためJob上限よりも高い値を設定
@@ -51,25 +82,10 @@ int ModelBase::run(const managetocomputation::PredictRequest &request)
         src.emplace_back(it);
     }
 
-    std::string dump_result = "";
-    try
-    {
-        auto [share_table, schemas] = readDb(request);
-        auto result = predict(share_table, schemas, src, request.model_param_job_uuid());
-        writeDb(request, result);
-    }
-    catch (const std::runtime_error &e)
-    {
-        QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
-        QMPC_LOG_ERROR(e.what());
-        QMPC_LOG_ERROR("Predict Error");
-    }
-    catch (const std::exception &e)
-    {
-        QMPC_LOG_ERROR("unexpected Error");
-        QMPC_LOG_ERROR(e.what());
-        QMPC_LOG_ERROR("Predict Error");
-    }
+    auto [share_table, schemas] = readDb(request);
+    validate_cols(schemas, src);
+    auto result = predict(share_table, schemas, src, request.model_param_job_uuid());
+    writeDb(request, result);
 
     return static_cast<int>(statusManager.getStatus());
 }

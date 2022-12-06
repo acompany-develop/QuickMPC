@@ -11,6 +11,7 @@
 #include "JobBase.hpp"
 #include "JobParameter.hpp"
 #include "JobSelector.hpp"
+#include "JobStatus.hpp"
 #include "Logging/Logger.hpp"
 #include "ProgressManager.hpp"
 #include "TransactionQueue/TransactionQueue.hpp"
@@ -37,6 +38,51 @@ class JobManager
 
     // JobIDをjob_id_queueから出す
     unsigned int pollingPopJobId() { return job_id_queue.pop(); }
+
+    // try-catchをしながら特定の処理を実行する
+    template <class F>
+    static auto try_catch_run(const std::string &job_uuid, const F &func)
+    {
+        StatusManager statusManager(job_uuid);
+        try
+        {
+            func();
+        }
+        catch (const std::runtime_error &e)
+        {
+            QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
+            QMPC_LOG_ERROR("{} | Job Error", e.what());
+
+            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
+            if (error_info)
+            {
+                QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
+            }
+            else
+            {
+                QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
+            }
+        }
+        catch (const std::exception &e)
+        {
+            QMPC_LOG_ERROR("unexpected Error");
+            QMPC_LOG_ERROR("{} | Job Error", e.what());
+
+            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
+            if (error_info)
+            {
+                QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
+            }
+            else
+            {
+                QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
+            }
+        }
+    }
 
 public:
     JobManager()
@@ -85,39 +131,29 @@ public:
     void asyncRun(const JobParameter &job_param, const bool is_job_trigger_party)
     {
         // Job実行の中身
-        // TODO status を DB に書き込むようにする（エラー等も）
-        // TODO:DB操作に関してはDBClientのgrpcエラーコードをそのまま返す方が良いかも
         auto job_id = job_param.getJobId();
+        auto job_uuid = job_param.getRequest().job_uuid();
         QMPC_LOG_INFO("job_id is {}", job_param.getJobId());
         QMPC_LOG_INFO("JobManager: method Id is {}", job_param.getRequest().method_id());
 
-        ProgressManager::getInstance()->registerJob(
-            job_param.getJobId(), job_param.getRequest().job_uuid()
-        );
+        ProgressManager::getInstance()->registerJob(job_id, job_uuid);
 
         std::thread job_thread(
             [=]
             {
-                try
+                auto job = this->selector(job_param);
+                if (job == nullptr)
                 {
-                    auto job = this->selector(job_param);
-                    if (job == nullptr)
-                    {
-                        QMPC_LOG_ERROR("unknown Method Id");
-                        QMPC_LOG_ERROR("Request Failed");
-                    }
-                    else
-                    {
-                        job->run();
-                    }
+                    QMPC_LOG_ERROR("unknown Method Id");
+                    QMPC_LOG_ERROR("Request Failed");
+                    // TODO: statusをERRORにする
                 }
-                catch (...)
+                else
                 {
-                    QMPC_LOG_ERROR("Job Failed");
+                    try_catch_run(job_uuid, [&]() { job->run(); });
                 }
                 QMPC_LOG_INFO("end_job_id is {}", job_id);
                 if (is_job_trigger_party) pushJobId(job_id);
-                return;
             }
         );
         job_thread.detach();  // TODO Detachはスレッド管理者が消えるので，アカンかも．．．
@@ -157,7 +193,7 @@ public:
             auto job_id = job_manager->pollingPopJobId();
 
             // 3. 取りだしたJobReqの内容を全パーティに伝える
-            job_manager->sendJobInfo(job_req, job_id);
+            try_catch_run(job_req.job_uuid(), [&]() { job_manager->sendJobInfo(job_req, job_id); });
         }
     }
 };

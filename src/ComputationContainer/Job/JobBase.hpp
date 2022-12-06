@@ -162,47 +162,11 @@ public:
         }
         std::vector<std::list<int>> arg{src, target};
 
-        try
-        {
-            auto [share_table, schemas] = readDb();
-            validate_cols(schemas, arg);
-            auto result = static_cast<T *>(this)->compute(share_table, schemas, arg);
-            writeDb(result);
-        }
-        catch (const std::runtime_error &e)
-        {
-            QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
-            QMPC_LOG_ERROR("{} | Job Error", e.what());
+        auto [share_table, schemas] = readDb();
+        validate_cols(schemas, arg);
+        auto result = static_cast<T *>(this)->compute(share_table, schemas, arg);
+        writeDb(result);
 
-            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
-            if (error_info)
-            {
-                QMPC_LOG_ERROR("{}", *error_info);
-                statusManager.error(e, *error_info);
-            }
-            else
-            {
-                QMPC_LOG_ERROR("thrown exception has no stack trace information");
-                statusManager.error(e, std::nullopt);
-            }
-        }
-        catch (const std::exception &e)
-        {
-            QMPC_LOG_ERROR("unexpected Error");
-            QMPC_LOG_ERROR("{} | Job Error", e.what());
-
-            auto *error_info = boost::get_error_info<qmpc::Log::traced>(e);
-            if (error_info)
-            {
-                QMPC_LOG_ERROR("{}", *error_info);
-                statusManager.error(e, *error_info);
-            }
-            else
-            {
-                QMPC_LOG_ERROR("thrown exception has no stack trace information");
-                statusManager.error(e, std::nullopt);
-            }
-        }
         return static_cast<int>(statusManager.getStatus());
     }
 };

@@ -13,7 +13,6 @@ cc_library(
         "//Client/ComputationToDb:client",
         "//Client/ComputationToDb:valuetable",
         "//Job:jobStatus",
-        "//Job:progressManager",
         "//Logging:log",
     ],
     visibility = ["//visibility:public"],
@@ -26,6 +25,9 @@ cc_library(
     ],
     deps = [
         "@Proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
+        "//Job:jobStatus",
+        "//Job:progressManager",
+        "//Share:share",
         "//Model:model",
         "//Model/Models:linearregression",
         "//Model/Models:logisticregression",

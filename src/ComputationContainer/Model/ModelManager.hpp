@@ -3,6 +3,8 @@
 #include <memory>
 #include <vector>
 
+#include "Job/JobStatus.hpp"
+#include "Job/ProgressManager.hpp"
 #include "Logging/Logger.hpp"
 #include "Model/ModelBase.hpp"
 #include "Model/Models/DecisionTree.hpp"
@@ -35,6 +37,52 @@ class ModelManager
         }
     }
 
+    // try-catchをしながら特定の処理を実行する
+    template <class F>
+    static auto try_catch_run(const std::string &job_uuid, const F &func)
+    {
+        qmpc::Job::StatusManager statusManager(job_uuid);
+        try
+        {
+            return func();
+        }
+        catch (const std::runtime_error &e)
+        {
+            QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
+            QMPC_LOG_ERROR("{} | Predict Error", e.what());
+
+            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
+            if (error_info)
+            {
+                QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
+            }
+            else
+            {
+                QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
+            }
+        }
+        catch (const std::exception &e)
+        {
+            QMPC_LOG_ERROR("unexpected Error");
+            QMPC_LOG_ERROR("{} | Predict Error", e.what());
+
+            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
+            if (error_info)
+            {
+                QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
+            }
+            else
+            {
+                QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
+            }
+        }
+        return static_cast<int>(statusManager.getStatus());
+    }
+
 public:
     /*
         model_id error 0
@@ -55,7 +103,8 @@ public:
 
         auto f = std::async(
             std::launch::async,
-            [&request, model = std::move(model)]() { return model->run(request); }
+            [&request, model = std::move(model)]()
+            { return try_catch_run(request.job_uuid(), [&]() { return model->run(request); }); }
         );
         return f.get();
     }

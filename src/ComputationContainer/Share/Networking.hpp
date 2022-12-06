@@ -1,7 +1,9 @@
 #pragma once
 
 #include <boost/multiprecision/cpp_int.hpp>
+#include <exception>
 #include <iterator>
+#include <stdexcept>
 #include <string>
 #include <thread>
 #include <type_traits>
@@ -71,19 +73,37 @@ template <typename T>
 void open(const T &share)
 {
     Config *conf = Config::getInstance();
+    std::exception_ptr ep;
+
     std::vector<std::thread> threads;
     // 全パーティにシェアの値を送信する
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
         if (pt_id != conf->party_id)
         {
-            threads.push_back(std::thread([=, &share]() { send(share, pt_id); }));
+            threads.emplace_back((
+                [=, &share, &ep]()
+                {
+                    try
+                    {
+                        send(share, pt_id);
+                    }
+                    catch (...)
+                    {
+                        ep = std::current_exception();
+                    }
+                }
+            ));
         }
     }
 
     for (auto &th : threads)
     {
         th.join();
+    }
+    if (ep)
+    {
+        std::rethrow_exception(ep);
     }
 }
 template <typename T>
