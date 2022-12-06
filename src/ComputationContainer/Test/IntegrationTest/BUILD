@@ -123,3 +123,19 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "ot_test",
+    srcs = [
+        "OTTest.hpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    deps = [
+        "@gtest//:main",
+        "//ConfigParse:config_parse",
+        "@libsodium//:sodium",
+        "//Share:compare",
+    ],    
+    linkopts=["-lboost_system", "-lboost_thread","-lcrypto"],
+    visibility = ["//visibility:public"],
+)

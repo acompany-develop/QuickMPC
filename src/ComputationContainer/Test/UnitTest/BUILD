@@ -137,7 +137,7 @@ cc_test(
     srcs = [
         "OTTest.cpp",
     ],
-    copts = ["-Iexternal/gtest/include","-std=c++11 -march=native -msse4.1 -msse4.2 -madx"],
+    copts = ["-Iexternal/gtest/include"],
     linkopts=["-lboost_system", "-lboost_thread","-lcrypto"],
     deps = [
         "@gtest//:main",

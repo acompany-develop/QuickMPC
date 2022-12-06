@@ -49,13 +49,13 @@ RUN cd / && git clone https://github.com/jedisct1/libsodium --branch stable && \
     cp -r /libsodium/src/libsodium/include /usr/local/lib/libsodium && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/libsodium.conf && \
     ldconfig
-# #g++10 install
-# RUN add-apt-repository ppa:ubuntu-toolchain-r/test &&\
-#     apt install -y gcc-10 \
-#     g++-10
+#g++10 install
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test &&\
+    apt install -y gcc-10 \
+    g++-10
 
-# RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10\
-#     && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10\
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
 ARG boost_version=1.79.0
 ARG boost_file=boost_1_79_0
 RUN cd /tmp \

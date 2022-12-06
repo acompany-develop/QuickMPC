@@ -18,6 +18,7 @@ cc_library(
         "//Test/IntegrationTest:read_triple_test",
         "//Test/IntegrationTest:gbdt_test",
         "//Test/IntegrationTest:value_table_test",
+        "//Test/IntegrationTest:ot_test",
         "//ConfigParse:config_parse",
         "//Server/ComputationToComputationContainer:server",
         "//Server/ManageToComputationContainer:server",
