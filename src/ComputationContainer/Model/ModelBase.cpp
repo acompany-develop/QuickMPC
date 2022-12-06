@@ -72,6 +72,8 @@ int ModelBase::run(const managetocomputation::PredictRequest &request)
     constexpr int JOB_ID = 1000;  // JobIDのCompetitionを防ぐためJob上限よりも高い値を設定
     qmpc::Share::AddressId::setJobId(JOB_ID);
 
+    qmpc::Job::ProgressManager::getInstance()->registerJob(JOB_ID, request.job_uuid());
+
     statusManager.initJobID(request.job_uuid());
 
     std::list<int> src;

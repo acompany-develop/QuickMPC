@@ -92,10 +92,6 @@ public:
     */
     auto push(const managetocomputation::PredictRequest &request) const
     {
-        // Model/ModelManager.cpp内のJOB_IDの値と合わせる．
-        // AddressId内部の値はthread_localなので共有できない
-        constexpr int JOB_ID = 1000;
-
         QMPC_LOG_INFO("Model Manager: Model Id is {}", request.model_id());
         auto model = select(request.model_id());
         if (!model)
@@ -105,7 +101,6 @@ public:
             return 0;
         }
 
-        qmpc::Job::ProgressManager::getInstance()->registerJob(JOB_ID, request.job_uuid());
         auto f = std::async(
             std::launch::async,
             [&request, model = std::move(model)]()
