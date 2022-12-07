@@ -135,6 +135,7 @@ cc_library(
         "//ConfigParse:config_parse",
         "@libsodium//:sodium",
         "//Share:compare",
+        "//OT:ot",
     ],    
     linkopts=["-lboost_system", "-lboost_thread","-lcrypto"],
     visibility = ["//visibility:public"],

@@ -1,9 +1,10 @@
 
-cc_test(
-    name = "OTTest",
+cc_library(
+    name = "ot",
     srcs = [
-        "OTTest.cpp",
+        "OT.cpp",
     ],
+    hdrs=["OT.hpp"],
     copts = ["-Iexternal/gtest/include"],
     linkopts=["-lboost_system", "-lboost_thread"],
     deps = [
@@ -11,4 +12,5 @@ cc_test(
         "//ConfigParse:config_parse",
         "@libsodium//:sodium",
     ],
+    visibility = ["//visibility:public"],
 )

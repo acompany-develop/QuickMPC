@@ -11,6 +11,7 @@
 #include "Test/IntegrationTest/MatrixTest.hpp"
 #include "Test/IntegrationTest/MeshCodeTest.hpp"
 #include "Test/IntegrationTest/ModelTest.hpp"
+#include "Test/IntegrationTest/OTTest.hpp"
 #include "Test/IntegrationTest/OptimizeTest.hpp"
 #include "Test/IntegrationTest/ReadTripleFromBtsTest.hpp"
 #include "Test/IntegrationTest/ShareTest.hpp"
