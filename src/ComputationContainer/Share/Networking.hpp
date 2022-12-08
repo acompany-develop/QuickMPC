@@ -1,13 +1,20 @@
 #pragma once
 
+#include <atomic>
+#include <boost/accumulators/framework/accumulator_set.hpp>
+#include <boost/accumulators/statistics/stats.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <exception>
 #include <iterator>
+#include <limits>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <type_traits>
 #include <vector>
+
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
 
 #include "AddressId.hpp"
 #include "ConfigParse/ConfigParse.hpp"
@@ -69,9 +76,22 @@ void send(const SV &share_value, const AddressId &share_id, int pt_id)
     auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
     client->exchangeShare(share_value, share_id, conf->party_id);
 }
+
+inline boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::mean,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::count>>
+    open_acc;
+
 template <typename T>
 void open(const T &share)
 {
+    const auto start_tp = std::chrono::system_clock::now();
+
     Config *conf = Config::getInstance();
     std::exception_ptr ep;
 
@@ -105,7 +125,15 @@ void open(const T &share)
     {
         std::rethrow_exception(ep);
     }
+
+    const auto finish_tp = std::chrono::system_clock::now();
+
+    const auto dur =
+        std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(finish_tp - start_tp);
+
+    open_acc(dur.count());
 }
+
 template <typename T>
 auto stosv(const std::string &str_value)
 {
@@ -126,9 +154,39 @@ auto stosv(const std::string &str_value)
         return T(str_value);
     }
 }
+
+inline boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::mean,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::count>>
+    recons_one_acc;
+
+inline boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::mean,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::count>>
+    recons_vec_acc;
+inline boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::mean,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::count>>
+    recons_vec_size_acc;
 template <typename T, std::enable_if_t<is_share<T>::value, std::nullptr_t> = nullptr>
 auto recons(const T &share)
 {
+    const auto start_tp = std::chrono::system_clock::now();
     Config *conf = Config::getInstance();
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
@@ -170,11 +228,22 @@ auto recons(const T &share)
             }
         }
     }
+
+    const auto finish_tp = std::chrono::system_clock::now();
+
+    const auto dur =
+        std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(finish_tp - start_tp);
+
+    recons_one_acc(dur.count());
+
     return ret;
 }
+
 template <typename T, std::enable_if_t<is_share_vector<T>::value, std::nullptr_t> = nullptr>
 auto recons(const T &share)
 {
+    const auto start_tp = std::chrono::system_clock::now();
+
     Config *conf = Config::getInstance();
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
@@ -227,6 +296,14 @@ auto recons(const T &share)
         }
     }
 
+    const auto finish_tp = std::chrono::system_clock::now();
+
+    const auto dur =
+        std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(finish_tp - start_tp);
+
+    recons_vec_acc(dur.count());
+    recons_vec_size_acc(length);
+
     return ret;
 }
 template <typename SV>
@@ -256,5 +333,13 @@ std::vector<SV> receive(int sp_id, const std::vector<AddressId> &address_ids)
         ret[i] = stosv<SV>(shares[i]);
     }
     return ret;
+}
+
+inline static void init_acc()
+{
+    open_acc = decltype(open_acc){};
+    recons_one_acc = decltype(recons_one_acc){};
+    recons_vec_acc = decltype(recons_vec_acc){};
+    recons_vec_size_acc = decltype(recons_vec_size_acc){};
 }
 }  // namespace qmpc::Share

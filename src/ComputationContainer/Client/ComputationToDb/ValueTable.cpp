@@ -1,13 +1,16 @@
 #include "ValueTable.hpp"
 
 #include <algorithm>
+#include <boost/accumulators/statistics/count.hpp>
 #include <chrono>
 #include <cmath>
+#include <ratio>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "Job/ProgressManager.hpp"
 #include "Share/Compare.hpp"
+#include "Share/Networking.hpp"
 
 namespace qmpc::ComputationToDb
 {
@@ -84,6 +87,10 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     {
         return {};
     }
+
+    Share::init_acc();
+
+    const auto start_tp = std::chrono::system_clock::now();
 
     auto progress_manager = qmpc::Job::ProgressManager::getInstance();
     const auto job_id = sorted_v1[0].getId().getJobId();
@@ -254,6 +261,26 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
             }
             linear_search_progress->update(min_progress);
         }
+    }
+
+    const auto finish_tp = std::chrono::system_clock::now();
+
+    const auto dur =
+        std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(finish_tp - start_tp);
+
+    QMPC_LOG_INFO("hjoin time: {}", dur.count());
+    std::vector<std::pair<std::string, decltype(Share::open_acc)>> accs{
+        {"open", Share::open_acc},
+        {"recons one", Share::recons_one_acc},
+        {"recons vec", Share::recons_vec_acc},
+        {"recons vec size", Share::recons_vec_size_acc}};
+    for (const auto &[name, acc] : accs)
+    {
+        QMPC_LOG_INFO("{} time (sum): {}", name, boost::accumulators::extract::sum(acc));
+        QMPC_LOG_INFO("{} time (count): {}", name, boost::accumulators::extract::count(acc));
+        QMPC_LOG_INFO("{} time (mean): {}", name, boost::accumulators::extract::mean(acc));
+        QMPC_LOG_INFO("{} time (min): {}", name, boost::accumulators::extract::min(acc));
+        QMPC_LOG_INFO("{} time (max): {}", name, boost::accumulators::extract::max(acc));
     }
 
     return intersection_it_list;
