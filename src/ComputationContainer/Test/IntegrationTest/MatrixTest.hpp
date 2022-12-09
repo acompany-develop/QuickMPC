@@ -16,7 +16,7 @@ TEST(ShareMatrixTest, OpenAndReconsTest)
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
     auto share_mat = qmpc::Share::ShareMatrix(
-        {{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
     );
     auto recons_mat = share_mat.open_and_recons();
 
@@ -31,10 +31,10 @@ TEST(ShareMatrixTest, AddTest)
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
     auto a = qmpc::Share::ShareMatrix(
-        {{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
     );
     auto b = qmpc::Share::ShareMatrix(
-        {{FixedPoint("5.0"), FixedPoint("1.0")}, {FixedPoint("2.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("5.0"), FixedPoint("1.0")}, {FixedPoint("2.0"), FixedPoint("4.0")}}
     );
     auto c = a + b;
     auto recons_mat = c.open_and_recons();
@@ -52,10 +52,10 @@ TEST(ShareMatrixTest, SubTest)
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
     auto a = qmpc::Share::ShareMatrix(
-        {{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
     );
     auto b = qmpc::Share::ShareMatrix(
-        {{FixedPoint("5.0"), FixedPoint("1.0")}, {FixedPoint("2.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("5.0"), FixedPoint("1.0")}, {FixedPoint("2.0"), FixedPoint("4.0")}}
     );
     auto c = a - b;
     auto recons_mat = c.open_and_recons();
@@ -73,10 +73,10 @@ TEST(ShareMatrixTest, MulTest)
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
     auto a = qmpc::Share::ShareMatrix(
-        {{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
     );
     auto b = qmpc::Share::ShareMatrix(
-        {{FixedPoint("5.0"), FixedPoint("1.0")}, {FixedPoint("2.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("5.0"), FixedPoint("1.0")}, {FixedPoint("2.0"), FixedPoint("4.0")}}
     );
     auto c = a * b;
     auto recons_mat = c.open_and_recons();
@@ -123,7 +123,7 @@ TEST(ShareMatrixTest, MulScalarTest)
     int n_parties = conf->n_parties;
 
     auto share_mat = qmpc::Share::ShareMatrix(
-        {{FixedPoint(1.0), FixedPoint(2.0)}, {FixedPoint(3.0), FixedPoint(4.0)}}
+        {std::vector<Share>{FixedPoint(1.0), FixedPoint(2.0)}, {FixedPoint(3.0), FixedPoint(4.0)}}
     );
     auto mul_mat = 0.5 * share_mat;
     auto recons_mat = mul_mat.open_and_recons();
@@ -165,7 +165,7 @@ TEST(ShareMatrixTest, TransposeTest)
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
     auto share_mat = qmpc::Share::ShareMatrix(
-        {{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
     );
     auto recons_mat = share_mat.transpose().open_and_recons();
 
@@ -178,10 +178,10 @@ TEST(ShareMatrixTest, TransposeTest)
 TEST(ShareMatrixTest, InverseTest_Small)
 {
     auto share_mat = qmpc::Share::ShareMatrix(
-        {{FixedPoint("1.0"), FixedPoint("3.0"), FixedPoint("5.0"), FixedPoint("6.0")},
-         {FixedPoint("3.0"), FixedPoint("4.0"), FixedPoint("3.0"), FixedPoint("2.0")},
-         {FixedPoint("5.0"), FixedPoint("3.0"), FixedPoint("1.0"), FixedPoint("1.0")},
-         {FixedPoint("6.0"), FixedPoint("2.0"), FixedPoint("1.0"), FixedPoint("4.0")}}
+        {std::vector<Share>{FixedPoint("1.0"), FixedPoint("3.0"), FixedPoint("5.0"), FixedPoint("6.0")},
+         std::vector<Share>{FixedPoint("3.0"), FixedPoint("4.0"), FixedPoint("3.0"), FixedPoint("2.0")},
+         std::vector<Share>{FixedPoint("5.0"), FixedPoint("3.0"), FixedPoint("1.0"), FixedPoint("1.0")},
+         std::vector<Share>{FixedPoint("6.0"), FixedPoint("2.0"), FixedPoint("1.0"), FixedPoint("4.0")}}
     );
     auto share_mat_inv = share_mat.inverse();
     auto recons_mat = (share_mat * share_mat_inv).open_and_recons();
@@ -251,40 +251,40 @@ TEST(ShareMatrixTest, InverseTest_Large)
 TEST(MatrixTest, SharizeTest)
 {
     auto mat = qmpc::Share::Matrix(
-        {{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
+        {std::vector<FixedPoint>{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}}
     );
     auto share_mat = mat.sharize_mat();
     auto recons_mat = share_mat.open_and_recons();
 
     auto true_mat = std::vector<std::vector<FixedPoint>>{
-        {FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}};
+        std::vector<FixedPoint>{FixedPoint("1.0"), FixedPoint("2.0")}, {FixedPoint("3.0"), FixedPoint("4.0")}};
     EXPECT_EQ(recons_mat, true_mat);
 }
 
 TEST(MatrixTest, InverseTest_Small)
 {
     auto sym_mat = qmpc::Share::Matrix(
-        {{FixedPoint("1.0"), FixedPoint("3.0"), FixedPoint("5.0"), FixedPoint("6.0")},
-         {FixedPoint("3.0"), FixedPoint("4.0"), FixedPoint("3.0"), FixedPoint("2.0")},
-         {FixedPoint("5.0"), FixedPoint("3.0"), FixedPoint("1.0"), FixedPoint("1.0")},
-         {FixedPoint("6.0"), FixedPoint("2.0"), FixedPoint("1.0"), FixedPoint("4.0")}}
+        std::vector<std::vector<FixedPoint>>{std::vector<FixedPoint>{FixedPoint("1.0"), FixedPoint("3.0"), FixedPoint("5.0"), FixedPoint("6.0")},
+         std::vector<FixedPoint>{FixedPoint("3.0"), FixedPoint("4.0"), FixedPoint("3.0"), FixedPoint("2.0")},
+         std::vector<FixedPoint>{FixedPoint("5.0"), FixedPoint("3.0"), FixedPoint("1.0"), FixedPoint("1.0")},
+         std::vector<FixedPoint>{FixedPoint("6.0"), FixedPoint("2.0"), FixedPoint("1.0"), FixedPoint("4.0")}}
     );
     auto mat_inv = sym_mat.inverse();
 
     auto true_mat = std::vector<std::vector<FixedPoint>>{
-        {FixedPoint("0.84210526"),
+        std::vector<FixedPoint>{FixedPoint("0.84210526"),
          FixedPoint("-1.84210526"),
          FixedPoint("2.21052632"),
          FixedPoint("-0.89473684")},
-        {FixedPoint("-1.84210526"),
+        std::vector<FixedPoint>{FixedPoint("-1.84210526"),
          FixedPoint("3.84210526"),
          FixedPoint("-4.21052632"),
          FixedPoint("1.89473684")},
-        {FixedPoint("2.21052632"),
+        std::vector<FixedPoint>{FixedPoint("2.21052632"),
          FixedPoint("-4.21052632"),
          FixedPoint("5.05263158"),
          FixedPoint("-2.47368421")},
-        {FixedPoint("-0.89473684"),
+        std::vector<FixedPoint>{FixedPoint("-0.89473684"),
          FixedPoint("1.89473684"),
          FixedPoint("-2.47368421"),
          FixedPoint("1.26315789")}};

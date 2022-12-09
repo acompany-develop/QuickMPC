@@ -74,6 +74,10 @@ public:
         else
             value = static_cast<T>(v * shift);
     }
+    FixedPointImpl(const D &d)
+    {
+        value = static_cast<T>(d * shift);
+    }
     FixedPointImpl(const std::string &str)
     {
         D v_{str};

@@ -185,7 +185,7 @@ TEST(MathTest, Correl_size)
     {
         qmpc::Math::correl(x, y);
     }
-    catch (std::exception e)
+    catch (std::exception& e)
     {
         QMPC_LOG_INFO(e.what());
         EXPECT_TRUE(true);

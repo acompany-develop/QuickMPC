@@ -1,6 +1,7 @@
 #pragma once
 #include <atomic>
 #include <mutex>
+#include <iostream>
 namespace qmpc::Share
 {
 class AddressId

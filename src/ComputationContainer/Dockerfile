@@ -1,4 +1,5 @@
-FROM ubuntu:18.04 as base
+FROM ubuntu:22.04 as base
+
 # 環境変数
 ENV CMAKE_INSTALL_DIR /local
 ENV PATH $PATH:/grpc/cmake/build
@@ -6,7 +7,7 @@ ENV PATH $PATH:/grpc/cmake/build/third_party/protobuf
 ENV PATH $PATH:$CMAKE_INSTALL_DIR/bin
 
 RUN apt-get update && \
-    apt-get install -y \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
     git \
     wget \
     clang \
