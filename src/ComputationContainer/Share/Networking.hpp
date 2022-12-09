@@ -46,11 +46,11 @@ void send(const T &shares, const int &pt_id)
         using SV = typename T::value_type::value_type;
         size_t length = std::size(shares);
         std::vector<SV> str_values(length);
-        std::vector<qmpc::Share::AddressId> share_ids(length);
+        std::vector<qmpc::Share::AddressId> share_ids;
         for (unsigned int i = 0; i < length; i++)
         {
             str_values[i] = shares[i].getVal();
-            share_ids[i] = shares[i].getId();
+            share_ids.emplace_back(shares[i].getId());
         }
         client->exchangeShares(str_values, share_ids, length, conf->party_id);
     }

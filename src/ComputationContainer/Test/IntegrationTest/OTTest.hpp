@@ -253,7 +253,6 @@ TEST(OTTest, ot2)
     const auto clock_start = std::chrono::system_clock::now();
     size_t size = 32;
     qmpc::OT ot(size);
-    std::cout << "first id share is " << ot.first.getId() << std::endl;
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
     int r = 5;
@@ -264,7 +263,7 @@ TEST(OTTest, ot2)
     }
     else if (pt_id == 2)
     {
-        std::vector<bm::cpp_int> x;
+        std::vector<int64_t> x;
         for (int i = 0; i < 32; ++i)
         {
             x.emplace_back(1 << i);
@@ -272,6 +271,10 @@ TEST(OTTest, ot2)
         ot.send(1, x);
     }
 
+    // for (auto &&a : ot.second)
+    // {
+    //     std::cout << a.getId() << std::endl;
+    // }
     const auto clock_end = std::chrono::system_clock::now();
     const auto elapsed_time_ms =
         std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
