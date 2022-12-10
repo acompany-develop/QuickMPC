@@ -77,23 +77,22 @@ private:
     using range_type = std::pair<iterator_type<T>, iterator_type<T>>;
 
     template <typename T>
-    std::vector<range_type<T>> split(
-        const std::vector<T> &input,
-        const unsigned int threads = std::thread::hardware_concurrency()
-    ) const
+    std::vector<range_type<T>> split(const std::vector<T> &input) const
     {
+        std::size_t threads = this->stubs_.size();
         if (threads == 0)
         {
             throw std::invalid_argument("");
         }
         std::vector<range_type<T>> ret;
 
-        const std::size_t width = input.size() / threads;
-        for (unsigned int i = 0; i < threads; ++i)
+        const std::size_t width = (input.size() + threads - 1) / threads;
+        for (std::size_t i = 0; i < threads; ++i)
         {
-            const iterator_type<T> from = std::next(input.cbegin(), i * width);
-            const std::size_t step = std::min(input.size(), (i + 1) * width);
-            const iterator_type<T> to = std::next(input.cbegin(), step);
+            const std::size_t step_from = std::min(input.size(), i * width);
+            const iterator_type<T> from = std::next(input.cbegin(), step_from);
+            const std::size_t step_to = std::min(input.size(), (i + 1) * width);
+            const iterator_type<T> to = std::next(input.cbegin(), step_to);
 
             ret.emplace_back(std::make_pair(from, to));
         }
@@ -136,27 +135,27 @@ private:
             a->set_job_id(share_ids->getJobId());
             if constexpr (std::is_same_v<std::decay_t<T>, bool>)
             {
-                multiple_shares->set_flag(values[i]);
+                multiple_shares->set_flag(*values);
             }
             else if constexpr (std::is_same_v<std::decay_t<T>, int>)
             {
-                multiple_shares->set_num(values[i]);
+                multiple_shares->set_num(*values);
             }
             else if constexpr (std::is_same_v<std::decay_t<T>, long>)
             {
-                multiple_shares->set_num64(values[i]);
+                multiple_shares->set_num64(*values);
             }
             else if constexpr (std::is_same_v<std::decay_t<T>, float>)
             {
-                multiple_shares->set_f(values[i]);
+                multiple_shares->set_f(*values);
             }
             else if constexpr (std::is_same_v<std::decay_t<T>, double>)
             {
-                multiple_shares->set_d(values[i]);
+                multiple_shares->set_d(*values);
             }
             else
             {
-                multiple_shares->set_byte(to_string(values[i]));
+                multiple_shares->set_byte(to_string(*values));
             }
             values++;
             share_ids++;
@@ -206,9 +205,13 @@ public:
 
         for (std::size_t i = 0; i < stubs_.size(); ++i)
         {
+            if (std::distance(values_ranges[i].first, values_ranges[i].second) == 0)
+            {
+                continue;
+            }
             boost::asio::post(
                 pool,
-                [&]()
+                [i, values_ranges, share_ids_ranges, party_id, &stubs_ = this->stubs_, this]()
                 {
                     iterator_type<T> from = values_ranges[i].first;
                     iterator_type<T> to = values_ranges[i].second;
@@ -217,7 +220,7 @@ public:
                     // リクエスト設定
                     std::vector<computationtocomputation::Shares> shares;
                     google::protobuf::Empty response;
-                    shares = makeShares(from, s_from, len, party_id);
+                    shares = makeShares<T>(from, s_from, len, party_id);
                     grpc::Status status;
 
                     // リトライポリシーに従ってリクエストを送る
@@ -241,6 +244,8 @@ public:
                 }
             );
         }
+
+        pool.join();
 
         // 送信に成功
         return true;
