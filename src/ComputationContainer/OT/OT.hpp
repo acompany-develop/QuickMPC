@@ -1,9 +1,12 @@
 #include <openssl/sha.h>
 #include <sodium.h>
 #include <boost/algorithm/hex.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 #include <boost/asio.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/multiprecision/integer.hpp>
+#include <boost/serialization/vector.hpp>
 #include <chrono>
 #include <functional>
 #include <iostream>
@@ -57,8 +60,8 @@ class OT
 public:
     size_t size;
     qmpc::Share::Share<int64_t> first;
-    std::vector<qmpc::Share::Share<bm::cpp_int>> second;
-    OT(size_t size_) : size(size_), first(), second(size + 1) {}
+    qmpc::Share::Share<std::string> second;
+    OT(size_t size_) : size(size_), first(), second() {}
 
     void send(int to_id, const std::vector<int64_t>& x)
     {
@@ -70,10 +73,9 @@ public:
         // auto b = recv<std::vector<int64_t>>(socket, 1);
         // 1nd
         auto server = qmpc::ComputationToComputation::Server::getServer();
-
         int64_t beta = std::stol(server->getShare(to_id, first.getId()));
-        std::cout << "sender beta is " << beta << std::endl;
-        // int64_t beta = b.back();
+        // std::cout << "sender beta is " << beta << std::endl;
+        //  int64_t beta = b.back();
         int64_t k = rand(mt);
         auto a = pow(g, k, prime);
         std::vector<bm::cpp_int> ab;
@@ -96,10 +98,14 @@ public:
             ab.emplace_back(ei);
         }
         ab.emplace_back(a);
-        for (int i = 0; i <= size; ++i)
-        {
-            second[i] = ab[i];
-        }
+        std::stringstream stream;
+        boost::archive::binary_oarchive ar(stream);
+        ar& ab;
+        // for (int i = 0; i <= size; ++i)
+        // {
+        //     second[i] = ab[i];
+        // }
+        second = stream.str();
         qmpc::Share::send(second, to_id);
     }
 
@@ -107,11 +113,7 @@ public:
     {
         std::cout << first.getId() << std::endl;
         qmpc::Share::AddressId id = first.getId();
-        std::vector<qmpc::Share::AddressId> ids_list;  // 複数シェアのidリスト
-        for (int i = 0; i <= size; ++i)
-        {
-            ids_list.emplace_back(second[i].getId());
-        }
+        qmpc::Share::AddressId id2 = second.getId();
 
         // 1st
         std::random_device rnd;  // 非決定的な乱数生成器を生成
@@ -134,11 +136,14 @@ public:
 
         // 2nd
         auto server = qmpc::ComputationToComputation::Server::getServer();
-
-        std::vector<std::string> ab = server->getShares(from_id, ids_list, size + 1);
+        std::stringstream archive;
+        archive << server->getShare(from_id, id2);
+        std::vector<bm::cpp_int> ab;
+        boost::archive::binary_iarchive ar(archive);
+        ar& ab;
         // auto ab = recv<std::vector<bm::cpp_int>>(socket, size + 1);
         std::cout << "ab size is " << ab.size() << std::endl;
-        int64_t a = static_cast<int64_t>(std::stol(ab.back()));
+        int64_t a = static_cast<int64_t>(ab.back());
         ab.pop_back();
         // int i = 0;
         // for (auto estr : ab)
@@ -165,7 +170,7 @@ public:
         boost::algorithm::hex(hash, std::back_inserter(hash_int));
         bm::cpp_int value(hash_int);
         auto xr = e ^ value;
-        // std::cout << "ans is " << xr << std::endl;
+        std::cout << "ans is " << xr << std::endl;
         // for (int i = 0; i < size; ++i)
         // {
         //     bm::cpp_int e{ab[i]};

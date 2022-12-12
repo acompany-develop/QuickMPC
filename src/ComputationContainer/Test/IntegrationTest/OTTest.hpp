@@ -255,6 +255,8 @@ TEST(OTTest, ot2)
     qmpc::OT ot(size);
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
+
+    std::vector<int64_t> x(size);
     int r = 5;
     if (pt_id == 1)
     {
@@ -263,11 +265,14 @@ TEST(OTTest, ot2)
     }
     else if (pt_id == 2)
     {
-        std::vector<int64_t> x;
         for (int i = 0; i < 32; ++i)
         {
-            x.emplace_back(1 << i);
+            x[i] = 1ll << i;
         }
+        const auto clock_end = std::chrono::system_clock::now();
+        const auto elapsed_time_ms =
+            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
+        std::cout << "middle Elapsed time =" << elapsed_time_ms << std::endl;
         ot.send(1, x);
     }
 

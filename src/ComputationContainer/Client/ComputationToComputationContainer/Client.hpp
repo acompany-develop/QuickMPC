@@ -58,6 +58,10 @@ private:
         {
             s.set_d(value);
         }
+        else if constexpr (std::is_same_v<std::decay_t<T>, std::string>)
+        {
+            s.set_byte(value);
+        }
         else
         {
             s.set_byte(to_string(value));
