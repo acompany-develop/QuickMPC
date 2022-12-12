@@ -16,6 +16,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
+
 #include "Client/ComputationToComputationContainer/Client.hpp"
 #include "Client/Helper/Helper.hpp"
 #include "Logging/Logger.hpp"
@@ -24,6 +27,17 @@
 #include "unistd.h"
 namespace qmpc::ComputationToComputation
 {
+
+inline boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::mean,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::count>>
+    get_shares_acc;
+
 class Server final : public computationtocomputation::ComputationToComputation::Service
 {
     std::map<int, std::shared_ptr<Client>> ccClients;

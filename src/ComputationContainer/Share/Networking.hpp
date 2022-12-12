@@ -20,6 +20,7 @@
 #include "ConfigParse/ConfigParse.hpp"
 #include "FixedPoint/FixedPoint.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
+#include "TripleHandler/TripleHandler.hpp"
 namespace qmpc::Share
 {
 using std::to_string;
@@ -333,13 +334,5 @@ std::vector<SV> receive(int sp_id, const std::vector<AddressId> &address_ids)
         ret[i] = stosv<SV>(shares[i]);
     }
     return ret;
-}
-
-inline static void init_acc()
-{
-    open_acc = decltype(open_acc){};
-    recons_one_acc = decltype(recons_one_acc){};
-    recons_vec_acc = decltype(recons_vec_acc){};
-    recons_vec_size_acc = decltype(recons_vec_size_acc){};
 }
 }  // namespace qmpc::Share

@@ -149,6 +149,8 @@ std::vector<std::string> Server::getShares(
     int party_id, const std::vector<qmpc::Share::AddressId> &share_ids, unsigned int length
 )
 {
+    const auto start_tp = std::chrono::system_clock::now();
+
     std::vector<std::string> str_values;
     str_values.reserve(length);
     for (unsigned int i = 0; i < length; i++)
@@ -162,6 +164,14 @@ std::vector<std::string> Server::getShares(
         str_values.emplace_back(share);
         shares.erase(key);
     }
+
+    const auto finish_tp = std::chrono::system_clock::now();
+
+    const auto dur =
+        std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(finish_tp - start_tp);
+
+    get_shares_acc(dur.count());
+
     return str_values;
 }
 

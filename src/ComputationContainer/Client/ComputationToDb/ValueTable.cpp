@@ -14,6 +14,18 @@
 
 namespace qmpc::ComputationToDb
 {
+
+static void init_acc()
+{
+    Share::open_acc = decltype(Share::open_acc){};
+    Share::recons_one_acc = decltype(Share::recons_one_acc){};
+    Share::recons_vec_acc = decltype(Share::recons_vec_acc){};
+    Share::recons_vec_size_acc = decltype(Share::recons_vec_size_acc){};
+    ComputationToComputation::get_shares_acc = decltype(ComputationToComputation::get_shares_acc){};
+    TripleHandler::get_triple_acc = decltype(TripleHandler::get_triple_acc){};
+    RandomGeneratorAcc::generate_rand_acc = decltype(RandomGeneratorAcc::generate_rand_acc){};
+}
+
 ValueTable::ValueTable(
     const std::vector<std::vector<std::string>> &table, const std::vector<std::string> &schemas
 )
@@ -88,7 +100,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         return {};
     }
 
-    Share::init_acc();
+    init_acc();
 
     const auto start_tp = std::chrono::system_clock::now();
 
@@ -273,6 +285,9 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         {"open", Share::open_acc},
         {"recons one", Share::recons_one_acc},
         {"recons vec", Share::recons_vec_acc},
+        {"recons vec -> getShares", ComputationToComputation::get_shares_acc},
+        {"triple handler", TripleHandler::get_triple_acc},
+        {"generate rand", RandomGeneratorAcc::generate_rand_acc},
         {"recons vec size", Share::recons_vec_size_acc}};
     for (const auto &[name, acc] : accs)
     {

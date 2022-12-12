@@ -10,6 +10,16 @@
 namespace qmpc::TripleHandler
 {
 
+inline boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::mean,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::count>>
+    get_triple_acc;
+
 template <typename T>
 using Triple = std::tuple<T, T, T>;
 
@@ -62,6 +72,7 @@ public:
     template <typename SV>
     auto getTriple(size_t needCount = 1)
     {
+        const auto start_tp = std::chrono::system_clock::now();
         using Result = Triple<SV>;
         std::vector<Result> ret;
 
@@ -76,6 +87,15 @@ public:
                 ret.emplace_back(takeOutTriple<SV>(triple_queue_fp));
             }
         }
+
+        const auto finish_tp = std::chrono::system_clock::now();
+
+        const auto dur = std::chrono::duration_cast<std::chrono::duration<double, std::milli>>(
+            finish_tp - start_tp
+        );
+
+        get_triple_acc(dur.count());
+
         return ret;
     }
 };

@@ -2,8 +2,24 @@
 
 #include <vector>
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
+
 #include "FixedPoint/FixedPoint.hpp"
 
+namespace qmpc::RandomGeneratorAcc
+{
+
+inline boost::accumulators::accumulator_set<
+    double,
+    boost::accumulators::stats<
+        boost::accumulators::tag::min,
+        boost::accumulators::tag::max,
+        boost::accumulators::tag::mean,
+        boost::accumulators::tag::sum,
+        boost::accumulators::tag::count>>
+    generate_rand_acc;
+};
 class RandGenerator
 {
 private:

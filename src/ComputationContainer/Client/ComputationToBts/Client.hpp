@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 
+#include <boost/accumulators/accumulators.hpp>
+#include <boost/accumulators/statistics.hpp>
+
 #include "Client/Helper/Helper.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "Logging/Logger.hpp"
