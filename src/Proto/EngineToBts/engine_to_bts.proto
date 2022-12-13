@@ -8,9 +8,16 @@ service EngineToBts {
     rpc GetTriples(GetTriplesRequest) returns (GetTriplesResponse) {}
 }
 
+enum Type{
+  TYPE_UNKNOWN = 0;
+  TYPE_FLOAT = 1;
+  TYPE_FIXEDPOINT = 2;
+}
+
 message GetTriplesRequest{
     uint32 job_id = 1;
     uint32 amount = 2;
+    Type triple_type = 3;
 }
 
 message Triple{
