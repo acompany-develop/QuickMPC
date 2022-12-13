@@ -593,4 +593,3 @@ std::vector<Share<T>> getFloor(const std::vector<Share<T>> &s)
 }  // namespace qmpc::Share
 
 using Share = qmpc::Share::Share<FixedPoint>;
-
