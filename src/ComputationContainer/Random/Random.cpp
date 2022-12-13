@@ -19,20 +19,3 @@ unsigned long long RandGenerator::generateRand()
 
     return rnd;
 }
-
-template <>
-long long RandGenerator::getRand<long long>(long long min_val, long long max_val)
-{
-    auto rnd = RandGenerator::getInstance()->generateRand();
-    auto rnd_mod = static_cast<long long>(rnd % (max_val - min_val));
-    auto val = std::abs(rnd_mod) + min_val;
-    return val;
-}
-template <>
-FixedPoint RandGenerator::getRand<FixedPoint>(long long min_val, long long max_val)
-{
-    auto rnd = RandGenerator::getInstance()->generateRand();
-    auto rnd_mod = static_cast<long long>(rnd % (max_val - min_val));
-    FixedPoint val{std::abs(rnd_mod) + min_val};
-    return val;
-}
