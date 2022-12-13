@@ -434,7 +434,7 @@ std::vector<Share<T>> getRandShares(long long min_val, long long max_val, int n)
     std::vector<Share<T>> ret;
     ret.reserve(n);
 
-    std::vector<FixedPoint> r = RandGenerator::getInstance()->getRandVec<T>(min_val, max_val, n);
+    auto r = RandGenerator::getInstance()->getRandVec<T>(min_val, max_val, n);
     for (const auto &v : r)
     {
         ret.emplace_back(Share(v));
@@ -442,49 +442,76 @@ std::vector<Share<T>> getRandShares(long long min_val, long long max_val, int n)
     return ret;
 }
 
-template <typename T>
+template <class T>
+auto _isZero(const T &x)
+{
+    if constexpr (std::is_same_v<T, FixedPoint>)
+    {
+        return x.getDoubleVal() == 0.0;
+    }
+    else
+    {
+        return x == 0.0;
+    }
+}
+template <class T>
+auto _sqrt(const T &x)
+{
+    if constexpr (std::is_same_v<T, FixedPoint>)
+    {
+        return T(x.getSqrtValue());
+    }
+    else
+    {
+        return std::sqrt(x);
+    }
+}
+
+template <typename T, typename BT = float>
 Share<T> getRandBitShare()
 {
     while (true)
     {
-        Share<T> r = Share(RandGenerator::getInstance()->getRand<T>(-1000, 1000));
-        Share<T> square_r = r * r;
+        auto r = Share<BT>(RandGenerator::getInstance()->getRand<BT>(-10, 10));
+        auto square_r = r * r;
         open(square_r);
-        T square_r_rec = recons(square_r);
-        if (square_r_rec.getDoubleVal() != 0.0)
+        auto square_r_rec = recons(square_r);
+        if (!_isZero(square_r_rec))
         {
-            T r_dash = T(square_r_rec.getSqrtValue());
-            T inv_r_dash = T(1.0) / r_dash;
-            Share<T> r0 = Share(T(0.5) * (inv_r_dash * r + T(1.0)));
+            auto r_dash = _sqrt(square_r_rec);
+            auto inv_r_dash = BT(1.0) / r_dash;
+            auto r0_bt = BT(0.5) * (inv_r_dash * r + BT(1.0));
+            auto r0 = Share<T>(T(r0_bt.getVal()));
             return r0;
         }
     }
 }
 
-template <typename T>
+template <typename T, typename BT = float>
 std::vector<Share<T>> getRandBitShare(int n)
 {
-    std::vector<Share<T>> r = getRandShares<T>(-1000, 1000, n);
-    std::vector<Share<T>> square_r = r * r;
+    auto r = getRandShares<BT>(-10, 10, n);
+    auto square_r = r * r;
     open(square_r);
-    std::vector<T> square_r_rec = recons(square_r);
+    auto square_r_rec = recons(square_r);
 
     std::vector<Share<T>> ret;
     ret.reserve(n);
     for (int i = 0; i < n; i++)
     {
-        if (square_r_rec[i].getDoubleVal() != 0.0)
+        if (!_isZero(square_r_rec[i]))
         {
-            T r_dash = T(square_r_rec[i].getSqrtValue());
-            T inv_r_dash = T(1.0) / r_dash;
-            Share<T> r0 = Share(T(0.5) * (inv_r_dash * r[i] + T(1.0)));
+            auto r_dash = _sqrt(square_r_rec[i]);
+            auto inv_r_dash = BT(1.0) / r_dash;
+            auto r0_bt = BT(0.5) * (inv_r_dash * r[i] + BT(1.0));
+            auto r0 = Share<T>(T(r0_bt.getVal()));
             ret.emplace_back(r0);
         }
         else
         {
             // もし square_r_rec[i] の値が 0
             // である場合は、再度乱数ビットシェアを生成する
-            ret.emplace_back(getRandBitShare<T>());
+            ret.emplace_back(getRandBitShare<T, BT>());
         }
     }
     return ret;
@@ -566,3 +593,4 @@ std::vector<Share<T>> getFloor(const std::vector<Share<T>> &s)
 }  // namespace qmpc::Share
 
 using Share = qmpc::Share::Share<FixedPoint>;
+
