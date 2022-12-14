@@ -15,7 +15,8 @@ using Triple = std::tuple<T, T, T>;
 
 class TripleHandler
 {
-    thread_local static inline std::queue<Triple<std::string>> triple_queue;
+    thread_local static inline std::queue<Triple<std::string>> triple_queue_fp;
+    thread_local static inline std::queue<Triple<std::string>> triple_queue_float;
 
 private:
     // 1Jobで必要なトリプルを下回るとBTS周りでいろいろ死ぬので，でかめに設定
@@ -37,7 +38,7 @@ public:
         {
             auto client = ComputationToBts::Client::getInstance();
             auto job_id = qmpc::Share::AddressId::getThreadJobId();
-            for (const auto &triple : client->readTriples(job_id, TripleHandler::threshold))
+            for (const auto &triple : client->readTriples<TV>(job_id, TripleHandler::threshold))
             {
                 triple_queue.push(triple);
             }
@@ -66,7 +67,14 @@ public:
 
         for (size_t count = 0; count < needCount; count++)
         {
-            ret.emplace_back(takeOutTriple<SV>(this->triple_queue));
+            if constexpr (std::is_same_v<SV, float>)
+            {
+                ret.emplace_back(takeOutTriple<SV>(triple_queue_float));
+            }
+            else
+            {
+                ret.emplace_back(takeOutTriple<SV>(triple_queue_fp));
+            }
         }
         return ret;
     }

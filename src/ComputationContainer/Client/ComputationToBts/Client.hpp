@@ -3,6 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "Client/Helper/Helper.hpp"
+#include "ConfigParse/ConfigParse.hpp"
+#include "Logging/Logger.hpp"
 #include "external/Proto/EngineToBts/engine_to_bts.grpc.pb.h"
 
 namespace qmpc::ComputationToBts
@@ -25,6 +28,47 @@ public:
     static std::shared_ptr<Client> getInstance();
 
     // tripleの取り出し
-    std::vector<Triple> readTriples(const unsigned int job_id, const unsigned int amount);
+    template <class SV>
+    std::vector<Triple> readTriples(const unsigned int job_id, const unsigned int amount)
+    {
+        // リクエスト設定
+        enginetobts::GetTriplesRequest request;
+        request.set_job_id(job_id);
+        request.set_amount(amount);
+        if constexpr (std::is_same_v<SV, float>)
+        {
+            request.set_triple_type(enginetobts::Type::TYPE_FLOAT);
+        }
+        else
+        {
+            request.set_triple_type(enginetobts::Type::TYPE_FIXEDPOINT);
+        }
+        enginetobts::GetTriplesResponse response;
+
+        grpc::Status status;
+
+        // リトライポリシーに従ってリクエストを送る
+        auto retry_manager = RetryManager("BTS", "readTriples");
+        do
+        {
+            grpc::ClientContext context;
+            const std::string token = Config::getInstance()->cc_to_bts_token;
+            context.AddMetadata("authorization", "bearer " + token);
+            status = stub_->GetTriples(&context, request, &response);
+        } while (retry_manager.retry(status));
+
+        // responseから結果を取り出して返す
+        std::vector<Triple> triples;
+        triples.reserve(response.triples_size());
+        for (int i = 0; i < response.triples_size(); i++)
+        {
+            auto triple = response.triples(i);
+            Triple t = std::make_tuple(
+                std::to_string(triple.a()), std::to_string(triple.b()), std::to_string(triple.c())
+            );
+            triples.emplace_back(t);
+        }
+        return triples;
+    }
 };
 }  // namespace qmpc::ComputationToBts

@@ -10,7 +10,7 @@ void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
     for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
     {
         QMPC_LOG_INFO("jobId[{}]: ...", jobId);
-        auto triples = cc_to_db->readTriples(jobId, amount);
+        auto triples = cc_to_db->readTriples<FixedPoint>(jobId, amount);
         EXPECT_EQ(triples.size(), amount);
         // TODO: Party間で足並みを揃えてa*b=cのチェック
 
