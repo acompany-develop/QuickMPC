@@ -143,5 +143,6 @@ cc_test(
         "@gtest//:main",
         "//ConfigParse:config_parse",
         "@libsodium//:sodium",
+        "//OT:ot",
     ],
 )

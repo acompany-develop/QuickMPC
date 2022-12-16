@@ -13,6 +13,7 @@
 #include <random>
 #include <thread>
 #include "ConfigParse/ConfigParse.hpp"
+#include "Group.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/Share.hpp"
 namespace qmpc
