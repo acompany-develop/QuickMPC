@@ -470,9 +470,18 @@ auto _sqrt(const T &x)
 template <typename T, typename BT = float>
 Share<T> getRandBitShare()
 {
+    Config *conf = Config::getInstance();
     while (true)
     {
-        auto r = Share<BT>(RandGenerator::getInstance()->getRand<BT>(-10, 10));
+        auto r_int = RandGenerator::getInstance()->getRand<int>(-10, 10);
+        // SPは奇数，それ以外は偶数になるまで再生成
+        while ((conf->party_id == conf->sp_id && !(r_int & 1))
+               || (conf->party_id != conf->sp_id && (r_int & 1)))
+        {
+            r_int = RandGenerator::getInstance()->getRand<int>(-10, 10);
+        }
+        auto r = Share<BT>(BT(r_int));
+
         auto square_r = r * r;
         open(square_r);
         auto square_r_rec = recons(square_r);
@@ -490,7 +499,21 @@ Share<T> getRandBitShare()
 template <typename T, typename BT = float>
 std::vector<Share<T>> getRandBitShare(int n)
 {
-    auto r = getRandShares<BT>(-10, 10, n);
+    Config *conf = Config::getInstance();
+    std::vector<Share<BT>> r;
+    r.reserve(n);
+    for (int _ = 0; _ < n; ++_)
+    {
+        auto r_int = RandGenerator::getInstance()->getRand<int>(-10, 10);
+        // SPは奇数，それ以外は偶数になるまで再生成
+        while ((conf->party_id == conf->sp_id && !(r_int & 1))
+               || (conf->party_id != conf->sp_id && (r_int & 1)))
+        {
+            r_int = RandGenerator::getInstance()->getRand<int>(-10, 10);
+        }
+        r.emplace_back(BT(r_int));
+    }
+
     auto square_r = r * r;
     open(square_r);
     auto square_r_rec = recons(square_r);
