@@ -432,8 +432,7 @@ func (s *server) GetComputationResultTest(in *pb.GetComputationResultRequest, st
 		return status.Err()
 	}
 
-	// piece_idで取得される
-	// 一度結合する
+	// 現状のresultの形式から配列に変更するため、一度結合する
 	m := map[int]string{}
 
 	for _, result := range computationResults{
