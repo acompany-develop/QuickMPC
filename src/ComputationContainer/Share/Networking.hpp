@@ -135,9 +135,13 @@ auto recons(const T &share)
             {
                 ret ^= Result{s == "1"};
             }
-            else if constexpr (std::is_integral_v<Result>)
+            else if constexpr (std::is_same_v<Result, int>)
             {
                 ret += Result{std::stoi(s)};
+            }
+            else if constexpr (std::is_same_v<Result, long>)
+            {
+                ret += Result{std::stol(s)};
             }
             else if constexpr (std::is_floating_point_v<Result>)
             {
@@ -191,9 +195,13 @@ auto recons(const T &share)
                 {
                     ret[i] = ret[i] ^ Result(std::stoi(values[i]));
                 }
-                else if constexpr (std::is_integral_v<Result>)
+                else if constexpr (std::is_same_v<Result, int>)
                 {
                     ret[i] += Result(std::stoi(values[i]));
+                }
+                else if constexpr (std::is_same_v<Result, long>)
+                {
+                    ret[i] += Result(std::stol(values[i]));
                 }
                 else if constexpr (std::is_floating_point_v<Result>)
                 {

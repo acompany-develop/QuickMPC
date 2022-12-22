@@ -123,12 +123,9 @@ public:
         std::uniform_int_distribution<> rand_ast(1, 100000);
 
         int64_t s = rand(mt);
-        auto beta = pow(g, s, prime);  // 4
-        std::cout << "beta is " << beta << std::endl;
+        auto beta = pow(g, s, prime);           // 4
         auto beta2 = pow(h, choise_id, prime);  // 27
-        std::cout << "beta2 is " << beta2 << std::endl;
         (beta *= beta2) %= prime;
-        std::cout << "b is " << beta << std::endl;
         std::vector<int64_t> b;
         b.emplace_back(beta);
         first = beta;
@@ -143,7 +140,6 @@ public:
         boost::archive::binary_iarchive ar(archive);
         ar& ab;
         // auto ab = recv<std::vector<bm::cpp_int>>(socket, size + 1);
-        std::cout << "ab size is " << ab.size() << std::endl;
         int64_t a = static_cast<int64_t>(ab.back());
         ab.pop_back();
         // int i = 0;
@@ -171,7 +167,6 @@ public:
         boost::algorithm::hex(hash, std::back_inserter(hash_int));
         bm::cpp_int value(hash_int);
         auto xr = e ^ value;
-        std::cout << "ans is " << xr << std::endl;
         // for (int i = 0; i < size; ++i)
         // {
         //     bm::cpp_int e{ab[i]};

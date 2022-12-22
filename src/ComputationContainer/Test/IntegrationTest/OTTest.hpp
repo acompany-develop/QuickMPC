@@ -2,6 +2,7 @@
 
 #include <openssl/sha.h>
 #include <sodium.h>
+#include <bitset>
 #include <boost/algorithm/hex.hpp>
 #include <boost/asio.hpp>
 #include <boost/multiprecision/cpp_int.hpp>
@@ -269,10 +270,6 @@ TEST(OTTest, ot2)
         {
             x[i] = 1ll << i;
         }
-        const auto clock_end = std::chrono::system_clock::now();
-        const auto elapsed_time_ms =
-            std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
-        std::cout << "middle Elapsed time =" << elapsed_time_ms << std::endl;
         ot.send(1, x);
     }
 
@@ -284,4 +281,72 @@ TEST(OTTest, ot2)
     const auto elapsed_time_ms =
         std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
     std::cout << "Elapsed time =" << elapsed_time_ms << std::endl;
+}
+
+TEST(OTTest, unitvprep)
+{
+    auto rotate = [](unsigned int x, int r) { return x << r | x >> (32 - r); };
+    size_t N = 32;
+    qmpc::OT ot(N);
+    Config *conf = Config::getInstance();
+    int pt_id = conf->party_id;
+    int n_parties = conf->n_parties;
+    int r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
+    auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N - 1);
+
+    std::cout << pt_id << " party r is " << r << std::endl;
+    qmpc::Share::Share<int64_t> ret;
+    // v[to] = data;
+    std::vector<int64_t> v(N);
+    for (int i = 1; i < N; ++i)
+    {
+        v[i] = random_s[i];
+    }
+    if (pt_id == 1)
+    {
+        v[0] = rotate(1, r);
+        std::vector<int64_t> x;
+        for (int i = 0; i < N; ++i)
+        {
+            int64_t xi = rotate(v[0], i) - v[1];
+            std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            x.emplace_back(xi);
+        }
+        ot.send(2, x);
+        x.clear();
+        for (int i = 0; i < N; ++i)
+        {
+            int64_t xi = rotate(v[1], i) - v[2];
+            std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            x.emplace_back(xi);
+        }
+        ot.send(3, x);
+        ret = v[2];
+    }
+    else if (pt_id == 2)
+    {
+        auto rec = ot.recieve(1, r);
+        v[1] = static_cast<int64_t>(rec);
+        std::vector<int64_t> x;
+        for (int i = 0; i < N; ++i)
+        {
+            int64_t xi = rotate(v[1], i) - v[2];
+            std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            x.emplace_back(xi);
+        }
+        ot.send(3, x);
+        ret = v[2];
+        std::cout << "rec is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
+    }
+    else if (pt_id == 3)
+    {
+        auto rec = ot.recieve(1, r);
+        auto rec2 = ot.recieve(2, r);
+        ret = static_cast<int64_t>(rec + rec2);
+        std::cout << "rec1  is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
+        std::cout << "rec2  is " << std::bitset<32>(static_cast<int64_t>(rec2)) << std::endl;
+    }
+    open(ret);
+    auto rec = recons(ret);
+    std::cout << "value is " << std::bitset<32>(rec) << std::endl;
 }
