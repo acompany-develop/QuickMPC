@@ -19,6 +19,7 @@ service LibcToManage {
     rpc Predict(PredictRequest) returns (PredictResponse) {}                                         // モデル値予測リクエスト
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
     rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                    // 計算時間取得リクエスト
+    rpc GetComputationResultTest(GetComputationResultRequest) returns (stream GetComputationResultResponseTest) {}
 }
 
 /**
@@ -178,4 +179,16 @@ message GetElapsedTimeRequest {
 message GetElapsedTimeResponse {
     bool is_ok = 1;
     double elapsed_time = 2;
+}
+
+message GetComputationResultResponseTest {
+    string message = 1;
+    bool is_ok = 2;
+    repeated string result = 3;
+    int32 row_number = 4;
+    pb_common_types.JobStatus status = 5;
+    int32 piece_id = 6;
+    optional pb_common_types.JobProgress progress = 7;
+    bool is_schema = 8;
+    bool is_dim2 = 9;
 }
