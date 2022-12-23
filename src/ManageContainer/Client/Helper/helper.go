@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"time"
+
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,7 +21,7 @@ type RetryManager struct {
 func (rm *RetryManager) canRetry(code codes.Code) bool {
 
 	rm.count++
-	if rm.count >= 10 {
+	if rm.count >= retryNum {
 		return false
 	}
 
@@ -44,7 +46,7 @@ func (rm *RetryManager) Retry(err error) (bool, error) {
 	AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
 	if rm.canRetry(st.Code()) {
 		// リトライ可能と判断してsleepの後にリトライ
-		// TODO: sleep
+		time.Sleep(retryWaitTime * time.Second)
 		return true, err
 	}
 
