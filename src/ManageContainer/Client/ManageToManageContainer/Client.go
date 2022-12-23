@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	helper "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/Helper"
 	m2mserver "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server/ManageToManageContainer"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer"
@@ -82,14 +83,16 @@ func (c Client) DeleteShares(dataID string) error {
 // (conn)にシェア削除リクエストを送信する
 func (c Client) deleteShares(conn *grpc.ClientConn, dataID string) error {
 	mcTomcClient := pb.NewManageToManageClient(conn)
+
 	deleteSharesRequest := &pb.DeleteSharesRequest{DataId: dataID}
-	_, err := mcTomcClient.DeleteShares(context.TODO(), deleteSharesRequest)
-	if err != nil {
-		if reconnect(conn) {
-			return c.deleteShares(conn, dataID)
+	rm := helper.RetryManager{}
+	for {
+		_, err := mcTomcClient.DeleteShares(context.TODO(), deleteSharesRequest)
+		retry, _ := rm.Retry(err)
+		if !retry {
+			return err
 		}
 	}
-	return err
 }
 
 // 自分以外のMCにSyncリクエストを送信する
@@ -116,11 +119,12 @@ func (c Client) Sync(syncID string) error {
 func (c Client) sync(conn *grpc.ClientConn, syncID string) error {
 	mcTomcClient := pb.NewManageToManageClient(conn)
 	syncRequest := &pb.SyncRequest{SyncId: syncID}
-	_, err := mcTomcClient.Sync(context.TODO(), syncRequest)
-	if err != nil {
-		if reconnect(conn) {
-			return c.sync(conn, syncID)
+	rm := helper.RetryManager{}
+	for {
+		_, err := mcTomcClient.Sync(context.TODO(), syncRequest)
+		retry, _ := rm.Retry(err)
+		if !retry {
+			return err
 		}
 	}
-	return err
 }

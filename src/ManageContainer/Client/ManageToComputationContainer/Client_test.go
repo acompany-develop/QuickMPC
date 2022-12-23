@@ -65,11 +65,11 @@ func TestExecuteComputation(t *testing.T) {
 	}
 
 	if message != "ok" {
-		t.Fatal("ExecuteComputation must return message 'ok'")
+		t.Fatalf("ExecuteComputation must return message 'ok'. but message is '%s'", message)
 	}
 
 	if status != 0 {
-		t.Fatal("ExecuteComputation must return status '0'")
+		t.Fatalf("ExecuteComputation must return status '0'. but status is '%d'", status)
 	}
 }
 
@@ -142,10 +142,10 @@ func TestPredict(t *testing.T) {
 	}
 
 	if message != "ok" {
-		t.Fatal("Result must return message 'ok'")
+		t.Fatalf("Result must return message 'ok'. but message is '%s'", message)
 	}
 
 	if status != 0 {
-		t.Fatal("Result must return status '0'")
+		t.Fatalf("Result must return status '0'. but status is '%d'", status)
 	}
 }
