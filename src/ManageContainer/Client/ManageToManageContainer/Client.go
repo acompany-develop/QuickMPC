@@ -11,7 +11,6 @@ import (
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -54,14 +53,6 @@ func connect() ([]*grpc.ClientConn, error) {
 		connList = append(connList, conn)
 	}
 	return connList, nil
-}
-
-func reconnect(conn *grpc.ClientConn) bool {
-	// 20秒間だけ再接続を試みる
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-	conn.WaitForStateChange(ctx, conn.GetState())
-	return conn.GetState() == connectivity.Idle
 }
 
 // 自分以外のMCにシェア削除リクエストを送信する
