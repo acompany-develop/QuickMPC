@@ -1,12 +1,13 @@
 package helper
 
 import (
-	"fmt"
 	"testing"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+var unavailableErr = status.Error(codes.Unavailable, "")
 
 // 正常の場合リトライがfalseになるか
 func TestRetryNotError(t *testing.T) {
@@ -20,7 +21,7 @@ func TestRetryNotError(t *testing.T) {
 // 異常の場合リトライがtrueになるか
 func TestRetryError(t *testing.T) {
 	rm := RetryManager{}
-	b, err := rm.Retry(fmt.Errorf("Various errors"))
+	b, err := rm.Retry(unavailableErr)
 	if !b || err == nil {
 		t.Fatalf("Retry must return `(true, err)` when argument `err` has error. but return `(%t, %v)`", b, err)
 	}
@@ -46,7 +47,7 @@ func TestRetryGrpcError(t *testing.T) {
 		"OutOfRange":         {status.Error(codes.OutOfRange, ""), false},
 		"Unimplemented":      {status.Error(codes.Unimplemented, ""), false},
 		"Internal":           {status.Error(codes.Internal, ""), false},
-		"Unavailable":        {status.Error(codes.Unavailable, ""), true},
+		"Unavailable":        {status.Error(codes.Unavailable, "ERROR"), true},
 		"DataLoss":           {status.Error(codes.DataLoss, ""), false},
 		"Unauthenticated":    {status.Error(codes.Unauthenticated, ""), false},
 	}
@@ -69,16 +70,16 @@ func TestRetryGrpcError(t *testing.T) {
 func TestRetryErrorMomentary(t *testing.T) {
 	rm := RetryManager{}
 
-	// 10回まではリトライする
-	for i := 0; i < 10; i++ {
-		b, err := rm.Retry(fmt.Errorf("Various errors"))
+	// 9回まではリトライする
+	for i := 0; i < 9; i++ {
+		b, err := rm.Retry(unavailableErr)
 		if !b || err == nil {
 			t.Fatalf("Retry must return `(true, err)` when argument `err` has error. but return `(%t, %v)`", b, err)
 		}
 	}
 
-	// 11回目はリトライしない
-	b, err := rm.Retry(fmt.Errorf("Various errors"))
+	// 10回目はリトライしない
+	b, err := rm.Retry(unavailableErr)
 	if b || err == nil {
 		t.Fatalf("Retry must return `false, err` when call Retry over 10 times. but return `%t %v`", b, err)
 	}
