@@ -257,18 +257,22 @@ TEST(OTTest, ot2)
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
 
-    std::vector<int64_t> x(size);
-    int r = 5;
+    std::vector<std::vector<bm::cpp_int>> x(size, std::vector<bm::cpp_int>(size));
+    int r = 15;
     if (pt_id == 1)
     {
         auto chosen = ot.recieve(2, r);
-        std::cout << chosen << std::endl;
+        for (auto a : chosen)
+        {
+            std::cout << a;
+        }
+        std::cout << std::endl;
     }
     else if (pt_id == 2)
     {
-        for (int i = 0; i < 32; ++i)
+        for (int i = 0; i < size; ++i)
         {
-            x[i] = 1ll << i;
+            x[i][i] = 1ll;
         }
         ot.send(1, x);
     }
@@ -287,7 +291,7 @@ TEST(OTTest, unitvprep)
 {
     auto rotate = [](unsigned int x, int r) { return x << r | x >> (32 - r); };
     size_t N = 32;
-    qmpc::OT ot(N);
+    qmpc::OT ot(N), ot2(N);
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
     int n_parties = conf->n_parties;
@@ -295,58 +299,169 @@ TEST(OTTest, unitvprep)
     auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N - 1);
 
     std::cout << pt_id << " party r is " << r << std::endl;
-    qmpc::Share::Share<int64_t> ret;
-    // v[to] = data;
-    std::vector<int64_t> v(N);
-    for (int i = 1; i < N; ++i)
-    {
-        v[i] = random_s[i];
-    }
+    qmpc::Share::Share<int> rShare = r;
+    std::vector<qmpc::Share::Share<bm::cpp_int>> x_1_temp(N);
     if (pt_id == 1)
     {
-        v[0] = rotate(1, r);
-        std::vector<int64_t> x;
+        std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
+        // v[to] = data;
+        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
         for (int i = 0; i < N; ++i)
         {
-            int64_t xi = rotate(v[0], i) - v[1];
-            std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
-            x.emplace_back(xi);
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+            for (int j = 0; j < N; ++j)
+            {
+                v[i][j] = bm::cpp_int{ri[j]};
+            }
+        }
+        std::vector<bm::cpp_int> e(N);
+        e[r - 1] = 1ll;
+        v[0] = e;
+        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
+        {
+            auto vi = v[0];
+            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+            std::vector<bm::cpp_int> xi(N);
+            for (int i = 0; i < N; ++i)
+            {
+                xi[i] = vi[i] - v[1][i];
+            }
+            x[i] = xi;
+        }
+        for (int i = 0; i < N; ++i)
+        {
+            // std::cout << "v 1 is " << v[1][i] << std::endl;
+            x_1_temp[i] = v[1][i];
         }
         ot.send(2, x);
-        x.clear();
         for (int i = 0; i < N; ++i)
         {
-            int64_t xi = rotate(v[1], i) - v[2];
-            std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
-            x.emplace_back(xi);
+            auto vi = v[1];
+            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+            std::vector<bm::cpp_int> xi(N);
+            for (int i = 0; i < N; ++i)
+            {
+                xi[i] = vi[i] - v[2][i];
+                // std::cout << "ot x " << i << " is " << std::bitset<32>(xi[i]) << std::endl;
+            }
+            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            x[i] = xi;
         }
-        ot.send(3, x);
-        ret = v[2];
+        ot2.send(3, x);
+        for (int i = 0; i < N; ++i)
+        {
+            // std::cout << "v 2 is " << v[2][i] << std::endl;
+            ret[i] = v[2][i];
+        }
+        open(ret);
+        auto ret_rec = recons(ret);
+        int i = 0;
+        for (auto a : ret_rec)
+        {
+            std::cout << " index is " << i << " " << a << std::endl;
+            i++;
+        }
+        // std::cout << "v 2 is " << std::bitset<32>(v[2]) << std::endl;
     }
     else if (pt_id == 2)
     {
-        auto rec = ot.recieve(1, r);
-        v[1] = static_cast<int64_t>(rec);
-        std::vector<int64_t> x;
+        std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
+        // v[to] = data;
+
+        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
         for (int i = 0; i < N; ++i)
         {
-            int64_t xi = rotate(v[1], i) - v[2];
-            std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
-            x.emplace_back(xi);
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+            for (int j = 0; j < N; ++j)
+            {
+                v[i][j] = bm::cpp_int{ri[j]};
+            }
         }
-        ot.send(3, x);
-        ret = v[2];
-        std::cout << "rec is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
+        auto rec = ot.recieve(1, r);
+        for (int i = 0; i < N; ++i)
+        {
+            v[1][i] = rec[i];
+            // std::cout << "party 2 rec is " << v[1][i] << std::endl;
+            x_1_temp[i] = v[1][i];
+        }
+
+        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
+        {
+            auto vi = v[1];
+            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+            std::vector<bm::cpp_int> xi(N);
+            for (int i = 0; i < N; ++i)
+            {
+                xi[i] = vi[i] - v[2][i];
+            }
+            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            x[i] = xi;
+        }
+        ot2.send(3, x);
+        for (int i = 0; i < N; ++i)
+        {
+            // std::cout << "v 2 is " << v[2][i] << std::endl;
+            ret[i] = v[2][i];
+        }
+        open(ret);
+        auto ret_rec = recons(ret);
+        int i = 0;
+        for (auto a : ret_rec)
+        {
+            std::cout << " index is " << i << " " << a << std::endl;
+            i++;
+        }
+        // std::cout << "rec is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
     }
     else if (pt_id == 3)
     {
-        auto rec = ot.recieve(1, r);
-        auto rec2 = ot.recieve(2, r);
-        ret = static_cast<int64_t>(rec + rec2);
-        std::cout << "rec1  is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
-        std::cout << "rec2  is " << std::bitset<32>(static_cast<int64_t>(rec2)) << std::endl;
+        std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
+        // v[to] = data;
+
+        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
+        {
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+            for (int j = 0; j < N; ++j)
+            {
+                v[i][j] = bm::cpp_int{ri[j]};
+            }
+        }
+        auto rec = ot2.recieve(1, r);
+        auto rec2 = ot2.recieve(2, r);
+        for (int i = 0; i < N; ++i)
+        {
+            ret[i] = rec[i] + rec2[i];
+        }
+        // std::cout << "rec1  is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
+        // std::cout << "rec2  is " << std::bitset<32>(static_cast<int64_t>(rec2)) << std::endl;
+        open(ret);
+        auto ret_rec = recons(ret);
+        int i = 0;
+        for (auto a : ret_rec)
+        {
+            std::cout << " index is " << i << " " << a << std::endl;
+            i++;
+        }
     }
-    open(ret);
-    auto rec = recons(ret);
-    std::cout << "value is " << std::bitset<32>(rec) << std::endl;
+    open(x_1_temp);
+    auto tmp_rec = recons(x_1_temp);
+    int i = 0;
+    for (auto &a : tmp_rec)
+    {
+        if (a == 1)
+        {
+            std::cout << "temp rec is " << i << std::endl;
+        }
+        i++;
+    }
+    open(rShare);
+    auto recR = recons(rShare);
+    // std::cout << "value is " << std::bitset<32>(rec) << std::endl;
+    std::cout << "random value is" << (recR % 32) << std::endl;
 }

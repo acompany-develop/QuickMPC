@@ -64,7 +64,7 @@ public:
     qmpc::Share::Share<std::string> second;
     OT(size_t size_) : size(size_), first(), second() {}
 
-    void send(int to_id, const std::vector<int64_t>& x)
+    void send(int to_id, const std::vector<std::vector<bm::cpp_int>>& x)
     {
         std::cout << first.getId() << std::endl;
         std::random_device rnd;  // 非決定的な乱数生成器を生成
@@ -75,11 +75,11 @@ public:
         // 1nd
         auto server = qmpc::ComputationToComputation::Server::getServer();
         int64_t beta = std::stol(server->getShare(to_id, first.getId()));
-        // std::cout << "sender beta is " << beta << std::endl;
+        std::cout << "sender beta is " << beta << std::endl;
         //  int64_t beta = b.back();
         int64_t k = rand(mt);
         auto a = pow(g, k, prime);
-        std::vector<bm::cpp_int> ab;
+        std::vector<std::vector<bm::cpp_int>> ab(size + 1);
         for (int i = 0; i < size; ++i)
         {
             auto bk = pow(beta, k, prime);
@@ -94,11 +94,14 @@ public:
             bm::cpp_int value(hash_int);
             // std::cout << value << std::endl;
 
-            bm::cpp_int ei = value ^ x[i];
-            // std::cout << "ei is " << ei << std::endl;
-            ab.emplace_back(ei);
+            for (int j = 0; j < size; ++j)
+            {
+                bm::cpp_int ei = value ^ x[i][j];
+                // std::cout << "ei is " << ei << std::endl;
+                ab[i].emplace_back(ei);
+            }
         }
-        ab.emplace_back(a);
+        ab[size].emplace_back(a);
         std::stringstream stream;
         boost::archive::binary_oarchive ar(stream);
         ar& ab;
@@ -110,7 +113,7 @@ public:
         qmpc::Share::send(second, to_id);
     }
 
-    bm::cpp_int recieve(int from_id, int choise_id)
+    std::vector<bm::cpp_int> recieve(int from_id, int choise_id)
     {
         std::cout << first.getId() << std::endl;
         qmpc::Share::AddressId id = first.getId();
@@ -133,40 +136,48 @@ public:
         // send(socket, b);
 
         // 2nd
+        std::cout << "second " << std::endl;
         auto server = qmpc::ComputationToComputation::Server::getServer();
         std::stringstream archive;
         archive << server->getShare(from_id, id2);
-        std::vector<bm::cpp_int> ab;
+        std::vector<std::vector<bm::cpp_int>> ab;
         boost::archive::binary_iarchive ar(archive);
         ar& ab;
         // auto ab = recv<std::vector<bm::cpp_int>>(socket, size + 1);
-        int64_t a = static_cast<int64_t>(ab.back());
+        int64_t a = static_cast<int64_t>(ab.back().back());
         ab.pop_back();
-        // int i = 0;
-        // for (auto estr : ab)
+        int i = 0;
+        // for (auto cur : ab)
         // {
-        //     bm::cpp_int e{estr};
-        //     // std::cout << "e is " << e << std::endl;
-        //     bm::cpp_int as = pow(a, s, prime);
-        //     // std::cout << "a is " << e << " b is " << as << std::endl;
-        //     auto hash = sha256(as.str() + std::to_string(i));
-        //     // std::cout << "recv " << i << " hash is " << hash << std::endl;
-        //     std::string hash_int;
-        //     boost::algorithm::hex(hash, std::back_inserter(hash_int));
-        //     bm::cpp_int value(hash_int);
-        //     auto xr = e ^ value;
-        //     if (i == (choise_id - 1)) std::cout << "ans is " << xr << std::endl;
+        //     for (auto estr : cur)
+        //     {
+        //         bm::cpp_int e{estr};
+        //         std::cout << "e is " << e << std::endl;
+        //         bm::cpp_int as = pow(a, s, prime);
+        //         // std::cout << "a is " << e << " b is " << as << std::endl;
+        //         auto hash = sha256(as.str() + std::to_string(i));
+        //         std::cout << "recv " << i << " hash is " << hash << std::endl;
+        //         std::string hash_int;
+        //         boost::algorithm::hex(hash, std::back_inserter(hash_int));
+        //         bm::cpp_int value(hash_int);
+        //         auto xr = e ^ value;
+        //         if (i == (choise_id - 1)) std::cout << "ans is " << xr << std::endl;
+        //     }
         //     i++;
         // }
 
-        bm::cpp_int e{ab[choise_id - 1]};
+        std::vector<bm::cpp_int> e = ab[choise_id - 1];
         bm::cpp_int as = pow(a, s, prime);
         auto hash = sha256(as.str() + std::to_string(choise_id - 1));
         // std::cout << "recv " << i << " hash is " << hash << std::endl;
         std::string hash_int;
         boost::algorithm::hex(hash, std::back_inserter(hash_int));
         bm::cpp_int value(hash_int);
-        auto xr = e ^ value;
+        std::vector<bm::cpp_int> xr(size);
+        for (int i = 0; i < size; ++i)
+        {
+            xr[i] = e[i] ^ value;
+        }
         // for (int i = 0; i < size; ++i)
         // {
         //     bm::cpp_int e{ab[i]};
