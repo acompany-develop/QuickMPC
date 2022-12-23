@@ -73,17 +73,26 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 		}, errToken
 	}
 
-	err := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at, machingColumn)
-	s.m2mclient.Sync(fmt.Sprintf("%s%d", dataID, pieceID))
-
-	if err != nil {
-		AppLogger.Error(err)
+	errInsert := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at, machingColumn)
+	if errInsert != nil {
+		AppLogger.Error(errInsert)
 		s.m2dbclient.DeleteShares([]string{dataID})
 		s.m2mclient.DeleteShares(dataID)
 		return &pb.SendSharesResponse{
-			Message: err.Error(),
+			Message: errInsert.Error(),
 			IsOk:    false,
-		}, err
+		}, errInsert
+	}
+
+	errSync := s.m2mclient.Sync(fmt.Sprintf("%s%d", dataID, pieceID))
+	if errSync != nil {
+		AppLogger.Error(errSync)
+		s.m2dbclient.DeleteShares([]string{dataID})
+		s.m2mclient.DeleteShares(dataID)
+		return &pb.SendSharesResponse{
+			Message: errSync.Error(),
+			IsOk:    false,
+		}, errSync
 	}
 
 	return &pb.SendSharesResponse{
