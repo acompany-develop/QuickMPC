@@ -1,6 +1,7 @@
 package m2mserver
 
 import (
+	"sync"
 	"testing"
 	"time"
 )
@@ -48,5 +49,31 @@ func TestWaitForever(t *testing.T) {
 
 	if err == nil {
 		t.Fatal("", err)
+	}
+}
+
+// waitが失敗した時にデータが削除されているか
+func TestWaitFailedDeleteData(t *testing.T) {
+	id := "id"
+	mp := counter{
+		count: 0,
+		mu:    new(sync.Mutex),
+		ch:    make(chan bool),
+	}
+
+	// データ登録
+	count_map.Store(id, mp)
+
+	err := Wait(id, time.Second, func(cnt int) bool {
+		return cnt < 1
+	})
+	if err == nil {
+		t.Fatal("", err)
+	}
+
+	// データが削除されているか
+	_, ok := count_map.Load(id)
+	if ok {
+		t.Fatal("")
 	}
 }

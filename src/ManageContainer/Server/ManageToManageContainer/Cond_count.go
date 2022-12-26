@@ -8,7 +8,7 @@ import (
 
 type counter struct {
 	count int
-	ch    chan interface{}
+	ch    chan bool
 	mu    *sync.Mutex
 }
 
@@ -40,7 +40,7 @@ func load(key string) counter {
 		mp := counter{
 			count: 0,
 			mu:    new(sync.Mutex),
-			ch:    make(chan interface{}),
+			ch:    make(chan bool),
 		}
 		count_map.Store(key, mp)
 		return mp
@@ -61,7 +61,11 @@ func Wait(key string, waitTime time.Duration, fn func(int) bool) error {
 		defer mp.mu.Unlock()
 
 		for fn(load(key).count) {
-			<-mp.ch
+			b := <-mp.ch
+			// timeoutした場合は待機を強制終了する
+			if !b {
+				break
+			}
 		}
 
 		count_map.Delete(key)
@@ -70,8 +74,14 @@ func Wait(key string, waitTime time.Duration, fn func(int) bool) error {
 
 	select {
 	case <-timeout:
+		// timeoutを待機処理に通知する
+		ma, _ := count_map.Load(key)
+		ma.(counter).ch <- false
+		// 待機処理の終了を待つ
+		<-done
 		return fmt.Errorf("Timeout ERROR! Wait %d microseccond, but the condition was not met", waitTime)
 	case <-done:
+		// 正常に終了
 		return nil
 	}
 }
