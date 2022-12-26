@@ -349,7 +349,7 @@ func SendResult(stream pb.LibcToManage_GetComputationResultTestServer, result []
 					RowNumber: int32(row_number),
 					PieceId:  int32(piece_id),
 					Progress: progress,
-					IsSchema: true,
+					IsSchema: isSchema,
 					IsDim2: isDim2,
 				})
 				tmp_num = 0
