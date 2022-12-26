@@ -102,7 +102,8 @@ func (c Client) Sync(syncID string) error {
 	}
 
 	// 他のMCからリクエストが来るのを待機
-	return m2mserver.Wait(syncID, 50*time.Second, func(cnt int) bool { return cnt < len(connList) })
+	// NOTE: リトライポリシーの時間以上のtimeoutを設定する
+	return m2mserver.Wait(syncID, 60*time.Second, func(cnt int) bool { return cnt < len(connList) })
 }
 
 // (conn)にシェア削除リクエストを送信する
