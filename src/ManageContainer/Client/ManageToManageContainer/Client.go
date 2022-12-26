@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"time"
 
+	helper "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/Helper"
 	m2mserver "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server/ManageToManageContainer"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/ManageToManageContainer"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -55,14 +55,6 @@ func connect() ([]*grpc.ClientConn, error) {
 	return connList, nil
 }
 
-func reconnect(conn *grpc.ClientConn) bool {
-	// 20秒間だけ再接続を試みる
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
-	defer cancel()
-	conn.WaitForStateChange(ctx, conn.GetState())
-	return conn.GetState() == connectivity.Idle
-}
-
 // 自分以外のMCにシェア削除リクエストを送信する
 func (c Client) DeleteShares(dataID string) error {
 	connList, err := connect()
@@ -82,14 +74,16 @@ func (c Client) DeleteShares(dataID string) error {
 // (conn)にシェア削除リクエストを送信する
 func (c Client) deleteShares(conn *grpc.ClientConn, dataID string) error {
 	mcTomcClient := pb.NewManageToManageClient(conn)
+
 	deleteSharesRequest := &pb.DeleteSharesRequest{DataId: dataID}
-	_, err := mcTomcClient.DeleteShares(context.TODO(), deleteSharesRequest)
-	if err != nil {
-		if reconnect(conn) {
-			return c.deleteShares(conn, dataID)
+	rm := helper.RetryManager{}
+	for {
+		_, err := mcTomcClient.DeleteShares(context.TODO(), deleteSharesRequest)
+		retry, _ := rm.Retry(err)
+		if !retry {
+			return err
 		}
 	}
-	return err
 }
 
 // 自分以外のMCにSyncリクエストを送信する
@@ -107,20 +101,31 @@ func (c Client) Sync(syncID string) error {
 		}
 	}
 
-	// 他のMCからリクエストが来るのを待機
-	m2mserver.Wait(syncID, func(cnt int) bool { return cnt < len(connList) })
-	return nil
+	// 他のMCからリクエストが来るのをタイムアウト付きで待機
+	timeout := time.After(50 * time.Second)
+	done := make(chan struct{})
+	go func() {
+		m2mserver.Wait(syncID, func(cnt int) bool { return cnt < len(connList) })
+		done <- struct{}{}
+	}()
+	select {
+	case <-timeout:
+		return fmt.Errorf("Sync response is not returned ERROR!")
+	case <-done:
+		return nil
+	}
 }
 
 // (conn)にシェア削除リクエストを送信する
 func (c Client) sync(conn *grpc.ClientConn, syncID string) error {
 	mcTomcClient := pb.NewManageToManageClient(conn)
 	syncRequest := &pb.SyncRequest{SyncId: syncID}
-	_, err := mcTomcClient.Sync(context.TODO(), syncRequest)
-	if err != nil {
-		if reconnect(conn) {
-			return c.sync(conn, syncID)
+	rm := helper.RetryManager{}
+	for {
+		_, err := mcTomcClient.Sync(context.TODO(), syncRequest)
+		retry, _ := rm.Retry(err)
+		if !retry {
+			return err
 		}
 	}
-	return err
 }

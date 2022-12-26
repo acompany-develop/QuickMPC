@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 
+	helper "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/Helper"
 	datastore "github.com/acompany-develop/QuickMPC/src/ManageContainer/DataStore"
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
@@ -41,16 +43,19 @@ func connect() (*grpc.ClientConn, error) {
 func executeComputation(conn *grpc.ClientConn, req *pb.ExecuteComputationRequest) (string, int32, error) {
 	client := pb.NewManageToComputationClient(conn)
 
-	_, err := client.ExecuteComputation(context.TODO(), req)
-	//CC側からエラーが返却された場合
-	if err != nil {
-		st, ok := status.FromError(err)
-		if !ok {
-			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
+	rm := helper.RetryManager{}
+	for {
+		_, err := client.ExecuteComputation(context.TODO(), req)
+		retry, _ := rm.Retry(err)
+		if !retry {
+			st, _ := status.FromError(err)
+			if st.Code() == codes.OK {
+				return "ok", int32(codes.OK), nil
+			} else {
+				return st.Message(), int32(st.Code()), err
+			}
 		}
-		return st.Message(), int32(st.Code()), err
 	}
-	return "ok", 0, nil
 }
 
 // CCに計算リクエストを送る
@@ -107,17 +112,19 @@ func checkStateOfComputationContainer() {
 // (conn)にモデル値予測リクエストを送る
 func predict(conn *grpc.ClientConn, req *pb.PredictRequest) (string, int32, error) {
 	client := pb.NewManageToComputationClient(conn)
-
-	_, err := client.Predict(context.TODO(), req)
-	//CC側からエラーが返却された場合
-	if err != nil {
-		st, ok := status.FromError(err)
-		if !ok {
-			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
+	rm := helper.RetryManager{}
+	for {
+		_, err := client.Predict(context.TODO(), req)
+		retry, _ := rm.Retry(err)
+		if !retry {
+			st, _ := status.FromError(err)
+			if st.Code() == codes.OK {
+				return "ok", int32(codes.OK), nil
+			} else {
+				return st.Message(), int32(st.Code()), err
+			}
 		}
-		return st.Message(), int32(st.Code()), err
 	}
-	return "ok", 0, nil
 }
 
 // CCにモデル値予測リクエストを送る
