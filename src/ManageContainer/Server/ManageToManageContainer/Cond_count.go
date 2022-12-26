@@ -1,7 +1,9 @@
 package m2mserver
 
 import (
+	"fmt"
 	"sync"
+	"time"
 )
 
 type counter struct {
@@ -49,13 +51,27 @@ func load(key string) counter {
 
 // fnがtrueとなる間waitする
 // keyに対してincrementされる度に判定が起こる
-func Wait(key string, fn func(int) bool) {
-	mp := load(key)
-	mp.mu.Lock()
-	defer mp.mu.Unlock()
+func Wait(key string, waitTime time.Duration, fn func(int) bool) error {
 
-	for fn(load(key).count) {
-		<-mp.ch
+	timeout := time.After(waitTime)
+	done := make(chan struct{})
+	go func() {
+		mp := load(key)
+		mp.mu.Lock()
+		defer mp.mu.Unlock()
+
+		for fn(load(key).count) {
+			<-mp.ch
+		}
+
+		count_map.Delete(key)
+		done <- struct{}{}
+	}()
+
+	select {
+	case <-timeout:
+		return fmt.Errorf("Timeout ERROR! Wait %d microseccond, but the condition was not met", waitTime)
+	case <-done:
+		return nil
 	}
-	count_map.Delete(key)
 }

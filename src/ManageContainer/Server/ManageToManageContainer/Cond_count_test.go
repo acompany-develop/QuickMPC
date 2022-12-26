@@ -21,45 +21,32 @@ func TestIncrement(t *testing.T) {
 // waitが正常に終了するかTest
 func TestWait(t *testing.T) {
 	id := "id"
-	timeout := time.After(2 * time.Second)
-	done := make(chan bool)
 
 	go func() {
 		time.Sleep(time.Second)
 		increment(id)
 	}()
 
-	go func() {
-		// incrementで発火してdoneする
-		Wait(id, func(cnt int) bool {
-			return cnt < 1
-		})
-		done <- true
-	}()
+	// incrementで発火する
+	err := Wait(id, 2*time.Second, func(cnt int) bool {
+		return cnt < 1
+	})
 
-	select {
-	case <-timeout:
-		t.Fatal("")
-	case <-done:
+	if err != nil {
+		t.Fatal("", err)
 	}
 }
 
 // waitがwaitし続けるかTest
 func TestWaitForever(t *testing.T) {
 	id := "id"
-	timeout := time.After(time.Second)
-	done := make(chan bool)
-	go func() {
-		// incrementがないためずっとwaitする
-		Wait(id, func(cnt int) bool {
-			return cnt < 1
-		})
-		done <- true
-	}()
 
-	select {
-	case <-done:
-		t.Fatal("")
-	case <-timeout:
+	// incrementがないためずっとwaitする
+	err := Wait(id, time.Second, func(cnt int) bool {
+		return cnt < 1
+	})
+
+	if err == nil {
+		t.Fatal("", err)
 	}
 }

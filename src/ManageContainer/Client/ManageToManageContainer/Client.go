@@ -101,19 +101,8 @@ func (c Client) Sync(syncID string) error {
 		}
 	}
 
-	// 他のMCからリクエストが来るのをタイムアウト付きで待機
-	timeout := time.After(50 * time.Second)
-	done := make(chan struct{})
-	go func() {
-		m2mserver.Wait(syncID, func(cnt int) bool { return cnt < len(connList) })
-		done <- struct{}{}
-	}()
-	select {
-	case <-timeout:
-		return fmt.Errorf("Sync response is not returned ERROR!")
-	case <-done:
-		return nil
-	}
+	// 他のMCからリクエストが来るのを待機
+	return m2mserver.Wait(syncID, 50*time.Second, func(cnt int) bool { return cnt < len(connList) })
 }
 
 // (conn)にシェア削除リクエストを送信する
