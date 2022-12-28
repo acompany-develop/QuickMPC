@@ -109,7 +109,7 @@ TEST(ValueTableTest, hjoinColumnTest)
     EXPECT_EQ(table_1h5_2, table1.hjoin(table5, 2, 2));
 
     // 3列目を指定して table1 に table5 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h5_3{{"102", "3", "4", "101", "4"}};
+    const std::vector<std::vector<std::string>> table_data_1h5_3{{"102", "3", "4", "102", "0"}};
     const std::vector<std::string> schemas_1h5_3{"id", "attr1", "attr2", "id", "attr1"};
     const auto table_1h5_3 = qmpc::ComputationToDb::ValueTable(table_data_1h5_3, schemas_1h5_3);
     EXPECT_EQ(table_1h5_3, table1.hjoin(table5, 3, 3));
