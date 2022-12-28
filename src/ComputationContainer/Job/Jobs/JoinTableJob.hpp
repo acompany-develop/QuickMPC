@@ -16,8 +16,7 @@ class JoinTableJob : public JobBase<JoinTableJob>
         const std::list<int> &id_column
     )
     {
-        // 最左列(ID列)と突合に使用した列をテーブルから削除する
-        constexpr size_t ID_ROW = 0;
+        // 突合に使用した列をテーブルから削除する
         const size_t match_row = id_column.front() - 1;
 
         std::vector<std::vector<std::string>> remove_table;
@@ -28,7 +27,7 @@ class JoinTableJob : public JobBase<JoinTableJob>
             remove_row.reserve(row.size());
             for (size_t i = 0; i < row.size(); ++i)
             {
-                if (i != ID_ROW && i != match_row)
+                if (i != match_row)
                 {
                     remove_row.emplace_back(row[i]);
                 }
@@ -40,7 +39,7 @@ class JoinTableJob : public JobBase<JoinTableJob>
         remove_schema.reserve(schema.size());
         for (size_t i = 0; i < schema.size(); ++i)
         {
-            if (i != ID_ROW && i != match_row)
+            if (i != match_row)
             {
                 remove_schema.emplace_back(schema[i]);
             }
