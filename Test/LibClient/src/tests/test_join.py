@@ -20,7 +20,7 @@ def execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 1, 2]],
     [
         # not share join case
         (execute_computation_param(join=[0]),
-         [[1, 2, 2]]),
+         [[1, 2, 1, 2]]),
 
         # all match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],
@@ -94,7 +94,7 @@ def test_vjoin(param: tuple, expected: list):
     [
         # not share join case
         (execute_computation_param(join=[2]),
-         [[1, 2, 2]]),
+         [[1, 2, 1, 2]]),
 
         # all match case
         (execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 3, 4]],

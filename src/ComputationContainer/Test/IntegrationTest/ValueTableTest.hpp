@@ -49,14 +49,16 @@ TEST(ValueTableTest, vjoinTest)
 TEST(ValueTableTest, hjoinTest)
 {
     // table1 に table2 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h2{{"101", "1", "2", "6"}};
-    const std::vector<std::string> schemas_1h2{"id", "attr1", "attr2", "attr3"};
+    const std::vector<std::vector<std::string>> table_data_1h2{{"101", "1", "2", "5", "6"}};
+    const std::vector<std::string> schemas_1h2{"id", "attr1", "attr2", "attr1", "attr3"};
     const auto table_1h2 = qmpc::ComputationToDb::ValueTable(table_data_1h2, schemas_1h2);
     EXPECT_EQ(table_1h2, table1.hjoin(table2, 1, 1));
 
     // table3 に table4 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_3h4{{"103", "12", "13", "14", "17"}};
-    const std::vector<std::string> schemas_3h4{"id", "attr1", "attr3", "attr4", "attr5"};
+    const std::vector<std::vector<std::string>> table_data_3h4{
+        {"103", "12", "13", "14", "15", "16", "17"}};
+    const std::vector<std::string> schemas_3h4{
+        "id", "attr1", "attr3", "attr4", "attr3", "attr4", "attr5"};
     const auto table_3h4 = qmpc::ComputationToDb::ValueTable(table_data_3h4, schemas_3h4);
     EXPECT_EQ(table_3h4, table3.hjoin(table4, 1, 1));
 }
@@ -65,8 +67,8 @@ TEST(ValueTableTest, vhjoinTest)
 {
     // vjoin(table1,table2) と table3 を横結合した場合
     const std::vector<std::vector<std::string>> table_data_1v2h3{
-        {"102", "3", "10", "11"}, {"103", "7", "13", "14"}};
-    const std::vector<std::string> schemas_1v2h3{"id", "attr1", "attr3", "attr4"};
+        {"102", "3", "9", "10", "11"}, {"103", "7", "12", "13", "14"}};
+    const std::vector<std::string> schemas_1v2h3{"id", "attr1", "attr1", "attr3", "attr4"};
     const auto table_1v2h3 = qmpc::ComputationToDb::ValueTable(table_data_1v2h3, schemas_1v2h3);
     EXPECT_EQ(table_1v2h3, table1.vjoin(table2, 1, 1).hjoin(table3, 1, 1));
 }
@@ -101,14 +103,14 @@ TEST(ValueTableTest, vjoinColumnTest)
 TEST(ValueTableTest, hjoinColumnTest)
 {
     // 2列目を指定して table1 に table5 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h5_2{{"101", "1", "2"}};
-    const std::vector<std::string> schemas_1h5_2{"id", "attr1", "attr2"};
+    const std::vector<std::vector<std::string>> table_data_1h5_2{{"101", "1", "2", "101", "0"}};
+    const std::vector<std::string> schemas_1h5_2{"id", "attr1", "attr2", "id", "attr2"};
     const auto table_1h5_2 = qmpc::ComputationToDb::ValueTable(table_data_1h5_2, schemas_1h5_2);
     EXPECT_EQ(table_1h5_2, table1.hjoin(table5, 2, 2));
 
     // 3列目を指定して table1 に table5 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h5_3{{"102", "3", "4"}};
-    const std::vector<std::string> schemas_1h5_3{"id", "attr1", "attr2"};
+    const std::vector<std::vector<std::string>> table_data_1h5_3{{"102", "3", "4", "101", "4"}};
+    const std::vector<std::string> schemas_1h5_3{"id", "attr1", "attr2", "id", "attr1"};
     const auto table_1h5_3 = qmpc::ComputationToDb::ValueTable(table_data_1h5_3, schemas_1h5_3);
     EXPECT_EQ(table_1h5_3, table1.hjoin(table5, 3, 3));
 }
