@@ -77,9 +77,10 @@ TEST(ValueTableTest, hvjoinTest)
 {
     // hjoin(table1,table2) と table3 を縦結合した場合
     const std::vector<std::vector<std::string>> table_data_1h2v3{
-        {"101", "1", "6"}, {"102", "9", "10"}, {"103", "12", "13"}};
-    const std::vector<std::string> schemas_1h2v3{"id", "attr1", "attr3"};
+        {"101", "1", "5", "6"}, {"102", "9", "9", "10"}, {"103", "12", "12", "13"}};
+    const std::vector<std::string> schemas_1h2v3{"id", "attr1", "attr1", "attr3"};
     const auto table_1h2v3 = qmpc::ComputationToDb::ValueTable(table_data_1h2v3, schemas_1h2v3);
+    auto t = table1.hjoin(table2, 1, 1).vjoin(table3, 1, 1);
     EXPECT_EQ(table_1h2v3, table1.hjoin(table2, 1, 1).vjoin(table3, 1, 1));
 }
 
