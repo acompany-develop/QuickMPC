@@ -189,6 +189,9 @@ message GetComputationResultResponseTest {
     pb_common_types.JobStatus status = 5;
     int32 piece_id = 6;
     optional pb_common_types.JobProgress progress = 7;
-    bool is_schema = 8;
-    bool is_dim2 = 9;
+    oneof value{
+        bool is_dim1 = 8;
+        bool is_dim2 = 9;
+        bool is_schema = 10;
+    }
 }
