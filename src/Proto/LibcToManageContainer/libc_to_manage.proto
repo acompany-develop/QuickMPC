@@ -19,7 +19,6 @@ service LibcToManage {
     rpc Predict(PredictRequest) returns (PredictResponse) {}                                         // モデル値予測リクエスト
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
     rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                    // 計算時間取得リクエスト
-    rpc GetComputationResultTest(GetComputationResultRequest) returns (stream GetComputationResultResponseTest) {}
 }
 
 /**
@@ -118,10 +117,16 @@ message GetComputationResultRequest {
 message GetComputationResultResponse {
     string message = 1;
     bool is_ok = 2;
-    string result = 3;
-    pb_common_types.JobStatus status = 4;
-    int32 piece_id = 5;
-    optional pb_common_types.JobProgress progress = 6;
+    repeated string result = 3;
+    int32 column_number = 4;
+    pb_common_types.JobStatus status = 5;
+    int32 piece_id = 6;
+    optional pb_common_types.JobProgress progress = 7;
+    oneof result_type{
+        bool is_dim1 = 8;
+        bool is_dim2 = 9;
+        bool is_schema = 10;
+    }
 }
 
 /**
@@ -179,19 +184,4 @@ message GetElapsedTimeRequest {
 message GetElapsedTimeResponse {
     bool is_ok = 1;
     double elapsed_time = 2;
-}
-
-message GetComputationResultResponseTest {
-    string message = 1;
-    bool is_ok = 2;
-    repeated string result = 3;
-    int32 row_number = 4;
-    pb_common_types.JobStatus status = 5;
-    int32 piece_id = 6;
-    optional pb_common_types.JobProgress progress = 7;
-    oneof value{
-        bool is_dim1 = 8;
-        bool is_dim2 = 9;
-        bool is_schema = 10;
-    }
 }

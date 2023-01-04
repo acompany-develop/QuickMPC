@@ -31,7 +31,6 @@ type LibcToManageClient interface {
 	Predict(ctx context.Context, in *PredictRequest, opts ...grpc.CallOption) (*PredictResponse, error)
 	GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error)
 	GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error)
-	GetComputationResultTest(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultTestClient, error)
 }
 
 type libcToManageClient struct {
@@ -146,38 +145,6 @@ func (c *libcToManageClient) GetElapsedTime(ctx context.Context, in *GetElapsedT
 	return out, nil
 }
 
-func (c *libcToManageClient) GetComputationResultTest(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultTestClient, error) {
-	stream, err := c.cc.NewStream(ctx, &LibcToManage_ServiceDesc.Streams[1], "/libctomanage.LibcToManage/GetComputationResultTest", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &libcToManageGetComputationResultTestClient{stream}
-	if err := x.ClientStream.SendMsg(in); err != nil {
-		return nil, err
-	}
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	return x, nil
-}
-
-type LibcToManage_GetComputationResultTestClient interface {
-	Recv() (*GetComputationResultResponseTest, error)
-	grpc.ClientStream
-}
-
-type libcToManageGetComputationResultTestClient struct {
-	grpc.ClientStream
-}
-
-func (x *libcToManageGetComputationResultTestClient) Recv() (*GetComputationResultResponseTest, error) {
-	m := new(GetComputationResultResponseTest)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 // LibcToManageServer is the server API for LibcToManage service.
 // All implementations must embed UnimplementedLibcToManageServer
 // for forward compatibility
@@ -191,7 +158,6 @@ type LibcToManageServer interface {
 	Predict(context.Context, *PredictRequest) (*PredictResponse, error)
 	GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error)
 	GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error)
-	GetComputationResultTest(*GetComputationResultRequest, LibcToManage_GetComputationResultTestServer) error
 	mustEmbedUnimplementedLibcToManageServer()
 }
 
@@ -225,9 +191,6 @@ func (UnimplementedLibcToManageServer) GetDataList(context.Context, *GetDataList
 }
 func (UnimplementedLibcToManageServer) GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetElapsedTime not implemented")
-}
-func (UnimplementedLibcToManageServer) GetComputationResultTest(*GetComputationResultRequest, LibcToManage_GetComputationResultTestServer) error {
-	return status.Errorf(codes.Unimplemented, "method GetComputationResultTest not implemented")
 }
 func (UnimplementedLibcToManageServer) mustEmbedUnimplementedLibcToManageServer() {}
 
@@ -407,27 +370,6 @@ func _LibcToManage_GetElapsedTime_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LibcToManage_GetComputationResultTest_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetComputationResultRequest)
-	if err := stream.RecvMsg(m); err != nil {
-		return err
-	}
-	return srv.(LibcToManageServer).GetComputationResultTest(m, &libcToManageGetComputationResultTestServer{stream})
-}
-
-type LibcToManage_GetComputationResultTestServer interface {
-	Send(*GetComputationResultResponseTest) error
-	grpc.ServerStream
-}
-
-type libcToManageGetComputationResultTestServer struct {
-	grpc.ServerStream
-}
-
-func (x *libcToManageGetComputationResultTestServer) Send(m *GetComputationResultResponseTest) error {
-	return x.ServerStream.SendMsg(m)
-}
-
 // LibcToManage_ServiceDesc is the grpc.ServiceDesc for LibcToManage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -472,11 +414,6 @@ var LibcToManage_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetComputationResult",
 			Handler:       _LibcToManage_GetComputationResult_Handler,
-			ServerStreams: true,
-		},
-		{
-			StreamName:    "GetComputationResultTest",
-			Handler:       _LibcToManage_GetComputationResultTest_Handler,
 			ServerStreams: true,
 		},
 	},
