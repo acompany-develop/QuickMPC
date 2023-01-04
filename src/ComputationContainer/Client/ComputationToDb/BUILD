@@ -31,6 +31,7 @@ cc_library(
         "//Share:share",
         "//Share:compare",
         "//Job:progressManager",
+        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )

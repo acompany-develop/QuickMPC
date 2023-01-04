@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include "Logging/Logger.hpp"
 #include "ValueTable.hpp"
 #include "external/Proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
 #include "external/Proto/common_types/common_types.pb.h"
@@ -93,8 +94,11 @@ public:
         }
         else
         {
-            // TODO: throw
+            qmpc::Log::throw_with_trace(std::runtime_error(
+                "data type must be `std::vector<std::string>>` or `std::vector<std::string>>`"
+            ));
         }
+
         if (is_schema)
         {
             data_name = "schema";
