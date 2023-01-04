@@ -337,7 +337,19 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
 ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt) const
 {
     // joinしたschemasを構築
-    auto [schemas_it, schemas_join_it] = unionValueIndex(schemas, join_table.schemas);
+    auto schemas_it = std::vector<int>(schemas.size());
+    std::iota(schemas_it.begin(), schemas_it.end(), 0);
+    auto schemas_join_it = std::vector<int>();
+    schemas_join_it.reserve(join_table.schemas.size());
+    for (size_t i = 0; i < join_table.schemas.size(); ++i)
+    {
+        if (static_cast<int>(i) == idx_tgt - 1)
+        {
+            continue;
+        }
+        schemas_join_it.emplace_back(i);
+    }
+
     auto new_schemas_size = schemas_it.size() + schemas_join_it.size();
     auto new_schemas = schemas;
     new_schemas.reserve(new_schemas_size);
@@ -409,7 +421,19 @@ ValueTable parseRead(
 ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx_tgt) const
 {
     // joinしたschemasを構築
-    auto [schemas_it, schemas_join_it] = unionValueIndex(schemas, join_table.schemas);
+    auto schemas_it = std::vector<int>(schemas.size());
+    std::iota(schemas_it.begin(), schemas_it.end(), 0);
+    auto schemas_join_it = std::vector<int>();
+    schemas_join_it.reserve(join_table.schemas.size());
+    for (size_t i = 0; i < join_table.schemas.size(); ++i)
+    {
+        if (static_cast<int>(i) == idx_tgt - 1)
+        {
+            continue;
+        }
+        schemas_join_it.emplace_back(i);
+    }
+
     auto new_schemas_size = schemas_it.size() + schemas_join_it.size();
     auto new_schemas = schemas;
     new_schemas.reserve(new_schemas_size);
