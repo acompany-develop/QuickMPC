@@ -25,7 +25,7 @@ func (localDb) GetSchema(string) ([]string, error) {
 func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
-func (localDb) InsertModelParams(string, string, int32) error {
+func (localDb) InsertModelParams(string, []string, int32) error {
 	return nil
 }
 func (localDb) GetDataList() (string, error) {
