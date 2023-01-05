@@ -22,8 +22,8 @@ func (localDb) DeleteShares([]string) error {
 func (localDb) GetSchema(string) ([]string, error) {
 	return []string{""}, nil
 }
-func (localDb) GetComputationResult(string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
-	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil, nil
+func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
+	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
 func (localDb) InsertModelParams(string, string, int32) error {
 	return nil
