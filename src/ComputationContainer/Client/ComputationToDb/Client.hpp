@@ -129,12 +129,14 @@ public:
 
         for (const auto &val : result_list)
         {
-            piece_result.emplace_back(val);
-            current_size += val.size();
-            if (current_size >= piece_size)
+            int size = val.size();
+            // resultのsizeがpieceの最大サイズを超える場合は一旦保存
+            if (current_size + size >= piece_size)
             {
                 add_piece();
             }
+            piece_result.emplace_back(val);
+            current_size += size;
         }
         if (!piece_result.empty())
         {
