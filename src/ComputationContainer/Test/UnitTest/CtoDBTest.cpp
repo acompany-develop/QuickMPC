@@ -113,7 +113,7 @@ TEST(ComputationToDbTest, SuccessReadModelParamTest)
     const std::string job_uuid = "SuccessReadModelParamTest";
     initialize(job_uuid);
 
-    const std::string data = R"({"result":"[\"1\",\"2\",\"3\"]")"
+    const std::string data = R"({"result":["1","2","3"])"
                              R"(,"meta":{"column_number":4, "piece_id":0}})";
     fs::create_directories("/Db/result/" + job_uuid);
     auto ofs = std::ofstream("/Db/result/" + job_uuid + "/dim1_0");
@@ -135,11 +135,11 @@ TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
     initialize(job_uuid);
 
     const std::vector<std::string> data = {
-        R"({"result":"[\"1\",\"2\"")"
+        R"({"result":["1","2"])"
         R"(,"meta":{"column_number":4, "piece_id":0}})",
-        R"({"result":",\"3\"")"
+        R"({"result":["3"])"
         R"(,"meta":{"column_number":4, "piece_id":1}})",
-        R"({"result":",\"4\"]")"
+        R"({"result":["4"])"
         R"(,"meta":{"column_number":4, "piece_id":2}})"};
     fs::create_directories("/Db/result/" + job_uuid);
     for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)

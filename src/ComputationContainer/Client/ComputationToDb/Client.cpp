@@ -60,10 +60,12 @@ ValueTable Client::readShare(const std::string &data_id) const
     return ValueTable(table, schemas);
 }
 
-std::string Client::readModelparamString(const std::string &job_uuid) const
+// model parameterの取り出し
+std::vector<std::string> Client::readModelparam(const std::string &job_uuid) const
 {
     // DBから値を取り出す
-    std::map<int, std::string> pieces;
+    int all_size = 0;
+    std::map<int, std::vector<std::string>> pieces;
     std::regex is_status_file(R"((.*/completed)|(.*/status_.*))");
     for (const auto &entry : fs::directory_iterator(resultDbPath + job_uuid))
     {
@@ -74,33 +76,23 @@ std::string Client::readModelparamString(const std::string &job_uuid) const
         getline(ifs, data);
 
         auto json = nlohmann::json::parse(data);
-        pieces.emplace(json["meta"]["piece_id"], json["result"]);
+        std::vector<std::string> result_piece = json["result"];
+        all_size += result_piece.size();
+        pieces.emplace(json["meta"]["piece_id"], result_piece);
     }
 
     // piece_id順にresultを結合
-    std::string result_str = "";
+    std::vector<std::string> result;
+    result.reserve(all_size);
     for (const auto &[_, piece] : pieces)
     {
         static_cast<void>(_);
-        result_str += piece;
+        for (const auto &s : piece)
+        {
+            result.emplace_back(s);
+        }
     }
-    return result_str;
-}
-
-// model parameter(vector)の取り出し
-std::vector<std::string> Client::readModelparam(const std::string &job_uuid) const
-{
-    auto result_str = readModelparamString(job_uuid);
-    auto result_json = nlohmann::json::parse(result_str);
-    std::vector<std::string> result(result_json.begin(), result_json.end());
     return result;
-}
-
-// model parameter(json)の取り出し
-nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
-{
-    auto result_str = readModelparamString(job_uuid);
-    return nlohmann::json::parse(result_str);
 }
 
 // Job を DB に新規登録する
