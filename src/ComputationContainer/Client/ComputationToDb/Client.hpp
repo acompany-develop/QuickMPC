@@ -81,10 +81,9 @@ public:
         {
             // ２次元配列の場合は1次元に変換する
             data_name = "dim2";
-            column_number = results[0].size();
-            size_t size = results.size() * results[0].size();
+            column_number = (results.empty() ? 0 : results[0].size());
+            size_t size = (results.empty() ? 0 : results.size() * results[0].size());
             result_list.reserve(size);
-
             for (auto row : results)
             {
                 for (auto val : row)
