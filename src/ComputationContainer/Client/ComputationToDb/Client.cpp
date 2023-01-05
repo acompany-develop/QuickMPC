@@ -95,6 +95,13 @@ std::vector<std::string> Client::readModelparam(const std::string &job_uuid) con
     return result;
 }
 
+// XXX: Jsonは対応していないので削除する
+// model parameter(json)の取り出し
+nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
+{
+    return nlohmann::json();
+}
+
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const
 {

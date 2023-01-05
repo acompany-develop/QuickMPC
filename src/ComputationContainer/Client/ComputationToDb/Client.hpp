@@ -29,7 +29,8 @@ public:
 
     // model parameterの取り出し
     std::vector<std::string> readModelparam(const std::string &) const;
-    nlohmann::json readModelparamJson(const std::string &) const;
+    // TODO: 削除する
+    [[deprecated]] nlohmann::json readModelparamJson(const std::string &) const;
 
     // Job を DB に新規登録する
     void registerJob(const std::string &job_uuid, const int &status) const;
