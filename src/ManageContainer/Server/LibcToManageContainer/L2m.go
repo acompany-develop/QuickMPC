@@ -33,6 +33,7 @@ type testresult struct {
 	Schema []string   `json:"schema"`
 	Table  [][]string `json:"table"`
 }
+
 func (s *server) authorize(token string, stages []string) error {
 	var errAll error = nil
 	for _, stage := range stages {
@@ -273,7 +274,7 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
 	}
 
-	ComputationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID,[]string{"dim1","dim2","schema"})
+	ComputationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
 
 	if err != nil {
 		stream.Send(&pb.GetComputationResultResponse{
@@ -291,25 +292,25 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		return status.Err()
 	}
 
-	for _, result := range ComputationResults{
+	for _, result := range ComputationResults {
 		response := pb.GetComputationResultResponse{
-			Message:  "ok",
-			IsOk:     true,
-			Status:   ComputationResults[0].Status,
-			Result:   result.Result,
+			Message:      "ok",
+			IsOk:         true,
+			Status:       ComputationResults[0].Status,
+			Result:       result.Result,
 			ColumnNumber: result.Meta.ColumnNumber,
-			PieceId:  result.Meta.PieceID,
-			Progress: progress,
+			PieceId:      result.Meta.PieceID,
+			Progress:     progress,
 		}
 		if result.Meta.ResultType == "dim1" {
 			response.ResultType = &pb.GetComputationResultResponse_IsDim1{
 				IsDim1: true,
 			}
-		}else if result.Meta.ResultType == "dim2" {
+		} else if result.Meta.ResultType == "dim2" {
 			response.ResultType = &pb.GetComputationResultResponse_IsDim2{
 				IsDim2: true,
 			}
-		}else if result.Meta.ResultType == "schema"{
+		} else if result.Meta.ResultType == "schema" {
 			response.ResultType = &pb.GetComputationResultResponse_IsSchema{
 				IsSchema: true,
 			}

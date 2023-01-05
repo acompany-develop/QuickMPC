@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"testing"
 	"reflect"
+	"testing"
 
 	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
@@ -29,7 +29,7 @@ func (localDb) DeleteShares([]string) error {
 func (localDb) GetSchema(string) ([]string, error) {
 	return []string{"attr1"}, nil
 }
-func (localDb) GetComputationResult(string,[]string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
+func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
 func (localDb) InsertModelParams(string, string, int32) error {
@@ -159,7 +159,7 @@ func TestGetComputationResult(t *testing.T) {
 
 		res := reply.GetResult()
 		ac := []string{"result"}
-		if !reflect.DeepEqual(res,ac){
+		if !reflect.DeepEqual(res, ac) {
 			t.Fatal(fmt.Sprintf("GetComputationResult Failed. getResult() must be %s, but response is %s", ac, res))
 		}
 	}

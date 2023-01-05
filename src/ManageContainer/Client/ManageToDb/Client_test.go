@@ -34,7 +34,8 @@ const defaultSentAt = ""
 const defaultMatchingColumn = 1
 const defaultJobUUID = "m2db_test_jobuuid"
 const defaultParams = `["1","2","3"]`
-var defaultResult = []string{"1","2","3"}
+
+var defaultResult = []string{"1", "2", "3"}
 
 /* InsertShares(string, []string, int32, string, string) error */
 // シェアが保存されるかTest
@@ -184,7 +185,7 @@ func TestGetComputationResultSuccessDim1(t *testing.T) {
 	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID,[]string{"dim1"})
+	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
@@ -192,7 +193,7 @@ func TestGetComputationResultSuccessDim1(t *testing.T) {
 	if result[0].JobUUID != defaultJobUUID {
 		t.Error(fmt.Sprintf("get computation result failed: JobUUID must be %s, but value is %s", defaultJobUUID, result[0].JobUUID))
 	}
-	if !reflect.DeepEqual(result[0].Result,defaultResult){
+	if !reflect.DeepEqual(result[0].Result, defaultResult) {
 		t.Error(fmt.Sprintf("get computation result failed: Result must be %s, but value is %s", defaultResult, result[0].Result))
 	}
 	if result[0].Meta.PieceID != defaultPieceID {
@@ -214,7 +215,7 @@ func TestGetComputationResultSuccessDim2(t *testing.T) {
 	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID,[]string{"dim2"})
+	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim2"})
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
@@ -222,7 +223,7 @@ func TestGetComputationResultSuccessDim2(t *testing.T) {
 	if result[0].JobUUID != defaultJobUUID {
 		t.Error(fmt.Sprintf("get computation result failed: JobUUID must be %s, but value is %s", defaultJobUUID, result[0].JobUUID))
 	}
-	if !reflect.DeepEqual(result[0].Result,defaultResult){
+	if !reflect.DeepEqual(result[0].Result, defaultResult) {
 		t.Error(fmt.Sprintf("get computation result failed: Result must be %s, but value is %s", defaultResult, result[0].Result))
 	}
 	if result[0].Meta.PieceID != defaultPieceID {
@@ -244,7 +245,7 @@ func TestGetComputationResultSuccessSchema(t *testing.T) {
 	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID,[]string{"schema"})
+	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"schema"})
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
@@ -252,7 +253,7 @@ func TestGetComputationResultSuccessSchema(t *testing.T) {
 	if result[0].JobUUID != defaultJobUUID {
 		t.Error(fmt.Sprintf("get computation result failed: JobUUID must be %s, but value is %s", defaultJobUUID, result[0].JobUUID))
 	}
-	if !reflect.DeepEqual(result[0].Result,defaultResult){
+	if !reflect.DeepEqual(result[0].Result, defaultResult) {
 		t.Error(fmt.Sprintf("get computation result failed: Result must be %s, but value is %s", defaultResult, result[0].Result))
 	}
 	if result[0].Meta.PieceID != defaultPieceID {
@@ -274,7 +275,7 @@ func TestGetComputationResultFailedEmptyOnlyComputationResult(t *testing.T) {
 	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID,[]string{"dim1","dim2","schema"})
+	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1", "dim2", "schema"})
 
 	if err == nil {
 		t.Error("get computation result must be failed")
@@ -292,7 +293,7 @@ func TestGetComputationResultFailedEmptyResult(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	_, _, err := client.GetComputationResult(defaultJobUUID,[]string{"dim1"})
+	_, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 	if err == nil {
 		t.Error("get computation result must be failed: result is not registered.")
@@ -310,7 +311,7 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
-	_, _, err := client.GetComputationResult(defaultJobUUID,[]string{"dim1"})
+	_, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 	if err == nil {
 		t.Error("get computation result must be failed: computation is running(complated file is not found).")
@@ -331,7 +332,7 @@ func TestGetComputationResultSuccessGetStatus(t *testing.T) {
 		os.Create(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, status))
 
 		client := Client{}
-		result, _, err := client.GetComputationResult(defaultJobUUID,[]string{"dim1"})
+		result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 		if err != nil {
 			t.Error("get computation result failed: " + err.Error())
@@ -355,7 +356,7 @@ func TestGetComputationResultFailedJobErrorInfo(t *testing.T) {
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
 
 	client := Client{}
-	_, info, err := client.GetComputationResult(defaultJobUUID,[]string{"dim1"})
+	_, info, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 	if err != nil {
 		t.Error(err)
@@ -390,7 +391,7 @@ func TestGetComputationResultFailedJobErrorInfoWithStacktrace(t *testing.T) {
 	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
 
 	client := Client{}
-	_, info, err := client.GetComputationResult(defaultJobUUID,[]string{"dim1"})
+	_, info, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 	if err != nil {
 		t.Error(err)

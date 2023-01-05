@@ -189,7 +189,6 @@ func getComputationStatus(path string) (pb_types.JobStatus, *pb_types.JobErrorIn
 }
 
 // DBから計算結果を得る
-// func (c Client) GetComputationResult(jobUUID string, resultType string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
 func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
@@ -211,7 +210,7 @@ func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*C
 	}
 
 	var computationResults []*ComputationResult
-for _, resultType := range resultTypes {
+	for _, resultType := range resultTypes {
 		files, _ := filepath.Glob(path + "/" + resultType + "_*")
 		for _, piecePath := range files {
 			raw, errRead := ioutil.ReadFile(piecePath)
@@ -254,17 +253,7 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 	if errUnmarshal != nil {
 		return errUnmarshal
 	}
-// var result []string
 
-// TODO Listで保存
-	// saveParams := ComputationResult{
-	// 	JobUUID: jobUUID,
-	// 	Meta: ComputationResultMeta{
-	// 		PieceID: pieceId,
-	// 	},
-	// 	Result: params,
-	// 	Status: pb_types.JobStatus_COMPLETED,
-	// }
 	saveParams := ComputationResult{
 		JobUUID: jobUUID,
 		Meta: ComputationResultMeta{
