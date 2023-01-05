@@ -33,7 +33,8 @@ const defaultShares = `[["1","2","3"],["4","5","6"]]`
 const defaultSentAt = ""
 const defaultMatchingColumn = 1
 const defaultJobUUID = "m2db_test_jobuuid"
-const defaultParams = `["1","2","3"]`
+
+var defaultParams = []string{"1", "2", "3"}
 
 var defaultResult = []string{"1", "2", "3"}
 
@@ -458,7 +459,7 @@ func TestInsertModelParamsParallelSuccess(t *testing.T) {
 			if errInsert != nil {
 				t.Error("insert model params failed: " + errInsert.Error())
 			}
-			_, errExist := os.Stat(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, pieceId))
+			_, errExist := os.Stat(fmt.Sprintf("/Db/result/%s/dim1_%d", defaultJobUUID, pieceId))
 			if errExist != nil {
 				t.Error("insert model params failed: " + errExist.Error())
 			}

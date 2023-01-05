@@ -32,7 +32,7 @@ func (localDb) GetSchema(string) ([]string, error) {
 func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
-func (localDb) InsertModelParams(string, string, int32) error {
+func (localDb) InsertModelParams(string, []string, int32) error {
 	return nil
 }
 func (localDb) GetDataList() (string, error) {
@@ -203,7 +203,9 @@ func TestSendModelParam(t *testing.T) {
 	client := pb.NewLibcToManageClient(conn)
 
 	result, err := client.SendModelParam(context.Background(), &pb.SendModelParamRequest{
-		JobUuid: "id", Params: "[\"1\"]", Token: "token"})
+		JobUuid: "id",
+		Params:  []string{"1", "2"},
+		Token:   "token"})
 
 	if err != nil {
 		t.Fatal(err)
