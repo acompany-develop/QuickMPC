@@ -5,10 +5,12 @@
 #include "ConfigParse/ConfigParse.hpp"
 #include "FixedPoint/FixedPoint.hpp"
 #include "Networking.hpp"
+#include "OT/OT.hpp"
 #include "Share.hpp"
 namespace qmpc::Share
 {
 
+namespace bm = boost::multiprecision;
 bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
 bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
 bool operator<(const Share<FixedPoint> &left, const FixedPoint &right);
@@ -43,54 +45,137 @@ Share<T> operator==(const Share<T> &left, const Share<T> &right)
 /// @tparam N generate share-value mod N
 /// @return random share [r] and r-th value is 1 ,otherwise is 0 in n length array
 template <size_t N>
-std::pair<Share<int>, std::vector<Share<int>>> unitvPrep()
+std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
 {
-    std::vector<Share<int>> e(N * N);
-    std::vector<AddressId> addressIds(N * N);
-    std::vector<Share<int>> ret(N * N);
+    auto rotate = [](unsigned int x, int r) { return x << r | x >> (32 - r); };
+    qmpc::OT ot(N);
     Config *conf = Config::getInstance();
-    auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << 20, N);
-    auto r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
+    int pt_id = conf->party_id;
     int n_parties = conf->n_parties;
-    int pt_id = conf->party_id - 1;
-    for (size_t i = 0; i < N * N; ++i)
+    int r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
+    auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N - 1);
+    qmpc::Share::Share<int> rShare = r;
+    std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
+    std::vector<qmpc::Share::Share<bm::cpp_int>> x_1_temp(N);
+    if (pt_id == 1)
     {
-        addressIds[i] = e[i].getId();
-    }
-    if (pt_id == 0)
-    {
-        for (size_t i = 0; i < N * N; ++i)
+        // v[to] = data;
+        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
         {
-            if (i % N == i / N) e[i] = 1;
-            e[i] += random_s[i % N];
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+            for (int j = 0; j < N; ++j)
+            {
+                v[i][j] = bm::cpp_int{ri[j]};
+            }
+        }
+        std::vector<bm::cpp_int> e(N);
+        e[r - 1] = 1ll;
+        v[0] = e;
+        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
+        {
+            auto vi = v[0];
+            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+            std::vector<bm::cpp_int> xi(N);
+            for (int i = 0; i < N; ++i)
+            {
+                xi[i] = vi[i] - v[1][i];
+            }
+            x[i] = xi;
+        }
+        for (int i = 0; i < N; ++i)
+        {
+            // std::cout << "v 1 is " << v[1][i] << std::endl;
+            x_1_temp[i] = v[1][i];
+        }
+        ot.send(2, x);
+        for (int i = 0; i < N; ++i)
+        {
+            auto vi = v[1];
+            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+            std::vector<bm::cpp_int> xi(N);
+            for (int i = 0; i < N; ++i)
+            {
+                xi[i] = vi[i] - v[2][i];
+                // std::cout << "ot x " << i << " is " << std::bitset<32>(xi[i]) << std::endl;
+            }
+            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            x[i] = xi;
+        }
+        ot.send(3, x);
+        for (int i = 0; i < N; ++i)
+        {
+            // std::cout << "v 2 is " << v[2][i] << std::endl;
+            ret[i] = v[2][i];
+        }
+    }
+    else if (pt_id == 2)
+    {
+        // v[to] = data;
+
+        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
+        {
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+            for (int j = 0; j < N; ++j)
+            {
+                v[i][j] = bm::cpp_int{ri[j]};
+            }
+        }
+        auto rec = ot.recieve(1, r);
+        for (int i = 0; i < N; ++i)
+        {
+            v[1][i] = rec[i];
+            // std::cout << "party 2 rec is " << v[1][i] << std::endl;
+            x_1_temp[i] = v[1][i];
         }
 
-        std::rotate(e.begin(), e.begin() + r * N, e.end());
-        send(e, (pt_id + 1) % n_parties + 1);
-        auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
-
-        for (size_t i = 0; i < N * N; ++i)
+        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
         {
-            ret[i] = s[i] - random_s[i % N];
+            auto vi = v[1];
+            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+            std::vector<bm::cpp_int> xi(N);
+            for (int i = 0; i < N; ++i)
+            {
+                xi[i] = vi[i] - v[2][i];
+            }
+            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            x[i] = xi;
+        }
+        ot.send(3, x);
+        for (int i = 0; i < N; ++i)
+        {
+            // std::cout << "v 2 is " << v[2][i] << std::endl;
+            ret[i] = v[2][i];
         }
     }
-    else
+    else if (pt_id == 3)
     {
-        auto s = receive<int>((pt_id + n_parties - 1) % n_parties + 1, addressIds);
-        for (size_t i = 0; i < N * N; ++i)
+        // v[to] = data;
+
+        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < N; ++i)
         {
-            e[i] = s[i] + random_s[i % N];
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+            for (int j = 0; j < N; ++j)
+            {
+                v[i][j] = bm::cpp_int{ri[j]};
+            }
         }
-        std::rotate(e.begin(), e.begin() + r * N, e.end());
-        send(e, (pt_id + 1) % n_parties + 1);
-        for (size_t i = 0; i < N * N; ++i)
+        auto rec = ot.recieve(1, r);
+        auto rec2 = ot.recieve(2, r);
+        for (int i = 0; i < N; ++i)
         {
-            ret[i] = -random_s[i % N];
+            ret[i] = rec[i] + rec2[i];
         }
     }
-    return {r, ret};
+    return {bm::cpp_int{r}, ret};
 }
-
 template <typename T, int N = 32, int N_dash = 32>
 std::vector<Share<T>> unitv(const Share<T> &n)
 {
@@ -99,12 +184,13 @@ std::vector<Share<T>> unitv(const Share<T> &n)
     open(diff);
     auto rec = recons(diff);
     int m = (rec % N + N) % N;
-    std::vector<Share<T>> ret(N);
-    for (int i = 0; i < N; ++i)
-    {
-        ret[i] = v[N * m + i];
-    }
-    return ret;
+    // std::vector<Share<T>> ret(N);
+    // for (int i = 0; i < N; ++i)
+    // {
+    //     ret[i] = v[N * m + i];
+    // }
+    std::rotate(v.begin(), v.begin() + N - m - 1, v.end());
+    return v;
 }
 template <typename Arr>
 std::vector<int> expand(int x, const Arr &delta)

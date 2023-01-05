@@ -13,9 +13,8 @@
 #include <random>
 #include <thread>
 #include "ConfigParse/ConfigParse.hpp"
-#include "OT/OT.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Share/Share.hpp"
+#include "Share/Compare.hpp"
 #include "gtest/gtest.h"
 
 using namespace boost::multiprecision::literals;
@@ -70,8 +69,8 @@ void send(Socket &&socket, T &msg)
         std::cout << "send success" << std::endl;
         // std::cout << msg << std::endl;
         //  asio::read(socket, receive_buffer, asio::transfer_all(), error);
-        //  const char *data = asio::buffer_cast<const char *>(receive_buffer.data());
-        //  std::cout << data << std::endl;
+        //  const char *data = asio::buffer_cast<const char
+        //  *>(receive_buffer.data()); std::cout << data << std::endl;
     }
 }
 
@@ -95,7 +94,8 @@ T recv(tcp::socket &socket, size_t size)
         {
             std::cout << "recv message is " << a << std::endl;
         }
-        // const char *data = asio::buffer_cast<const char *>(receive_buffer.data());
+        // const char *data = asio::buffer_cast<const char
+        // *>(receive_buffer.data());
         //  asio::write(socket, asio::buffer(k), error);
         return msg;
     }
@@ -115,8 +115,8 @@ T recv(tcp::socket &socket, size_t size)
 //     std::vector<qmpc::Share::Share<bm::cpp_int>> second(size + 1);
 
 //     qmpc::Share::AddressId id = first.getId();
-//     std::vector<qmpc::Share::AddressId> ids_list(size + 1);  // 複数シェアのidリスト
-//     for (int i = 0; i <= size; ++i)
+//     std::vector<qmpc::Share::AddressId> ids_list(size + 1);  //
+//     複数シェアのidリスト for (int i = 0; i <= size; ++i)
 //     {
 //         ids_list[i] = second[i].getId();
 //     }
@@ -161,7 +161,8 @@ T recv(tcp::socket &socket, size_t size)
 //         // 2nd
 //         auto server = qmpc::ComputationToComputation::Server::getServer();
 
-//         std::vector<std::string> ab = server->getShares(2, ids_list, size + 1);
+//         std::vector<std::string> ab = server->getShares(2, ids_list, size +
+//         1);
 //         // auto ab = recv<std::vector<bm::cpp_int>>(socket, size + 1);
 //         std::cout << "ab size is " << ab.size() << std::endl;
 //         int64_t a = static_cast<int64_t>(std::stol(ab.back()));
@@ -245,7 +246,8 @@ T recv(tcp::socket &socket, size_t size)
 
 //     const auto clock_end = std::chrono::system_clock::now();
 //     const auto elapsed_time_ms =
-//         std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
+//         std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
+//         clock_start).count();
 //     std::cout << "Elapsed time =" << elapsed_time_ms << std::endl;
 // }
 
@@ -300,10 +302,10 @@ TEST(OTTest, unitvprep)
 
     std::cout << pt_id << " party r is " << r << std::endl;
     qmpc::Share::Share<int> rShare = r;
+    std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
     std::vector<qmpc::Share::Share<bm::cpp_int>> x_1_temp(N);
     if (pt_id == 1)
     {
-        std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
         // v[to] = data;
         std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
         for (int i = 0; i < N; ++i)
@@ -344,12 +346,14 @@ TEST(OTTest, unitvprep)
             for (int i = 0; i < N; ++i)
             {
                 xi[i] = vi[i] - v[2][i];
-                // std::cout << "ot x " << i << " is " << std::bitset<32>(xi[i]) << std::endl;
+                // std::cout << "ot x " << i << " is " << std::bitset<32>(xi[i]) <<
+                // std::endl;
             }
-            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) <<
+            // std::endl;
             x[i] = xi;
         }
-        ot2.send(3, x);
+        ot.send(3, x);
         for (int i = 0; i < N; ++i)
         {
             // std::cout << "v 2 is " << v[2][i] << std::endl;
@@ -363,11 +367,9 @@ TEST(OTTest, unitvprep)
             std::cout << " index is " << i << " " << a << std::endl;
             i++;
         }
-        // std::cout << "v 2 is " << std::bitset<32>(v[2]) << std::endl;
     }
     else if (pt_id == 2)
     {
-        std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
         // v[to] = data;
 
         std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
@@ -398,10 +400,11 @@ TEST(OTTest, unitvprep)
             {
                 xi[i] = vi[i] - v[2][i];
             }
-            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
+            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) <<
+            // std::endl;
             x[i] = xi;
         }
-        ot2.send(3, x);
+        ot.send(3, x);
         for (int i = 0; i < N; ++i)
         {
             // std::cout << "v 2 is " << v[2][i] << std::endl;
@@ -415,11 +418,9 @@ TEST(OTTest, unitvprep)
             std::cout << " index is " << i << " " << a << std::endl;
             i++;
         }
-        // std::cout << "rec is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
     }
     else if (pt_id == 3)
     {
-        std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
         // v[to] = data;
 
         std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
@@ -432,14 +433,12 @@ TEST(OTTest, unitvprep)
                 v[i][j] = bm::cpp_int{ri[j]};
             }
         }
-        auto rec = ot2.recieve(1, r);
-        auto rec2 = ot2.recieve(2, r);
+        auto rec = ot.recieve(1, r);
+        auto rec2 = ot.recieve(2, r);
         for (int i = 0; i < N; ++i)
         {
             ret[i] = rec[i] + rec2[i];
         }
-        // std::cout << "rec1  is " << std::bitset<32>(static_cast<int64_t>(rec)) << std::endl;
-        // std::cout << "rec2  is " << std::bitset<32>(static_cast<int64_t>(rec2)) << std::endl;
         open(ret);
         auto ret_rec = recons(ret);
         int i = 0;
@@ -464,4 +463,52 @@ TEST(OTTest, unitvprep)
     auto recR = recons(rShare);
     // std::cout << "value is " << std::bitset<32>(rec) << std::endl;
     std::cout << "random value is" << (recR % 32) << std::endl;
+}
+
+TEST(OTTest, unitvpMulti)
+{
+    auto [r1, v1] = qmpc::Share::unitvPrep<32>();
+    auto [r2, v2] = qmpc::Share::unitvPrep<32>();
+    auto [r3, v3] = qmpc::Share::unitvPrep<32>();
+    // open(r);
+    // open(v);
+    // auto r_rec = recons(r);
+    // auto v_rec = recons(v);
+    // std::cout << "r rec is " << r_rec << std::endl;
+    // int i = 0;
+    // for (auto &a : v_rec)
+    // {
+    //     std::cout << "index " << i << " v value is " << a << std::endl;
+    //     i++;
+    // }
+}
+
+TEST(OTTest, unitv)
+{
+    qmpc::Share::Share<bm::cpp_int> index{1};
+    auto v = qmpc::Share::unitv(index);
+    open(v);
+    auto v_rec = recons(v);
+    int i = 0;
+    for (auto &a : v_rec)
+    {
+        std::cout << "index " << i << " v value is " << a << std::endl;
+        i++;
+    }
+}
+
+TEST(OTTest, compare)
+{
+    qmpc::Share::Share<bm::cpp_int> x{5};
+    qmpc::Share::Share<bm::cpp_int> y{5};
+    qmpc::Share::Share<bm::cpp_int> z{4};
+    auto ok = qmpc::Share::equality1(x, y);
+    // open(ok);
+    // auto rec = recons(ok);
+    // std::cout << "rec is " << rec << std::endl;
+
+    auto ng = qmpc::Share::equality1(x, z);
+    // open(ng);
+    // auto rec_ng = recons(ng);
+    // std::cout << "rec_ng is " << rec_ng << std::endl;
 }

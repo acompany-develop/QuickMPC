@@ -1,3 +1,4 @@
+#pragma once
 #include <openssl/sha.h>
 #include <sodium.h>
 #include <boost/algorithm/hex.hpp>
@@ -66,7 +67,6 @@ public:
 
     void send(int to_id, const std::vector<std::vector<bm::cpp_int>>& x)
     {
-        std::cout << first.getId() << std::endl;
         std::random_device rnd;  // 非決定的な乱数生成器を生成
         std::mt19937 mt(rnd());
         std::uniform_int_distribution<> rand(0, 100000);
@@ -75,7 +75,6 @@ public:
         // 1nd
         auto server = qmpc::ComputationToComputation::Server::getServer();
         int64_t beta = std::stol(server->getShare(to_id, first.getId()));
-        std::cout << "sender beta is " << beta << std::endl;
         //  int64_t beta = b.back();
         int64_t k = rand(mt);
         auto a = pow(g, k, prime);
@@ -115,7 +114,6 @@ public:
 
     std::vector<bm::cpp_int> recieve(int from_id, int choise_id)
     {
-        std::cout << first.getId() << std::endl;
         qmpc::Share::AddressId id = first.getId();
         qmpc::Share::AddressId id2 = second.getId();
 
@@ -136,7 +134,6 @@ public:
         // send(socket, b);
 
         // 2nd
-        std::cout << "second " << std::endl;
         auto server = qmpc::ComputationToComputation::Server::getServer();
         std::stringstream archive;
         archive << server->getShare(from_id, id2);
