@@ -134,7 +134,7 @@ message GetComputationResultResponse {
 */
 message SendModelParamRequest {
     string job_uuid = 1;
-    string params = 2;
+    repeated string params = 2;
     int32 piece_id = 3;
     string token = 4;
 }
