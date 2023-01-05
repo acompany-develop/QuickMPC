@@ -20,7 +20,7 @@ usually_tree = [{
 }]
 
 
-def predict_param(model_param_job_uuid=job_uuid(usually_tree),
+def predict_param(model_param_job_uuid=job_uuid([1]),
                   dataIds=[data_id([[1, 1, 0], [1, 0, 1]],
                                    ["a#0", "b#0", "b#1"])],
                   join=[],
@@ -29,6 +29,7 @@ def predict_param(model_param_job_uuid=job_uuid(usually_tree),
     return (model_param_job_uuid, (dataIds, join, index), src)
 
 
+@pytest.mark.skip(reason="廃止予定のためskip")
 @pytest.mark.parametrize(
     ("param", "expected"),
     [
