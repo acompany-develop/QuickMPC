@@ -2,12 +2,9 @@ package l2mserver
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"sort"
 	"strconv"
-	"unicode/utf8"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/reflection"
@@ -21,7 +18,6 @@ import (
 	common "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	pb "github.com/acompany-develop/QuickMPC/src/Proto/LibcToManageContainer"
-	pb_types "github.com/acompany-develop/QuickMPC/src/Proto/common_types"
 )
 
 // ServerのInterface定義
@@ -277,13 +273,12 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
 	}
 
-	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID)
+	ComputationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID,[]string{"dim1","dim2","schema"})
 
 	if err != nil {
 		stream.Send(&pb.GetComputationResultResponse{
 			Message: "Internal Server Error",
 			IsOk:    false,
-			Result:  "",
 		})
 		return err
 	}
@@ -296,175 +291,32 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		return status.Err()
 	}
 
-	for _, result := range computationResults {
-		resultBytes, err := json.Marshal(result.Result)
-		if err != nil {
-			stream.Send(&pb.GetComputationResultResponse{
-				Message: "Internal Server Error",
-				IsOk:    false,
-				Result:  "",
-			})
-			return err
-		}
-
-		stream.Send(&pb.GetComputationResultResponse{
+	for _, result := range ComputationResults{
+		response := pb.GetComputationResultResponse{
 			Message:  "ok",
 			IsOk:     true,
-			Status:   result.Status,
-			Result:   string(resultBytes),
+			Status:   ComputationResults[0].Status,
+			Result:   result.Result,
+			ColumnNumber: result.Meta.ColumnNumber,
 			PieceId:  result.Meta.PieceID,
 			Progress: progress,
-		})
-	}
-	return nil
-}
-
-// TODO name
-func SendResult(stream pb.LibcToManage_GetComputationResultTestServer, result [][]string, isSchema bool, status pb_types.JobStatus, progress *pb_types.JobProgress, isDim2 bool) error {
-	if len(result) == 0 || len(result[0]) == 0 {
-		return nil
-	}
-	AppLogger.Info("len",len(result[0]))
-	AppLogger.Info("len",len(result[0][0]))
-	if len(result[0]) == 0 {
-		return nil
-	}
-	piece_size := 1000000
-	tmp_num := 0
-	row_number := len(result[0])
-	var res []string
-	piece_id := 0
-	for _,row := range result {
-		for _,val := range row {
-			val_size := utf8.RuneCountInString(val)
-			if val_size == 0 {
-				continue
+		}
+		if result.Meta.ResultType == "dim1" {
+			response.ResultType = &pb.GetComputationResultResponse_IsDim1{
+				IsDim1: true,
 			}
-			if tmp_num + val_size >= piece_size {
-				stream.Send(&pb.GetComputationResultResponseTest{
-					Message:  "ok",
-					IsOk:     true,
-					Status:   status,
-					Result:   res,
-					RowNumber: int32(row_number),
-					PieceId:  int32(piece_id),
-					Progress: progress,
-					IsSchema: isSchema,
-					IsDim2: isDim2,
-				})
-				tmp_num = 0
-				piece_id+=1
-				res = []string{}
+		}else if result.Meta.ResultType == "dim2" {
+			response.ResultType = &pb.GetComputationResultResponse_IsDim2{
+				IsDim2: true,
 			}
-			res = append(res,val)
-			tmp_num += val_size
+		}else if result.Meta.ResultType == "schema"{
+			response.ResultType = &pb.GetComputationResultResponse_IsSchema{
+				IsSchema: true,
+			}
 		}
-	}
-	if len(res) != 0 {
-		stream.Send(&pb.GetComputationResultResponseTest{
-			Message:  "ok",
-			IsOk:     true,
-			Status:   status,
-			Result:   res,
-			RowNumber: int32(row_number),
-			PieceId:  int32(piece_id),
-			Progress: progress,
-			IsSchema: isSchema,
-			IsDim2: isDim2,
-		})
-	}
-	AppLogger.Info(result[0])
-	return nil
-}
-func (s *server) GetComputationResultTest(in *pb.GetComputationResultRequest, stream pb.LibcToManage_GetComputationResultTestServer) error {
-	AppLogger.Info("Get Computation Result;")
-	AppLogger.Info("jobUUID: " + in.GetJobUuid())
-
-	JobUUID := in.GetJobUuid()
-	token := in.GetToken()
-
-	errToken := s.authorize(token, []string{"demo", "dep"})
-	if errToken != nil {
-		stream.Send(&pb.GetComputationResultResponseTest{
-			Message: errToken.Error(),
-			IsOk:    false,
-		})
-		return errToken
+		stream.Send(&response)
 	}
 
-	progress, err := s.m2cclient.CheckProgress(JobUUID)
-
-	if err != nil {
-		st, ok := status.FromError(err)
-		if !ok {
-			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
-		}
-		// optional な情報のためロガーに残すのみでエラーを返さない
-		logger_func := func(template string, args ...interface{}) {}
-		switch st.Code() {
-		case codes.NotFound:
-			logger_func = AppLogger.Infof
-		case
-			codes.Internal,
-			codes.Unavailable:
-			logger_func = AppLogger.Warningf
-		default:
-			logger_func = AppLogger.Errorf
-		}
-		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
-	}
-
-	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID)
-
-	if err != nil {
-		stream.Send(&pb.GetComputationResultResponseTest{
-			Message: "Internal Server Error",
-			IsOk:    false,
-		})
-		return err
-	}
-
-	if computationErrInfo != nil {
-		status, err := status.New(codes.Unknown, "computation result has error info").WithDetails(computationErrInfo)
-		if err != nil {
-			return err
-		}
-		return status.Err()
-	}
-
-	// 現状のresultの形式から配列に変更するため、一度結合する
-	m := map[int]string{}
-
-	for _, result := range computationResults{
-		m[int(result.Meta.PieceID)] = result.Result
-	}
-
-	keys := []int{}
-
-	for k:= range(m){
-		keys = append(keys,k)
-	}
-    sort.Ints(keys)
-
-	result := ""
-	for key := range(keys){
-		result +=m[key]
-	}
-	jsonByte := []byte(result)
-
-	// resultの形式は以下のいずれか
-	// TODO 簡易的にコードを書いただけ
-	var joinTable testresult
-	var dim1Result []string
-	var dim2Result [][]string
-
-	err = json.Unmarshal(jsonByte,&dim1Result)
-	err = json.Unmarshal(jsonByte,&dim2Result)
-	err = json.Unmarshal(jsonByte,&joinTable)
-	SendResult(stream,[][]string{dim1Result},false,computationResults[0].Status,progress,false)
-	SendResult(stream,dim2Result,false,computationResults[0].Status,progress,true)
-	SendResult(stream,[][]string{joinTable.Schema},true,computationResults[0].Status,progress,true)
-	SendResult(stream,joinTable.Table,false,computationResults[0].Status,progress,true)
 	return nil
 }
 func (s *server) SendModelParam(ctx context.Context, in *pb.SendModelParamRequest) (*pb.SendModelParamResponse, error) {
