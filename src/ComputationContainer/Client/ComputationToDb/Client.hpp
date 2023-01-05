@@ -98,50 +98,48 @@ public:
                 "data type must be `std::vector<std::string>>` or `std::vector<std::string>>`"
             ));
         }
-
         if (is_schema)
         {
             data_name = "schema";
         }
 
         // 巨大なデータはpieceに分割して保存する
-        int piece_id = 0;
-        int tmp = 0;
         std::vector<std::string> piece_result;
-        for (auto val : result_list)
+        piece_result.reserve(piece_size);
+        int piece_id = 0;
+        int current_size = 0;
+        auto add_piece = [&]()
         {
-            if (tmp + static_cast<int>(val.size()) >= piece_size)
+            nlohmann::json piece_data_json = {
+                {"job_uuid", job_uuid},
+                {"result", piece_result},
+                {"meta", {{"piece_id", piece_id}, {"column_number", column_number}}}};
+            const std::string data = piece_data_json.dump();
+
+            auto ofs = std::ofstream(
+                resultDbPath + job_uuid + "/" + data_name + "_" + std::to_string(piece_id)
+            );
+            ofs << data;
+            ofs.close();
+
+            current_size = 0;
+            ++piece_id;
+            piece_result.clear();
+        };
+
+        for (const auto &val : result_list)
+        {
+            piece_result.emplace_back(val);
+            current_size += val.size();
+            if (current_size >= piece_size)
             {
-                nlohmann::json piece_data_json = {
-                    {"job_uuid", job_uuid},
-                    {"result", piece_result},
-                    {"meta", {{"piece_id", piece_id}, {"column_number", column_number}}}};
-                const std::string data = piece_data_json.dump();
-
-                auto ofs = std::ofstream(
-                    resultDbPath + job_uuid + "/" + data_name + "_" + std::to_string(piece_id)
-                );
-                ofs << data;
-                ofs.close();
-
-                tmp = 0;
-                piece_id++;
-                piece_result.clear();
+                add_piece();
             }
-            piece_result.push_back(val);
-            tmp += val.size();
         }
-        nlohmann::json piece_data_json = {
-            {"job_uuid", job_uuid},
-            {"result", piece_result},
-            {"meta", {{"piece_id", piece_id}, {"column_number", column_number}}}};
-        const std::string data = piece_data_json.dump();
-
-        auto ofs = std::ofstream(
-            resultDbPath + job_uuid + "/" + data_name + "_" + std::to_string(piece_id)
-        );
-        ofs << data;
-        ofs.close();
+        if (!piece_result.empty())
+        {
+            add_piece();
+        }
 
         std::ofstream(resultDbPath + job_uuid + "/completed");
     }
