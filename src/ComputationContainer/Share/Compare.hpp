@@ -34,8 +34,6 @@ std::vector<bool> allEq(
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s);
 std::vector<Share<FixedPoint>> LTZ(const std::vector<Share<FixedPoint>> &s);
 
-/// @brief l=32 split array
-inline constexpr std::array<int, 7> delta = {5, 5, 5, 5, 5, 5, 2};
 template <typename T, std::enable_if_t<std::is_integral_v<T>, std::nullptr_t> = nullptr>
 Share<T> operator==(const Share<T> &left, const Share<T> &right)
 {
@@ -192,26 +190,25 @@ std::vector<Share<T>> unitv(const Share<T> &n)
     std::rotate(v.begin(), v.begin() + N - m - 1, v.end());
     return v;
 }
-template <typename Arr>
-std::vector<int> expand(int x, const Arr &delta)
+template <typename T, size_t N = 32>
+std::vector<T> expand(const T &x)
 {
-    unsigned int x_u = static_cast<unsigned int>(x);
-    std::vector<int> delta_sum;
-    std::vector<int> ret;
-    delta_sum.emplace_back(0);
-    int sum = 0;
-    for (auto &&a : delta)
+    T x_dash = x;
+    constexpr int mask_size = 8;
+    constexpr int size = N / mask_size;
+    std::vector<T> ret;
+    ret.reserve(size);
+    for (int i = 0; i < size; ++i)
     {
-        sum += a;
-        delta_sum.emplace_back(sum);
+        int mask = (1 << mask_size) - 1;
+        int x_mask = x_dash & mask;
+        // std::cout << "mask_size is " << mask_size << " x_dash is " << std::bitset<16>(x_mask)
+        //           << std::endl;
+        ret.emplace_back(x_mask);
+        x_dash >>= mask_size;
+        // std::cout << std::bitset<N>(x_dash) << std::endl;
     }
-
-    reverse(delta_sum.begin(), delta_sum.end());
-    for (auto &&delta_num : delta_sum)
-    {
-        ret.emplace_back(static_cast<int>(1ll * x_u / (1ll << delta_num)));
-        x_u = static_cast<unsigned int>(1ll * x_u % (1ll << delta_num));
-    }
+    std::reverse(ret.begin(), ret.end());
     return ret;
 }
 template <typename T>
@@ -224,7 +221,7 @@ template <typename T>
 Share<T> equality(const Share<T> &x, const Share<T> &y)
 {
     Config *conf = Config::getInstance();
-    int d{};
+    T d{};
     if (conf->party_id == 1)
     {
         d = x.getVal() - y.getVal();
@@ -233,9 +230,9 @@ Share<T> equality(const Share<T> &x, const Share<T> &y)
     {
         d = y.getVal() - x.getVal();
     }
-    auto d_expand = expand(d, delta);
+    auto d_expand = expand(d);
     int m = d_expand.size();
-    std::vector<Share<int>> p(m), q(m);
+    std::vector<Share<T>> p(m), q(m);
     Share<T> f{};
     for (int i = 0; i < m; ++i)
     {
