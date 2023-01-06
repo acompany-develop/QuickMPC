@@ -45,12 +45,11 @@ Share<T> operator==(const Share<T> &left, const Share<T> &right)
 template <size_t N>
 std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
 {
-    auto rotate = [](unsigned int x, int r) { return x << r | x >> (32 - r); };
     qmpc::OT ot(N);
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
     int n_parties = conf->n_parties;
-    int r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
+    int r = RandGenerator::getInstance()->getRand<long long>(1, N);
     auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N - 1);
     qmpc::Share::Share<int> rShare = r;
     std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
@@ -58,10 +57,10 @@ std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
     if (pt_id == 1)
     {
         // v[to] = data;
-        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
+        std::vector<std::vector<bm::cpp_int>> v(n_parties, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < n_parties; ++i)
         {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, (1 << N) - 1, N);
 
             for (int j = 0; j < N; ++j)
             {
@@ -69,7 +68,7 @@ std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
             }
         }
         std::vector<bm::cpp_int> e(N);
-        e[r - 1] = 1ll;
+        e[(r + N - 1) % N] = 1ll;
         v[0] = e;
         std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
         for (int i = 0; i < N; ++i)
@@ -113,10 +112,10 @@ std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
     {
         // v[to] = data;
 
-        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
+        std::vector<std::vector<bm::cpp_int>> v(n_parties, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < n_parties; ++i)
         {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, (1 << N) - 1, N);
 
             for (int j = 0; j < N; ++j)
             {
@@ -155,10 +154,10 @@ std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
     {
         // v[to] = data;
 
-        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
+        std::vector<std::vector<bm::cpp_int>> v(n_parties, std::vector<bm::cpp_int>(N));
+        for (int i = 0; i < n_parties; ++i)
         {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, (1 << N) - 1, N);
 
             for (int j = 0; j < N; ++j)
             {

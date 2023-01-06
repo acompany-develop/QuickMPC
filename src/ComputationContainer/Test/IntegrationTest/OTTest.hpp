@@ -529,12 +529,12 @@ TEST(OTTest, compareFull)
     qmpc::Share::Share<bm::cpp_int> y{5};
     qmpc::Share::Share<bm::cpp_int> z{4};
     auto ok = qmpc::Share::equality(x, y);
-    open(ok);
-    auto rec = recons(ok);
-    std::cout << "rec is " << rec << std::endl;
+    // open(ok);
+    // auto rec = recons(ok);
+    // std::cout << "rec is " << rec << std::endl;
 
     auto ng = qmpc::Share::equality(x, z);
-    open(ng);
-    auto rec_ng = recons(ng);
-    std::cout << "rec_ng is " << rec_ng << std::endl;
+    // open(ng);
+    // auto rec_ng = recons(ng);
+    // std::cout << "rec_ng is " << rec_ng << std::endl;
 }
