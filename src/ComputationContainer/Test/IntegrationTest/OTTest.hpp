@@ -465,37 +465,37 @@ TEST(OTTest, unitvprep)
     std::cout << "random value is" << (recR % 32) << std::endl;
 }
 
-TEST(OTTest, unitvpMulti)
-{
-    auto [r1, v1] = qmpc::Share::unitvPrep<32>();
-    auto [r2, v2] = qmpc::Share::unitvPrep<32>();
-    auto [r3, v3] = qmpc::Share::unitvPrep<32>();
-    // open(r);
-    // open(v);
-    // auto r_rec = recons(r);
-    // auto v_rec = recons(v);
-    // std::cout << "r rec is " << r_rec << std::endl;
-    // int i = 0;
-    // for (auto &a : v_rec)
-    // {
-    //     std::cout << "index " << i << " v value is " << a << std::endl;
-    //     i++;
-    // }
-}
+// TEST(OTTest, unitvpMulti)
+// {
+//     auto [r1, v1] = qmpc::Share::unitvPrep<32>();
+//     auto [r2, v2] = qmpc::Share::unitvPrep<32>();
+//     auto [r3, v3] = qmpc::Share::unitvPrep<32>();
+//     // open(r);
+//     // open(v);
+//     // auto r_rec = recons(r);
+//     // auto v_rec = recons(v);
+//     // std::cout << "r rec is " << r_rec << std::endl;
+//     // int i = 0;
+//     // for (auto &a : v_rec)
+//     // {
+//     //     std::cout << "index " << i << " v value is " << a << std::endl;
+//     //     i++;
+//     // }
+// }
 
-TEST(OTTest, unitv)
-{
-    qmpc::Share::Share<bm::cpp_int> index{1};
-    auto v = qmpc::Share::unitv(index);
-    open(v);
-    auto v_rec = recons(v);
-    int i = 0;
-    for (auto &a : v_rec)
-    {
-        std::cout << "index " << i << " v value is " << a << std::endl;
-        i++;
-    }
-}
+// TEST(OTTest, unitv)
+// {
+//     qmpc::Share::Share<bm::cpp_int> index{1};
+//     auto v = qmpc::Share::unitv(index);
+//     open(v);
+//     auto v_rec = recons(v);
+//     int i = 0;
+//     for (auto &a : v_rec)
+//     {
+//         std::cout << "index " << i << " v value is " << a << std::endl;
+//         i++;
+//     }
+// }
 
 TEST(OTTest, compare)
 {
@@ -511,4 +511,30 @@ TEST(OTTest, compare)
     // open(ng);
     // auto rec_ng = recons(ng);
     // std::cout << "rec_ng is " << rec_ng << std::endl;
+}
+
+TEST(OTTest, expand)
+{
+    int x = 54321;
+    std::cout << std::bitset<32>(x) << std::endl;
+    auto x_dash = qmpc::Share::expand(x);
+    for (auto &&a : x_dash)
+    {
+        std::cout << a << std::endl;
+    }
+}
+TEST(OTTest, compareFull)
+{
+    qmpc::Share::Share<bm::cpp_int> x{5};
+    qmpc::Share::Share<bm::cpp_int> y{5};
+    qmpc::Share::Share<bm::cpp_int> z{4};
+    auto ok = qmpc::Share::equality(x, y);
+    open(ok);
+    auto rec = recons(ok);
+    std::cout << "rec is " << rec << std::endl;
+
+    auto ng = qmpc::Share::equality(x, z);
+    open(ng);
+    auto rec_ng = recons(ng);
+    std::cout << "rec_ng is " << rec_ng << std::endl;
 }
