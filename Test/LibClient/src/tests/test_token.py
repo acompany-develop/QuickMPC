@@ -3,6 +3,7 @@ import csv
 import time
 
 from quickmpc import QMPC
+from quickmpc.exception import QMPCServerError
 from utils import get_result, qmpc
 
 # 各種リクエストに用いる変数
@@ -44,13 +45,37 @@ def check_all_request(token: str):
     table = [[data_id], [], [1]]
 
     # 各requestを実行する
-    res_send_share = qmpc_inner.send_share(secrets, schema)
-    res_execute_computation = qmpc_inner.sum(table, inp)
-    res_get_computation_result = qmpc_inner.get_computation_result(job_uuid)
-    res_send_model_params = qmpc_inner.send_model_params(data)
-    res_predict = qmpc_inner.linear_regression_predict(
-        model_param_job_uuid, table, inp)
-    res_delete_share = qmpc_inner.delete_share([data_id])
+    try:
+        res_send_share = qmpc_inner.send_share(secrets, schema)
+    except QMPCServerError:
+        """tokenが正しくない場合例外が投げられるため"""
+        res_send_share = {"is_ok":False}
+
+    try:
+        res_execute_computation = qmpc_inner.sum(table, inp)
+    except QMPCServerError:
+        res_execute_computation = {"is_ok":False}
+
+    try:
+        res_get_computation_result = qmpc_inner.get_computation_result(job_uuid)
+    except QMPCServerError:
+        res_get_computation_result = {"is_ok":False}
+
+    try:
+        res_send_model_params = qmpc_inner.send_model_params(data)
+    except QMPCServerError:
+        res_send_model_params = {"is_ok":False}
+
+    try:
+        res_predict = qmpc_inner.linear_regression_predict(
+            model_param_job_uuid, table, inp)
+    except QMPCServerError:
+        res_predict = {"is_ok":False}
+
+    try:
+        res_delete_share = qmpc_inner.delete_share([data_id])
+    except QMPCServerError:
+        res_delete_share = {"is_ok":False}
 
     return [res_send_share["is_ok"],
             res_execute_computation["is_ok"],
