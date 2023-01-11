@@ -269,7 +269,7 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
 	}
 
-	ComputationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
+	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
 
 	if err != nil {
 		stream.Send(&pb.GetComputationResultResponse{
@@ -287,11 +287,11 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		return status.Err()
 	}
 
-	for _, result := range ComputationResults {
+	for _, result := range computationResults {
 		response := pb.GetComputationResultResponse{
 			Message:      "ok",
 			IsOk:         true,
-			Status:       ComputationResults[0].Status,
+			Status:       computationResults[0].Status,
 			Result:       result.Result,
 			ColumnNumber: result.Meta.ColumnNumber,
 			PieceId:      result.Meta.PieceID,
