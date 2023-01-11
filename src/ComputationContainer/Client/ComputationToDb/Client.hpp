@@ -81,7 +81,7 @@ public:
         {
             // ２次元配列の場合は1次元に変換する
             data_name = "dim2";
-            column_number = (results.empty() ? 0 : results[0].size());
+            column_number = (results.empty() ? -1 : results[0].size());
             size_t size = (results.empty() ? 0 : results.size() * results[0].size());
             result_list.reserve(size);
             for (auto row : results)
@@ -101,6 +101,11 @@ public:
         if (is_schema)
         {
             data_name = "schema";
+        }
+        if (column_number <= 0)
+        {
+            // NOTE: Client側で復元する際に0以下だと不都合が生じるため
+            column_number = 1;
         }
 
         // 巨大なデータはpieceに分割して保存する
@@ -138,10 +143,7 @@ public:
             piece_result.emplace_back(val);
             current_size += size;
         }
-        if (!piece_result.empty())
-        {
-            add_piece();
-        }
+        add_piece();
 
         std::ofstream(resultDbPath + job_uuid + "/completed");
     }
