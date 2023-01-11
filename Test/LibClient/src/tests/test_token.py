@@ -45,44 +45,26 @@ def check_all_request(token: str):
     table = [[data_id], [], [1]]
 
     # 各requestを実行する
-    try:
-        res_send_share = qmpc_inner.send_share(secrets, schema)
-    except QMPCServerError:
-        """tokenが正しくない場合例外が投げられるため"""
-        res_send_share = {"is_ok":False}
+    requests = [
+        (qmpc_inner.send_share,(secrets, schema)),
+        (qmpc_inner.sum,(table, inp)),
+        (qmpc_inner.get_computation_result,(job_uuid,)),
+        (qmpc_inner.send_model_params,(data,)),
+        (qmpc_inner.linear_regression_predict,
+         (model_param_job_uuid, table, inp)),
+        (qmpc_inner.delete_share,([data_id],))
+    ]
 
-    try:
-        res_execute_computation = qmpc_inner.sum(table, inp)
-    except QMPCServerError:
-        res_execute_computation = {"is_ok":False}
+    def try_func(func,param):
+        try:
+            return func(*param)["is_ok"]
+        except QMPCServerError:
+            """tokenが正しくない場合例外が投げられるため"""
+            return False
 
-    try:
-        res_get_computation_result = qmpc_inner.get_computation_result(job_uuid)
-    except QMPCServerError:
-        res_get_computation_result = {"is_ok":False}
+    response = [try_func(func,param) for func,param in requests]
 
-    try:
-        res_send_model_params = qmpc_inner.send_model_params(data)
-    except QMPCServerError:
-        res_send_model_params = {"is_ok":False}
-
-    try:
-        res_predict = qmpc_inner.linear_regression_predict(
-            model_param_job_uuid, table, inp)
-    except QMPCServerError:
-        res_predict = {"is_ok":False}
-
-    try:
-        res_delete_share = qmpc_inner.delete_share([data_id])
-    except QMPCServerError:
-        res_delete_share = {"is_ok":False}
-
-    return [res_send_share["is_ok"],
-            res_execute_computation["is_ok"],
-            res_get_computation_result["is_ok"],
-            res_send_model_params["is_ok"],
-            res_predict["is_ok"],
-            res_delete_share["is_ok"]]
+    return response
 
 
 def test_token_dep():
