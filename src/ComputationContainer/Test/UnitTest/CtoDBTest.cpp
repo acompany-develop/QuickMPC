@@ -114,7 +114,7 @@ TEST(ComputationToDbTest, SuccessReadModelParamTest)
     initialize(job_uuid);
 
     const std::string data = R"({"result":["1","2","3"])"
-                             R"(,"meta":{"column_number":4, "piece_id":0}})";
+                             R"(,"meta":{"column_number":3, "piece_id":0}})";
     fs::create_directories("/Db/result/" + job_uuid);
     auto ofs = std::ofstream("/Db/result/" + job_uuid + "/dim1_0");
     ofs << data;
