@@ -29,11 +29,6 @@ type server struct {
 	m2tclient  m2t.M2TCAClient
 }
 
-type testresult struct {
-	Schema []string   `json:"schema"`
-	Table  [][]string `json:"table"`
-}
-
 func (s *server) authorize(token string, stages []string) error {
 	var errAll error = nil
 	for _, stage := range stages {
