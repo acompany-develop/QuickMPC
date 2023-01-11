@@ -28,7 +28,7 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
 def test_job_error_info(param: tuple):
     err_info = None
     try:
-        get_result(qmpc.sum(*param))
+        get_result(qmpc.sum(*param),5)
     except QMPCJobError as e:
         err_info = e.err_info
 
