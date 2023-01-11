@@ -1,8 +1,8 @@
 import grpc
+import pytest
 from grpc_status import rpc_status
 from quickmpc import JobErrorInfo
-
-import pytest
+from quickmpc.exception import QMPCJobError
 from utils import get_result, qmpc
 
 from tests.common import data_id
@@ -28,18 +28,9 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
 def test_job_error_info(param: tuple):
     err_info = None
     try:
-        # 総和計算リクエスト送信
-        get_result(qmpc.sum(*param))
-    except grpc.RpcError as e:
-        # re-throw される例外について調べる
-        status = rpc_status.from_call(e)
-        if status is not None:
-            for detail in status.details:
-                if detail.Is(
-                    JobErrorInfo.DESCRIPTOR
-                ):
-                    err_info = JobErrorInfo()
-                    detail.Unpack(err_info)
+        get_result(qmpc.sum(*param),5)
+    except QMPCJobError as e:
+        err_info = e.err_info
 
     assert (err_info is not None)
     assert (err_info.what != '')
