@@ -117,10 +117,16 @@ message GetComputationResultRequest {
 message GetComputationResultResponse {
     string message = 1;
     bool is_ok = 2;
-    string result = 3;
-    pb_common_types.JobStatus status = 4;
-    int32 piece_id = 5;
-    optional pb_common_types.JobProgress progress = 6;
+    repeated string result = 3;
+    int32 column_number = 4;
+    pb_common_types.JobStatus status = 5;
+    int32 piece_id = 6;
+    optional pb_common_types.JobProgress progress = 7;
+    oneof result_type{
+        bool is_dim1 = 8;
+        bool is_dim2 = 9;
+        bool is_schema = 10;
+    }
 }
 
 /**
@@ -128,7 +134,7 @@ message GetComputationResultResponse {
 */
 message SendModelParamRequest {
     string job_uuid = 1;
-    string params = 2;
+    repeated string params = 2;
     int32 piece_id = 3;
     string token = 4;
 }

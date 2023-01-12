@@ -1,6 +1,4 @@
-import grpc
 import pytest
-from grpc_status import rpc_status
 from quickmpc import JobErrorInfo
 from quickmpc.exception import QMPCJobError
 from utils import get_result, qmpc
@@ -28,7 +26,7 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
 def test_job_error_info(param: tuple):
     err_info = None
     try:
-        get_result(qmpc.sum(*param),5)
+        get_result(qmpc.sum(*param), 10)
     except QMPCJobError as e:
         err_info = e.err_info
 

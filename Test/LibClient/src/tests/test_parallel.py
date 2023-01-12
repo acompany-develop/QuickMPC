@@ -66,28 +66,6 @@ def test_send_model_params_array(parallel_num: int):
 @pytest.mark.parametrize(
     ("parallel_num"), parallel_num
 )
-def test_send_model_params_json(parallel_num: int):
-    filename: str = "Data/model_data_j5_1.json"
-    data = []
-    with open(filename) as f:
-        data = json.load(f)
-
-    # 並列にsend_model_params
-    executor = ThreadPoolExecutor()
-    futures = []
-    for _ in range(parallel_num):
-        futures.append(
-            executor.submit(qmpc.send_model_params, data)
-        )
-
-    for future in futures:
-        res = future.result()
-        assert (res["is_ok"])
-
-
-@pytest.mark.parametrize(
-    ("parallel_num"), parallel_num
-)
 def test_execute(parallel_num: int):
     filename: str = "Data/table_data_5x5.csv"
     secrets, schema = qmpc.parse_csv_file(filename)
@@ -167,11 +145,12 @@ def test_predict(parallel_num: int):
     ("parallel_num"), parallel_num
 )
 def test_get_computation_result(parallel_num: int):
-    filename: str = "Data/model_data_j5_1.json"
+    filename: str = "Data/model_data_a6.csv"
     data = []
     with open(filename) as f:
-        data = json.load(f)
-    res = qmpc.send_model_params(data)
+        reader = csv.reader(f)
+        data = [row for row in reader]
+    res = qmpc.send_model_params(data[0])
     job_uuid = res["job_uuid"]
 
     # 並列にget_computation_result

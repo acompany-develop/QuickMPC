@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strconv"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -26,13 +25,15 @@ var ls = utils.NewLockSet()
 
 // 計算結果形式
 type ComputationResultMeta struct {
-	PieceID int32 `json:"piece_id"`
+	ColumnNumber int32 `json:"column_number"`
+	PieceID      int32 `json:"piece_id"`
+	ResultType   string
 }
 type ComputationResult struct {
 	ID      string                `json:"id"`
 	JobUUID string                `json:"job_uuid"`
 	Status  pb_types.JobStatus    `json:"status"`
-	Result  string                `json:"result"`
+	Result  []string              `json:"result"`
 	Meta    ComputationResultMeta `json:"meta"`
 }
 
@@ -55,8 +56,8 @@ type M2DbClient interface {
 	InsertShares(string, []string, int32, string, string, int32) error
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
-	GetComputationResult(string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
-	InsertModelParams(string, string, int32) error
+	GetComputationResult(string, []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
+	InsertModelParams(string, []string, int32) error
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
@@ -188,7 +189,7 @@ func getComputationStatus(path string) (pb_types.JobStatus, *pb_types.JobErrorIn
 }
 
 // DBから計算結果を得る
-func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
+func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 
@@ -209,23 +210,22 @@ func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, *pb_
 	}
 
 	var computationResults []*ComputationResult
-	isStatusFile := regexp.MustCompile(".*status_*|.*/completed")
-	files, _ := filepath.Glob(path + "/*")
-	for _, piecePath := range files {
-		if isStatusFile.MatchString(piecePath) {
-			continue
-		}
-		raw, errRead := ioutil.ReadFile(piecePath)
-		if errRead != nil {
-			return nil, nil, errRead
-		}
+	for _, resultType := range resultTypes {
+		files, _ := filepath.Glob(path + "/" + resultType + "_*")
+		for _, piecePath := range files {
+			raw, errRead := ioutil.ReadFile(piecePath)
+			if errRead != nil {
+				return nil, nil, errRead
+			}
 
-		var result *ComputationResult
-		errUnmarshal := json.Unmarshal(raw, &result)
-		if errUnmarshal != nil {
-			return nil, nil, errUnmarshal
+			var result *ComputationResult
+			errUnmarshal := json.Unmarshal(raw, &result)
+			if errUnmarshal != nil {
+				return nil, nil, errUnmarshal
+			}
+			result.Meta.ResultType = resultType
+			computationResults = append(computationResults, result)
 		}
-		computationResults = append(computationResults, result)
 	}
 
 	if len(computationResults) == 0 {
@@ -238,8 +238,8 @@ func (c Client) GetComputationResult(jobUUID string) ([]*ComputationResult, *pb_
 }
 
 // DBにモデルパラメータを保存する
-func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) error {
-	dataPath := fmt.Sprintf("%s/%s/%d", resultDbPath, jobUUID, pieceId)
+func (c Client) InsertModelParams(jobUUID string, params []string, pieceId int32) error {
+	dataPath := fmt.Sprintf("%s/%s/dim1_%d", resultDbPath, jobUUID, pieceId)
 	ls.Lock(dataPath)
 	defer ls.Unlock(dataPath)
 
@@ -247,12 +247,6 @@ func (c Client) InsertModelParams(jobUUID string, params string, pieceId int32) 
 		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
 	}
 	os.Mkdir(fmt.Sprintf("%s/%s", resultDbPath, jobUUID), 0777)
-
-	var modelParamJson interface{}
-	errUnmarshal := json.Unmarshal([]byte(params), &modelParamJson)
-	if errUnmarshal != nil {
-		return errUnmarshal
-	}
 
 	saveParams := ComputationResult{
 		JobUUID: jobUUID,

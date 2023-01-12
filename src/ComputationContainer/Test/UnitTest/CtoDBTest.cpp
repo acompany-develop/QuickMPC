@@ -17,7 +17,7 @@ auto initialize(const std::string &id)
 // qmpc::ComputationToDb::ValueTable Client::readShare(const std::string &data_id);
 TEST(ComputationToDbTest, SuccessReadShareTest)
 {
-    const std::string data_id = "ReadShareTestId";
+    const std::string data_id = "SuccessReadShareTest";
     initialize(data_id);
 
     const std::string data = R"({"value":[["1","2"],["3","4"]])"
@@ -37,9 +37,10 @@ TEST(ComputationToDbTest, SuccessReadShareTest)
 
     initialize(data_id);
 }
+
 TEST(ComputationToDbTest, SuccessReadSharePieceTest)
 {
-    const std::string data_id = "ReadShareTestId";
+    const std::string data_id = "SuccessReadSharePieceTest";
     initialize(data_id);
 
     const std::vector<std::string> data = {
@@ -70,7 +71,7 @@ TEST(ComputationToDbTest, SuccessReadSharePieceTest)
 }
 TEST(ComputationToDbTest, SuccessReadShareLargeTest)
 {
-    std::string data_id = "ReadShareTestId";
+    std::string data_id = "SuccessReadShareLargeTest";
     initialize(data_id);
 
     constexpr int H = 500;
@@ -109,13 +110,13 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
 // std::vector<std::string> Client::readModelparam(const std::string &job_uuid);
 TEST(ComputationToDbTest, SuccessReadModelParamTest)
 {
-    const std::string job_uuid = "ReadModelParamTestId";
+    const std::string job_uuid = "SuccessReadModelParamTest";
     initialize(job_uuid);
 
-    const std::string data = R"({"result":"[\"1\",\"2\",\"3\"]")"
-                             R"(,"meta":{"piece_id":0}})";
+    const std::string data = R"({"result":["1","2","3"])"
+                             R"(,"meta":{"column_number":3, "piece_id":0}})";
     fs::create_directories("/Db/result/" + job_uuid);
-    auto ofs = std::ofstream("/Db/result/" + job_uuid + "/0");
+    auto ofs = std::ofstream("/Db/result/" + job_uuid + "/dim1_0");
     ofs << data;
     ofs.close();
 
@@ -130,20 +131,20 @@ TEST(ComputationToDbTest, SuccessReadModelParamTest)
 
 TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
 {
-    const std::string job_uuid = "ReadModelParamTestId";
+    const std::string job_uuid = "SuccessReadModelParamPieceTest";
     initialize(job_uuid);
 
     const std::vector<std::string> data = {
-        R"({"result":"[\"1\",\"2\"")"
-        R"(,"meta":{"piece_id":0}})",
-        R"({"result":",\"3\"")"
-        R"(,"meta":{"piece_id":1}})",
-        R"({"result":",\"4\"]")"
-        R"(,"meta":{"piece_id":2}})"};
+        R"({"result":["1","2"])"
+        R"(,"meta":{"column_number":4, "piece_id":0}})",
+        R"({"result":["3"])"
+        R"(,"meta":{"column_number":4, "piece_id":1}})",
+        R"({"result":["4"])"
+        R"(,"meta":{"column_number":4, "piece_id":2}})"};
     fs::create_directories("/Db/result/" + job_uuid);
     for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
     {
-        auto ofs = std::ofstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
+        auto ofs = std::ofstream("/Db/result/" + job_uuid + "/dim1_" + std::to_string(piece_id));
         ofs << data[piece_id];
         ofs.close();
     }
@@ -157,63 +158,11 @@ TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
     initialize(job_uuid);
 }
 
-// model parameter(json)の取り出し
-// nlohmann::json Client::readModelparamJson(const std::string &job_uuid);
-TEST(ComputationToDbTest, SuccessReadModelParamJsonTest)
-{
-    const std::string job_uuid = "ReadModelParamTestId";
-    initialize(job_uuid);
-
-    const std::string data = R"({"result":"{\"key1\":1,\"key2\":{\"key3\":\"val\"}}")"
-                             R"(,"meta":{"piece_id":0}})";
-    fs::create_directories("/Db/result/" + job_uuid);
-    auto ofs = std::ofstream("/Db/result/" + job_uuid + "/0");
-    ofs << data;
-    ofs.close();
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readModelparamJson(job_uuid);
-
-    nlohmann::json true_result = {{"key1", 1}, {"key2", {{"key3", "val"}}}};
-    EXPECT_EQ(true_result, read_data);
-
-    initialize(job_uuid);
-}
-TEST(ComputationToDbTest, SuccessReadModelParamJsonPieceTest)
-{
-    const std::string job_uuid = "ReadModelParamTestId";
-    initialize(job_uuid);
-
-    const std::vector<std::string> data = {
-        R"({"result":"{\"key1\"")"
-        R"(,"meta":{"piece_id":0}})",
-        R"({"result":":1,\"key2\":{\"ke")"
-        R"(,"meta":{"piece_id":1}})",
-        R"({"result":"y3\":\"val\"}}")"
-        R"(,"meta":{"piece_id":2}})",
-    };
-    fs::create_directories("/Db/result/" + job_uuid);
-    for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
-    {
-        auto ofs = std::ofstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
-        ofs << data[piece_id];
-        ofs.close();
-    }
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readModelparamJson(job_uuid);
-
-    nlohmann::json true_result = {{"key1", 1}, {"key2", {{"key3", "val"}}}};
-    EXPECT_EQ(true_result, read_data);
-
-    initialize(job_uuid);
-}
-
 // Job を DB に新規登録する
 // void Client::registerJob(const std::string &job_uuid, const int &status);
 TEST(ComputationToDbTest, SuccessRregisterJobTest)
 {
-    const std::string job_uuid = "RregisterJobTestId";
+    const std::string job_uuid = "SuccessRregisterJobTest";
     initialize(job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
@@ -229,7 +178,7 @@ TEST(ComputationToDbTest, SuccessRregisterJobTest)
 // void Client::updateJobStatus(const std::string &job_uuid, const int &status);
 TEST(ComputationToDbTest, SuccessupdateJobStatusTest)
 {
-    const std::string job_uuid = "RregisterJobTestId";
+    const std::string job_uuid = "SuccessupdateJobStatusTest";
     initialize(job_uuid);
 
     fs::create_directories("/Db/result/" + job_uuid);
@@ -255,104 +204,121 @@ TEST(ComputationToDbTest, SuccessupdateJobStatusTest)
 // void writeComputationResult(const std::string &job_uuid, const T &results, int piece_size);
 TEST(ComputationToDbTest, SuccessWriteComputationResultArrayTest)
 {
-    const std::string job_uuid = "WriteComputationResultTestId";
+    const std::string job_uuid = "WriteComputaSuccessWriteComputationResultArrayTest";
     initialize(job_uuid);
 
-    const std::vector<std::vector<std::string>> data = {{"12", "15", "21"}};
+    const std::vector<std::string> data = {"12", "15", "21"};
     fs::create_directories("/Db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
     cc_to_db->writeComputationResult(job_uuid, data);
 
-    auto ifs = std::ifstream("/Db/result/" + job_uuid + "/0");
+    auto ifs = std::ifstream("/Db/result/" + job_uuid + "/dim1_0");
     std::string read_data;
     getline(ifs, read_data);
-    const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
-                           R"(,"meta":{"piece_id":0})"
-                           R"(,"result":"[[\"12\",\"15\",\"21\"]]"})";
+    const auto true_data = R"({"job_uuid":"WriteComputaSuccessWriteComputationResultArrayTest")"
+                           R"(,"meta":{"column_number":3,"piece_id":0})"
+                           R"(,"result":["12","15","21"]})";
+    EXPECT_EQ(read_data, true_data);
+
+    initialize(job_uuid);
+}
+TEST(ComputationToDbTest, SuccessWriteComputationResultArray2dimTest)
+{
+    const std::string job_uuid = "SuccessWriteComputationResultArray2dimTest";
+    initialize(job_uuid);
+
+    const std::vector<std::vector<std::string>> data = {{"12", "15"}, {"21", "51"}};
+    fs::create_directories("/Db/result/" + job_uuid);
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    cc_to_db->writeComputationResult(job_uuid, data);
+
+    auto ifs = std::ifstream("/Db/result/" + job_uuid + "/dim2_0");
+    std::string read_data;
+    getline(ifs, read_data);
+    const auto true_data = R"({"job_uuid":"SuccessWriteComputationResultArray2dimTest")"
+                           R"(,"meta":{"column_number":2,"piece_id":0})"
+                           R"(,"result":["12","15","21","51"]})";
     EXPECT_EQ(read_data, true_data);
 
     initialize(job_uuid);
 }
 
-TEST(ComputationToDbTest, SuccessWriteComputationResultJsonTest)
+TEST(ComputationToDbTest, SuccessWriteComputationResultSchemaTest)
 {
-    const std::string job_uuid = "WriteComputationResultTestId";
+    const std::string job_uuid = "SuccessWriteComputationResultSchemaTest";
     initialize(job_uuid);
 
-    nlohmann::json data = {{"key1", 1}, {"key2", {{"key3", "val"}}}};
+    const std::vector<std::string> schema = {"s1", "s2", "s3"};
     fs::create_directories("/Db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult(job_uuid, data);
+    cc_to_db->writeComputationResult(job_uuid, schema, true);
 
-    auto ifs = std::ifstream("/Db/result/" + job_uuid + "/0");
+    auto ifs = std::ifstream("/Db/result/" + job_uuid + "/schema_0");
     std::string read_data;
     getline(ifs, read_data);
-    const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
-                           R"(,"meta":{"piece_id":0})"
-                           R"(,"result":"{\"key1\":1,\"key2\":{\"key3\":\"val\"}}"})";
+    const auto true_data = R"({"job_uuid":"SuccessWriteComputationResultSchemaTest")"
+                           R"(,"meta":{"column_number":3,"piece_id":0})"
+                           R"(,"result":["s1","s2","s3"]})";
     EXPECT_EQ(read_data, true_data);
+
+    initialize(job_uuid);
+}
+TEST(ComputationToDbTest, SuccessWriteComputationResultTableTest)
+{
+    const std::string job_uuid = "SuccessWriteComputationResultTableTest";
+    initialize(job_uuid);
+
+    const nlohmann::json data_json = {
+        {"schema", std::vector<std::string>{"s1", "s2"}},
+        {"table", std::vector<std::vector<std::string>>{{"1", "2"}, {"3", "4"}}}};
+    fs::create_directories("/Db/result/" + job_uuid);
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    cc_to_db->writeComputationResult(job_uuid, data_json, false);
+
+    auto ifs_schema = std::ifstream("/Db/result/" + job_uuid + "/schema_0");
+    std::string read_data_schema;
+    getline(ifs_schema, read_data_schema);
+    const auto true_data_schema = R"({"job_uuid":"SuccessWriteComputationResultTableTest")"
+                                  R"(,"meta":{"column_number":2,"piece_id":0})"
+                                  R"(,"result":["s1","s2"]})";
+    EXPECT_EQ(read_data_schema, true_data_schema);
+
+    auto ifs_table = std::ifstream("/Db/result/" + job_uuid + "/dim2_0");
+    std::string read_data_table;
+    getline(ifs_table, read_data_table);
+    const auto true_data_table = R"({"job_uuid":"SuccessWriteComputationResultTableTest")"
+                                 R"(,"meta":{"column_number":2,"piece_id":0})"
+                                 R"(,"result":["1","2","3","4"]})";
+    EXPECT_EQ(read_data_table, true_data_table);
 
     initialize(job_uuid);
 }
 
 TEST(ComputationToDbTest, SuccessWriteComputationResultArrayPieceTest)
 {
-    const std::string job_uuid = "WriteComputationResultTestId";
+    const std::string job_uuid = "SuccessWriteComputationResultArrayPieceTest";
     initialize(job_uuid);
 
     const std::vector<std::vector<std::string>> data = {{"12", "15", "21"}};
     fs::create_directories("/Db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult(job_uuid, data, 4);
+    cc_to_db->writeComputationResult(job_uuid, data, false, 4);
 
-    std::vector<std::string> true_result = {R"([[\"1)", R"(2\",\")", R"(15\",)", R"(\"21\")", "]]"};
+    std::vector<std::string> true_result = {R"(["12"])", R"(["15"])", R"(["21"])"};
     for (size_t piece_id = 0; piece_id < true_result.size(); ++piece_id)
     {
-        auto ifs = std::ifstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
+        auto ifs = std::ifstream("/Db/result/" + job_uuid + "/dim2_" + std::to_string(piece_id));
         std::string read_data;
         getline(ifs, read_data);
-        const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
-                               R"(,"meta":{"piece_id":)"
-                               + std::to_string(piece_id) + R"(},"result":")"
-                               + true_result[piece_id] + R"("})";
-        EXPECT_EQ(read_data, true_data);
-    }
-
-    initialize(job_uuid);
-}
-
-TEST(ComputationToDbTest, SuccessWriteComputationResultJsonPieceTest)
-{
-    const std::string job_uuid = "WriteComputationResultTestId";
-    initialize(job_uuid);
-
-    nlohmann::json data = {{"key1", 1}, {"key2", {{"key3", "val"}}}};
-    fs::create_directories("/Db/result/" + job_uuid);
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult(job_uuid, data, 4);
-
-    std::vector<std::string> true_result = {
-        R"({\"ke)",
-        R"(y1\":)",
-        R"(1,\"k)",
-        R"(ey2\")",
-        R"(:{\"k)",
-        R"(ey3\")",
-        R"(:\"va)",
-        R"(l\"}})"};
-    for (size_t piece_id = 0; piece_id < true_result.size(); ++piece_id)
-    {
-        auto ifs = std::ifstream("/Db/result/" + job_uuid + "/" + std::to_string(piece_id));
-        std::string read_data;
-        getline(ifs, read_data);
-        const auto true_data = R"({"job_uuid":"WriteComputationResultTestId")"
-                               R"(,"meta":{"piece_id":)"
-                               + std::to_string(piece_id) + R"(},"result":")"
-                               + true_result[piece_id] + R"("})";
+        const auto true_data = R"({"job_uuid":"SuccessWriteComputationResultArrayPieceTest")"
+                               R"(,"meta":{"column_number":3,"piece_id":)"
+                               + std::to_string(piece_id) + R"(},"result":)" + true_result[piece_id]
+                               + R"(})";
         EXPECT_EQ(read_data, true_data);
     }
 

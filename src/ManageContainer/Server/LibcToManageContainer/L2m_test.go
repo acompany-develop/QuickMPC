@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"reflect"
 	"testing"
 
 	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
@@ -28,10 +29,10 @@ func (localDb) DeleteShares([]string) error {
 func (localDb) GetSchema(string) ([]string, error) {
 	return []string{"attr1"}, nil
 }
-func (localDb) GetComputationResult(string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
-	return []*m2db.ComputationResult{{Result: "result"}, {Result: "result"}}, nil, nil
+func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
+	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
-func (localDb) InsertModelParams(string, string, int32) error {
+func (localDb) InsertModelParams(string, []string, int32) error {
 	return nil
 }
 func (localDb) GetDataList() (string, error) {
@@ -157,8 +158,8 @@ func TestGetComputationResult(t *testing.T) {
 		}
 
 		res := reply.GetResult()
-		ac := `"result"`
-		if res != ac {
+		ac := []string{"result"}
+		if !reflect.DeepEqual(res, ac) {
 			t.Fatal(fmt.Sprintf("GetComputationResult Failed. getResult() must be %s, but response is %s", ac, res))
 		}
 	}
@@ -202,7 +203,9 @@ func TestSendModelParam(t *testing.T) {
 	client := pb.NewLibcToManageClient(conn)
 
 	result, err := client.SendModelParam(context.Background(), &pb.SendModelParamRequest{
-		JobUuid: "id", Params: "[\"1\"]", Token: "token"})
+		JobUuid: "id",
+		Params:  []string{"1", "2"},
+		Token:   "token"})
 
 	if err != nil {
 		t.Fatal(err)

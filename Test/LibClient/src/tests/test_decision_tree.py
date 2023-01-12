@@ -15,6 +15,7 @@ def execute_computation_param(dataIds=[data_id([[1, 1, 0], [1, 0, 1]],
     return ((dataIds, join, index), (src, target))
 
 
+@pytest.mark.skip(reason="廃止予定のためskip")
 @pytest.mark.parametrize(
     ("param"),
     [

@@ -2,7 +2,6 @@ package l2mserver
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -270,13 +269,12 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
 	}
 
-	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID)
+	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
 
 	if err != nil {
 		stream.Send(&pb.GetComputationResultResponse{
 			Message: "Internal Server Error",
 			IsOk:    false,
-			Result:  "",
 		})
 		return err
 	}
@@ -290,28 +288,33 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 	}
 
 	for _, result := range computationResults {
-		resultBytes, err := json.Marshal(result.Result)
-		if err != nil {
-			stream.Send(&pb.GetComputationResultResponse{
-				Message: "Internal Server Error",
-				IsOk:    false,
-				Result:  "",
-			})
-			return err
+		response := pb.GetComputationResultResponse{
+			Message:      "ok",
+			IsOk:         true,
+			Status:       computationResults[0].Status,
+			Result:       result.Result,
+			ColumnNumber: result.Meta.ColumnNumber,
+			PieceId:      result.Meta.PieceID,
+			Progress:     progress,
 		}
-
-		stream.Send(&pb.GetComputationResultResponse{
-			Message:  "ok",
-			IsOk:     true,
-			Status:   result.Status,
-			Result:   string(resultBytes),
-			PieceId:  result.Meta.PieceID,
-			Progress: progress,
-		})
+		if result.Meta.ResultType == "dim1" {
+			response.ResultType = &pb.GetComputationResultResponse_IsDim1{
+				IsDim1: true,
+			}
+		} else if result.Meta.ResultType == "dim2" {
+			response.ResultType = &pb.GetComputationResultResponse_IsDim2{
+				IsDim2: true,
+			}
+		} else if result.Meta.ResultType == "schema" {
+			response.ResultType = &pb.GetComputationResultResponse_IsSchema{
+				IsSchema: true,
+			}
+		}
+		stream.Send(&response)
 	}
+
 	return nil
 }
-
 func (s *server) SendModelParam(ctx context.Context, in *pb.SendModelParamRequest) (*pb.SendModelParamResponse, error) {
 	AppLogger.Info("Send Model Parameters;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
