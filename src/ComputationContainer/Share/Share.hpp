@@ -434,7 +434,7 @@ std::vector<Share<T>> getRandShares(long long min_val, long long max_val, int n)
     std::vector<Share<T>> ret;
     ret.reserve(n);
 
-    std::vector<FixedPoint> r = RandGenerator::getInstance()->getRandVec<T>(min_val, max_val, n);
+    std::vector<T> r = RandGenerator::getInstance()->getRandVec<T>(min_val, max_val, n);
     for (const auto &v : r)
     {
         ret.emplace_back(Share(v));

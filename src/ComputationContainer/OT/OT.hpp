@@ -37,7 +37,7 @@ class OT
         {
             if (a & 1) (ret *= base) %= prime;
             (base *= base) %= prime;
-            a >>= 1;
+            a = a / 2;
         }
         return ret % prime;
     }
@@ -67,22 +67,17 @@ public:
 
     void send(int to_id, const std::vector<std::vector<bm::cpp_int>>& x)
     {
-        std::random_device rnd;  // 非決定的な乱数生成器を生成
-        std::mt19937 mt(rnd());
-        std::uniform_int_distribution<> rand(0, 100000);
-        std::uniform_int_distribution<> rand_ast(1, 100000);
-        // auto b = recv<std::vector<int64_t>>(socket, 1);
         // 1nd
         auto server = qmpc::ComputationToComputation::Server::getServer();
         int64_t beta = std::stol(server->getShare(to_id, first.getId()));
-        //  int64_t beta = b.back();
-        int64_t k = rand(mt);
+        bm::cpp_int k = RandGenerator::getInstance()->getRand<long long>(0, prime - 1);
         auto a = pow(g, k, prime);
         std::vector<std::vector<bm::cpp_int>> ab(size + 1);
         for (int i = 0; i < size; ++i)
         {
+            bm::cpp_int k_dash = k * (i + 1) * (prime - 2);
             auto bk = pow(beta, k, prime);
-            auto hinv = pow(h, (i + 1) * k * (prime - 2), prime);
+            auto hinv = pow(h, k_dash, prime);
             bm::cpp_int bh = (bk * hinv) % prime;
 
             auto hash = sha256(bh.str() + std::to_string(i));
@@ -118,12 +113,7 @@ public:
         qmpc::Share::AddressId id2 = second.getId();
 
         // 1st
-        std::random_device rnd;  // 非決定的な乱数生成器を生成
-        std::mt19937 mt(rnd());
-        std::uniform_int_distribution<> rand(0, 100000);
-        std::uniform_int_distribution<> rand_ast(1, 100000);
-
-        int64_t s = rand(mt);
+        bm::cpp_int s = RandGenerator::getInstance()->getRand<long long>(0, prime - 1);
         auto beta = pow(g, s, prime);           // 4
         auto beta2 = pow(h, choise_id, prime);  // 27
         (beta *= beta2) %= prime;
