@@ -289,213 +289,229 @@ TEST(OTTest, ot2)
     std::cout << "Elapsed time =" << elapsed_time_ms << std::endl;
 }
 
-TEST(OTTest, unitvprep)
-{
-    auto rotate = [](unsigned int x, int r) { return x << r | x >> (32 - r); };
-    size_t N = 32;
-    qmpc::OT ot(N), ot2(N);
-    Config *conf = Config::getInstance();
-    int pt_id = conf->party_id;
-    int n_parties = conf->n_parties;
-    int r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
-    auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N - 1);
-
-    std::cout << pt_id << " party r is " << r << std::endl;
-    qmpc::Share::Share<int> rShare = r;
-    std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
-    std::vector<qmpc::Share::Share<bm::cpp_int>> x_1_temp(N);
-    if (pt_id == 1)
-    {
-        // v[to] = data;
-        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
-        {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
-
-            for (int j = 0; j < N; ++j)
-            {
-                v[i][j] = bm::cpp_int{ri[j]};
-            }
-        }
-        std::vector<bm::cpp_int> e(N);
-        e[r - 1] = 1ll;
-        v[0] = e;
-        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
-        {
-            auto vi = v[0];
-            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
-            std::vector<bm::cpp_int> xi(N);
-            for (int i = 0; i < N; ++i)
-            {
-                xi[i] = vi[i] - v[1][i];
-            }
-            x[i] = xi;
-        }
-        for (int i = 0; i < N; ++i)
-        {
-            // std::cout << "v 1 is " << v[1][i] << std::endl;
-            x_1_temp[i] = v[1][i];
-        }
-        ot.send(2, x);
-        for (int i = 0; i < N; ++i)
-        {
-            auto vi = v[1];
-            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
-            std::vector<bm::cpp_int> xi(N);
-            for (int i = 0; i < N; ++i)
-            {
-                xi[i] = vi[i] - v[2][i];
-                // std::cout << "ot x " << i << " is " << std::bitset<32>(xi[i]) <<
-                // std::endl;
-            }
-            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) <<
-            // std::endl;
-            x[i] = xi;
-        }
-        ot.send(3, x);
-        for (int i = 0; i < N; ++i)
-        {
-            // std::cout << "v 2 is " << v[2][i] << std::endl;
-            ret[i] = v[2][i];
-        }
-        open(ret);
-        auto ret_rec = recons(ret);
-        int i = 0;
-        for (auto a : ret_rec)
-        {
-            std::cout << " index is " << i << " " << a << std::endl;
-            i++;
-        }
-    }
-    else if (pt_id == 2)
-    {
-        // v[to] = data;
-
-        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
-        {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
-
-            for (int j = 0; j < N; ++j)
-            {
-                v[i][j] = bm::cpp_int{ri[j]};
-            }
-        }
-        auto rec = ot.recieve(1, r);
-        for (int i = 0; i < N; ++i)
-        {
-            v[1][i] = rec[i];
-            // std::cout << "party 2 rec is " << v[1][i] << std::endl;
-            x_1_temp[i] = v[1][i];
-        }
-
-        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
-        {
-            auto vi = v[1];
-            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
-            std::vector<bm::cpp_int> xi(N);
-            for (int i = 0; i < N; ++i)
-            {
-                xi[i] = vi[i] - v[2][i];
-            }
-            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) <<
-            // std::endl;
-            x[i] = xi;
-        }
-        ot.send(3, x);
-        for (int i = 0; i < N; ++i)
-        {
-            // std::cout << "v 2 is " << v[2][i] << std::endl;
-            ret[i] = v[2][i];
-        }
-        open(ret);
-        auto ret_rec = recons(ret);
-        int i = 0;
-        for (auto a : ret_rec)
-        {
-            std::cout << " index is " << i << " " << a << std::endl;
-            i++;
-        }
-    }
-    else if (pt_id == 3)
-    {
-        // v[to] = data;
-
-        std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
-        {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
-
-            for (int j = 0; j < N; ++j)
-            {
-                v[i][j] = bm::cpp_int{ri[j]};
-            }
-        }
-        auto rec = ot.recieve(1, r);
-        auto rec2 = ot.recieve(2, r);
-        for (int i = 0; i < N; ++i)
-        {
-            ret[i] = rec[i] + rec2[i];
-        }
-        open(ret);
-        auto ret_rec = recons(ret);
-        int i = 0;
-        for (auto a : ret_rec)
-        {
-            std::cout << " index is " << i << " " << a << std::endl;
-            i++;
-        }
-    }
-    open(x_1_temp);
-    auto tmp_rec = recons(x_1_temp);
-    int i = 0;
-    for (auto &a : tmp_rec)
-    {
-        if (a == 1)
-        {
-            std::cout << "temp rec is " << i << std::endl;
-        }
-        i++;
-    }
-    open(rShare);
-    auto recR = recons(rShare);
-    // std::cout << "value is " << std::bitset<32>(rec) << std::endl;
-    std::cout << "random value is" << (recR % 32) << std::endl;
-}
-
-// TEST(OTTest, unitvpMulti)
+// TEST(OTTest, unitvprep)
 // {
-//     auto [r1, v1] = qmpc::Share::unitvPrep<32>();
-//     auto [r2, v2] = qmpc::Share::unitvPrep<32>();
-//     auto [r3, v3] = qmpc::Share::unitvPrep<32>();
-//     // open(r);
-//     // open(v);
-//     // auto r_rec = recons(r);
-//     // auto v_rec = recons(v);
-//     // std::cout << "r rec is " << r_rec << std::endl;
-//     // int i = 0;
-//     // for (auto &a : v_rec)
-//     // {
-//     //     std::cout << "index " << i << " v value is " << a << std::endl;
-//     //     i++;
-//     // }
-// }
+//     auto rotate = [](unsigned int x, int r) { return x << r | x >> (32 - r); };
+//     size_t N = 32;
+//     qmpc::OT ot(N), ot2(N);
+//     Config *conf = Config::getInstance();
+//     int pt_id = conf->party_id;
+//     int n_parties = conf->n_parties;
+//     int r = RandGenerator::getInstance()->getRand<long long>(0, N - 1);
+//     auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N - 1);
 
-// TEST(OTTest, unitv)
-// {
-//     qmpc::Share::Share<bm::cpp_int> index{1};
-//     auto v = qmpc::Share::unitv(index);
-//     open(v);
-//     auto v_rec = recons(v);
-//     int i = 0;
-//     for (auto &a : v_rec)
+//     std::cout << pt_id << " party r is " << r << std::endl;
+//     qmpc::Share::Share<int> rShare = r;
+//     std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
+//     std::vector<qmpc::Share::Share<bm::cpp_int>> x_1_temp(N);
+//     if (pt_id == 1)
 //     {
-//         std::cout << "index " << i << " v value is " << a << std::endl;
+//         // v[to] = data;
+//         std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
+//         for (int i = 0; i < N; ++i)
+//         {
+//             auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+//             for (int j = 0; j < N; ++j)
+//             {
+//                 v[i][j] = bm::cpp_int{ri[j]};
+//             }
+//         }
+//         std::vector<bm::cpp_int> e(N);
+//         e[r - 1] = 1ll;
+//         v[0] = e;
+//         std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
+//         for (int i = 0; i < N; ++i)
+//         {
+//             auto vi = v[0];
+//             std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+//             std::vector<bm::cpp_int> xi(N);
+//             for (int i = 0; i < N; ++i)
+//             {
+//                 xi[i] = vi[i] - v[1][i];
+//             }
+//             x[i] = xi;
+//         }
+//         for (int i = 0; i < N; ++i)
+//         {
+//             // std::cout << "v 1 is " << v[1][i] << std::endl;
+//             x_1_temp[i] = v[1][i];
+//         }
+//         ot.send(2, x);
+//         for (int i = 0; i < N; ++i)
+//         {
+//             auto vi = v[1];
+//             std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+//             std::vector<bm::cpp_int> xi(N);
+//             for (int i = 0; i < N; ++i)
+//             {
+//                 xi[i] = vi[i] - v[2][i];
+//                 // std::cout << "ot x " << i << " is " << std::bitset<32>(xi[i]) <<
+//                 // std::endl;
+//             }
+//             // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) <<
+//             // std::endl;
+//             x[i] = xi;
+//         }
+//         ot.send(3, x);
+//         for (int i = 0; i < N; ++i)
+//         {
+//             // std::cout << "v 2 is " << v[2][i] << std::endl;
+//             ret[i] = v[2][i];
+//         }
+//         open(ret);
+//         auto ret_rec = recons(ret);
+//         int i = 0;
+//         for (auto a : ret_rec)
+//         {
+//             std::cout << " index is " << i << " " << a << std::endl;
+//             i++;
+//         }
+//     }
+//     else if (pt_id == 2)
+//     {
+//         // v[to] = data;
+
+//         std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
+//         for (int i = 0; i < N; ++i)
+//         {
+//             auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+//             for (int j = 0; j < N; ++j)
+//             {
+//                 v[i][j] = bm::cpp_int{ri[j]};
+//             }
+//         }
+//         auto rec = ot.recieve(1, r);
+//         for (int i = 0; i < N; ++i)
+//         {
+//             v[1][i] = rec[i];
+//             // std::cout << "party 2 rec is " << v[1][i] << std::endl;
+//             x_1_temp[i] = v[1][i];
+//         }
+
+//         std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
+//         for (int i = 0; i < N; ++i)
+//         {
+//             auto vi = v[1];
+//             std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+//             std::vector<bm::cpp_int> xi(N);
+//             for (int i = 0; i < N; ++i)
+//             {
+//                 xi[i] = vi[i] - v[2][i];
+//             }
+//             // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) <<
+//             // std::endl;
+//             x[i] = xi;
+//         }
+//         ot.send(3, x);
+//         for (int i = 0; i < N; ++i)
+//         {
+//             // std::cout << "v 2 is " << v[2][i] << std::endl;
+//             ret[i] = v[2][i];
+//         }
+//         open(ret);
+//         auto ret_rec = recons(ret);
+//         int i = 0;
+//         for (auto a : ret_rec)
+//         {
+//             std::cout << " index is " << i << " " << a << std::endl;
+//             i++;
+//         }
+//     }
+//     else if (pt_id == 3)
+//     {
+//         // v[to] = data;
+
+//         std::vector<std::vector<bm::cpp_int>> v(N, std::vector<bm::cpp_int>(N));
+//         for (int i = 0; i < N; ++i)
+//         {
+//             auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N);
+
+//             for (int j = 0; j < N; ++j)
+//             {
+//                 v[i][j] = bm::cpp_int{ri[j]};
+//             }
+//         }
+//         auto rec = ot.recieve(1, r);
+//         auto rec2 = ot.recieve(2, r);
+//         for (int i = 0; i < N; ++i)
+//         {
+//             ret[i] = rec[i] + rec2[i];
+//         }
+//         open(ret);
+//         auto ret_rec = recons(ret);
+//         int i = 0;
+//         for (auto a : ret_rec)
+//         {
+//             std::cout << " index is " << i << " " << a << std::endl;
+//             i++;
+//         }
+//     }
+//     open(x_1_temp);
+//     auto tmp_rec = recons(x_1_temp);
+//     int i = 0;
+//     for (auto &a : tmp_rec)
+//     {
+//         if (a == 1)
+//         {
+//             std::cout << "temp rec is " << i << std::endl;
+//         }
 //         i++;
 //     }
+//     open(rShare);
+//     auto recR = recons(rShare);
+//     // std::cout << "value is " << std::bitset<32>(rec) << std::endl;
+//     std::cout << "random value is" << (recR % 32) << std::endl;
 // }
+
+TEST(OTTest, unitvpMulti)
+{
+    auto [r1, v1] = qmpc::Share::unitvPrep<32>();
+    auto [r2, v2] = qmpc::Share::unitvPrep<32>();
+    auto [r3, v3] = qmpc::Share::unitvPrep<32>();
+    // open(r1);
+    // open(r2);
+    // open(r3);
+    // open(v1);
+    // open(v2);
+    // open(v3);
+    // auto rec_r1 = recons(r1);
+    // auto rec_r2 = recons(r2);
+    // auto rec_r3 = recons(r3);
+    // auto rec_v1 = recons(v1);
+    // auto rec_v2 = recons(v2);
+    // auto rec_v3 = recons(v3);
+    // std::cout << " random is" << rec_r1 << " " << rec_r2 << " " << rec_r3 << std::endl;
+    // std::cout << "value is " << std::endl;
+    // for (auto a : rec_v1)
+    // {
+    //     std::cout << " v is " << a << std::endl;
+    // }
+
+    // for (auto a : rec_v2)
+    // {
+    //     std::cout << " v is " << a << std::endl;
+    // }
+    // for (auto a : rec_v3)
+    // {
+    //     std::cout << " v is " << a << std::endl;
+    // }
+}
+
+TEST(OTTest, unitv)
+{
+    qmpc::Share::Share<bm::cpp_int> index{1};
+    auto v = qmpc::Share::unitv(index);
+    open(v);
+    auto v_rec = recons(v);
+    int i = 0;
+    for (auto &a : v_rec)
+    {
+        std::cout << "index " << i << " v value is " << a << std::endl;
+        i++;
+    }
+}
 
 TEST(OTTest, compare)
 {
@@ -537,4 +553,112 @@ TEST(OTTest, compareFull)
     // open(ng);
     // auto rec_ng = recons(ng);
     // std::cout << "rec_ng is " << rec_ng << std::endl;
+}
+
+TEST(OTTest, compareMulti)
+{
+    qmpc::Share::Share<bm::cpp_int> x{5};
+    qmpc::Share::Share<bm::cpp_int> y{5};
+    qmpc::Share::Share<bm::cpp_int> z{4};
+    // open(ok);
+    // auto rec = recons(ok);
+    // std::cout << "rec is " << rec << std::endl;
+    for (int i = 0; i < 100; ++i)
+    {
+        auto ok = qmpc::Share::equality(x, y);
+    }
+    // auto ng = qmpc::Share::equality(x, z);
+    //  open(ng);
+    //  auto rec_ng = recons(ng);
+    //  std::cout << "rec_ng is " << rec_ng << std::endl;
+}
+
+// TEST(OTTest, RBS)
+// {
+//     size_t N = 1000;
+//     {
+//         const auto clock_start = std::chrono::system_clock::now();
+//         //[[maybe_unused]] auto [_, v] = qmpc::Share::unitvPrep<2>();
+//         auto random = qmpc::Share::getRandBitShare<qmpc::Utils::FixedPointImpl<>>(N);
+
+//         const auto clock_end = std::chrono::system_clock::now();
+//         const auto elapsed_time_ms =
+//             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
+//             clock_start).count();
+//         std::cout << "Elapsed time grb =" << elapsed_time_ms << std::endl;
+//     }
+//     {
+//         const auto clock_start = std::chrono::system_clock::now();
+//         std::vector<qmpc::Share::Share<bm::cpp_int>> ret;
+//         for (int i = 0; i < N; ++i)
+//         {
+//             auto [r, v1] = qmpc::Share::unitvPrep<16>();
+//             ret.emplace_back(v1[0]);
+//         }
+//         const auto clock_end = std::chrono::system_clock::now();
+//         const auto elapsed_time_ms =
+//             std::chrono::duration_cast<std::chrono::milliseconds>(clock_end -
+//             clock_start).count();
+//         std::cout << "Elapsed time unitv grb =" << elapsed_time_ms << std::endl;
+//         open(ret);
+//         auto rec_v = recons(ret);
+//         int i = 0;
+//         for (auto a : rec_v)
+//         {
+//             if (a == 1)
+//             {
+//                 std::cout << " v is " << i << std::endl;
+//             }
+//             i++;
+//         }
+//     }
+// }
+
+TEST(OTTest, OTe)
+{
+    size_t N = 32;
+    size_t array_size = 50;
+    qmpc::OTe ot(N, array_size);
+    Config *conf = Config::getInstance();
+    int pt_id = conf->party_id;
+
+    std::vector<std::vector<std::vector<bm::cpp_int>>> x(
+        array_size, std::vector<std::vector<bm::cpp_int>>(N, std::vector<bm::cpp_int>(N))
+    );
+    for (int arr = 0; arr < array_size; ++arr)
+    {
+        for (int i = 0; i < N; ++i)
+        {
+            x[arr][i][i] = 1ll;
+        }
+    }
+    std::vector<int> r(array_size, 15);
+    r[0] = 1;
+
+    const auto clock_start = std::chrono::system_clock::now();
+    if (pt_id == 1)
+    {
+        auto chosen = ot.recieve(2, r);
+        for (auto a : chosen)
+        {
+            for (auto b : a)
+            {
+                std::cout << b;
+            }
+            std::cout << std::endl;
+        }
+    }
+    else if (pt_id == 2)
+    {
+        ot.send(1, x);
+    }
+
+    // for (auto &&a : ot.second)
+    // {
+    //     std::cout << a.getId() << std::endl;
+    // }
+    const auto clock_end = std::chrono::system_clock::now();
+    const auto elapsed_time_ms =
+        std::chrono::duration_cast<std::chrono::milliseconds>(clock_end - clock_start).count();
+    std::cout << "Elapsed time =" << elapsed_time_ms << std::endl;
 }
