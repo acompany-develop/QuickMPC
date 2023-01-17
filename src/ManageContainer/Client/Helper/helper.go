@@ -1,9 +1,11 @@
 package helper
 
 import (
+	"context"
 	"time"
 
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -16,6 +18,14 @@ const retryWaitTime = 5
 
 type RetryManager struct {
 	count int
+	Conn  *grpc.ClientConn
+}
+
+func (rm *RetryManager) reconnect() {
+	// 再接続を試みる
+	ctx, cancel := context.WithTimeout(context.Background(), retryWaitTime*time.Second)
+	defer cancel()
+	rm.Conn.WaitForStateChange(ctx, rm.Conn.GetState())
 }
 
 func (rm *RetryManager) canRetry(code codes.Code) bool {
@@ -45,8 +55,8 @@ func (rm *RetryManager) Retry(err error) (bool, error) {
 
 	AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
 	if rm.canRetry(st.Code()) {
-		// リトライ可能と判断してsleepの後にリトライ
-		time.Sleep(retryWaitTime * time.Second)
+		// リトライ可能と判断して再接続後にリトライ
+		rm.reconnect()
 		return true, err
 	}
 
