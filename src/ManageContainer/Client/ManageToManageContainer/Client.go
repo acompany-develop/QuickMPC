@@ -76,7 +76,7 @@ func (c Client) deleteShares(conn *grpc.ClientConn, dataID string) error {
 	mcTomcClient := pb.NewManageToManageClient(conn)
 
 	deleteSharesRequest := &pb.DeleteSharesRequest{DataId: dataID}
-	rm := helper.RetryManager{}
+	rm := helper.RetryManager{Conn: conn}
 	for {
 		_, err := mcTomcClient.DeleteShares(context.TODO(), deleteSharesRequest)
 		retry, _ := rm.Retry(err)
@@ -110,7 +110,7 @@ func (c Client) Sync(syncID string) error {
 func (c Client) sync(conn *grpc.ClientConn, syncID string) error {
 	mcTomcClient := pb.NewManageToManageClient(conn)
 	syncRequest := &pb.SyncRequest{SyncId: syncID}
-	rm := helper.RetryManager{}
+	rm := helper.RetryManager{Conn: conn}
 	for {
 		_, err := mcTomcClient.Sync(context.TODO(), syncRequest)
 		retry, _ := rm.Retry(err)
