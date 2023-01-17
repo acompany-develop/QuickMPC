@@ -101,11 +101,14 @@ static grpc::ChannelArguments getDefaultChannelArguments(
       GRPC_ARG_KEEPALIVE_TIME_MS　pingの送信間隔　10秒
       GRPC_ARG_KEEPALIVE_TIMEOUT_MS　pingの返信待ち時間　10秒
       GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS 通信がなくてもpingだけ送る　on
+      MaxReceiveMessageSize 受信時のデータ容量制限　無し　-1
+      MaxSendMessageSize 送信時のデータ容量制限　無し -1
     */
     args.SetInt(GRPC_ARG_KEEPALIVE_TIME_MS, keepalive_time_ms);
     args.SetInt(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, keepalive_timeout_ms);
     args.SetInt(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, keepalive_permit_without_calls ? 1 : 0);
-
+    args.SetMaxReceiveMessageSize(-1);
+    args.SetMaxSendMessageSize(-1);
     return args;
 }
 

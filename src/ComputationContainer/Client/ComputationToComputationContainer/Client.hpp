@@ -123,6 +123,10 @@ private:
             {
                 multiple_shares->set_d(values[i]);
             }
+            else if constexpr (std::is_same_v<std::decay_t<T>, std::string>)
+            {
+                multiple_shares->set_byte(values[i]);
+            }
             else
             {
                 multiple_shares->set_byte(to_string(values[i]));

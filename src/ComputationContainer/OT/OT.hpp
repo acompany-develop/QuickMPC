@@ -171,9 +171,9 @@ public:
     size_t size;
     size_t array_size;
     std::vector<qmpc::Share::Share<Scala>> first;
-    qmpc::Share::Share<std::string> second;
+    std::vector<qmpc::Share::Share<std::string>> second;
     OTe(size_t size_, size_t array_size)
-        : size(size_), array_size(array_size), first(array_size), second()
+        : size(size_), array_size(array_size), first(array_size), second(array_size)
     {
     }
 
@@ -227,19 +227,30 @@ public:
         boost::archive::binary_oarchive ar(stream);
         ar& ab;
         ar& a;
-        second = stream.str();
+        std::string data = stream.str();
+        std::cout << "send data size is " << std::size(data) << std::endl;
+        size_t archive_size = std::size(data);
+        size_t four_mega = 4'000'000;
+        int count = 0;
+        size_t cur = 0;
+        for (size_t cur = 0; cur < archive_size;)
+        {
+            size_t length = (archive_size - cur < four_mega) ? archive_size - cur : four_mega;
+            second[count] = data.substr(cur, length);
+            // std::cout << "stream bytes is " << length << std::endl;
+            count++;
+            cur += length;
+        }
         qmpc::Share::send(second, to_id);
     }
 
     std::vector<std::vector<Scala>> recieve(int from_id, const std::vector<int>& choise_ids)
     {
-        std::vector<qmpc::Share::AddressId> id1(array_size);
-        qmpc::Share::AddressId id2;
+        std::vector<qmpc::Share::AddressId> id2(array_size);
         for (int i = 0; i < array_size; ++i)
         {
-            id1[i] = first[i].getId();
+            id2[i] = second[i].getId();
         }
-        id2 = second.getId();
 
         // 1st
         std::vector<Scala> s =
@@ -258,8 +269,15 @@ public:
 
         // 2nd
         auto server = qmpc::ComputationToComputation::Server::getServer();
+        std::string data;
+        auto data_vec = server->getShares(from_id, id2, array_size);
+        for (auto&& sub : data_vec)
+        {
+            data += sub;
+        }
+        std::cout << "recv data size is " << std::size(data) << std::endl;
         std::stringstream archive;
-        archive << server->getShare(from_id, id2);
+        archive << data;
         std::vector<std::vector<std::vector<Scala>>> ab;
         std::vector<Scala> a;
         boost::archive::binary_iarchive ar(archive);

@@ -169,6 +169,7 @@ void Server::runServer(std::string endpoint)
 {
     auto server = Server::getServer();
     grpc::ServerBuilder builder;
+    builder.SetMaxReceiveMessageSize(1024 * 1024 * 1024);
     builder.RegisterService(server);
 
     runServerCore(builder, "Cc2Cc", endpoint);

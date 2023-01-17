@@ -617,7 +617,7 @@ TEST(OTTest, compareMulti)
 TEST(OTTest, OTe)
 {
     size_t N = 32;
-    size_t array_size = 50;
+    size_t array_size = 15000;
     qmpc::OTe ot(N, array_size);
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
@@ -639,14 +639,14 @@ TEST(OTTest, OTe)
     if (pt_id == 1)
     {
         auto chosen = ot.recieve(2, r);
-        for (auto a : chosen)
-        {
-            for (auto b : a)
-            {
-                std::cout << b;
-            }
-            std::cout << std::endl;
-        }
+        // for (auto a : chosen)
+        // {
+        //     for (auto b : a)
+        //     {
+        //         std::cout << b;
+        //     }
+        //     std::cout << std::endl;
+        // }
     }
     else if (pt_id == 2)
     {
