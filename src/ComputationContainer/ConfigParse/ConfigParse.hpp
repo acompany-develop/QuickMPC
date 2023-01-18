@@ -88,6 +88,7 @@ class Config
         party_id = getEnvInt("PARTY_ID");
         n_parties = getEnvInt("N_PARTIES");
         sp_id = getEnvInt("SP_ID");
+        time_limit = getEnvInt("TIME_LIMIT");
         mc_to_cc = getEnvUrl("MC_TO_CC");
         cc_to_bts = getEnvUrl("CC_TO_BTS");
         cc_to_bts_token = getEnvString("BTS_TOKEN");
@@ -206,6 +207,7 @@ public:
     int party_id;
     int n_parties;
     int sp_id;
+    int time_limit;
     Url mc_to_cc;
     Url cc_to_bts;
     std::string cc_to_bts_token;
