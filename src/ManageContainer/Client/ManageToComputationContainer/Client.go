@@ -43,7 +43,7 @@ func connect() (*grpc.ClientConn, error) {
 func executeComputation(conn *grpc.ClientConn, req *pb.ExecuteComputationRequest) (string, int32, error) {
 	client := pb.NewManageToComputationClient(conn)
 
-	rm := helper.RetryManager{Conn: conn}
+	rm := helper.RetryManager{}
 	for {
 		_, err := client.ExecuteComputation(context.TODO(), req)
 		retry, _ := rm.Retry(err)
@@ -112,7 +112,7 @@ func checkStateOfComputationContainer() {
 // (conn)にモデル値予測リクエストを送る
 func predict(conn *grpc.ClientConn, req *pb.PredictRequest) (string, int32, error) {
 	client := pb.NewManageToComputationClient(conn)
-	rm := helper.RetryManager{Conn: conn}
+	rm := helper.RetryManager{}
 	for {
 		_, err := client.Predict(context.TODO(), req)
 		retry, _ := rm.Retry(err)

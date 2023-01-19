@@ -3,25 +3,15 @@ package helper
 import (
 	"testing"
 
-	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 var unavailableErr = status.Error(codes.Unavailable, "")
 
-// Test用のempty server
-var s *utils.TestServer
-
-func init() {
-	s = &utils.TestServer{}
-	s.GetServer()
-	s.Serve()
-}
-
 // 正常の場合リトライがfalseになるか
 func TestRetryNotError(t *testing.T) {
-	rm := RetryManager{Conn: s.GetConn()}
+	rm := RetryManager{}
 	b, err := rm.Retry(nil)
 	if b || err != nil {
 		t.Fatalf("Retry must return `(false, nil)` when argument `err` is nil. but return `(%t, %v)`", b, err)
@@ -30,7 +20,7 @@ func TestRetryNotError(t *testing.T) {
 
 // 異常の場合リトライがtrueになるか
 func TestRetryError(t *testing.T) {
-	rm := RetryManager{Conn: s.GetConn()}
+	rm := RetryManager{}
 	b, err := rm.Retry(unavailableErr)
 	if !b || err == nil {
 		t.Fatalf("Retry must return `(true, err)` when argument `err` has error. but return `(%t, %v)`", b, err)
@@ -67,7 +57,7 @@ func TestRetryGrpcError(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			rm := RetryManager{Conn: s.GetConn()}
+			rm := RetryManager{}
 			b, _ := rm.Retry(tt.grpcErr)
 			if b != tt.expected {
 				t.Fatalf("Retry must return `%t` when grpc error is `%s`, but return `%t`", tt.expected, name, b)
@@ -78,7 +68,7 @@ func TestRetryGrpcError(t *testing.T) {
 
 // リトライ回数制限が動作するか
 func TestRetryErrorMomentary(t *testing.T) {
-	rm := RetryManager{Conn: s.GetConn()}
+	rm := RetryManager{}
 
 	// 9回まではリトライする
 	for i := 0; i < 9; i++ {
