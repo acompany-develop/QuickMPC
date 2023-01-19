@@ -73,10 +73,11 @@ func (c Client) DeleteShares(dataID string) error {
 
 // (conn)にシェア削除リクエストを送信する
 func (c Client) deleteShares(conn *grpc.ClientConn, dataID string) error {
+	mcTomcClient := pb.NewManageToManageClient(conn)
+
 	deleteSharesRequest := &pb.DeleteSharesRequest{DataId: dataID}
 	rm := helper.RetryManager{Conn: conn}
 	for {
-		mcTomcClient := pb.NewManageToManageClient(conn)
 		_, err := mcTomcClient.DeleteShares(context.TODO(), deleteSharesRequest)
 		retry, _ := rm.Retry(err)
 		if !retry {
@@ -107,10 +108,10 @@ func (c Client) Sync(syncID string) error {
 
 // (conn)にシェア削除リクエストを送信する
 func (c Client) sync(conn *grpc.ClientConn, syncID string) error {
+	mcTomcClient := pb.NewManageToManageClient(conn)
 	syncRequest := &pb.SyncRequest{SyncId: syncID}
 	rm := helper.RetryManager{Conn: conn}
 	for {
-		mcTomcClient := pb.NewManageToManageClient(conn)
 		_, err := mcTomcClient.Sync(context.TODO(), syncRequest)
 		retry, _ := rm.Retry(err)
 		if !retry {
