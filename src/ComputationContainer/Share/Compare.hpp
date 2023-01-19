@@ -53,122 +53,52 @@ std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
     auto random_s = RandGenerator::getInstance()->getRandVec<long long>(1, 1 << N - 1, N - 1);
     qmpc::Share::Share<int> rShare = r;
     std::vector<qmpc::Share::Share<bm::cpp_int>> ret(N);
-    std::vector<qmpc::Share::Share<bm::cpp_int>> x_1_temp(N);
+    std::vector<std::vector<bm::cpp_int>> v(n_parties, std::vector<bm::cpp_int>(N));
     if (pt_id == 1)
     {
         // v[to] = data;
-        std::vector<std::vector<bm::cpp_int>> v(n_parties, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < n_parties; ++i)
-        {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, (1 << N) - 1, N);
-
-            for (int j = 0; j < N; ++j)
-            {
-                v[i][j] = bm::cpp_int{ri[j]};
-            }
-        }
         std::vector<bm::cpp_int> e(N);
         e[(r + N - 1) % N] = 1ll;
         v[0] = e;
-        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
-        {
-            auto vi = v[0];
-            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
-            std::vector<bm::cpp_int> xi(N);
-            for (int i = 0; i < N; ++i)
-            {
-                xi[i] = vi[i] - v[1][i];
-            }
-            x[i] = xi;
-        }
-        for (int i = 0; i < N; ++i)
-        {
-            // std::cout << "v 1 is " << v[1][i] << std::endl;
-            x_1_temp[i] = v[1][i];
-        }
-        ot.send(2, x);
-        for (int i = 0; i < N; ++i)
-        {
-            auto vi = v[1];
-            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
-            std::vector<bm::cpp_int> xi(N);
-            for (int i = 0; i < N; ++i)
-            {
-                xi[i] = vi[i] - v[2][i];
-                // std::cout << "ot x " << i << " is " << std::bitset<32>(xi[i]) << std::endl;
-            }
-            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
-            x[i] = xi;
-        }
-        ot.send(3, x);
-        for (int i = 0; i < N; ++i)
-        {
-            // std::cout << "v 2 is " << v[2][i] << std::endl;
-            ret[i] = v[2][i];
-        }
     }
-    else if (pt_id == 2)
+    for (int party = 1; party <= n_parties; ++party)
     {
-        // v[to] = data;
-
-        std::vector<std::vector<bm::cpp_int>> v(n_parties, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < n_parties; ++i)
+        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
+        if (party < pt_id)
+        {
+            // v[to] = data;
+            auto rec = ot.recieve(party, r);
+            for (int i = 0; i < N; ++i)
+            {
+                v[party - 1][i] = rec[i];
+                // std::cout << "party 2 rec is " << v[1][i] << std::endl;
+                v[pt_id - 1][i] += rec[i];
+            }
+        }
+        else if (party > pt_id)
         {
             auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, (1 << N) - 1, N);
 
             for (int j = 0; j < N; ++j)
             {
-                v[i][j] = bm::cpp_int{ri[j]};
+                v[party - 1][j] = bm::cpp_int{ri[j]};
             }
-        }
-        auto rec = ot.recieve(1, r);
-        for (int i = 0; i < N; ++i)
-        {
-            v[1][i] = rec[i];
-            // std::cout << "party 2 rec is " << v[1][i] << std::endl;
-            x_1_temp[i] = v[1][i];
-        }
-
-        std::vector<std::vector<bm::cpp_int>> x(N, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < N; ++i)
-        {
-            auto vi = v[1];
-            std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
-            std::vector<bm::cpp_int> xi(N);
             for (int i = 0; i < N; ++i)
             {
-                xi[i] = vi[i] - v[2][i];
+                auto vi = v[party - 2];
+                std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+                std::vector<bm::cpp_int> xi(N);
+                for (int j = 0; j < N; ++j)
+                {
+                    xi[j] = vi[j] - v[party - 1][j];
+                }
+                x[i] = xi;
             }
-            // std::cout << "ot x " << i << " is " << std::bitset<32>(xi) << std::endl;
-            x[i] = xi;
+            ot.send(party, x);
         }
-        ot.send(3, x);
         for (int i = 0; i < N; ++i)
         {
-            // std::cout << "v 2 is " << v[2][i] << std::endl;
-            ret[i] = v[2][i];
-        }
-    }
-    else if (pt_id == 3)
-    {
-        // v[to] = data;
-
-        std::vector<std::vector<bm::cpp_int>> v(n_parties, std::vector<bm::cpp_int>(N));
-        for (int i = 0; i < n_parties; ++i)
-        {
-            auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, (1 << N) - 1, N);
-
-            for (int j = 0; j < N; ++j)
-            {
-                v[i][j] = bm::cpp_int{ri[j]};
-            }
-        }
-        auto rec = ot.recieve(1, r);
-        auto rec2 = ot.recieve(2, r);
-        for (int i = 0; i < N; ++i)
-        {
-            ret[i] = rec[i] + rec2[i];
+            ret[i] = v[n_parties - 1][i];
         }
     }
     return {bm::cpp_int{r}, ret};
@@ -181,6 +111,22 @@ std::vector<Share<T>> unitv(const Share<T> &n)
     open(diff);
     auto rec = recons(diff);
     int m = (rec % N + N) % N;
+    // std::vector<Share<T>> ret(N);
+    // for (int i = 0; i < N; ++i)
+    // {
+    //     ret[i] = v[N * m + i];
+    // }
+    std::rotate(v.begin(), v.begin() + N - m - 1, v.end());
+    return v;
+}
+template <typename T, int N = 32, int N_dash = 32>
+std::vector<std::vector<Share<T>>> unitv(const std::vector<Share<T>> &n)
+{
+    auto [r, v] = unitvPrep<32>();
+    auto diff = n - r;
+    open(diff);
+    auto rec = recons(diff);
+    auto m = (rec % N + N) % N;
     // std::vector<Share<T>> ret(N);
     // for (int i = 0; i < N; ++i)
     // {
@@ -217,6 +163,12 @@ Share<T> equality1(const Share<T> &x, const Share<T> &y)
     return g[0];
 }
 template <typename T>
+std::vector<Share<T>> equality1(const std::vector<Share<T>> &x, const std::vector<Share<T>> &y)
+{
+    auto g = unitv<T>(x - y);
+    return g[0];
+}
+template <typename T>
 Share<T> equality(const Share<T> &x, const Share<T> &y)
 {
     Config *conf = Config::getInstance();
@@ -247,4 +199,36 @@ Share<T> equality(const Share<T> &x, const Share<T> &y)
     }
     return unitv(f)[m];
 }
+// template <typename T>
+// std::vector<Share<T>> equality(const std::vector<Share<T>> &x, const std::vector<Share<T>> &y)
+// {
+//     Config *conf = Config::getInstance();
+//     int size = x.size();
+//     std::vector<T> d(size);
+//     if (conf->party_id == 1)
+//     {
+//         d = x - y;
+//     }
+//     else
+//     {
+//         d = y - x;
+//     }
+//     auto d_expand = expand(d);
+//     int m = d_expand[0].size();
+//     std::vector<std::vector<T>> p(m, std::vector<T>(size)), q(m, std::vector<T>(size));
+//     std::vector<T> f(size);
+//     for (int i = 0; i < m; ++i)
+//     {
+//         if (conf->party_id == 1)
+//         {
+//             p[i] = d_expand[i];
+//         }
+//         else
+//         {
+//             q[i] = d_expand[i];
+//         }
+//         f = f + equality1(p[i], q[i]);
+//     }
+//     return unitv(f)[m];
+// }
 }  // namespace qmpc::Share
