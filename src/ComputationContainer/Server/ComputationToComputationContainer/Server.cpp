@@ -143,9 +143,7 @@ std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
             lock, std::chrono::seconds(conf->time_limit), [&] { return shares.count(key) == 1; }
         ))  // 待機
     {
-        qmpc::Log::throw_with_trace(
-            std::runtime_error("getShare is timeout")
-        );
+        qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
     }
     std::string share = shares[key];
     shares.erase(key);
@@ -170,9 +168,7 @@ std::vector<std::string> Server::getShares(
                 lock, std::chrono::seconds(conf->time_limit), [&] { return shares.count(key) == 1; }
             ))  // 待機
         {
-            qmpc::Log::throw_with_trace(
-                std::runtime_error("getShares is timeout")
-            );
+            qmpc::Log::throw_with_trace(std::runtime_error("getShares is timeout"));
         }
         std::string share = shares[key];
         str_values.emplace_back(share);
