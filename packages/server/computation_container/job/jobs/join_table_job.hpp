@@ -20,11 +20,14 @@ public:
     )
     {
         // 突合に使用した列をテーブルから削除する関数
-        auto removeIdColumn = [&arg](const std::vector<std::string> &v)
+        // 想定の型は以下のどちらか
+        // std::vector<string>
+        // std::vector<ComputationToDb::SchemaType>
+        auto removeIdColumn = [&arg](const auto &v)
         {
             const size_t match_row = arg[0].front() - 1;
 
-            std::vector<std::string> new_vec;
+            decltype(v) new_vec;
             new_vec.reserve(v.size());
             for (size_t i = 0; i < v.size(); ++i)
             {

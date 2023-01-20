@@ -1,7 +1,6 @@
 
 #include "value_table.hpp"
 
-#include "client/computation_to_db/client.hpp"
 #include "logging/logger.hpp"
 
 namespace qmpc::ComputationToDb
@@ -83,7 +82,7 @@ std::vector<std::string> ValueTable::getColumn(int column_number) const
     }
     return ret;
 }
-std::vector<std::string> ValueTable::getSchemas() const
+std::vector<SchemaType> ValueTable::getSchemas() const
 {
     return Client::getInstance()->readSchema(data_id);
 }

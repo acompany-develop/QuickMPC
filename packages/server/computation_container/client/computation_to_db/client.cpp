@@ -1,11 +1,16 @@
 #include "client.hpp"
 
+#include <boost/format/format_fwd.hpp>
 #include <chrono>
 #include <experimental/filesystem>
 #include <fstream>
 #include <regex>
+#include <stdexcept>
 
 #include <google/protobuf/util/json_util.h>
+
+#include "ValueTable.hpp"
+#include "external/Proto/common_types/common_types.pb.h"
 
 namespace qmpc::ComputationToDb
 {
@@ -68,6 +73,29 @@ void Client::ComputationResultWriter::emplace(const std::vector<std::string> &v)
 
 /************ Client ************/
 
+static std::vector<SchemaType> load_schema(const nlohmann::json &json)
+{
+    if (!json.is_array())
+    {
+        qmpc::Log::throw_with_trace(std::invalid_argument("schema is not array"));
+    }
+    std::vector<SchemaType> schema;
+    for (const auto &elem : json)
+    {
+        pb_common_types::ColumnSchema column;
+        const google::protobuf::util::Status status =
+            google::protobuf::util::JsonStringToMessage(elem.dump(), &column);
+        if (!status.ok())
+        {
+            qmpc::Log::throw_with_trace(
+                std::invalid_argument((boost::format("%s") % status.message()).str())
+            );
+        }
+        schema.emplace_back(column.name(), column.type());
+    }
+    return schema;
+}
+
 Client::Client() {}
 
 std::shared_ptr<Client> Client::getInstance()
@@ -101,16 +129,15 @@ std::optional<std::vector<std::vector<std::string>>> Client::readTable(
 }
 
 // Schemaの取り出し
-std::vector<std::string> Client::readSchema(const std::string &data_id) const
+std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
 {
     // DBから値を取り出す
-    std::vector<std::string> schemas;
     auto ifs = std::ifstream(shareDbPath + data_id + "/0");
     std::string data;
     getline(ifs, data);
     auto json = nlohmann::json::parse(data);
     auto j = json["meta"]["schema"];
-    schemas = std::vector<std::string>(j.begin(), j.end());
+    std::vector<std::string> schemas = load_schema(j);
     return schemas;
 }
 
@@ -118,7 +145,7 @@ std::vector<std::string> Client::readSchema(const std::string &data_id) const
 std::string Client::writeTable(
     const std::string &data_id,
     std::vector<std::vector<std::string>> &table,
-    const std::vector<std::string> &schema
+    const std::vector<SchemaType> &schema
 ) const
 {
     // TODO: piece_idを引数に受け取ってpieceごとに保存できるようにする
