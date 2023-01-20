@@ -26,7 +26,7 @@ service LibcToManage {
 message SendSharesRequest {
     string data_id = 1;
     string shares = 2;
-    repeated string schema = 3;
+    repeated pb_common_types.ColumnSchema schema = 3;
     int32 piece_id = 4;
     string sent_at = 5;
     int32 matching_column = 6;
@@ -71,7 +71,7 @@ message GetSchemaRequest {
 message GetSchemaResponse {
     string message = 1;
     bool is_ok = 2;
-    repeated string schema = 3;
+    repeated pb_common_types.ColumnSchema schema = 3;
 }
 
 /**

@@ -23,6 +23,12 @@ enum ComputationMethod {
   COMPUTATION_METHOD_JOIN_TABLE = 6;
 }
 
+enum ShareValueTypeEnum {
+    SHARE_VALUE_TYPE_UNSPECIFIED = 0;
+    SHARE_VALUE_TYPE_FIXED_POINT = 1;
+    SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION = 2;
+}
+
 message ProcedureProgress {
   uint64 id = 1;                // unique id in ProgressManager context
   string description = 2;       // describe specific process in job
@@ -50,4 +56,9 @@ message JobErrorInfo {
   string what = 1;
   optional string additional_info = 2;
   optional Stacktrace stacktrace = 3;
+}
+
+message ColumnSchema {
+    string name = 1;
+    ShareValueTypeEnum type = 2;
 }
