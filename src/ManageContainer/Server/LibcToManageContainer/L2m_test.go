@@ -30,7 +30,7 @@ func (localDb) GetSchema(string) ([]string, error) {
 	return []string{"attr1"}, nil
 }
 func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
-	return &pb_types.JobErrorInfo{}, nil
+	return &pb_types.JobErrorInfo{What: "test"}, nil
 }
 func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
@@ -165,6 +165,26 @@ func TestGetComputationResult(t *testing.T) {
 		if !reflect.DeepEqual(res, ac) {
 			t.Fatal(fmt.Sprintf("GetComputationResult Failed. getResult() must be %s, but response is %s", ac, res))
 		}
+	}
+}
+
+// エラー情報を取得できるかTest
+func TestGetJobErrorInfo(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewLibcToManageClient(conn)
+
+	result, err := client.GetJobErrorInfo(context.Background(), &pb.GetJobErrorInfoRequest{
+		JobUuid: "id",
+		Token:   "token_dep",
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.GetJobErrorInfo().GetWhat() != "test" {
+		t.Fatal("GetElapsedTime Failed")
 	}
 }
 
