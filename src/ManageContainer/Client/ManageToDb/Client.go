@@ -220,6 +220,15 @@ func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*C
 	}
 
 	if errInfo != nil {
+		// metadataは7kbまで
+		if (proto.Size(errInfo) > 7000) {
+			// スタックトレース情報を削除する
+			errInfo.Stacktrace = nil
+
+			additionalInfo := "Stacktrace information is too long. Please use get_job_error_info method to get more information"
+			errInfo.AdditionalInfo = &additionalInfo
+		}
+
 		return nil, errInfo, nil
 	}
 
