@@ -11,7 +11,7 @@ namespace qmpc::Job
 {
 class MathJob : public JobBase<MathJob>
 {
-    //数学関数
+    // 数学関数
     using Func = std::function<Share(std::vector<Share> &)>;
     Func f;
 

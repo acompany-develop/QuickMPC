@@ -38,7 +38,8 @@ class JobBase : public Interface
     StatusManager statusManager;
 
     static void validate_cols(
-        const std::vector<std::string> &schemas, const std::vector<std::list<int>> &arg
+        const std::vector<ComputationToDb::SchemaType> &schemas,
+        const std::vector<std::list<int>> &arg
     )
     {
         for (const auto &iter_arg : arg | boost::adaptors::indexed(0))
@@ -55,10 +56,10 @@ class JobBase : public Interface
                          % boost::algorithm::join(
                              schemas
                                  | boost::adaptors::transformed(
-                                     [](const std::string &s)
+                                     [](const ComputationToDb::SchemaType &schema)
                                      {
                                          std::ostringstream ss;
-                                         ss << std::quoted(s);
+                                         ss << std::quoted(std::get<0>(schema));
                                          return ss.str();
                                      }
                                  ),

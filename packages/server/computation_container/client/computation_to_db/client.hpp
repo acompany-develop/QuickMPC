@@ -13,6 +13,7 @@
 
 namespace qmpc::ComputationToDb
 {
+    using SchemaType = std::tuple<std::string, pb_common_types::ShareValueTypeEnum>;
 class Client final
 {
     static inline const std::string shareDbPath = "/db/share/";
