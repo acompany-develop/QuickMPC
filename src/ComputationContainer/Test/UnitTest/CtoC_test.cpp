@@ -113,7 +113,6 @@ TEST(CtoC_Test, GetSharesThrowExceptionTest)
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
     EXPECT_ANY_THROW(server->getShares(conf->party_id, share_ids, length));
-
 }
 int main(int argc, char **argv)
 {

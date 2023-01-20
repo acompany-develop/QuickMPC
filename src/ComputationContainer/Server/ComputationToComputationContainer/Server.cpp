@@ -139,7 +139,9 @@ std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
     auto key = std::make_tuple(
         party_id, share_id.getShareId(), share_id.getJobId(), share_id.getThreadId()
     );
-    if (!cond.wait_for(lock, std::chrono::seconds(conf->time_limit), [&] { return shares.count(key) == 1; }))  // 待機
+    if (!cond.wait_for(
+            lock, std::chrono::seconds(conf->time_limit), [&] { return shares.count(key) == 1; }
+        ))  // 待機
     {
         qmpc::Log::throw_with_trace(
             std::runtime_error("getShare is timeout")
@@ -164,7 +166,9 @@ std::vector<std::string> Server::getShares(
         auto key = std::make_tuple(
             party_id, share_ids[i].getShareId(), share_ids[i].getJobId(), share_ids[i].getThreadId()
         );
-        if(!cond.wait_for(lock, std::chrono::seconds(conf->time_limit), [&] { return shares.count(key) == 1; }))  // 待機
+        if (!cond.wait_for(
+                lock, std::chrono::seconds(conf->time_limit), [&] { return shares.count(key) == 1; }
+            ))  // 待機
         {
             qmpc::Log::throw_with_trace(
                 std::runtime_error("getShares is timeout")
