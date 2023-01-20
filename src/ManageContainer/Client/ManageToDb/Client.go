@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
@@ -61,6 +62,7 @@ type M2DbClient interface {
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
+	GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -186,6 +188,23 @@ func getComputationStatus(path string) (pb_types.JobStatus, *pb_types.JobErrorIn
 	}
 
 	return pb_types.JobStatus_UNKNOWN, nil, errorAnyStatusFileNotFound
+}
+
+func (c Client) GetJobErrorInfo(jobUUID string) (*pb_types.JobErrorInfo, error) {
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
+
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+
+	_, errInfo, errStatus := getComputationStatus(path)
+	if errStatus != nil {
+		return nil, errStatus
+	}
+	if errInfo != nil {
+		return errInfo, nil
+	}
+
+	return &pb_types.JobErrorInfo{}, nil
 }
 
 // DBから計算結果を得る
