@@ -31,6 +31,7 @@ type LibcToManageClient interface {
 	Predict(ctx context.Context, in *PredictRequest, opts ...grpc.CallOption) (*PredictResponse, error)
 	GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error)
 	GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error)
+	GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error)
 }
 
 type libcToManageClient struct {
@@ -145,6 +146,15 @@ func (c *libcToManageClient) GetElapsedTime(ctx context.Context, in *GetElapsedT
 	return out, nil
 }
 
+func (c *libcToManageClient) GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error) {
+	out := new(GetJobErrorInfoResponse)
+	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetJobErrorInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LibcToManageServer is the server API for LibcToManage service.
 // All implementations must embed UnimplementedLibcToManageServer
 // for forward compatibility
@@ -158,6 +168,7 @@ type LibcToManageServer interface {
 	Predict(context.Context, *PredictRequest) (*PredictResponse, error)
 	GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error)
 	GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error)
+	GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error)
 	mustEmbedUnimplementedLibcToManageServer()
 }
 
@@ -191,6 +202,9 @@ func (UnimplementedLibcToManageServer) GetDataList(context.Context, *GetDataList
 }
 func (UnimplementedLibcToManageServer) GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetElapsedTime not implemented")
+}
+func (UnimplementedLibcToManageServer) GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJobErrorInfo not implemented")
 }
 func (UnimplementedLibcToManageServer) mustEmbedUnimplementedLibcToManageServer() {}
 
@@ -370,6 +384,24 @@ func _LibcToManage_GetElapsedTime_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LibcToManage_GetJobErrorInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetJobErrorInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LibcToManageServer).GetJobErrorInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libctomanage.LibcToManage/GetJobErrorInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LibcToManageServer).GetJobErrorInfo(ctx, req.(*GetJobErrorInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LibcToManage_ServiceDesc is the grpc.ServiceDesc for LibcToManage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -408,6 +440,10 @@ var LibcToManage_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetElapsedTime",
 			Handler:    _LibcToManage_GetElapsedTime_Handler,
+		},
+		{
+			MethodName: "GetJobErrorInfo",
+			Handler:    _LibcToManage_GetJobErrorInfo_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

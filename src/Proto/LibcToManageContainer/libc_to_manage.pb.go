@@ -1364,6 +1364,116 @@ func (x *GetElapsedTimeResponse) GetElapsedTime() float64 {
 	return 0
 }
 
+type GetJobErrorInfoRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	JobUuid string `protobuf:"bytes,1,opt,name=job_uuid,json=jobUuid,proto3" json:"job_uuid,omitempty"`
+	Token   string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+}
+
+func (x *GetJobErrorInfoRequest) Reset() {
+	*x = GetJobErrorInfoRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_libc_to_manage_proto_msgTypes[20]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetJobErrorInfoRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetJobErrorInfoRequest) ProtoMessage() {}
+
+func (x *GetJobErrorInfoRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_libc_to_manage_proto_msgTypes[20]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetJobErrorInfoRequest.ProtoReflect.Descriptor instead.
+func (*GetJobErrorInfoRequest) Descriptor() ([]byte, []int) {
+	return file_libc_to_manage_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GetJobErrorInfoRequest) GetJobUuid() string {
+	if x != nil {
+		return x.JobUuid
+	}
+	return ""
+}
+
+func (x *GetJobErrorInfoRequest) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+type GetJobErrorInfoResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	JobErrorInfo *common_types.JobErrorInfo `protobuf:"bytes,1,opt,name=job_error_info,json=jobErrorInfo,proto3" json:"job_error_info,omitempty"`
+	IsOk         bool                       `protobuf:"varint,2,opt,name=is_ok,json=isOk,proto3" json:"is_ok,omitempty"`
+}
+
+func (x *GetJobErrorInfoResponse) Reset() {
+	*x = GetJobErrorInfoResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_libc_to_manage_proto_msgTypes[21]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GetJobErrorInfoResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetJobErrorInfoResponse) ProtoMessage() {}
+
+func (x *GetJobErrorInfoResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_libc_to_manage_proto_msgTypes[21]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetJobErrorInfoResponse.ProtoReflect.Descriptor instead.
+func (*GetJobErrorInfoResponse) Descriptor() ([]byte, []int) {
+	return file_libc_to_manage_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GetJobErrorInfoResponse) GetJobErrorInfo() *common_types.JobErrorInfo {
+	if x != nil {
+		return x.JobErrorInfo
+	}
+	return nil
+}
+
+func (x *GetJobErrorInfoResponse) GetIsOk() bool {
+	if x != nil {
+		return x.IsOk
+	}
+	return false
+}
+
 var File_libc_to_manage_proto protoreflect.FileDescriptor
 
 var file_libc_to_manage_proto_rawDesc = []byte{
@@ -1513,7 +1623,19 @@ var file_libc_to_manage_proto_rawDesc = []byte{
 	0x6f, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x69, 0x73, 0x4f, 0x6b, 0x12, 0x21,
 	0x0a, 0x0c, 0x65, 0x6c, 0x61, 0x70, 0x73, 0x65, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x01, 0x52, 0x0b, 0x65, 0x6c, 0x61, 0x70, 0x73, 0x65, 0x64, 0x54, 0x69, 0x6d,
-	0x65, 0x32, 0xc6, 0x06, 0x0a, 0x0c, 0x4c, 0x69, 0x62, 0x63, 0x54, 0x6f, 0x4d, 0x61, 0x6e, 0x61,
+	0x65, 0x22, 0x49, 0x0a, 0x16, 0x47, 0x65, 0x74, 0x4a, 0x6f, 0x62, 0x45, 0x72, 0x72, 0x6f, 0x72,
+	0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x6a,
+	0x6f, 0x62, 0x5f, 0x75, 0x75, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6a,
+	0x6f, 0x62, 0x55, 0x75, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x22, 0x73, 0x0a, 0x17,
+	0x47, 0x65, 0x74, 0x4a, 0x6f, 0x62, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x43, 0x0a, 0x0e, 0x6a, 0x6f, 0x62, 0x5f, 0x65,
+	0x72, 0x72, 0x6f, 0x72, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1d, 0x2e, 0x70, 0x62, 0x5f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x5f, 0x74, 0x79, 0x70, 0x65,
+	0x73, 0x2e, 0x4a, 0x6f, 0x62, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0c,
+	0x6a, 0x6f, 0x62, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x13, 0x0a, 0x05,
+	0x69, 0x73, 0x5f, 0x6f, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x04, 0x69, 0x73, 0x4f,
+	0x6b, 0x32, 0xa8, 0x07, 0x0a, 0x0c, 0x4c, 0x69, 0x62, 0x63, 0x54, 0x6f, 0x4d, 0x61, 0x6e, 0x61,
 	0x67, 0x65, 0x12, 0x51, 0x0a, 0x0a, 0x53, 0x65, 0x6e, 0x64, 0x53, 0x68, 0x61, 0x72, 0x65, 0x73,
 	0x12, 0x1f, 0x2e, 0x6c, 0x69, 0x62, 0x63, 0x74, 0x6f, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x2e,
 	0x53, 0x65, 0x6e, 0x64, 0x53, 0x68, 0x61, 0x72, 0x65, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
@@ -1565,12 +1687,18 @@ var file_libc_to_manage_proto_rawDesc = []byte{
 	0x45, 0x6c, 0x61, 0x70, 0x73, 0x65, 0x64, 0x54, 0x69, 0x6d, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x1a, 0x24, 0x2e, 0x6c, 0x69, 0x62, 0x63, 0x74, 0x6f, 0x6d, 0x61, 0x6e, 0x61, 0x67,
 	0x65, 0x2e, 0x47, 0x65, 0x74, 0x45, 0x6c, 0x61, 0x70, 0x73, 0x65, 0x64, 0x54, 0x69, 0x6d, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x46, 0x5a, 0x44, 0x67, 0x69,
-	0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x63, 0x6f, 0x6d, 0x70, 0x61, 0x6e,
-	0x79, 0x2d, 0x64, 0x65, 0x76, 0x65, 0x6c, 0x6f, 0x70, 0x2f, 0x51, 0x75, 0x69, 0x63, 0x6b, 0x4d,
-	0x50, 0x43, 0x2f, 0x73, 0x72, 0x63, 0x2f, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x4c, 0x69, 0x62,
-	0x63, 0x54, 0x6f, 0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x43, 0x6f, 0x6e, 0x74, 0x61, 0x69, 0x6e,
-	0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x60, 0x0a, 0x0f, 0x47, 0x65,
+	0x74, 0x4a, 0x6f, 0x62, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x24, 0x2e,
+	0x6c, 0x69, 0x62, 0x63, 0x74, 0x6f, 0x6d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x2e, 0x47, 0x65, 0x74,
+	0x4a, 0x6f, 0x62, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x6c, 0x69, 0x62, 0x63, 0x74, 0x6f, 0x6d, 0x61, 0x6e, 0x61,
+	0x67, 0x65, 0x2e, 0x47, 0x65, 0x74, 0x4a, 0x6f, 0x62, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x49, 0x6e,
+	0x66, 0x6f, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x46, 0x5a, 0x44,
+	0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x63, 0x6f, 0x6d, 0x70,
+	0x61, 0x6e, 0x79, 0x2d, 0x64, 0x65, 0x76, 0x65, 0x6c, 0x6f, 0x70, 0x2f, 0x51, 0x75, 0x69, 0x63,
+	0x6b, 0x4d, 0x50, 0x43, 0x2f, 0x73, 0x72, 0x63, 0x2f, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x4c,
+	0x69, 0x62, 0x63, 0x54, 0x6f, 0x4d, 0x61, 0x6e, 0x61, 0x67, 0x65, 0x43, 0x6f, 0x6e, 0x74, 0x61,
+	0x69, 0x6e, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1585,7 +1713,7 @@ func file_libc_to_manage_proto_rawDescGZIP() []byte {
 	return file_libc_to_manage_proto_rawDescData
 }
 
-var file_libc_to_manage_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_libc_to_manage_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_libc_to_manage_proto_goTypes = []interface{}{
 	(*SendSharesRequest)(nil),            // 0: libctomanage.SendSharesRequest
 	(*SendSharesResponse)(nil),           // 1: libctomanage.SendSharesResponse
@@ -1607,42 +1735,48 @@ var file_libc_to_manage_proto_goTypes = []interface{}{
 	(*GetDataListResponse)(nil),          // 17: libctomanage.GetDataListResponse
 	(*GetElapsedTimeRequest)(nil),        // 18: libctomanage.GetElapsedTimeRequest
 	(*GetElapsedTimeResponse)(nil),       // 19: libctomanage.GetElapsedTimeResponse
-	(common_types.ComputationMethod)(0),  // 20: pb_common_types.ComputationMethod
-	(common_types.JobStatus)(0),          // 21: pb_common_types.JobStatus
-	(*common_types.JobProgress)(nil),     // 22: pb_common_types.JobProgress
-	(common_types.PredictMethod)(0),      // 23: pb_common_types.PredictMethod
+	(*GetJobErrorInfoRequest)(nil),       // 20: libctomanage.GetJobErrorInfoRequest
+	(*GetJobErrorInfoResponse)(nil),      // 21: libctomanage.GetJobErrorInfoResponse
+	(common_types.ComputationMethod)(0),  // 22: pb_common_types.ComputationMethod
+	(common_types.JobStatus)(0),          // 23: pb_common_types.JobStatus
+	(*common_types.JobProgress)(nil),     // 24: pb_common_types.JobProgress
+	(common_types.PredictMethod)(0),      // 25: pb_common_types.PredictMethod
+	(*common_types.JobErrorInfo)(nil),    // 26: pb_common_types.JobErrorInfo
 }
 var file_libc_to_manage_proto_depIdxs = []int32{
-	20, // 0: libctomanage.ExecuteComputationRequest.method_id:type_name -> pb_common_types.ComputationMethod
+	22, // 0: libctomanage.ExecuteComputationRequest.method_id:type_name -> pb_common_types.ComputationMethod
 	6,  // 1: libctomanage.ExecuteComputationRequest.table:type_name -> libctomanage.JoinOrder
 	7,  // 2: libctomanage.ExecuteComputationRequest.arg:type_name -> libctomanage.Input
-	21, // 3: libctomanage.GetComputationResultResponse.status:type_name -> pb_common_types.JobStatus
-	22, // 4: libctomanage.GetComputationResultResponse.progress:type_name -> pb_common_types.JobProgress
-	23, // 5: libctomanage.PredictRequest.model_id:type_name -> pb_common_types.PredictMethod
+	23, // 3: libctomanage.GetComputationResultResponse.status:type_name -> pb_common_types.JobStatus
+	24, // 4: libctomanage.GetComputationResultResponse.progress:type_name -> pb_common_types.JobProgress
+	25, // 5: libctomanage.PredictRequest.model_id:type_name -> pb_common_types.PredictMethod
 	6,  // 6: libctomanage.PredictRequest.table:type_name -> libctomanage.JoinOrder
-	0,  // 7: libctomanage.LibcToManage.SendShares:input_type -> libctomanage.SendSharesRequest
-	2,  // 8: libctomanage.LibcToManage.DeleteShares:input_type -> libctomanage.DeleteSharesRequest
-	4,  // 9: libctomanage.LibcToManage.GetSchema:input_type -> libctomanage.GetSchemaRequest
-	8,  // 10: libctomanage.LibcToManage.ExecuteComputation:input_type -> libctomanage.ExecuteComputationRequest
-	10, // 11: libctomanage.LibcToManage.GetComputationResult:input_type -> libctomanage.GetComputationResultRequest
-	12, // 12: libctomanage.LibcToManage.SendModelParam:input_type -> libctomanage.SendModelParamRequest
-	14, // 13: libctomanage.LibcToManage.Predict:input_type -> libctomanage.PredictRequest
-	16, // 14: libctomanage.LibcToManage.GetDataList:input_type -> libctomanage.GetDataListRequest
-	18, // 15: libctomanage.LibcToManage.GetElapsedTime:input_type -> libctomanage.GetElapsedTimeRequest
-	1,  // 16: libctomanage.LibcToManage.SendShares:output_type -> libctomanage.SendSharesResponse
-	3,  // 17: libctomanage.LibcToManage.DeleteShares:output_type -> libctomanage.DeleteSharesResponse
-	5,  // 18: libctomanage.LibcToManage.GetSchema:output_type -> libctomanage.GetSchemaResponse
-	9,  // 19: libctomanage.LibcToManage.ExecuteComputation:output_type -> libctomanage.ExecuteComputationResponse
-	11, // 20: libctomanage.LibcToManage.GetComputationResult:output_type -> libctomanage.GetComputationResultResponse
-	13, // 21: libctomanage.LibcToManage.SendModelParam:output_type -> libctomanage.SendModelParamResponse
-	15, // 22: libctomanage.LibcToManage.Predict:output_type -> libctomanage.PredictResponse
-	17, // 23: libctomanage.LibcToManage.GetDataList:output_type -> libctomanage.GetDataListResponse
-	19, // 24: libctomanage.LibcToManage.GetElapsedTime:output_type -> libctomanage.GetElapsedTimeResponse
-	16, // [16:25] is the sub-list for method output_type
-	7,  // [7:16] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	26, // 7: libctomanage.GetJobErrorInfoResponse.job_error_info:type_name -> pb_common_types.JobErrorInfo
+	0,  // 8: libctomanage.LibcToManage.SendShares:input_type -> libctomanage.SendSharesRequest
+	2,  // 9: libctomanage.LibcToManage.DeleteShares:input_type -> libctomanage.DeleteSharesRequest
+	4,  // 10: libctomanage.LibcToManage.GetSchema:input_type -> libctomanage.GetSchemaRequest
+	8,  // 11: libctomanage.LibcToManage.ExecuteComputation:input_type -> libctomanage.ExecuteComputationRequest
+	10, // 12: libctomanage.LibcToManage.GetComputationResult:input_type -> libctomanage.GetComputationResultRequest
+	12, // 13: libctomanage.LibcToManage.SendModelParam:input_type -> libctomanage.SendModelParamRequest
+	14, // 14: libctomanage.LibcToManage.Predict:input_type -> libctomanage.PredictRequest
+	16, // 15: libctomanage.LibcToManage.GetDataList:input_type -> libctomanage.GetDataListRequest
+	18, // 16: libctomanage.LibcToManage.GetElapsedTime:input_type -> libctomanage.GetElapsedTimeRequest
+	20, // 17: libctomanage.LibcToManage.GetJobErrorInfo:input_type -> libctomanage.GetJobErrorInfoRequest
+	1,  // 18: libctomanage.LibcToManage.SendShares:output_type -> libctomanage.SendSharesResponse
+	3,  // 19: libctomanage.LibcToManage.DeleteShares:output_type -> libctomanage.DeleteSharesResponse
+	5,  // 20: libctomanage.LibcToManage.GetSchema:output_type -> libctomanage.GetSchemaResponse
+	9,  // 21: libctomanage.LibcToManage.ExecuteComputation:output_type -> libctomanage.ExecuteComputationResponse
+	11, // 22: libctomanage.LibcToManage.GetComputationResult:output_type -> libctomanage.GetComputationResultResponse
+	13, // 23: libctomanage.LibcToManage.SendModelParam:output_type -> libctomanage.SendModelParamResponse
+	15, // 24: libctomanage.LibcToManage.Predict:output_type -> libctomanage.PredictResponse
+	17, // 25: libctomanage.LibcToManage.GetDataList:output_type -> libctomanage.GetDataListResponse
+	19, // 26: libctomanage.LibcToManage.GetElapsedTime:output_type -> libctomanage.GetElapsedTimeResponse
+	21, // 27: libctomanage.LibcToManage.GetJobErrorInfo:output_type -> libctomanage.GetJobErrorInfoResponse
+	18, // [18:28] is the sub-list for method output_type
+	8,  // [8:18] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_libc_to_manage_proto_init() }
@@ -1891,6 +2025,30 @@ func file_libc_to_manage_proto_init() {
 				return nil
 			}
 		}
+		file_libc_to_manage_proto_msgTypes[20].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetJobErrorInfoRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_libc_to_manage_proto_msgTypes[21].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GetJobErrorInfoResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_libc_to_manage_proto_msgTypes[11].OneofWrappers = []interface{}{
 		(*GetComputationResultResponse_IsDim1)(nil),
@@ -1903,7 +2061,7 @@ func file_libc_to_manage_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_libc_to_manage_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
