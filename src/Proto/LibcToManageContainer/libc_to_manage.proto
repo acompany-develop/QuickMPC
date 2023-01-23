@@ -193,6 +193,6 @@ message GetJobErrorInfoRequest {
 }
 
 message GetJobErrorInfoResponse {
-    pb_common_types.JobErrorInfo job_error_info = 1;
+    optional pb_common_types.JobErrorInfo job_error_info = 1;
     bool is_ok = 2;
 }
