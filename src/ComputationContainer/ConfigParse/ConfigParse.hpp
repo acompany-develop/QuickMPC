@@ -88,10 +88,10 @@ class Config
         party_id = getEnvInt("PARTY_ID");
         n_parties = getEnvInt("N_PARTIES");
         sp_id = getEnvInt("SP_ID");
-        time_limit = getEnvInt("TIME_LIMIT");
         mc_to_cc = getEnvUrl("MC_TO_CC");
         cc_to_bts = getEnvUrl("CC_TO_BTS");
         cc_to_bts_token = getEnvString("BTS_TOKEN");
+        time_limit = getEnvOptionalInt("TIME_LIMIT").value_or(10);
         const std::string port_for_job = getEnvString("PORT_FOR_JOB");
         for (int i = 1; i <= n_parties; i++)
         {
@@ -175,6 +175,18 @@ class Config
         if (tmp)
         {
             return std::string(tmp);
+        }
+        else
+        {
+            return std::nullopt;
+        }
+    }
+    std::optional<int> getEnvOptionalInt(const char *s)
+    {
+        const char *tmp = std::getenv(s);
+        if (tmp)
+        {
+            return atoi(tmp);
         }
         else
         {
