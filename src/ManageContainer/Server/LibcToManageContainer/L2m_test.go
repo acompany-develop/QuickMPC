@@ -184,7 +184,7 @@ func TestGetJobErrorInfo(t *testing.T) {
 	}
 
 	if result.GetJobErrorInfo().GetWhat() != "test" {
-		t.Fatal("GetElapsedTime Failed")
+		t.Fatal("GetJobErrorInfo Failed")
 	}
 }
 
