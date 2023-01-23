@@ -91,7 +91,7 @@ class Config
         mc_to_cc = getEnvUrl("MC_TO_CC");
         cc_to_bts = getEnvUrl("CC_TO_BTS");
         cc_to_bts_token = getEnvString("BTS_TOKEN");
-        time_limit = getEnvOptionalInt("TIME_LIMIT").value_or(10);
+        getshare_time_limit = getEnvOptionalInt("GETSHARE_TIME_LIMIT").value_or(10);
         const std::string port_for_job = getEnvString("PORT_FOR_JOB");
         for (int i = 1; i <= n_parties; i++)
         {
@@ -219,7 +219,7 @@ public:
     int party_id;
     int n_parties;
     int sp_id;
-    int time_limit;
+    int getshare_time_limit;
     Url mc_to_cc;
     Url cc_to_bts;
     std::string cc_to_bts_token;
