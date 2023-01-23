@@ -204,7 +204,7 @@ func (c Client) GetJobErrorInfo(jobUUID string) (*pb_types.JobErrorInfo, error) 
 		return errInfo, nil
 	}
 
-	return &pb_types.JobErrorInfo{}, nil
+	return nil, nil
 }
 
 // DBから計算結果を得る
