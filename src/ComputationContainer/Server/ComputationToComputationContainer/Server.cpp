@@ -134,11 +134,19 @@ grpc::Status Server::ExchangeShares(
 // 単一シェアget用
 std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
 {
+    Config *conf = Config::getInstance();
     std::unique_lock<std::mutex> lock(mtx);  // mutex発動
     auto key = std::make_tuple(
         party_id, share_id.getShareId(), share_id.getJobId(), share_id.getThreadId()
     );
-    cond.wait(lock, [&] { return shares.count(key) == 1; });  // 待機
+    if (!cond.wait_for(
+            lock,
+            std::chrono::seconds(conf->getshare_time_limit),
+            [&] { return shares.count(key) == 1; }
+        ))  // 待機
+    {
+        qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
+    }
     std::string share = shares[key];
     shares.erase(key);
     return share;
@@ -149,6 +157,7 @@ std::vector<std::string> Server::getShares(
     int party_id, const std::vector<qmpc::Share::AddressId> &share_ids, unsigned int length
 )
 {
+    Config *conf = Config::getInstance();
     std::vector<std::string> str_values;
     str_values.reserve(length);
     for (unsigned int i = 0; i < length; i++)
@@ -157,7 +166,14 @@ std::vector<std::string> Server::getShares(
         auto key = std::make_tuple(
             party_id, share_ids[i].getShareId(), share_ids[i].getJobId(), share_ids[i].getThreadId()
         );
-        cond.wait(lock, [&] { return shares.count(key) == 1; });  // 待機
+        if (!cond.wait_for(
+                lock,
+                std::chrono::seconds(conf->getshare_time_limit),
+                [&] { return shares.count(key) == 1; }
+            ))  // 待機
+        {
+            qmpc::Log::throw_with_trace(std::runtime_error("getShares is timeout"));
+        }
         std::string share = shares[key];
         str_values.emplace_back(share);
         shares.erase(key);

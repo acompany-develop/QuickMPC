@@ -60,5 +60,6 @@ message Stacktrace {
 
 message JobErrorInfo {
     string what = 1;
-    optional Stacktrace stacktrace = 2;
+    optional string additional_info = 2;
+    optional Stacktrace stacktrace = 3;
 }

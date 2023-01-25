@@ -412,6 +412,54 @@ func TestGetComputationResultFailedJobErrorInfoWithStacktrace(t *testing.T) {
 	}
 }
 
+// ERROR の status が存在する時にエラー情報(Stacktrace付き)を取得できるかTest
+func TestGetJobErrorInfoSuccess(t *testing.T) {
+	initialize()
+	defer initialize()
+
+	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	data := `{
+		"what": "test",
+		"stacktrace": {
+			"frames": []
+		}
+	}`
+	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+
+	client := Client{}
+	info, err := client.GetJobErrorInfo(defaultJobUUID)
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if info == nil {
+		t.Error("there are no job error info")
+	}
+
+	expected := "test"
+	if info.What != expected {
+		t.Errorf("error information could not be parsed expectedly: required property What: %s, expected: %s", info.What, expected)
+	}
+
+	if info.Stacktrace == nil {
+		t.Error("error information could not be parsed expectedly: optional property Stacktrace is nil")
+	}
+}
+
+// statusもcompletedも存在しない場合にエラーがでるかTest
+func TestGetJobErrorInfoFailed(t *testing.T) {
+	initialize()
+	defer initialize()
+
+	client := Client{}
+	_, err := client.GetJobErrorInfo(defaultJobUUID)
+
+	if err == nil {
+		t.Error("get job error info must be failed: any status file not found")
+	}
+}
+
 /* InsertModelParams(string, string, int32) error */
 // モデルパラメータが送れるかTest
 func TestInsertModelParamsSuccess(t *testing.T) {

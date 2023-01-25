@@ -95,6 +95,25 @@ TEST(CtoC_Test, EXCHANGESHARES)
         EXPECT_EQ(values[i], datas[i]);
     }
 }
+
+TEST(CtoC_Test, GetShareThrowExceptionTest)
+{
+    Config *conf = Config::getInstance();
+    qmpc::Share::AddressId share_id;
+
+    auto server = qmpc::ComputationToComputation::Server::getServer();
+    EXPECT_ANY_THROW(server->getShare(conf->party_id, share_id));
+}
+
+TEST(CtoC_Test, GetSharesThrowExceptionTest)
+{
+    Config *conf = Config::getInstance();
+    unsigned int length = 1;
+    std::vector<qmpc::Share::AddressId> share_ids(length);
+
+    auto server = qmpc::ComputationToComputation::Server::getServer();
+    EXPECT_ANY_THROW(server->getShares(conf->party_id, share_ids, length));
+}
 int main(int argc, char **argv)
 {
     Config *conf = Config::getInstance();

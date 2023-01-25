@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 
 	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
 	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
@@ -61,6 +62,7 @@ type M2DbClient interface {
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
+	GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -188,6 +190,23 @@ func getComputationStatus(path string) (pb_types.JobStatus, *pb_types.JobErrorIn
 	return pb_types.JobStatus_UNKNOWN, nil, errorAnyStatusFileNotFound
 }
 
+func (c Client) GetJobErrorInfo(jobUUID string) (*pb_types.JobErrorInfo, error) {
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
+
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+
+	_, errInfo, errStatus := getComputationStatus(path)
+	if errStatus != nil {
+		return nil, errStatus
+	}
+	if errInfo != nil {
+		return errInfo, nil
+	}
+
+	return nil, nil
+}
+
 // DBから計算結果を得る
 func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
 	ls.Lock(jobUUID)
@@ -201,6 +220,15 @@ func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*C
 	}
 
 	if errInfo != nil {
+		// metadataは7kbまで
+		if (proto.Size(errInfo) > 7000) {
+			// スタックトレース情報を削除する
+			errInfo.Stacktrace = nil
+
+			additionalInfo := "Stacktrace information is too long. Please use get_job_error_info method to get more information"
+			errInfo.AdditionalInfo = &additionalInfo
+		}
+
 		return nil, errInfo, nil
 	}
 
