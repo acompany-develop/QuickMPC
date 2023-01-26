@@ -45,7 +45,7 @@ Share<T> operator==(const Share<T> &left, const Share<T> &right)
 template <size_t N>
 std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
 {
-    qmpc::OT ot(N);
+    std::vector<qmpc::OT> ot(3, qmpc::OT(N));
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
     int n_parties = conf->n_parties;
@@ -67,7 +67,7 @@ std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
         if (party < pt_id)
         {
             // v[to] = data;
-            auto rec = ot.recieve(party, r);
+            auto rec = ot[party - 1].recieve(party, r);
             for (int i = 0; i < N; ++i)
             {
                 v[party - 1][i] = rec[i];
@@ -94,15 +94,84 @@ std::pair<Share<bm::cpp_int>, std::vector<Share<bm::cpp_int>>> unitvPrep()
                 }
                 x[i] = xi;
             }
-            ot.send(party, x);
+            ot[pt_id - 1].send(party, x);
         }
-        for (int i = 0; i < N; ++i)
-        {
-            ret[i] = v[n_parties - 1][i];
-        }
+    }
+    for (int i = 0; i < N; ++i)
+    {
+        ret[i] = v[n_parties - 1][i];
     }
     return {bm::cpp_int{r}, ret};
 }
+// template <size_t N, size_t ArraySize>
+// std::pair<std::vector<Share<bm::cpp_int>>, std::vector<std::vector<Share<bm::cpp_int>>>>
+// unitvPrepVec()
+// {
+//     qmpc::OTe ot(N, ArraySize);
+//     Config *conf = Config::getInstance();
+//     int pt_id = conf->party_id;
+//     int n_parties = conf->n_parties;
+//     auto r = RandGenerator::getInstance()->getRandVec<long long>(1, N, ArraySize);
+//     std::vector<std::vector<qmpc::Share::Share<bm::cpp_int>>> ret(
+//         ArraySize, std::vector<std::vector<qmpc::Share::Share<bm::cpp_int>>>(N)
+//     );
+//     std::vector<std::vector<std::vector<bm::cpp_int>>> v(
+//         ArraySize, std::vector<std::vector<bm::cpp_int>>(n_parties, std::vector<bm::cpp_int>(N))
+//     );
+//     if (pt_id == 1)
+//     {
+//         // v[to] = data;
+//         std::vector<bm::cpp_int> e(N);
+//         e[(r + N - 1) % N] = 1ll;
+//         for (int i = 0; i < ArraySize; ++i)
+//         {
+//             v[i][0] = e;
+//         }
+//     }
+//     for (int party = 1; party <= n_parties; ++party)
+//     {
+//         std::vector<std::vector<std::vector<bm::cpp_int>>> x(
+//             ArraySize, std::vector < std::vector<bm::cpp_int>(N, std::vector<bm::cpp_int>(N))
+//         );
+//         if (party < pt_id)
+//         {
+//             // v[to] = data;
+//             auto rec = ot.recieve(party, r);
+//             for (int i = 0; i < N; ++i)
+//             {
+//                 v[party - 1][i] = rec[i];
+//                 // std::cout << "party 2 rec is " << v[1][i] << std::endl;
+//                 v[pt_id - 1][i] += rec[i];
+//             }
+//         }
+//         else if (party > pt_id)
+//         {
+//             auto ri = RandGenerator::getInstance()->getRandVec<long long>(1, (1 << N) - 1, N);
+
+//             for (int j = 0; j < N; ++j)
+//             {
+//                 v[party - 1][j] = bm::cpp_int{ri[j]};
+//             }
+//             for (int i = 0; i < N; ++i)
+//             {
+//                 auto vi = v[party - 2];
+//                 std::rotate(vi.begin(), vi.begin() + N - i - 1, vi.end());
+//                 std::vector<bm::cpp_int> xi(N);
+//                 for (int j = 0; j < N; ++j)
+//                 {
+//                     xi[j] = vi[j] - v[party - 1][j];
+//                 }
+//                 x[i] = xi;
+//             }
+//             ot.send(party, x);
+//         }
+//     }
+//     for (int i = 0; i < N; ++i)
+//     {
+//         ret[i] = v[n_parties - 1][i];
+//     }
+//     return {bm::cpp_int{r}, ret};
+// }
 template <typename T, int N = 32, int N_dash = 32>
 std::vector<Share<T>> unitv(const Share<T> &n)
 {

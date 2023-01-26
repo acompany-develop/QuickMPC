@@ -617,7 +617,7 @@ TEST(OTTest, compareMulti)
 TEST(OTTest, OTe)
 {
     size_t N = 32;
-    size_t array_size = 15000;
+    size_t array_size = 30000;
     qmpc::OTe ot(N, array_size);
     Config *conf = Config::getInstance();
     int pt_id = conf->party_id;
