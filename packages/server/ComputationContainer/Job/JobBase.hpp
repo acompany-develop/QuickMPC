@@ -41,6 +41,7 @@ class JobBase : public Interface
 
     StatusManager statusManager;
 
+    template <typename Type>
     auto readDb()
     {
         statusManager.nextStatus();
@@ -54,7 +55,7 @@ class JobBase : public Interface
         }
 
         // シェア型に変換
-        std::vector<std::vector<Share>> share_table;
+        std::vector<std::vector<qmpc::Share::Share<Type>>> share_table;
         share_table.reserve(values.size());
         for (const auto &rows : values)
         {
@@ -64,9 +65,10 @@ class JobBase : public Interface
         statusManager.nextStatus();
 
         auto schemas = joinTable.getSchemas();
-        return std::pair<std::vector<std::vector<Share>>, std::vector<std::string>>(
-            share_table, schemas
-        );
+        return std::
+            pair<std::vector<std::vector<qmpc::Share::Share<Type>>>, std::vector<std::string>>(
+                share_table, schemas
+            );
     }
 
     static auto toString(const std::vector<::Share> &values)
@@ -140,6 +142,7 @@ class JobBase : public Interface
 
 public:
     using Share = qmpc::Share::Share<FixedPoint>;
+    using ShareValue = FixedPoint;
     JobBase(const JobParameter &request)
         : request(request.getRequest())
         , job_id(request.getJobId())
@@ -162,7 +165,7 @@ public:
         }
         std::vector<std::list<int>> arg{src, target};
 
-        auto [share_table, schemas] = readDb();
+        auto [share_table, schemas] = readDb<ShareValue>();
         validate_cols(schemas, arg);
         auto result = static_cast<T *>(this)->compute(share_table, schemas, arg);
         writeDb(result);

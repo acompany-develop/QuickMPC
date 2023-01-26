@@ -65,7 +65,7 @@ FixedPoint stdev(std::vector<Share> &v)
 
     FixedPoint stdev = recons(var);
     QMPC_LOG_INFO("recons_varv: {}", stdev.getStrVal());
-    auto value = boost::multiprecision::cpp_dec_float_100(stdev.getStrVal());
+    auto value = boost::multiprecision::cpp_dec_float_50(stdev.getStrVal());
     if (value < 0)
     {
         value = 0;
