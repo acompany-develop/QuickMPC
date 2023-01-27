@@ -1,0 +1,22 @@
+[
+    {
+        "weight": 1.0,
+        "tree_structure": {
+            "feature_bitvector": [1, 0, 0],
+            "threshold": 1.5,
+            "right_child": {
+                "feature_bitvector": [0, 1, 0],
+                "threshold": 1.5,
+                "right_child": {
+                  "output": 0
+                },
+                "left_child": {
+                  "output": 1
+                }
+            },
+            "left_child": {
+                "output": 1
+            }
+        }
+    }
+]

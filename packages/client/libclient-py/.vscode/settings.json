@@ -1,0 +1,26 @@
+{
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "**/*.cfg": "cfg"
+  },
+  "[cfg]": {
+    "editor.formatOnSave": false
+  },
+  "editor.formatOnType": true,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 10000,
+  "files.trimFinalNewlines": true,
+  "files.trimTrailingWhitespace": true,
+  "terminal.integrated.copyOnSelection": true,
+  "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+  "python.formatting.autopep8Args": ["--max-line-length", "79", "--aggressive"],
+  "python.formatting.provider": "autopep8",
+  "python.languageServer": "Default",
+  "python.linting.enabled": true,
+  "python.linting.flake8Args": ["--max-line-length=79"],
+  "python.linting.flake8Enabled": true,
+  "python.linting.mypyEnabled": true,
+  "python.linting.lintOnSave": true,
+  "python.linting.pylintEnabled": false,
+  "editor.guides.highlightActiveIndentation": true
+}
