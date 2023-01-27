@@ -141,7 +141,6 @@ services:
     ports:
       - "0.0.0.0:60020:50020"
     networks:
-      default: {}
       shared-network:
         aliases:
           - beaver_triple_service
@@ -500,7 +499,6 @@ services:
       - ../Config/ComputationContainer/Compute1/.env
       - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.1.20
     depends_on:
@@ -534,7 +532,6 @@ services:
       - ../Config/ComputationContainer/Compute2/.env
       - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.2.20
     depends_on:
@@ -569,7 +566,6 @@ services:
       - ../Config/ComputationContainer/Compute3/.env
       - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.3.20
     depends_on:
@@ -603,7 +599,6 @@ services:
       - ../Config/ComputationContainer/Compute1/.env
       - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.1.20
     depends_on:
@@ -638,7 +633,6 @@ services:
       - ../Config/ComputationContainer/Compute2/.env
       - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.2.20
     depends_on:
@@ -674,7 +668,6 @@ services:
       - ../Config/ComputationContainer/Compute3/.env
       - ../Config/ComputationContainer/JWT/client.sample.env
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.3.20
     depends_on:
@@ -708,7 +701,6 @@ services:
       - "50010"
       - "50011"
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.1.10
     command:
@@ -739,7 +731,6 @@ services:
       - "50010"
       - "50011"
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.2.10
     command:
@@ -770,7 +761,6 @@ services:
       - "50010"
       - "50011"
     networks:
-      default: {}
       shared-network:
         ipv4_address: 10.0.3.10
     command:
@@ -884,7 +874,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     build:
       context: ../
-      dockerfile: Test/LibClient/Dockerfile
+      dockerfile: scripts/LibClient/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
@@ -915,7 +905,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     build:
       context: ../
-      dockerfile: Test/LibClient/Dockerfile
+      dockerfile: scripts/LibClient/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
@@ -951,4 +941,3 @@ volumes:
 networks:
   shared-network:
     external: true
-  default:
