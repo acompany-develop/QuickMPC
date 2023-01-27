@@ -250,7 +250,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: packages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
