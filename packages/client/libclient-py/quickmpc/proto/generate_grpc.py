@@ -11,18 +11,19 @@ def generate_files():
             "",
             "-I{}".format(pkg_resources.resource_filename('grpc_tools',
                                                           '_proto')),
-            "-I.",
+            "-I./../../../../../proto/LibcToManageContainer",
+            "-I./../../../../../proto",
             "--python_out=.",
             "--grpc_python_out=.",
-            "./libc_to_manage.proto",
+            "./../../../../../proto/LibcToManageContainer/libc_to_manage.proto",
         )
     )
     protoc.main(
         (
             "",
-            "-I.",
+            "-I./../../../../../proto",
             "--python_out=.",
-            "./common_types/common_types.proto",
+            "./../../../../../proto/common_types/common_types.proto",
         )
     )
 
