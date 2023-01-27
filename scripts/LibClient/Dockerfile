@@ -2,10 +2,12 @@ FROM python:3.7 as base
 
 
 FROM base as builder
-# copy
-COPY packages/client/libclient-py /QuickMPC-libClient-py
+# setuptools_scmが_version.pyを作る時にgitのversionが必要なので.git/をcopy
+COPY .git/ /.git/
+COPY packages/client/libclient-py /packages/client/libclient-py
 
 # install pipenv and modules
+WORKDIR /packages/client/libclient-py
 WORKDIR /LibClient
 RUN pip install -U pip && \
   pip install \
@@ -13,7 +15,7 @@ RUN pip install -U pip && \
   seaborn \
   scikit-learn \
   tabulate \
-  /QuickMPC-libClient-py
+  /packages/client/libclient-py
 
 
 FROM builder as medium
