@@ -3,4 +3,5 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]
-write_to = "quickmpc/_version.py"
+write_to = "packages/client/libclient-py/quickmpc/_version.py"
+root = "../../../"
