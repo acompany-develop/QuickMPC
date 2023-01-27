@@ -24,8 +24,8 @@ jobs:
 
       - name: Build CC image
         run: |
-          docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }} --load
-          docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:stable                          --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }} --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:stable                          --load
         working-directory: ./packages/server/ComputationContainer/
 
       - name: Run Trivy vulnerability scanner for CC
@@ -62,8 +62,8 @@ jobs:
 
       - name: Build MC image
         run: |
-          docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }} --load
-          docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:stable                          --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }} --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:stable                          --load
         working-directory: ./packages/server/ManageContainer/
 
       - name: Run Trivy vulnerability scanner for MC
