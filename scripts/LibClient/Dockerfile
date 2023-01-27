@@ -4,7 +4,6 @@ FROM python:3.7 as base
 FROM base as builder
 # copy
 COPY packages/client/libclient-py /QuickMPC-libClient-py
-RUN rm /QuickMPC-libClient-py/.git
 
 # install pipenv and modules
 WORKDIR /LibClient
