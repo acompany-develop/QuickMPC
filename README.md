@@ -28,7 +28,7 @@ This will enable businesses and engineers worldwide to use Python and JavaScript
 ## Run all test suite
 1. Change your current directory into `Test/`
 ```sh
-cd QuickMPC/Test
+cd QuickMPC/scripts
 ```
 2. Launch all containers
 ```sh
@@ -39,10 +39,10 @@ make debug t=./ManageContainer
 - libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo)
 
 ## How to test each container
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/Test
+Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/scripts
 1. Change your current directory into `Test/`
 ```sh
-cd QuickMPC/Test
+cd QuickMPC/scripts
 ```
 2. Run test
 ```sh
@@ -63,10 +63,10 @@ make debug t=./ManageContainer # Then, all container is launched
 
 ## How to develop each container
 ### Computation Container
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/src/ComputationContainer#readme
+Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ComputationContainer#readme
 1. Change your current directory
 ```sh
-cd src/ComputationContainer
+cd packages/server/ComputationContainer
 ```
 2. Start the container and enter the container
 ```sh
@@ -92,10 +92,10 @@ bazel clean
 
 ### Manage Container
 
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/src/ManageContainer#readme
+Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ManageContainer#readme
 1. Change your current directory
 ```sh
-cd src/ManageContainer
+cd packages/server/ManageContainer
 ```
 2. Start the container and enter the container
 ```sh
@@ -111,4 +111,3 @@ go build
 # test
 go test ... -v
 ```
-

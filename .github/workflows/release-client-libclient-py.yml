@@ -1,0 +1,45 @@
+name: Push Stable Package for Pypi
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  # 安定バージョンのQuickMPC-LibClient-pyをpush
+  build_and_push_libc:
+    name: Build and publish Python 🐍 distributions 📦 to PyPI
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.7"
+
+      - name: Install pypa/build
+        run: >-
+          python -m
+          pip install
+          build
+          twine
+          setuptools_scm
+          --user
+
+      - name: Build a binary wheel and a source tarball
+        run: >-
+          python -m
+          build
+          --sdist
+          --wheel
+          --outdir dist/
+          .
+
+      - name: Publish distribution 📦 to PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          twine upload --repository pypi dist/*

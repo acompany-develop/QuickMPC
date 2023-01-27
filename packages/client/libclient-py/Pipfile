@@ -1,0 +1,26 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+numpy = "*"
+grpcio-tools = "==1.46.3"
+pynacl = "*"
+tqdm = "*"
+grpcio-status = "==1.46.3"
+natsort = "*"
+
+[dev-packages]
+pytest = "*"
+tox = "*"
+flake8 = "*"
+autopep8 = "*"
+isort = "*"
+mypy = "*"
+types-protobuf = "*"
+types-tabulate = "*"
+types-tqdm = "*"
+
+[requires]
+python_version = "3.7"

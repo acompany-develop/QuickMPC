@@ -6,7 +6,7 @@
     {
       "label": "Format the file opened in this tab",
       "type": "shell",
-      "command": "clang-format-14 -i -style=\"file:${workspaceFolder}/src/.clang-format\" ${file}",
+      "command": "clang-format-14 -i -style=\"file:${workspaceFolder}/packages/server/.clang-format\" ${file}",
       "group": {
         "kind": "build",
         "isDefault": true

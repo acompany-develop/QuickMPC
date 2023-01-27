@@ -7,26 +7,26 @@ bazel-tools
 .bazel
 result
 
-src/ManageContainer/vendor
-src/ManageContainer/ManageContainer
+packages/server/ManageContainer/vendor
+packages/server/ManageContainer/ManageContainer
 
-src/DbContainer/DbGate/vendor
-src/DbContainer/DbGate/DbGate
-src/DbContainer/DbGate/bench/log/*
+packages/server/DbContainer/DbGate/vendor
+packages/server/DbContainer/DbGate/DbGate
+packages/server/DbContainer/DbGate/bench/log/*
 
 **/Db/**/data/*
 **/Db/**/nodestatus/initialized
 
 !.gitkeep
-src/ComputationContainer/setup.sh
-src/ComputationContainer/.vscode/c_cpp_properties.json
+packages/server/ComputationContainer/setup.sh
+packages/server/ComputationContainer/.vscode/c_cpp_properties.json
 
 **/.cache/**
 **/compose-bundle.zip
 !.gitkeep
-src/ComputationContainer/start.dev.sh
-src/ManageContainer/start.dev.sh
-src/_DbContainer/DbGate/start.dev.sh
+packages/server/ComputationContainer/start.dev.sh
+packages/server/ManageContainer/start.dev.sh
+packages/server/_DbContainer/DbGate/start.dev.sh
 
 __pycache__
 

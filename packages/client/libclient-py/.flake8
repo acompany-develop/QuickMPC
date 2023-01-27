@@ -1,0 +1,14 @@
+[flake8]
+
+# 検査するファイル，ディレクトリ
+filename =
+	./quickmpc/*.py
+	./demo/*.py
+	./tests/*.py
+
+# 検査から外すファイル
+# cache等は指定不要だが，明示的に指定することで速度が速くなった
+exclude = 
+  quickmpc/proto/*_pb2*,
+	*cache/*,
+	.tox/*,

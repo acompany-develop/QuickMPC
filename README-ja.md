@@ -26,7 +26,7 @@ QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Sec
 ## QuickMPC全体のテスト方法
 1. ディレクトリを移動する
 ```sh
-cd QuickMPC/Test
+cd QuickMPC/scripts
 ```
 2. 全コンテナを起動する
 ```sh
@@ -37,10 +37,10 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 - libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo)
 
 ## 各コンテナのテスト方法
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/Test
+詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/scripts
 1. ディレクトリを移動する
 ```sh
-cd QuickMPC/Test
+cd QuickMPC/scripts
 ```
 2. テストを開始する
 ```sh
@@ -61,10 +61,10 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 
 ## 各コンテナの開発方法
 ### Computation Container
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/src/ComputationContainer#readme
+詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ComputationContainer#readme
 1. ディレクトリを移動する
 ```sh
-cd src/ComputationContainer
+cd packages/server/ComputationContainer
 ```
 2. コンテナを起動してコンテナに入る
 ```sh
@@ -91,10 +91,10 @@ bazel clean
 
 ### Manage Container
 
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/src/ManageContainer#readme
+詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ManageContainer#readme
 1. ディレクトリを移動する
 ```sh
-cd src/ManageContainer
+cd packages/server/ManageContainer
 ```
 2. コンテナを起動してコンテナに入る
 ```sh
@@ -110,4 +110,3 @@ go build
 # test
 go test ... -v
 ```
-
