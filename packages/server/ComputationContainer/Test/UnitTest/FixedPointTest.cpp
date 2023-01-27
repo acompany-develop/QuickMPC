@@ -241,8 +241,7 @@ TEST(FixedPointTest, Decrement)
 TEST(FixedPointTest, Max)
 {
     namespace mp = boost::multiprecision;
-    mp::checked_int256_t ma =
-        std::numeric_limits<mp::checked_int256_t>::max() / FixedPoint::getShift();
+    mp::cpp_int ma = std::numeric_limits<mp::checked_int256_t>::max() / FixedPoint::getShift();
     FixedPoint a{ma};
     EXPECT_EQ(a, FixedPoint(ma));
 }
@@ -257,7 +256,7 @@ TEST(FixedPointTest, Mod)
 TEST(FixedPointTest, OverInt256)
 {
     namespace mp = boost::multiprecision;
-    mp::checked_int256_t ma = std::numeric_limits<mp::checked_int256_t>::max();
+    mp::cpp_int ma = std::numeric_limits<mp::checked_int256_t>::max();
     FixedPoint a{ma};
     a += FixedPoint{ma};
 

@@ -26,10 +26,12 @@ RUN apt-get update && \
     iputils-ping \
     net-tools \
     dnsutils \
-    gdb
+    sudo \
+    software-properties-common 
 
 # Install cmake
-RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.sh && \
+RUN CMAKE_VERSION=3.24.2 && \
+    wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-Linux-x86_64.sh && \
     mkdir -p $CMAKE_INSTALL_DIR && \
     sh cmake-linux.sh -- --skip-license --prefix=$CMAKE_INSTALL_DIR && \
     rm cmake-linux.sh && \
@@ -47,6 +49,25 @@ RUN cd / && git clone https://github.com/jedisct1/libsodium --branch stable && \
     cp -r /libsodium/src/libsodium/include /usr/local/lib/libsodium && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/libsodium.conf && \
     ldconfig
+#g++10 install
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test &&\
+    apt install -y gcc-10 \
+    g++-10
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10\
+    && update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+ARG boost_version=1.79.0
+ARG boost_file=boost_1_79_0
+RUN cd /tmp \
+    && wget https://boostorg.jfrog.io/artifactory/main/release/${boost_version}/source/${boost_file}.tar.gz --no-check-certificate \
+    && tar xfz ${boost_file}.tar.gz \
+    && rm ${boost_file}.tar.gz \
+    && cd ${boost_file} \
+    && ./bootstrap.sh \
+    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install \
+    && cd .. \
+    && rm -rf ${boost_file} \
+    && ldconfig
 
 # Install spdlog
 RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.gz && \
@@ -56,9 +77,6 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.15 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
-
-# Create directory to save core dump file
-RUN mkdir -p /tmp/cores
 
 FROM base as src
 # 開発環境のフォーマッタを統一
@@ -96,14 +114,11 @@ FROM alpine:3.16.2 as dep-runner
 RUN apk update && \
     apk add curl && \
     apk add --no-cache bash && \
-    apk add gdb && \
     # CVE-2022-0778 対策
     # 公式イメージの upgrade がされていないため
     apk upgrade
 RUN true
 COPY --from=builder /QuickMPC/computation_container /QuickMPC/bazel-bin/computation_container
-RUN true
-COPY --from=builder /QuickMPC/Scripts /QuickMPC/Scripts
 RUN true
 COPY --from=builder /usr/local/lib /usr/local/lib
 RUN true
@@ -133,9 +148,6 @@ FROM alpine:latest as large-runner
 RUN apk update && apk add curl
 RUN true
 COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bin/computation_container
-RUN true
-COPY --from=builder /QuickMPC/Scripts /QuickMPC/Scripts
-RUN true
 # テスト用バイナリ
 COPY --from=builder /QuickMPC/bazel-bin/computation_container_test /QuickMPC/bazel-bin/computation_container_test
 RUN true
@@ -146,6 +158,4 @@ RUN true
 COPY --from=builder /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
 RUN true
 COPY --from=builder /lib64 /lib64
-# Create directory to save core dump file
-RUN mkdir -p /tmp/cores
 WORKDIR /QuickMPC
