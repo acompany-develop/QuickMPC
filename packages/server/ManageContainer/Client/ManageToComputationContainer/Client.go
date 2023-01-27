@@ -10,12 +10,12 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 
-	helper "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/Helper"
-	datastore "github.com/acompany-develop/QuickMPC/src/ManageContainer/DataStore"
-	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
-	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
-	pb "github.com/acompany-develop/QuickMPC/src/proto/ManageToComputationContainer"
-	pb_types "github.com/acompany-develop/QuickMPC/src/proto/common_types"
+	helper "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/Helper"
+	datastore "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/DataStore"
+	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
 
 type Client struct{}

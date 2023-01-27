@@ -27,7 +27,7 @@ jobs:
           sudo apt-get install clang-format-14
       - name: Check if *.{cpp|hpp} files are formatted
         run: |
-          cd ${{ github.workspace }}/src/
+          cd ${{ github.workspace }}/packages/server/
           make check
 
   small_test_cc:
@@ -40,13 +40,13 @@ jobs:
 
       # Setup config for using GCS as bazel remote cache
       - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./src/ComputationContainer/sa.json
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/ComputationContainer/sa.json
         env:
           CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
       - name: Update .bazelrc for using remote cache
         run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./src/ComputationContainer/.bazelrc
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/ComputationContainer/.bazelrc
         env:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
@@ -91,13 +91,13 @@ jobs:
 
       # Setup config for using GCS as bazel remote cache
       - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./src/ComputationContainer/sa.json
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/ComputationContainer/sa.json
         env:
           CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
       - name: Update .bazelrc for using remote cache
         run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./src/ComputationContainer/.bazelrc
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/ComputationContainer/.bazelrc
         env:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
@@ -139,13 +139,13 @@ jobs:
           submodules: true
 
       - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./src/ComputationContainer/sa.json
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/ComputationContainer/sa.json
         env:
           CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
       - name: Update .bazelrc for using remote cache
         run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./src/ComputationContainer/.bazelrc
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/ComputationContainer/.bazelrc
         env:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 

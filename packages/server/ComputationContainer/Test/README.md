@@ -12,7 +12,7 @@ bazel build //:all && ./bazel-bin/computation_container_test
 これは 3Partyで CC を建てる必要があるため現行のLargeでは実行不可能
 もし実行する場合は以下のようにすること
 
-- src/ComputationContainer/Test/IntegrationTest/ComputationTest/BUILD
+- packages/server/ComputationContainer/Test/IntegrationTest/ComputationTest/BUILD
 ```
 cc_library(
     name = "computation_test",
@@ -39,7 +39,7 @@ cc_library(
 )
 ```
 
-- src/ComputationContainer/Test/IntegrationTest/ComputationTest/ComputationTest.hpp
+- packages/server/ComputationContainer/Test/IntegrationTest/ComputationTest/ComputationTest.hpp
 ```
 #pragma once
 #include <iostream>

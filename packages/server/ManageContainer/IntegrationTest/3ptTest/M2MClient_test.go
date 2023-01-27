@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
-	m2m "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToManageContainer"
-	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToDb"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToManageContainer"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
 )
 
 func TestDeleteShares(t *testing.T) {

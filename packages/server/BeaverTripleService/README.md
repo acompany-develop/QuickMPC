@@ -7,7 +7,7 @@ BeverTripleService Container
 [ghcr.ioにイメージをpushまたはpullする時にやること](/Docs/ghcr-io-push-pull.md)を行ってghcrからBTSのイメージをpullする権限を得る
 
 ## ローカルでの起動方法
-`src/BeaverTripleService/`で以下のコマンドを実行
+`packages/server/BeaverTripleService/`で以下のコマンドを実行
 ```sh
 make run
 ```

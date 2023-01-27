@@ -1,3 +1,3 @@
-module github.com/acompany-develop/QuickMPC/src/proto/ManageToManageContainer
+module github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer
 
 go 1.14

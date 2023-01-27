@@ -9,7 +9,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
@@ -53,7 +53,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
@@ -94,7 +94,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
@@ -167,19 +167,19 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-src
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: src
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-src
     volumes:
       - type: bind
-        source: ../src/ComputationContainer
+        source: ../packages/server/ComputationContainer
         target: /QuickMPC
       - type: bind
-        source: ../src/ComputationContainer/.cache
+        source: ../packages/server/ComputationContainer/.cache
         target: /root/.cache
       - type: bind
-        source: ../src/proto
+        source: ../proto
         target: /proto
       - type: bind
         source: ../Config/ComputationContainer/Compute1
@@ -203,16 +203,16 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-src
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: src
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-src
     volumes:
       - type: bind
-        source: ../src/ManageContainer
+        source: ../packages/server/ManageContainer
         target: /QuickMPC
       - type: bind
-        source: ../src/proto
+        source: ../proto
         target: /proto
       - type: bind
         source: ../Config/ManageContainer/Manage1
@@ -233,7 +233,7 @@ services:
     image: envoyproxy/envoy:v1.17.1
     volumes:
       - type: bind
-        source: ./../src/ManageContainer/envoy.yaml
+        source: ./../packages/server/ManageContainer/envoy.yaml
         target: /etc/envoy/envoy.yaml
     expose:
       - "15000"
@@ -250,7 +250,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ages/server/ManageContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
@@ -316,7 +316,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
@@ -378,7 +378,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
@@ -447,7 +447,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       # temporarily change build stage from `small` to `small_tmp` because it takes long time.
       # TODO(#36): improve performance
       target: small_tmp
@@ -460,7 +460,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: small
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
@@ -482,7 +482,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
@@ -516,7 +516,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
@@ -551,7 +551,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
@@ -585,7 +585,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
@@ -620,7 +620,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
@@ -656,7 +656,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: src/ComputationContainer/Dockerfile
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
@@ -688,7 +688,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
@@ -719,7 +719,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
@@ -750,7 +750,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
@@ -782,7 +782,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
@@ -819,7 +819,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
@@ -852,7 +852,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: src/ManageContainer/Dockerfile
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev

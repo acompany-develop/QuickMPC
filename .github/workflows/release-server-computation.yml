@@ -26,7 +26,7 @@ jobs:
         run: |
           docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }} --load
           docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:stable                          --load
-        working-directory: ./src/ComputationContainer/
+        working-directory: ./packages/server/ComputationContainer/
 
       - name: Run Trivy vulnerability scanner for CC
         uses: aquasecurity/trivy-action@master
@@ -64,7 +64,7 @@ jobs:
         run: |
           docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }} --load
           docker buildx build ../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:stable                          --load
-        working-directory: ./src/ManageContainer/
+        working-directory: ./packages/server/ManageContainer/
 
       - name: Run Trivy vulnerability scanner for MC
         uses: aquasecurity/trivy-action@master

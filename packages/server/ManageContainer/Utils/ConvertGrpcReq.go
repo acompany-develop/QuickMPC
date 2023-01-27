@@ -1,8 +1,8 @@
 package utils
 
 import (
-	pb_l2m "github.com/acompany-develop/QuickMPC/src/proto/LibcToManageContainer"
-	pb_m2c "github.com/acompany-develop/QuickMPC/src/proto/ManageToComputationContainer"
+	pb_l2m "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer"
+	pb_m2c "github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer"
 )
 
 func ConvertExecuteComputationRequest(in *pb_l2m.ExecuteComputationRequest, jobUUID string) *pb_m2c.ExecuteComputationRequest {

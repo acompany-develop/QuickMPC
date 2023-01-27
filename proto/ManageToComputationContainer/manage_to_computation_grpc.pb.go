@@ -8,7 +8,7 @@ package ManageToComputationContainer
 
 import (
 	context "context"
-	common_types "github.com/acompany-develop/QuickMPC/src/proto/common_types"
+	common_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

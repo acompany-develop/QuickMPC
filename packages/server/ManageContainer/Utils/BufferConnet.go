@@ -8,7 +8,7 @@ import (
 	"context"
 	"net"
 
-	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
+	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"

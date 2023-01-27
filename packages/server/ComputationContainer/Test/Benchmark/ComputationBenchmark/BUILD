@@ -14,7 +14,7 @@ cc_library(
         "//Server/ComputationToComputationContainer:server",
         "//Server/ManageToComputationContainer:server",
         "//Logging:log",
-        "@com_github_grpc_grpc//src/proto/grpc/health/v1:health_proto",
+        "@com_github_grpc_grpc//proto/grpc/health/v1:health_proto",
     ],
     visibility = ["//visibility:public"],
 )

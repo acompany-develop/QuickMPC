@@ -11,7 +11,7 @@ import (
 	"sync"
 	"testing"
 
-	pb_types "github.com/acompany-develop/QuickMPC/src/proto/common_types"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
 
 // DBを初期化する

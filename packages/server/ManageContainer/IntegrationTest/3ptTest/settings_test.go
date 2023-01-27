@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	m2m "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToManageContainer"
-	l2mserver "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server/LibcToManageContainer"
-	m2mserver "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server/ManageToManageContainer"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToManageContainer"
+	l2mserver "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server/LibcToManageContainer"
+	m2mserver "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server/ManageToManageContainer"
 )
 
 func TestMain(m *testing.M) {

@@ -7,7 +7,7 @@ proto
 
 - `WORKSPACE`
 
-`src/proto` のワークスペースを参照し、gRPC 利用時に必要な設定を読込・実行する
+`proto` のワークスペースを参照し、gRPC 利用時に必要な設定を読込・実行する
 
 ```bazel
 # Enable Proto
@@ -27,7 +27,7 @@ Proto_extra_deps()
 - `BUILD`
 
 依存関係に `@proto//${分類}:${ターゲット名}` を指定する
-例: `src/ComputationContainer/Server/ComputationToComputationContainer/BUILD`
+例: `packages/server/ComputationContainer/Server/ComputationToComputationContainer/BUILD`
 ```bazel
 cc_library(
     ...,
@@ -40,7 +40,7 @@ cc_library(
 - `#include` 時
 
 `external/proto/${分類}/${プロトコル名}.grpc.pb.h` のように指定する
-例: `src/ComputationContainer/Server/ComputationToComputationContainer/Server.hpp`
+例: `packages/server/ComputationContainer/Server/ComputationToComputationContainer/Server.hpp`
 
 ```cpp
 #include "external/proto/ComputationToComputationContainer/ComputationToComputation.grpc.pb.h"
@@ -54,12 +54,12 @@ cc_library(
 
 ```
 replace (
-	github.com/acompany-develop/QuickMPC/src/proto/TargetProtocol => ./../proto/TargetProtocol
+	github.com/acompany-develop/QuickMPC/proto/TargetProtocol => ./../proto/TargetProtocol
   ...
 )
 
 require (
-	github.com/acompany-develop/QuickMPC/src/proto/TargetProtocol
+	github.com/acompany-develop/QuickMPC/proto/TargetProtocol
   ...
 )
 ```
@@ -73,13 +73,13 @@ require (
 ```
 import (
   ...
-  pb "github.com/acompany-develop/QuickMPC/src/proto/TargetProtocol"
+  pb "github.com/acompany-develop/QuickMPC/proto/TargetProtocol"
 )
 ```
 
 ## docker-compose.yml (develop 用)
 
-`src/proto` をマウントするように以下を追加する
+`proto` をマウントするように以下を追加する
 
 ```yaml
 services:
@@ -94,10 +94,10 @@ services:
 
 ## Dockerfile (image build 用)
 
-`src/proto` を利用できるようコピーするため以下を追加する
+`proto` を利用できるようコピーするため以下を追加する
 
 ```docker
-COPY src/proto/ /proto
+COPY proto/ /proto
 RUN true
 ```
 
@@ -105,11 +105,11 @@ RUN true
 
 ## .proto 追加
 
-`src/proto/${分類}/${プロトコル名}.proto` のように新規ファイルを作成する
+`proto/${分類}/${プロトコル名}.proto` のように新規ファイルを作成する
 
 ## C++ 周りのビルド設定を定義
 
-`src/proto/${分類}/BUILD` を作成し、以下のように記述
+`proto/${分類}/BUILD` を作成し、以下のように記述
 
 ```bazel
 load("@rules_proto//proto:defs.bzl", "proto_library")
@@ -146,7 +146,7 @@ cc_grpc_library(
 .proto ファイル内で `go_package` option を指定
 
 ```protobuf
-option go_package = "github.com/acompany-develop/QuickMPC/src/proto/TargetProtocol";
+option go_package = "github.com/acompany-develop/QuickMPC/proto/TargetProtocol";
 ```
 
 以下のコマンドにて生成後、生成物を commit (git の管理下に置く)
@@ -163,7 +163,7 @@ protoc --go_out=. --go_opt=paths=source_relative \
 ### `go.mod` 作成
 
 ```
-module github.com/acompany-develop/QuickMPC/src/proto/ManageToComputationContainer
+module github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer
 
 go 1.14
 ```

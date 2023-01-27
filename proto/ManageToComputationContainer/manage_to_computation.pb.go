@@ -7,7 +7,7 @@
 package ManageToComputationContainer
 
 import (
-	common_types "github.com/acompany-develop/QuickMPC/src/proto/common_types"
+	common_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"

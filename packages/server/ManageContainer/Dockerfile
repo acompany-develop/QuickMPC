@@ -54,11 +54,11 @@ ENV PATH=$PATH:/root/.local/bin
 WORKDIR /QuickMPC
 
 FROM base as builder
-COPY src/ManageContainer/ /QuickMPC
+COPY packages/server/ManageContainer/ /QuickMPC
 # github actionsで使用されているdockerがCOPYを2連続で行うとたまにエラーが出る問題を抱えている
 # その問題を回避するために、COPYの間にRun trueを挟んでいる
 RUN true
-COPY src/proto/ /proto
+COPY proto/ /proto
 WORKDIR /QuickMPC
 RUN --mount=type=cache,target=/root/go/pkg/mod \
   go mod download

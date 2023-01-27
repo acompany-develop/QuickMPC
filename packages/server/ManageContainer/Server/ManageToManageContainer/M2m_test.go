@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
-	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
-	pb "github.com/acompany-develop/QuickMPC/src/proto/ManageToManageContainer"
-	pb_types "github.com/acompany-develop/QuickMPC/src/proto/common_types"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToDb"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
 
 // Test用のDbGとCCのmock

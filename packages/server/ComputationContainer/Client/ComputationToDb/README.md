@@ -47,7 +47,7 @@ Jobの計算結果が格納されたDB
 }
 ```
 - job_uuid：jobのID
-- status：JobのStatus．各値の詳細は[こちら](https://github.com/acompany-develop/QuickMPC/blob/81548efe382797191f367b4125d177fc2f1d1b1c/src/proto/common_types/common_types.proto#L7-L13)
+- status：JobのStatus．各値の詳細は[こちら](https://github.com/acompany-develop/QuickMPC/blob/81548efe382797191f367b4125d177fc2f1d1b1c/proto/common_types/common_types.proto#L7-L13)
 - result：計算結果．jsonの詳細な形式は下記参照
 - piece_id：分割したデータの内，何番目のデータか．0-index
 ### Example

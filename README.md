@@ -63,10 +63,10 @@ make debug t=./ManageContainer # Then, all container is launched
 
 ## How to develop each container
 ### Computation Container
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/src/ComputationContainer#readme
+Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ComputationContainer#readme
 1. Change your current directory
 ```sh
-cd src/ComputationContainer
+cd packages/server/ComputationContainer
 ```
 2. Start the container and enter the container
 ```sh
@@ -92,10 +92,10 @@ bazel clean
 
 ### Manage Container
 
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/src/ManageContainer#readme
+Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ManageContainer#readme
 1. Change your current directory
 ```sh
-cd src/ManageContainer
+cd packages/server/ManageContainer
 ```
 2. Start the container and enter the container
 ```sh
@@ -111,4 +111,3 @@ go build
 # test
 go test ... -v
 ```
-

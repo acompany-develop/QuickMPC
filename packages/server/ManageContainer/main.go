@@ -1,10 +1,10 @@
 package main
 
 import (
-	l2mserver "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server/LibcToManageContainer"
-	m2mserver "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server/ManageToManageContainer"
+	l2mserver "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server/LibcToManageContainer"
+	m2mserver "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server/ManageToManageContainer"
 
-	manage2comp "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToComputationContainer"
+	manage2comp "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToComputationContainer"
 )
 
 func main() {

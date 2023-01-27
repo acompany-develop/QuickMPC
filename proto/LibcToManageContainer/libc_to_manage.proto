@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package libctomanage;
 
-option go_package = "github.com/acompany-develop/QuickMPC/src/proto/LibcToManageContainer";
+option go_package = "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer";
 
 import "common_types/common_types.proto";
 

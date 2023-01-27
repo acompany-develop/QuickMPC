@@ -1,19 +1,19 @@
-module github.com/acompany-develop/QuickMPC/src/ManageContainer
+module github.com/acompany-develop/QuickMPC/packages/server/ManageContainer
 
 go 1.14
 
 replace (
-	github.com/acompany-develop/QuickMPC/src/proto/LibcToManageContainer => ./../proto/LibcToManageContainer
-	github.com/acompany-develop/QuickMPC/src/proto/ManageToComputationContainer => ./../proto/ManageToComputationContainer
-	github.com/acompany-develop/QuickMPC/src/proto/ManageToManageContainer => ./../proto/ManageToManageContainer
-	github.com/acompany-develop/QuickMPC/src/proto/common_types => ./../proto/common_types
+	github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer => ./../proto/LibcToManageContainer
+	github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer => ./../proto/ManageToComputationContainer
+	github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer => ./../proto/ManageToManageContainer
+	github.com/acompany-develop/QuickMPC/proto/common_types => ./../proto/common_types
 )
 
 require (
-	github.com/acompany-develop/QuickMPC/src/proto/LibcToManageContainer v0.0.0-00010101000000-000000000000
-	github.com/acompany-develop/QuickMPC/src/proto/ManageToComputationContainer v0.0.0-00010101000000-000000000000
-	github.com/acompany-develop/QuickMPC/src/proto/ManageToManageContainer v0.0.0-00010101000000-000000000000
-	github.com/acompany-develop/QuickMPC/src/proto/common_types v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.5.0
 	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/google/uuid v1.1.2

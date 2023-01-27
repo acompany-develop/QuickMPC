@@ -3,7 +3,7 @@ package helper
 import (
 	"time"
 
-	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
+	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

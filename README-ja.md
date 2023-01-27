@@ -61,10 +61,10 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 
 ## 各コンテナの開発方法
 ### Computation Container
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/src/ComputationContainer#readme
+詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ComputationContainer#readme
 1. ディレクトリを移動する
 ```sh
-cd src/ComputationContainer
+cd packages/server/ComputationContainer
 ```
 2. コンテナを起動してコンテナに入る
 ```sh
@@ -91,10 +91,10 @@ bazel clean
 
 ### Manage Container
 
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/src/ManageContainer#readme
+詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ManageContainer#readme
 1. ディレクトリを移動する
 ```sh
-cd src/ManageContainer
+cd packages/server/ManageContainer
 ```
 2. コンテナを起動してコンテナに入る
 ```sh
@@ -110,4 +110,3 @@ go build
 # test
 go test ... -v
 ```
-

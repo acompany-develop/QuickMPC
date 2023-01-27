@@ -4,8 +4,8 @@ services:
     container_name: computation_container1
     tty: true # 起動しっぱなし
     build:
-      context: ../../
-      dockerfile: src/ComputationContainer/Dockerfile
+      context: ../../../
+      dockerfile: packages/server/ComputationContainer/Dockerfile
       target: src
     expose:
       - "50120"
@@ -17,21 +17,21 @@ services:
         target: /QuickMPC
       # bazelのビルド成果物を永続化
       - type: bind
-        source: ../../src/ComputationContainer/.cache
+        source: ./.cache
         target: /root/.cache
       - type: bind
-        source: ../proto
+        source: ../../../proto
         target: /proto
       - type: bind
-        source: ../../Config/ComputationContainer/Compute1
+        source: ../../../Config/ComputationContainer/Compute1
         target: /QuickMPC/Config
       # srcステージ用の.src.envを.envに上書きする(テスト時にファイルを直接読み込むため)
       - type: bind
-        source: ../../Config/ComputationContainer/Compute1/.src.env
+        source: ../../../Config/ComputationContainer/Compute1/.src.env
         target: /QuickMPC/Config/.env
       # 開発環境のフォーマッタを統一
       - type: bind
-        source: ../../.vscode
+        source: ../../../.vscode
         target: /QuickMPC/.vscode
       - type: bind
         source: ../.clang-format
@@ -40,8 +40,8 @@ services:
         source: ../Db/
         target: /Db
     env_file:
-      - ../../Config/ComputationContainer/Compute1/.src.env
-      - ../../Config/ComputationContainer/JWT/client.sample.env
+      - ../../../Config/ComputationContainer/Compute1/.src.env
+      - ../../../Config/ComputationContainer/JWT/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.120

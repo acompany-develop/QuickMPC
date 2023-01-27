@@ -10,14 +10,14 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	m2c "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToComputationContainer"
-	m2db "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToDb"
-	m2m "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToManageContainer"
-	m2t "github.com/acompany-develop/QuickMPC/src/ManageContainer/Client/ManageToTokenCA"
-	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
-	common "github.com/acompany-develop/QuickMPC/src/ManageContainer/Server"
-	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
-	pb "github.com/acompany-develop/QuickMPC/src/proto/LibcToManageContainer"
+	m2c "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToComputationContainer"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToDb"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToManageContainer"
+	m2t "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToTokenCA"
+	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
+	common "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer"
 )
 
 // ServerのInterface定義

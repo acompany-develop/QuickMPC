@@ -4,7 +4,7 @@ srcステージのみ `Config.src.json` それ以外のステージでは `Confi
 ## 仕組み
 Dockerfileで
 ```Dockerfile
-# src/BeaverTripleService/Dockerfile
+# packages/server/BeaverTripleService/Dockerfile
 FROM ubuntu:18.04 as base
 ...
 
@@ -20,7 +20,7 @@ FROM base as builder
 
 アプリケーションで以下のように分岐することで切り替えを実現
 ```go
-// src/BeaverTripleService/ConfigStore/Config.go
+// packages/server/BeaverTripleService/ConfigStore/Config.go
 ...
 func init() {
     stage := getEnv("STAGE", "")

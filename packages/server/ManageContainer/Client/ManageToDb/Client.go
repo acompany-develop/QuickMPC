@@ -12,9 +12,9 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
-	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
-	pb_types "github.com/acompany-develop/QuickMPC/src/proto/common_types"
+	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
 
 // DBの役割を果たすディレクトリのパス

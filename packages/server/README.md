@@ -6,7 +6,7 @@ All Container
 DockerのImageには以下のステージ名を使用している.
 | ステージ名 | 用途                                                                   |
 | :--------- | :--------------------------------------------------------------------- |
-| src        | src/で開発する時に使用する                                             |
+| src        | packages/で開発する時に使用する                                             |
 | dev        | 3台同時に建てたい時に使用するステージ                                  |
 | small      | CIのsmallテストで使用するステージ                                      |
 | medium     | CIのmediumテストで使用するステージ                                     |
@@ -23,7 +23,7 @@ FROM ubuntu:18.04 as base
 # 諸々のセットアップ処理
 ...
 
-# src/で開発する時に使用するステージ
+# packages/で開発する時に使用するステージ
 FROM base as src
 ...
 
@@ -65,7 +65,7 @@ services:
     ...
     build:
       context: ../../
-      dockerfile: src/HogeContainer/Dockerfile
+      dockerfile: packages/server/HogeContainer/Dockerfile
       target: src # dev, dep, small, medium, large等
     ...
 ```

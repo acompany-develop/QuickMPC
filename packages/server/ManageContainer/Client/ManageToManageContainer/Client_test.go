@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/acompany-develop/QuickMPC/src/ManageContainer/Log"
-	utils "github.com/acompany-develop/QuickMPC/src/ManageContainer/Utils"
-	pb "github.com/acompany-develop/QuickMPC/src/proto/ManageToManageContainer"
+	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer"
 )
 
 // Test用のMCのmock

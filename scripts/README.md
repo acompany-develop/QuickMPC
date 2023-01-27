@@ -6,7 +6,7 @@ The directory containing the test code for all services and docker-compose.yml t
 The following stage name is used for Docker's Image.
 | stage name | purpose                                                                                                          |
 | :--------- | :--------------------------------------------------------------------------------------------------------------- |
-| src        | For developing under src/.                                                                                       |
+| src        | For developing under packages/.                                                                                       |
 | dev        | For building 3 units at the same time                                                                            |
 | small      | For CI's small test                                                                                              |
 | medium     | For CI's medium test                                                                                             |
@@ -24,7 +24,7 @@ services:
     ...
     build:
       context: ../
-      dockerfile: src/HogeContainer/Dockerfile
+      dockerfile: packages/server/HogeContainer/Dockerfile
       target: src # dev, dep, small, medium, large, etc...
     ...
 ```

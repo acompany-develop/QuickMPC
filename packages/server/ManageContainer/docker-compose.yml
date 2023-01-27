@@ -7,28 +7,28 @@ services:
       - "50110"
       - "50111"
     build:
-      context: ../../
-      dockerfile: src/ManageContainer/Dockerfile
+      context: ../../../
+      dockerfile: packages/server/ManageContainer/Dockerfile
       target: src
     volumes:
       - type: bind
         source: .
         target: /QuickMPC
       - type: bind
-        source: ../proto
+        source: ../../../proto
         target: /proto
       - type: bind
-        source: ../../Config/ManageContainer/Manage1
+        source: ../../../Config/ManageContainer/Manage1
         target: /QuickMPC/Config
       # 開発環境のフォーマッタを統一
       - type: bind
-        source: ../../.vscode
+        source: ../../../.vscode
         target: /QuickMPC/.vscode
       - type: bind
         source: ../Db/
         target: /Db
     env_file:
-      - ../../Config/ManageContainer/Manage1/.src.env
+      - ../../../Config/ManageContainer/Manage1/.src.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.110

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package pb_common_types;
 
-option go_package = "github.com/acompany-develop/QuickMPC/src/proto/common_types";
+option go_package = "github.com/acompany-develop/QuickMPC/proto/common_types";
 
 enum JobStatus {
     UNKNOWN = 0;
