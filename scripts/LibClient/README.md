@@ -5,7 +5,7 @@
 $ make test t=LibClient p=medium
 ```
 ### 特定のTestのみ動作させる
-[Test/docker-compose.ymlのcommandを記述した部分](https://github.com/acompany-develop/QuickMPC/blob/86bf97a1959a7b8351324e1ee55081530fbce08d/Test/docker-compose.yml#L1084)
+[scripts/docker-compose.ymlのcommandを記述した部分](../docker-compose.yml#L892)
 で，test optionとして`-k {実行したいtest名}`を追加する．
 ```yaml
 # before
@@ -20,7 +20,7 @@ command: ["/bin/bash", "-c", "pipenv run pytest src/tests -s -v -log-cli-level=D
 $ make test t=LibClient p=benchmark
 ```
 ### 特定のBenchmarkのみ動作させる
-[Test/docker-compose.ymlのcommandを記述した部分](https://github.com/acompany-develop/QuickMPC/blob/86bf97a1959a7b8351324e1ee55081530fbce08d/Test/docker-compose.yml#L1107)
+[scripts/docker-compose.ymlのcommandを記述した部分](../docker-compose.yml#L923)
 で，test optionとして`-k {実行したいtest名}`を追加する．
 ```yaml
 # before
@@ -29,7 +29,7 @@ command: ["/bin/bash", "-c", "pipenv run pytest src/benchmark -s -v -log-cli-lev
 command: ["/bin/bash", "-c", "pipenv run pytest src/benchmark -s -v -log-cli-level=DEBUG -k correl"]
 ```
 ### サーバに置いたQuickMPCに対してBenchmarkを動作させる
-[Test/LibClient/src/utils.pyで指定しているIP](https://github.com/acompany-develop/QuickMPC/blob/429f4974758b7165d341dce68535ac881880242a/Test/LibClient/src/utils.py#L6-L10)
+[scripts/LibClient/src/utils.pyで指定しているIP](./src/utils.py#L6-L10)
 を対象のIPに変更する．
 ```Python
 qmpc: QMPC = QMPC([

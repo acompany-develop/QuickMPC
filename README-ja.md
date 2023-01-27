@@ -26,7 +26,7 @@ QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Sec
 ## QuickMPC全体のテスト方法
 1. ディレクトリを移動する
 ```sh
-cd QuickMPC/Test
+cd QuickMPC/scripts
 ```
 2. 全コンテナを起動する
 ```sh
@@ -37,10 +37,10 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 - libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo)
 
 ## 各コンテナのテスト方法
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/Test
+詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/scripts
 1. ディレクトリを移動する
 ```sh
-cd QuickMPC/Test
+cd QuickMPC/scripts
 ```
 2. テストを開始する
 ```sh

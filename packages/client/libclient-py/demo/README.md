@@ -4,7 +4,7 @@
 The demo can be performed in the virtual environment which is installed QuickMPC-libClient-py via pip, assuming actual usage. Note that a different environment from the development Python environment is required.
 
 ### 1. Start up the container
-Refer to the **Debugging Method** in [QuickMPC/Test/README.md](https://github.com/acompany-develop/QuickMPC/tree/develop/Test), and set up all QuickMPC containers in the dev stage.
+Refer to the **Debugging Method** in [QuickMPC/scripts/README.md](https://github.com/acompany-develop/QuickMPC/tree/develop/scripts), and set up all QuickMPC containers in the dev stage.
 
 ### 2. Execute the following commands in this directory to establish the environment
 ```console
@@ -26,4 +26,3 @@ $ pipenv run python send_share.py [file_path] # Run the demo of sending share
 $ pipenv run python execute_computation.py # Run the demo of executing computation
 ```
 Note that some unit_demos such as ``unit_demo/execute_computation.py`` depend on ID information obtained from send_share, etc., so you need to rewrite the ID accordingly.
-

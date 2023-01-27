@@ -4,7 +4,7 @@
 デモは実際の使用状況を想定して，QuickMPC-libClient-pyをpip installしたDemo用の環境で行う．開発用のPython環境とは異なる環境が必要な点に注意する．
 
 ### 1. コンテナを立ちあげる
-[QuickMPC/Test/README.md](https://github.com/acompany-develop/QuickMPC/tree/develop/Test)の**デバッグ方法**を参考にして，QuickMPCの全てのコンテナをdevステージで立ち上げる
+[QuickMPC/scripts/README.md](https://github.com/acompany-develop/QuickMPC/tree/develop/scripts)の**デバッグ方法**を参考にして，QuickMPCの全てのコンテナをdevステージで立ち上げる
 
 
 
