@@ -1,6 +1,6 @@
 module github.com/acompany-develop/QuickMPC/packages/server/ManageContainer
 
-go 1.14
+go 1.18
 
 replace (
 	github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer => ./../proto/LibcToManageContainer
@@ -15,19 +15,21 @@ require (
 	github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.5.0
-	github.com/google/go-cmp v0.5.7 // indirect
 	github.com/google/uuid v1.1.2
-	github.com/kr/pretty v0.3.0 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
-	github.com/rogpeppe/go-internal v1.8.1 // indirect
-	go.uber.org/atomic v1.9.0 // indirect
-	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0
-	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
-	golang.org/x/text v0.3.8 // indirect
 	google.golang.org/grpc v1.41.0
 	google.golang.org/protobuf v1.28.1
-	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+)
+
+require (
+	github.com/google/go-cmp v0.5.7 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.8.0 // indirect
+	golang.org/x/net v0.4.0 // indirect; NOTE: CVE-2022-41717, CVE-2022-41721の回避 indirectだとCVE-2022-41717に引っかかるので決めうち
+	golang.org/x/sys v0.3.0 // indirect
+	golang.org/x/text v0.5.0 // indirect
+	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 )
 
 exclude (
