@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - "release/**"
+    tags:
+      - "*"
 
 jobs:
   # 安定バージョンのQMPCイメージをpush
@@ -22,16 +24,41 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
 
-      - name: Build CC image
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: quickmpc-cc
+
+      - name: Build CC image by branch
+        if: github.event.payload.ref_type == 'branch'
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }} --load
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:stable                          --load
         working-directory: ./packages/server/ComputationContainer/
 
-      - name: Run Trivy vulnerability scanner for CC
+      - name: Build CC image by tag
+        if: github.event.payload.ref_type == 'tag'
+        run: |
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.tags }} --load
+        working-directory: ./packages/server/ComputationContainer/
+
+      - name: Run Trivy vulnerability scanner for CC with branch
+        if: github.event.payload.ref_type == 'branch'
+        uses: aquasecurity/trivy-action@master
+        with:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       c
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }}"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy vulnerability scanner for CC with tag
+        if: github.event.payload.ref_type == 'tag'
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.tags }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -41,10 +68,16 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Push image
+      - name: Push image with branch
+        if: github.event.payload.ref_type == 'branch'
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:s${{ steps.date.outputs.date }}
           docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:stable
+
+      - name: Push image with tag
+        if: github.event.payload.ref_type == 'tag'
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.tags }}
 
   build_and_push_mc:
     runs-on: ubuntu-latest
@@ -60,13 +93,27 @@ jobs:
         id: date
         run: echo "::set-output name=date::$(date +'%Y%m%d')"
 
-      - name: Build MC image
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: quickmpc-mc
+
+      - name: Build MC image with branch
+        if: github.event.payload.ref_type == 'branch'
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }} --load
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:stable                          --load
         working-directory: ./packages/server/ManageContainer/
 
-      - name: Run Trivy vulnerability scanner for MC
+      - name: Build MC image with tag
+        if: github.event.payload.ref_type == 'tag'
+        run: |
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.tags }} --load
+        working-directory: ./packages/server/ManageContainer/
+
+      - name: Run Trivy vulnerability scanner for MC with branch
+        if: github.event.payload.ref_type == 'branch'
         uses: aquasecurity/trivy-action@master
         with:
           image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }}"
@@ -76,13 +123,28 @@ jobs:
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
 
+      - name: Run Trivy vulnerability scanner for MC with tag
+        if: github.event.payload.ref_type == 'tag'
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.tags }}"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Push image
+      - name: Push image with branch
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:s${{ steps.date.outputs.date }}
           docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:stable
+
+      - name: Push image with tag
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.tags }}
 
   build_and_push:
     runs-on: ubuntu-latest
