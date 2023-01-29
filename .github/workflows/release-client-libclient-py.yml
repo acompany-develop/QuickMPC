@@ -36,6 +36,7 @@ jobs:
           --wheel
           --outdir dist/
           .
+        working-directory: ./packages/client/libclient-py/
 
       - name: Publish distribution 📦 to PyPI
         env:
@@ -43,3 +44,4 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
         run: |
           twine upload --repository pypi dist/*
+        working-directory: ./packages/client/libclient-py/
