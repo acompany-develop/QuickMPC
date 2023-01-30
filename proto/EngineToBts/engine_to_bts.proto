@@ -4,8 +4,11 @@ package enginetobts;
 
 option go_package = "github.com/acompany-develop/QuickMPC/proto/EngineToBts";
 
+import "google/protobuf/empty.proto";
+
 service EngineToBts {
     rpc GetTriples(GetTriplesRequest) returns (GetTriplesResponse) {}
+    rpc InitTripleStore(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }
 
 enum Type{
