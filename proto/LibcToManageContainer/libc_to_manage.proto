@@ -16,7 +16,6 @@ service LibcToManage {
     rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
     rpc GetComputationResult(GetComputationResultRequest) returns (stream GetComputationResultResponse) {}  // 計算結果取得リクエスト
     rpc SendModelParam(SendModelParamRequest) returns (SendModelParamResponse) {}                    // モデルパラメータ送信リクエスト
-    rpc Predict(PredictRequest) returns (PredictResponse) {}                                         // モデル値予測リクエスト
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
     rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                    // 計算時間取得リクエスト
     rpc GetJobErrorInfo(GetJobErrorInfoRequest) returns (GetJobErrorInfoResponse) {}                 // stacktrace取得リクエスト
@@ -95,7 +94,7 @@ message ExecuteComputationRequest {
     Input arg = 4;
 }
 
-/**
+/*
  * the message of ExecuteComputationResponse
 */
 message ExecuteComputationResponse {
@@ -148,25 +147,6 @@ message SendModelParamResponse {
     bool is_ok = 2;
 }
 
-/**
- * the message of PredictRequest
-*/
-message PredictRequest {
-    string job_uuid = 1;
-    string model_param_job_uuid = 2;
-    pb_common_types.PredictMethod model_id = 3;
-    JoinOrder table = 4;
-    repeated int32 src = 5;
-    string token = 6;
-}
-
-/**
- * the message of PredictResponse
-*/
-message PredictResponse {
-    string message = 1;
-    bool is_ok = 2;
-}
 
 message GetDataListRequest {
     string token = 1;

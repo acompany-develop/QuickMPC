@@ -14,7 +14,6 @@ cc_library(
         "@proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
         "//Server/ComputationToComputationContainerForJob:server",
         "//Job:jobManager",
-        "//Model:modelManager",
         "@com_github_grpc_grpc//:grpc++",
         "@com_github_grpc_grpc//:grpc++_reflection",
         "//Logging:log"

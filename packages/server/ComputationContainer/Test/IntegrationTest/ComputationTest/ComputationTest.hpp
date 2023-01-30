@@ -10,8 +10,6 @@
 #include "Test/IntegrationTest/MathTest.hpp"
 #include "Test/IntegrationTest/MatrixTest.hpp"
 #include "Test/IntegrationTest/MeshCodeTest.hpp"
-#include "Test/IntegrationTest/ModelTest.hpp"
-#include "Test/IntegrationTest/OptimizeTest.hpp"
 #include "Test/IntegrationTest/ReadTripleFromBtsTest.hpp"
 #include "Test/IntegrationTest/ShareTest.hpp"
 #include "Test/IntegrationTest/ValueTableTest.hpp"

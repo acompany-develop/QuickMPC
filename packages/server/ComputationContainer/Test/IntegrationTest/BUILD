@@ -72,20 +72,6 @@ cc_library(
 )
 
 cc_library(
-    name = "optimize_test",
-    hdrs = [
-        "OptimizeTest.hpp",
-    ],
-    deps = [
-        "//ObjectiveFunction:objective_function",
-        "//Optimizer:optimizer",
-        "//Client/ComputationToBts:client",
-        "//Logging:log",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
     name = "read_triple_test",
     srcs = [
         "ReadTripleFromBtsTest.hpp",

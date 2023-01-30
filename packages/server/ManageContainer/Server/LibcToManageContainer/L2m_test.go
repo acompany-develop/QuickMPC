@@ -44,9 +44,6 @@ func (localDb) GetDataList() (string, error) {
 func (localCC) ExecuteComputation(*pb_m2c.ExecuteComputationRequest) (string, int32, error) {
 	return "", 0, nil
 }
-func (localCC) Predict(*pb_m2c.PredictRequest) (string, int32, error) {
-	return "", 0, nil
-}
 func (localCC) CheckProgress(string) (*pb_types.JobProgress, error) {
 	return nil, nil
 }
@@ -185,38 +182,6 @@ func TestGetJobErrorInfo(t *testing.T) {
 
 	if result.GetJobErrorInfo().GetWhat() != "test" {
 		t.Fatal("GetJobErrorInfo Failed")
-	}
-}
-
-// モデル予測値を取得できるかTest
-func TestPredict(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewLibcToManageClient(conn)
-	_, err := client.Predict(context.Background(), &pb.PredictRequest{
-		JobUuid: "id",
-		ModelId: 1,
-		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{1}},
-		Src:     []int32{}})
-
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-// id列が異なる場合にエラーがでるかTest
-func TestPredictFailedDifferentIdColumn(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewLibcToManageClient(conn)
-	_, err := client.Predict(context.Background(), &pb.PredictRequest{
-		JobUuid: "id",
-		ModelId: 1,
-		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{2}},
-		Src:     []int32{}})
-
-	if err == nil {
-		t.Error("predict must be failed, but success.")
 	}
 }
 

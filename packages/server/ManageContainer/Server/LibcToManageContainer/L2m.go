@@ -348,60 +348,6 @@ func (s *server) SendModelParam(ctx context.Context, in *pb.SendModelParamReques
 	}, nil
 }
 
-// CCにモデル値予測リクエストを送信
-func (s *server) Predict(ctx context.Context, in *pb.PredictRequest) (*pb.PredictResponse, error) {
-	AppLogger.Info("Predict;")
-	AppLogger.Info("jobUUID: " + in.GetJobUuid())
-	AppLogger.Info("model param jobUUID: " + in.GetModelParamJobUuid())
-	AppLogger.Info("methodID: " + strconv.Itoa(int(in.GetModelId())))
-	token := in.GetToken()
-
-	errToken := s.authorize(token, []string{"demo", "dep"})
-	if errToken != nil {
-		return &pb.PredictResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
-	}
-
-	dataIds := in.GetTable().GetDataIds()
-	index := in.GetTable().GetIndex()
-	for i := 0; i < len(dataIds); i++ {
-		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
-		if err != nil {
-			AppLogger.Error(err)
-			return &pb.PredictResponse{
-				IsOk: false,
-			}, err
-		}
-
-		if matchingColumn != index[i] {
-			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
-			AppLogger.Error(errMessage)
-			return &pb.PredictResponse{
-				IsOk: false,
-			}, errors.New(errMessage)
-		}
-	}
-
-	out := utils.ConvertPredictRequest(in)
-	message, status, err := s.m2cclient.Predict(out)
-
-	if err != nil {
-		AppLogger.Error(err)
-		AppLogger.Error(status)
-		return &pb.PredictResponse{
-			Message: message,
-			IsOk:    false,
-		}, nil
-	}
-
-	return &pb.PredictResponse{
-		Message: "ok",
-		IsOk:    true,
-	}, nil
-}
-
 func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*pb.GetDataListResponse, error) {
 	token := in.GetToken()
 

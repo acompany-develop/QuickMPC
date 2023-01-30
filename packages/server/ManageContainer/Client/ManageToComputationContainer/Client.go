@@ -21,7 +21,6 @@ import (
 type Client struct{}
 type M2CClient interface {
 	ExecuteComputation(*pb.ExecuteComputationRequest) (string, int32, error)
-	Predict(*pb.PredictRequest) (string, int32, error)
 	CheckProgress(string) (*pb_types.JobProgress, error)
 }
 
@@ -107,34 +106,6 @@ func checkStateOfComputationContainer() {
 		AppLogger.Info("ComputationContainer is working.")
 		datastore.StateOfComputationContainer = 1
 	}
-}
-
-// (conn)にモデル値予測リクエストを送る
-func predict(conn *grpc.ClientConn, req *pb.PredictRequest) (string, int32, error) {
-	client := pb.NewManageToComputationClient(conn)
-	rm := helper.RetryManager{}
-	for {
-		_, err := client.Predict(context.TODO(), req)
-		retry, _ := rm.Retry(err)
-		if !retry {
-			st, _ := status.FromError(err)
-			if st.Code() == codes.OK {
-				return "ok", int32(codes.OK), nil
-			} else {
-				return st.Message(), int32(st.Code()), err
-			}
-		}
-	}
-}
-
-// CCにモデル値予測リクエストを送る
-func (Client) Predict(req *pb.PredictRequest) (string, int32, error) {
-	conn, err := connect()
-	if err != nil {
-		return "", 0, err
-	}
-	defer conn.Close()
-	return predict(conn, req)
 }
 
 func checkProgress(conn *grpc.ClientConn, req *pb.CheckProgressRequest) (*pb_types.JobProgress, error) {
