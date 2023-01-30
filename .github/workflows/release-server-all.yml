@@ -1,10 +1,9 @@
-name: Push Stable CC, MC Image
+name: Push CC, MC Image
 
 on:
   push:
     branches:
       - main
-      - "release/**"
     tags:
       - "*"
 
@@ -27,27 +26,24 @@ jobs:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
-        with:
-          images: quickmpc-cc
 
       - name: Build CC image by branch
         if: startsWith(github.ref, 'refs/heads/')
         run: |
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:s${{ steps.date.outputs.date }} --load
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:stable                          --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.date.outputs.date }} --load
         working-directory: ./packages/server/ComputationContainer/
 
       - name: Build CC image by tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.tags }} --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.tags }} --load
         working-directory: ./packages/server/ComputationContainer/
 
       - name: Run Trivy vulnerability scanner for CC with branch
         if: startsWith(github.ref, 'refs/heads/')
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:s${{ steps.date.outputs.date }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.date.outputs.date }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -58,7 +54,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.tags }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.tags }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -71,13 +67,12 @@ jobs:
       - name: Push image with branch
         if: startsWith(github.ref, 'refs/heads/')
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:s${{ steps.date.outputs.date }}
-          docker push ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:stable
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.date.outputs.date }}
 
       - name: Push image with tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.tags }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.tags }}
 
   build_and_push_mc:
     runs-on: ubuntu-latest
@@ -96,27 +91,24 @@ jobs:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v4
-        with:
-          images: quickmpc-mc
 
       - name: Build MC image with branch
         if: startsWith(github.ref, 'refs/heads/')
         run: |
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:s${{ steps.date.outputs.date }} --load
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:stable                          --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.date.outputs.date }} --load
         working-directory: ./packages/server/ManageContainer/
 
       - name: Build MC image with tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.tags }} --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.tags }} --load
         working-directory: ./packages/server/ManageContainer/
 
       - name: Run Trivy vulnerability scanner for MC with branch
         if: startsWith(github.ref, 'refs/heads/')
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:s${{ steps.date.outputs.date }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.date.outputs.date }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -127,7 +119,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.tags }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.tags }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -139,12 +131,11 @@ jobs:
 
       - name: Push image with branch
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:s${{ steps.date.outputs.date }}
-          docker push ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.images }}:stable
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.date.outputs.date }}
 
       - name: Push image with tag
         run: |
-          docker push ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.tags }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.tags }}
 
   build_and_push:
     runs-on: ubuntu-latest

@@ -1,8 +1,11 @@
 name: Push Stable Package for Pypi
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
 
 jobs:
   # 安定バージョンのQuickMPC-LibClient-pyをpush
@@ -27,6 +30,7 @@ jobs:
           twine
           setuptools_scm
           --user
+        working-directory: ./packages/client/libclient-py/
 
       - name: Build a binary wheel and a source tarball
         run: >-
@@ -39,9 +43,9 @@ jobs:
         working-directory: ./packages/client/libclient-py/
 
       - name: Publish distribution 📦 to PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          twine upload --repository pypi dist/*
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
         working-directory: ./packages/client/libclient-py/
