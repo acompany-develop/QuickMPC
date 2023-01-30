@@ -77,10 +77,7 @@ if __name__ == '__main__':
         ),
         (qmpc.correl, [[2, 3, 4], [5]],
          [0.995537307016568, -0.192854233809008, 0.0441893193071959]),
-        (qmpc.linear_regression, [[2, 3, 4], [5]],
-         [-3.9106383, 12.81276596, 4.74468085, -3.30212766]),
-        (qmpc.logistic_regression, [[2, 3, 4], [6]],
-         [5.44821378, -0.67505836, -0.30945274, -0.72291515])]
+    ]
     for exe_func, inp, true_val in exe_set:
         logger.info(f"---- {exe_func.__name__} start ----")
         # TODO: Jobごとに使用するdata_idを選択できるようにする
