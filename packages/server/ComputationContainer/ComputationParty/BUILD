@@ -8,6 +8,7 @@ cc_library(
     ],
     deps = [
         "//ConfigParse:config_parse",
+        "//Client/ComputationToBts:client",
         "//Server/ComputationToComputationContainer:server",
         "//Server/ComputationToComputationContainerForJob:server",
         "//Server/ManageToComputationContainer:server",
