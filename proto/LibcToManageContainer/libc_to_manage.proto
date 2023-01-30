@@ -15,7 +15,6 @@ service LibcToManage {
     rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                   // スキーマ取得リクエスト
     rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
     rpc GetComputationResult(GetComputationResultRequest) returns (stream GetComputationResultResponse) {}  // 計算結果取得リクエスト
-    rpc SendModelParam(SendModelParamRequest) returns (SendModelParamResponse) {}                    // モデルパラメータ送信リクエスト
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
     rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                    // 計算時間取得リクエスト
     rpc GetJobErrorInfo(GetJobErrorInfoRequest) returns (GetJobErrorInfoResponse) {}                 // stacktrace取得リクエスト
@@ -128,25 +127,6 @@ message GetComputationResultResponse {
         bool is_schema = 10;
     }
 }
-
-/**
- * the message of SendModelParamRequest
-*/
-message SendModelParamRequest {
-    string job_uuid = 1;
-    repeated string params = 2;
-    int32 piece_id = 3;
-    string token = 4;
-}
-
-/**
- * the message of SendModelParamResponse
-*/
-message SendModelParamResponse {
-    string message = 1;
-    bool is_ok = 2;
-}
-
 
 message GetDataListRequest {
     string token = 1;

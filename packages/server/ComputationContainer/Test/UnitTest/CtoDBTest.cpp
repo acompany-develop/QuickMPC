@@ -106,58 +106,6 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
     initialize(data_id);
 }
 
-// model parameter(vector)の取り出し
-// std::vector<std::string> Client::readModelparam(const std::string &job_uuid);
-TEST(ComputationToDbTest, SuccessReadModelParamTest)
-{
-    const std::string job_uuid = "SuccessReadModelParamTest";
-    initialize(job_uuid);
-
-    const std::string data = R"({"result":["1","2","3"])"
-                             R"(,"meta":{"column_number":3, "piece_id":0}})";
-    fs::create_directories("/Db/result/" + job_uuid);
-    auto ofs = std::ofstream("/Db/result/" + job_uuid + "/dim1_0");
-    ofs << data;
-    ofs.close();
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readModelparam(job_uuid);
-
-    std::vector<std::string> true_result = {"1", "2", "3"};
-    EXPECT_EQ(true_result, read_data);
-
-    initialize(job_uuid);
-}
-
-TEST(ComputationToDbTest, SuccessReadModelParamPieceTest)
-{
-    const std::string job_uuid = "SuccessReadModelParamPieceTest";
-    initialize(job_uuid);
-
-    const std::vector<std::string> data = {
-        R"({"result":["1","2"])"
-        R"(,"meta":{"column_number":4, "piece_id":0}})",
-        R"({"result":["3"])"
-        R"(,"meta":{"column_number":4, "piece_id":1}})",
-        R"({"result":["4"])"
-        R"(,"meta":{"column_number":4, "piece_id":2}})"};
-    fs::create_directories("/Db/result/" + job_uuid);
-    for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
-    {
-        auto ofs = std::ofstream("/Db/result/" + job_uuid + "/dim1_" + std::to_string(piece_id));
-        ofs << data[piece_id];
-        ofs.close();
-    }
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readModelparam(job_uuid);
-
-    std::vector<std::string> true_result = {"1", "2", "3", "4"};
-    EXPECT_EQ(true_result, read_data);
-
-    initialize(job_uuid);
-}
-
 // Job を DB に新規登録する
 // void Client::registerJob(const std::string &job_uuid, const int &status);
 TEST(ComputationToDbTest, SuccessRregisterJobTest)

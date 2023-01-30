@@ -60,48 +60,6 @@ ValueTable Client::readShare(const std::string &data_id) const
     return ValueTable(table, schemas);
 }
 
-// model parameterの取り出し
-std::vector<std::string> Client::readModelparam(const std::string &job_uuid) const
-{
-    // DBから値を取り出す
-    int all_size = 0;
-    std::map<int, std::vector<std::string>> pieces;
-    std::regex is_status_file(R"((.*/completed)|(.*/status_.*))");
-    for (const auto &entry : fs::directory_iterator(resultDbPath + job_uuid))
-    {
-        if (std::regex_match(entry.path().string(), is_status_file)) continue;
-
-        auto ifs = std::ifstream(entry.path());
-        std::string data;
-        getline(ifs, data);
-
-        auto json = nlohmann::json::parse(data);
-        std::vector<std::string> result_piece = json["result"];
-        all_size += result_piece.size();
-        pieces.emplace(json["meta"]["piece_id"], result_piece);
-    }
-
-    // piece_id順にresultを結合
-    std::vector<std::string> result;
-    result.reserve(all_size);
-    for (const auto &[_, piece] : pieces)
-    {
-        static_cast<void>(_);
-        for (const auto &s : piece)
-        {
-            result.emplace_back(s);
-        }
-    }
-    return result;
-}
-
-// XXX: Jsonは対応していないので削除する
-// model parameter(json)の取り出し
-nlohmann::json Client::readModelparamJson(const std::string &job_uuid) const
-{
-    return nlohmann::json();
-}
-
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const
 {

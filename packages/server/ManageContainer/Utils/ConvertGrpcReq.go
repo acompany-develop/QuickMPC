@@ -18,17 +18,3 @@ func ConvertExecuteComputationRequest(in *pb_l2m.ExecuteComputationRequest, jobU
 			Target: in.GetArg().GetTarget()}}
 	return out
 }
-
-func ConvertPredictRequest(in *pb_l2m.PredictRequest) *pb_m2c.PredictRequest {
-	out := &pb_m2c.PredictRequest{
-		JobUuid:           in.GetJobUuid(),
-		ModelParamJobUuid: in.GetModelParamJobUuid(),
-		ModelId:           in.GetModelId(),
-		Table: &pb_m2c.JoinOrder{
-			DataIds: in.GetTable().GetDataIds(),
-			Join:    in.GetTable().GetJoin(),
-			Index:   in.GetTable().GetIndex()},
-		Src: in.GetSrc(),
-	}
-	return out
-}

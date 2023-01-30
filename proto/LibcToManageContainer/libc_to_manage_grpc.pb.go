@@ -23,7 +23,6 @@ type LibcToManageClient interface {
 	GetSchema(ctx context.Context, in *GetSchemaRequest, opts ...grpc.CallOption) (*GetSchemaResponse, error)
 	ExecuteComputation(ctx context.Context, in *ExecuteComputationRequest, opts ...grpc.CallOption) (*ExecuteComputationResponse, error)
 	GetComputationResult(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error)
-	SendModelParam(ctx context.Context, in *SendModelParamRequest, opts ...grpc.CallOption) (*SendModelParamResponse, error)
 	GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error)
 	GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error)
@@ -105,15 +104,6 @@ func (x *libcToManageGetComputationResultClient) Recv() (*GetComputationResultRe
 	return m, nil
 }
 
-func (c *libcToManageClient) SendModelParam(ctx context.Context, in *SendModelParamRequest, opts ...grpc.CallOption) (*SendModelParamResponse, error) {
-	out := new(SendModelParamResponse)
-	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/SendModelParam", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *libcToManageClient) GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error) {
 	out := new(GetDataListResponse)
 	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetDataList", in, out, opts...)
@@ -150,7 +140,6 @@ type LibcToManageServer interface {
 	GetSchema(context.Context, *GetSchemaRequest) (*GetSchemaResponse, error)
 	ExecuteComputation(context.Context, *ExecuteComputationRequest) (*ExecuteComputationResponse, error)
 	GetComputationResult(*GetComputationResultRequest, LibcToManage_GetComputationResultServer) error
-	SendModelParam(context.Context, *SendModelParamRequest) (*SendModelParamResponse, error)
 	GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error)
 	GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error)
@@ -175,9 +164,6 @@ func (UnimplementedLibcToManageServer) ExecuteComputation(context.Context, *Exec
 }
 func (UnimplementedLibcToManageServer) GetComputationResult(*GetComputationResultRequest, LibcToManage_GetComputationResultServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetComputationResult not implemented")
-}
-func (UnimplementedLibcToManageServer) SendModelParam(context.Context, *SendModelParamRequest) (*SendModelParamResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendModelParam not implemented")
 }
 func (UnimplementedLibcToManageServer) GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDataList not implemented")
@@ -294,24 +280,6 @@ func (x *libcToManageGetComputationResultServer) Send(m *GetComputationResultRes
 	return x.ServerStream.SendMsg(m)
 }
 
-func _LibcToManage_SendModelParam_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendModelParamRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LibcToManageServer).SendModelParam(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libctomanage.LibcToManage/SendModelParam",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LibcToManageServer).SendModelParam(ctx, req.(*SendModelParamRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _LibcToManage_GetDataList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetDataListRequest)
 	if err := dec(in); err != nil {
@@ -388,10 +356,6 @@ var LibcToManage_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExecuteComputation",
 			Handler:    _LibcToManage_ExecuteComputation_Handler,
-		},
-		{
-			MethodName: "SendModelParam",
-			Handler:    _LibcToManage_SendModelParam_Handler,
 		},
 		{
 			MethodName: "GetDataList",
