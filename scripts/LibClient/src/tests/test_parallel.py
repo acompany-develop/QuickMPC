@@ -43,29 +43,6 @@ def test_send_share(parallel_num: int):
 @pytest.mark.parametrize(
     ("parallel_num"), parallel_num
 )
-def test_send_model_params_array(parallel_num: int):
-    filename: str = "Data/model_data_a6.csv"
-    data = []
-    with open(filename) as f:
-        reader = csv.reader(f, quoting=csv.QUOTE_NONNUMERIC)
-        data = [row for row in reader][0]
-
-    # 並列にsend_model_params
-    executor = ThreadPoolExecutor()
-    futures = []
-    for _ in range(parallel_num):
-        futures.append(
-            executor.submit(qmpc.send_model_params, data)
-        )
-
-    for future in futures:
-        res = future.result()
-        assert (res["is_ok"])
-
-
-@pytest.mark.parametrize(
-    ("parallel_num"), parallel_num
-)
 def test_execute(parallel_num: int):
     filename: str = "Data/table_data_5x5.csv"
     secrets, schema = qmpc.parse_csv_file(filename)
@@ -99,17 +76,13 @@ def test_execute(parallel_num: int):
             assert (math.isclose(x, y, abs_tol=0.1))
 
 
+@pytest.mark.skip(reason="send_model_param削除によりjob_uuidを取得できなくなったため")
 @pytest.mark.parametrize(
     ("parallel_num"), parallel_num
 )
 def test_get_computation_result(parallel_num: int):
-    filename: str = "Data/model_data_a6.csv"
-    data = []
-    with open(filename) as f:
-        reader = csv.reader(f)
-        data = [row for row in reader]
-    res = qmpc.send_model_params(data[0])
-    job_uuid = res["job_uuid"]
+    # TODO: job_uuidを取得
+    job_uuid = None
 
     # 並列にget_computation_result
     executor = ThreadPoolExecutor()
