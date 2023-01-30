@@ -6,7 +6,6 @@
 #include "ConfigParse/ConfigParse.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Server/ManageToComputationContainer/Server.hpp"
-#include "Test/IntegrationTest/GBDTTest.hpp"
 #include "Test/IntegrationTest/MathTest.hpp"
 #include "Test/IntegrationTest/MatrixTest.hpp"
 #include "Test/IntegrationTest/MeshCodeTest.hpp"
