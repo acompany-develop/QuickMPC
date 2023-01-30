@@ -70,5 +70,20 @@ public:
         }
         return triples;
     }
+
+    void initTripleStore(){
+        grpc::Status status;
+        google::protobuf::Empty request, response;
+
+        // リトライポリシーに従ってリクエストを送る
+        auto retry_manager = RetryManager("BTS", "initTripleStore");
+        do
+        {
+            grpc::ClientContext context;
+            const std::string token = Config::getInstance()->cc_to_bts_token;
+            context.AddMetadata("authorization", "bearer " + token);
+            status = stub_->InitTripleStore(&context, request, &response);
+        } while (retry_manager.retry(status));
+    }
 };
 }  // namespace qmpc::ComputationToBts
