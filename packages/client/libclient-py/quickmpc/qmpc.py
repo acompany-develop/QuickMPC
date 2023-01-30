@@ -1,15 +1,15 @@
 import logging
 from dataclasses import dataclass, field, InitVar
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Optional, Tuple
 
 from google.protobuf.internal import enum_type_wrapper
 
 from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
-from .utils.restore import restore
 from .utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
                               parse_to_bitvector)
+from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
 # qmpc.JobStatus でアクセスできるようにエイリアスを設定する
@@ -17,8 +17,6 @@ JobStatus: enum_type_wrapper.EnumTypeWrapper \
     = common_types_pb2.JobStatus
 ComputationMethod: enum_type_wrapper.EnumTypeWrapper \
     = common_types_pb2.ComputationMethod
-PredictMethod: enum_type_wrapper.EnumTypeWrapper \
-    = common_types_pb2.PredictMethod
 JobErrorInfo = common_types_pb2.JobErrorInfo
 
 
@@ -186,69 +184,6 @@ class QMPC:
                     f"[job_id]={job_id} "
                     f"[path]={path}")
         return self.__qmpc_server.get_computation_result(job_id, path)
-
-    def send_model_params(self, params: list,
-                          piece_size: int = 1_000_000) -> Dict:
-        logger.info("send_model_params request. "
-                    f"[params size]={len(params)}")
-        return self.__qmpc_server.send_model_params(
-            params, piece_size)
-
-    def linear_regression_predict(self,
-                                  model_param_job_uuid: str,
-                                  join_order: Tuple[List, List, List],
-                                  src: List[int]) -> Dict:
-        logger.info("linear_regression_predict request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={src}")
-        return self.__qmpc_server.predict(
-            model_param_job_uuid,
-            PredictMethod.Value("PREDICT_METHOD_LINEAR_REGRESSION"),
-            join_order, src)
-
-    def logistic_regression_predict(self,
-                                    model_param_job_uuid: str,
-                                    join_order: Tuple[List, List, List],
-                                    src: List[int]) -> Dict:
-        logger.info("logistic_regression_predict request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={src}")
-        return self.__qmpc_server.predict(
-            model_param_job_uuid,
-            PredictMethod.Value("PREDICT_METHOD_LOGISTIC_REGRESSION"),
-            join_order, src)
-
-    def decision_tree_predict(self,
-                              model_param_job_uuid: str,
-                              join_order: Tuple[List, List, List],
-                              src: List[int]) -> Dict:
-        logger.info("decision_tree_predict request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={src}")
-        return self.__qmpc_server.predict(
-            model_param_job_uuid,
-            PredictMethod.Value("PREDICT_METHOD_DECISION_TREE"),
-            join_order, src)
-
-    def sid3_tree_predict(self,
-                          model_param_job_id: str,
-                          join_order: Tuple[List, List, List],
-                          src: List[int]) -> Dict:
-        logger.info("sid3_tree_predict request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={src}")
-        return self.__qmpc_server.predict(
-            model_param_job_id,
-            PredictMethod.Value("PREDICT_METHOD_SID3_TREE"),
-            join_order, src)
 
     def get_data_list(self) \
             -> Dict:

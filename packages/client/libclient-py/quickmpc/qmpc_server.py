@@ -6,7 +6,6 @@ import logging
 import os
 import struct
 import time
-import uuid
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, InitVar
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -24,10 +23,9 @@ from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        GetComputationResultRequest,
                                        GetComputationResultResponse,
                                        GetDataListRequest,
-                                       GetElapsedTimeRequest, Input, JoinOrder,
-                                       PredictRequest, SendModelParamRequest,
-                                       SendSharesRequest,
-                                       GetJobErrorInfoRequest)
+                                       GetElapsedTimeRequest,
+                                       GetJobErrorInfoRequest, Input,
+                                       JoinOrder, SendSharesRequest)
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
 from .share import Share
 from .utils.if_present import if_present
@@ -258,61 +256,6 @@ class QMPCServer:
 
         is_ok, response = QMPCServer.__futures_result(futures)
         job_uuid = response[0].job_uuid if is_ok else None
-
-        return {"is_ok": is_ok, "job_uuid": job_uuid}
-
-    def send_model_params(self, params: list,
-                          piece_size: int) -> Dict:
-        if piece_size < 1000 or piece_size > 1_000_000:
-            raise RuntimeError(
-                "piece_size must be in the range of 1000 to 1000000")
-
-        """ モデルパラメータをコンテナに送信 """
-        # リクエストパラメータを設定
-        job_uuid: str = str(uuid.uuid4())
-        params_share: list = Share.sharize(params, self.__party_size)
-        params_share_pieces: list = [MakePiece.make_pieces(
-            p, piece_size) for p in params_share]
-
-        # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(stub.SendModelParam,
-                                   SendModelParamRequest(job_uuid=job_uuid,
-                                                         params=param,
-                                                         piece_id=piece_id + 1,
-                                                         token=self.token))
-                   for pieces, stub in zip(params_share_pieces,
-                                           self.__client_stubs)
-                   for piece_id, param in enumerate(pieces)]
-        is_ok, _ = QMPCServer.__futures_result(futures)
-
-        return {"is_ok": is_ok, "job_uuid": job_uuid}
-
-    def predict(self,
-                model_param_job_uuid: str,
-                model_id: int,
-                join_order: Tuple[List, List, List],
-                src: List[int]) -> Dict:
-        if not self._argument_check(join_order):
-            raise ArgmentError("引数が正しくありません．")
-
-        """ モデルから予測値を取得 """
-        # リクエストパラメータを設定
-        job_uuid: str = str(uuid.uuid4())
-        req = PredictRequest(job_uuid=job_uuid,
-                             model_param_job_uuid=model_param_job_uuid,
-                             model_id=model_id,
-                             table=JoinOrder(dataIds=join_order[0],
-                                             join=join_order[1],
-                                             index=join_order[2]),
-                             src=src,
-                             token=self.token)
-
-        # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(stub.Predict, req)
-                   for stub in self.__client_stubs]
-        is_ok, response = QMPCServer.__futures_result(futures)
 
         return {"is_ok": is_ok, "job_uuid": job_uuid}
 
