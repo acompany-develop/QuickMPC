@@ -12,7 +12,6 @@ WORKDIR /LibClient
 RUN pip install -U pip && \
   pip install \
     pytest \
-    scikit-learn \
     /packages/client/libclient-py
 
 
