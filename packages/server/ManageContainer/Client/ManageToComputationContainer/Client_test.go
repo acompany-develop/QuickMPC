@@ -26,11 +26,6 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 func (s *server) CheckState(ctx context.Context, in *empty.Empty) (*pb.CheckStateResponse, error) {
 	return &pb.CheckStateResponse{State: 1}, nil
 }
-func (s *server) Predict(ctx context.Context, in *pb.PredictRequest) (*empty.Empty, error) {
-	AppLogger.Infof("Received: %v", in.GetJobUuid())
-	AppLogger.Infof("Received: %v", in.GetModelId())
-	return &empty.Empty{}, nil
-}
 
 // Test用のサーバを起動(CC)
 var s *utils.TestServer
@@ -121,31 +116,5 @@ func CheckExecuteComputation() {
 			AppLogger.Info(message)
 			AppLogger.Info(status)
 		}
-	}
-
-}
-
-// モデル値予測リクエストが遅れるかTest
-func TestPredict(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-
-	req := &pb.PredictRequest{
-		JobUuid: "hugahuga",
-		ModelId: 1,
-		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}},
-		Src:     []int32{}}
-
-	message, status, err := predict(conn, req)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if message != "ok" {
-		t.Fatalf("Result must return message 'ok'. but message is '%s'", message)
-	}
-
-	if status != 0 {
-		t.Fatalf("Result must return status '0'. but status is '%d'", status)
 	}
 }
