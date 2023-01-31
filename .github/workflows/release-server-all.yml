@@ -38,7 +38,7 @@ jobs:
       - name: Build CC image by tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ${{ steps.meta.outputs.tags[0] }} --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.version }} --load
         working-directory: ./packages/server/ComputationContainer/
 
       - name: Run Trivy vulnerability scanner for CC with branch
@@ -56,7 +56,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "${{ steps.meta.outputs.tags[0] }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.version }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -74,7 +74,7 @@ jobs:
       - name: Push image with tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          docker push ${{ steps.meta.outputs.tags[0] }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.version }}
 
   build_and_push_mc:
     runs-on: ubuntu-latest
@@ -105,7 +105,7 @@ jobs:
       - name: Build MC image with tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ${{ steps.meta.outputs.tags[0] }} --load
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.version }} --load
         working-directory: ./packages/server/ManageContainer/
 
       - name: Run Trivy vulnerability scanner for MC with branch
@@ -123,7 +123,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: "${{ steps.meta.outputs.tags[0] }}"
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.version }}"
           format: "table"
           exit-code: "1"
           ignore-unfixed: true
@@ -139,7 +139,7 @@ jobs:
 
       - name: Push image with tag
         run: |
-          docker push ${{ steps.meta.outputs.tags[0] }}
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.version }}
 
   build_and_push:
     runs-on: ubuntu-latest
