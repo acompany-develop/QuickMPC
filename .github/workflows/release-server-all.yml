@@ -134,10 +134,12 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
       - name: Push image with branch
+        if: startsWith(github.ref, 'refs/heads/')
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.date.outputs.date }}
 
       - name: Push image with tag
+        if: startsWith(github.ref, 'refs/tags/')
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.version }}
 
