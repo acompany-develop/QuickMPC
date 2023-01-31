@@ -58,7 +58,6 @@ type M2DbClient interface {
 	DeleteShares([]string) error
 	GetSchema(string) ([]string, error)
 	GetComputationResult(string, []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
-	InsertModelParams(string, []string, int32) error
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
@@ -263,41 +262,6 @@ func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*C
 	// CC側でStatusが更新されないためここで更新する
 	computationResults[0].Status = status
 	return computationResults, nil, nil
-}
-
-// DBにモデルパラメータを保存する
-func (c Client) InsertModelParams(jobUUID string, params []string, pieceId int32) error {
-	dataPath := fmt.Sprintf("%s/%s/dim1_%d", resultDbPath, jobUUID, pieceId)
-	ls.Lock(dataPath)
-	defer ls.Unlock(dataPath)
-
-	if isExists(dataPath) {
-		return errors.New("重複データ登録エラー: " + jobUUID + "は既に登録されています．")
-	}
-	os.Mkdir(fmt.Sprintf("%s/%s", resultDbPath, jobUUID), 0777)
-
-	saveParams := ComputationResult{
-		JobUUID: jobUUID,
-		Meta: ComputationResultMeta{
-			PieceID: pieceId,
-		},
-		Result: params,
-		Status: pb_types.JobStatus_COMPLETED,
-	}
-	bytes, errMarshal := json.Marshal(saveParams)
-	if errMarshal != nil {
-		return errMarshal
-	}
-
-	errWrite := ioutil.WriteFile(dataPath, bytes, 0777)
-	if errWrite != nil {
-		return errWrite
-	}
-
-	os.Create(fmt.Sprintf("%s/%s/completed", resultDbPath, jobUUID))
-	os.Create(fmt.Sprintf("%s/%s/status_%s", resultDbPath, jobUUID, pb_types.JobStatus_COMPLETED))
-
-	return nil
 }
 
 // DBからdata一覧を取得する

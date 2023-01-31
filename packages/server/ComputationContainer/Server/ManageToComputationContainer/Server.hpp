@@ -18,11 +18,6 @@ public:
         const managetocomputation::ExecuteComputationRequest *request,
         google::protobuf::Empty *response
     ) override;
-    grpc::Status Predict(
-        grpc::ServerContext *context,
-        const managetocomputation::PredictRequest *request,
-        google::protobuf::Empty *response
-    ) override;
     grpc::Status CheckProgress(
         grpc::ServerContext *context,
         const managetocomputation::CheckProgressRequest *request,

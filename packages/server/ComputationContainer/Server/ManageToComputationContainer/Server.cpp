@@ -8,7 +8,6 @@
 #include "ConfigParse/ConfigParse.hpp"
 #include "Job/JobManager.hpp"
 #include "Logging/Logger.hpp"
-#include "Model/ModelManager.hpp"
 #include "Server/ComputationToComputationContainerForJob/Server.hpp"
 #include "Share/Share.hpp"
 #include "external/proto/common_types/common_types.pb.h"
@@ -49,45 +48,6 @@ grpc::Status Server::ExecuteComputation(
         // 別なら即ok返し
         return grpc::Status::OK;
     }
-}
-
-/*
-    ReturnするステータスはPredict内でエラーが発生した場合はそれに合わせて変更する
-    通常はOK
-    status :
-        Predict外エラー : 0
-        Send : 1
-        Compute : 2
-        正常完了 : 4
-*/
-grpc::Status Server::Predict(
-    grpc::ServerContext *context,
-    const managetocomputation::PredictRequest *request,
-    google::protobuf::Empty *response
-)
-{
-    QMPC_LOG_INFO("{:<30} Received", "[Predict]");
-    auto manager = qmpc::Model::ModelManager();
-
-    auto status = manager.push(*request);
-
-    switch (status)
-    {
-        case 0:
-            QMPC_LOG_ERROR("Error predict");
-            QMPC_LOG_ERROR("Can not Create Predictor");
-            return grpc::Status{
-                grpc::StatusCode::INVALID_ARGUMENT, grpc::string{"Predict Method Error"}};
-        case 1:
-            QMPC_LOG_ERROR("ReadDB Error");
-            return grpc::Status{grpc::StatusCode::INTERNAL, grpc::string{"Read Db Error"}};
-        case 2:
-            QMPC_LOG_ERROR("Predict Error");
-            return grpc::Status{grpc::StatusCode::ABORTED, grpc::string{"Computation Error"}};
-    }
-
-    QMPC_LOG_INFO("{:<30} End grpd", "[Predict]");
-    return grpc::Status::OK;
 }
 
 grpc::Status Server::CheckProgress(

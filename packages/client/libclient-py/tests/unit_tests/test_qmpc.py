@@ -102,59 +102,6 @@ class TestQMPC:
             job_uuid, None)
         assert (response["is_ok"])
 
-    def test_send_model_params(self, run_server1, run_server2, run_server3):
-        """ serverにモデルパラメータを送れるかのTest"""
-        res: Dict[str, Any] = self.qmpc.send_model_params(
-            [1, 2, 3], 1000)
-        assert (res["is_ok"])
-
-    def test_send_model_params_errorhandring(self, run_server1,
-                                             run_server2, run_server3):
-        with pytest.raises(RuntimeError):
-            # piece_sizeが1000より小さい
-            self.qmpc.send_model_params(
-                [1, 2, 3], 500)
-        with pytest.raises(RuntimeError):
-            # piece_sizeが1000000より大きい
-            self.qmpc.send_model_params(
-                [1, 2, 3], 10000000)
-
-    def test_predict(self, run_server1, run_server2, run_server3):
-        """ serverにモデル値予測リクエストを送れるかのTest """
-        model_param_job_uuid: str = "uuid"
-        model_id: int = 1
-        response: Dict[str, Any] = self.qmpc.predict(
-            model_param_job_uuid, model_id,
-            [["id1", "id2"], [0], [1, 1]], [0, 1])
-        assert (response["is_ok"])
-
-    def test_predict_errorhandring(self, run_server1,
-                                   run_server2, run_server3):
-        """ serverにモデル値予測リクエストを送れるかのTest """
-        model_param_job_uuid: str = "uuid"
-        model_id: int = 1
-
-        with pytest.raises(ArgmentError):
-            # data_idsの要素数-1とjoinの要素数が一致していない
-            self.qmpc.predict(
-                model_param_job_uuid, model_id,
-                [["id1", "id2"], [], [1, 1]], [0, 1])
-        with pytest.raises(ArgmentError):
-            # data_idsの要素数とindexの要素数が一致していない
-            self.qmpc.predict(
-                model_param_job_uuid, model_id,
-                [["id1", "id2"], [0], [1]], [0, 1])
-        with pytest.raises(ArgmentError):
-            # joinの値が0より小さい
-            self.qmpc.predict(
-                model_param_job_uuid, model_id,
-                [["id1", "id2"], [-1], [1]], [0, 1])
-        with pytest.raises(ArgmentError):
-            # joinの値が2より大きい
-            self.qmpc.predict(
-                model_param_job_uuid, model_id,
-                [["id1", "id2"], [3], [1]], [0, 1])
-
     def test_exception_job_error(self):
         # QMPCJobErrorとして例外がthrowされるかのテスト
         with pytest.raises(QMPCJobError):

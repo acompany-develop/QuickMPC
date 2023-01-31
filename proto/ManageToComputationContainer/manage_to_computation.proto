@@ -15,8 +15,6 @@ import "common_types/common_types.proto";
 service ManageToComputation {
     // receive executing computation request from manage container
     rpc ExecuteComputation(ExecuteComputationRequest) returns (google.protobuf.Empty) {}
-    // receive predict request from manage container
-    rpc Predict(PredictRequest) returns (google.protobuf.Empty) {}
     // receive progress check request from manage container
     rpc CheckProgress(CheckProgressRequest) returns (pb_common_types.JobProgress) {}
 }
@@ -45,17 +43,6 @@ message ExecuteComputationRequest {
 */
 message CheckStateResponse {
     int32 state = 1; // the state of computation container(1:working)
-}
-
-/**
- * the message of PredictRequest
-*/
-message PredictRequest {
-    string job_uuid = 1;
-    string model_param_job_uuid = 2;
-    pb_common_types.PredictMethod model_id = 3;
-    JoinOrder table = 4;
-    repeated int32 src = 5;
 }
 
 message CheckProgressRequest {

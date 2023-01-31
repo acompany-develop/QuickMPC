@@ -82,20 +82,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             is_dim1=True,
         )
 
-    def SendModelParam(self, request, context):
-        res = libc_to_manage_pb2.GetComputationResultResponse(
-            message="ok",
-            is_ok=True,
-        )
-        return res
-
-    def Predict(self, request, context):
-        res = libc_to_manage_pb2.PredictResponse(
-            message="ok",
-            is_ok=True
-        )
-        return res
-
     def GetDataList(self, request, context):
         res = libc_to_manage_pb2.GetDataListResponse(
             is_ok=True,

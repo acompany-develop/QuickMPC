@@ -53,39 +53,6 @@ cc_library(
 )
 
 cc_library(
-    name = "model_test",
-    hdrs = [
-        "ModelTest.hpp",
-    ],
-    copts = ["-Iexternal/gtest/include"],
-    deps = [
-        "@gtest//:main",
-        "//Share:share",
-        "//Model/Models:linearregression",
-        "//Model/Models:logisticregression",
-        "//Model/Models:decisiontree",
-        "//Job/Jobs:logisticregressionJob",
-        "@proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
-        "//Logging:log",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
-    name = "optimize_test",
-    hdrs = [
-        "OptimizeTest.hpp",
-    ],
-    deps = [
-        "//ObjectiveFunction:objective_function",
-        "//Optimizer:optimizer",
-        "//Client/ComputationToBts:client",
-        "//Logging:log",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
     name = "read_triple_test",
     srcs = [
         "ReadTripleFromBtsTest.hpp",
@@ -95,19 +62,6 @@ cc_library(
         "@gtest//:main",
         "//TripleHandler:triple_handler",
         "//Logging:log",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
-    name = "gbdt_test",
-    hdrs = [
-        "GBDTTest.hpp",
-    ],
-    deps = [
-        "//GBDT:gbdt",
-        "//Share:share",
-        "//Logging:log"
     ],
     visibility = ["//visibility:public"],
 )

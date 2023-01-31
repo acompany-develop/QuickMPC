@@ -35,16 +35,10 @@ func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
 func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
-func (localDb) InsertModelParams(string, []string, int32) error {
-	return nil
-}
 func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }
 func (localCC) ExecuteComputation(*pb_m2c.ExecuteComputationRequest) (string, int32, error) {
-	return "", 0, nil
-}
-func (localCC) Predict(*pb_m2c.PredictRequest) (string, int32, error) {
 	return "", 0, nil
 }
 func (localCC) CheckProgress(string) (*pb_types.JobProgress, error) {
@@ -185,56 +179,6 @@ func TestGetJobErrorInfo(t *testing.T) {
 
 	if result.GetJobErrorInfo().GetWhat() != "test" {
 		t.Fatal("GetJobErrorInfo Failed")
-	}
-}
-
-// モデル予測値を取得できるかTest
-func TestPredict(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewLibcToManageClient(conn)
-	_, err := client.Predict(context.Background(), &pb.PredictRequest{
-		JobUuid: "id",
-		ModelId: 1,
-		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{1}},
-		Src:     []int32{}})
-
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-// id列が異なる場合にエラーがでるかTest
-func TestPredictFailedDifferentIdColumn(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewLibcToManageClient(conn)
-	_, err := client.Predict(context.Background(), &pb.PredictRequest{
-		JobUuid: "id",
-		ModelId: 1,
-		Table:   &pb.JoinOrder{DataIds: []string{"id"}, Join: []int32{}, Index: []int32{2}},
-		Src:     []int32{}})
-
-	if err == nil {
-		t.Error("predict must be failed, but success.")
-	}
-}
-
-func TestSendModelParam(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewLibcToManageClient(conn)
-
-	result, err := client.SendModelParam(context.Background(), &pb.SendModelParamRequest{
-		JobUuid: "id",
-		Params:  []string{"1", "2"},
-		Token:   "token"})
-
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !result.IsOk {
-		t.Fatal("Send Model Parameters Failed")
 	}
 }
 

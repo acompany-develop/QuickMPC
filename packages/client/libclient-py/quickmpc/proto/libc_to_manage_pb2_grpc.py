@@ -41,16 +41,6 @@ class LibcToManageStub(object):
             request_serializer=libc__to__manage__pb2.GetComputationResultRequest.SerializeToString,
             response_deserializer=libc__to__manage__pb2.GetComputationResultResponse.FromString,
         )
-        self.SendModelParam = channel.unary_unary(
-            '/libctomanage.LibcToManage/SendModelParam',
-            request_serializer=libc__to__manage__pb2.SendModelParamRequest.SerializeToString,
-            response_deserializer=libc__to__manage__pb2.SendModelParamResponse.FromString,
-        )
-        self.Predict = channel.unary_unary(
-            '/libctomanage.LibcToManage/Predict',
-            request_serializer=libc__to__manage__pb2.PredictRequest.SerializeToString,
-            response_deserializer=libc__to__manage__pb2.PredictResponse.FromString,
-        )
         self.GetDataList = channel.unary_unary(
             '/libctomanage.LibcToManage/GetDataList',
             request_serializer=libc__to__manage__pb2.GetDataListRequest.SerializeToString,
@@ -103,18 +93,6 @@ class LibcToManageServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def SendModelParam(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def Predict(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
     def GetDataList(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -160,16 +138,6 @@ def add_LibcToManageServicer_to_server(servicer, server):
             servicer.GetComputationResult,
             request_deserializer=libc__to__manage__pb2.GetComputationResultRequest.FromString,
             response_serializer=libc__to__manage__pb2.GetComputationResultResponse.SerializeToString,
-        ),
-        'SendModelParam': grpc.unary_unary_rpc_method_handler(
-            servicer.SendModelParam,
-            request_deserializer=libc__to__manage__pb2.SendModelParamRequest.FromString,
-            response_serializer=libc__to__manage__pb2.SendModelParamResponse.SerializeToString,
-        ),
-        'Predict': grpc.unary_unary_rpc_method_handler(
-            servicer.Predict,
-            request_deserializer=libc__to__manage__pb2.PredictRequest.FromString,
-            response_serializer=libc__to__manage__pb2.PredictResponse.SerializeToString,
         ),
         'GetDataList': grpc.unary_unary_rpc_method_handler(
             servicer.GetDataList,
@@ -283,40 +251,6 @@ class LibcToManage(object):
                                               libc__to__manage__pb2.GetComputationResultResponse.FromString,
                                               options, channel_credentials,
                                               insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def SendModelParam(request,
-                       target,
-                       options=(),
-                       channel_credentials=None,
-                       call_credentials=None,
-                       insecure=False,
-                       compression=None,
-                       wait_for_ready=None,
-                       timeout=None,
-                       metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/SendModelParam',
-                                             libc__to__manage__pb2.SendModelParamRequest.SerializeToString,
-                                             libc__to__manage__pb2.SendModelParamResponse.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def Predict(request,
-                target,
-                options=(),
-                channel_credentials=None,
-                call_credentials=None,
-                insecure=False,
-                compression=None,
-                wait_for_ready=None,
-                timeout=None,
-                metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/Predict',
-                                             libc__to__manage__pb2.PredictRequest.SerializeToString,
-                                             libc__to__manage__pb2.PredictResponse.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
     def GetDataList(request,

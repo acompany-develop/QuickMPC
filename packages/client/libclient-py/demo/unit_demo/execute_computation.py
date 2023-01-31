@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # data_idに対して計算のリクエストを行う
     data_ids = \
         ["95ac225f2f9c4d72f95c85373fd7ade9d3c22520654f45be569ae9c06c801709"]
-    res = qmpc.linear_regression(
+    res = qmpc.correl(
         (
             data_ids,  # 結合するdata_ids
             [],  # 結合方向(0:横，1:縦)

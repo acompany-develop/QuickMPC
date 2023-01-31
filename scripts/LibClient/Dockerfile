@@ -11,11 +11,8 @@ WORKDIR /packages/client/libclient-py
 WORKDIR /LibClient
 RUN pip install -U pip && \
   pip install \
-  pytest \
-  seaborn \
-  scikit-learn \
-  tabulate \
-  /packages/client/libclient-py
+    pytest \
+    /packages/client/libclient-py
 
 
 FROM builder as medium
