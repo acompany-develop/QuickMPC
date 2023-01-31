@@ -20,13 +20,12 @@ std::shared_ptr<Client> Client::getInstance()
     return instance;
 }
 
-// shareの取り出し
-ValueTable Client::readShare(const std::string &data_id) const
+// Tableの取り出し
+std::vector<std::vector<std::string>> Client::readTable(const std::string &data_id) const
 {
     // DBから値を取り出す
     std::map<int, nlohmann::json> pieces;
     int all_size = 0;
-    std::vector<std::string> schemas;
     for (const auto &entry : fs::directory_iterator(shareDbPath + data_id))
     {
         auto ifs = std::ifstream(entry.path());
@@ -37,13 +36,6 @@ ValueTable Client::readShare(const std::string &data_id) const
         all_size += json["value"].size();
         auto piece_id = json["meta"]["piece_id"];
         pieces.emplace(piece_id, json["value"]);
-
-        // schemaを1番目の要素だけから取り出す
-        if (piece_id == 0)
-        {
-            auto j = json["meta"]["schema"];
-            schemas = std::vector<std::string>(j.begin(), j.end());
-        }
     }
 
     // piece_id順にvalueを結合
@@ -57,7 +49,21 @@ ValueTable Client::readShare(const std::string &data_id) const
             table.emplace_back(row);
         }
     }
-    return ValueTable(table, schemas);
+    return table;
+}
+
+// Schemaの取り出し
+std::vector<std::string> Client::readSchema(const std::string &data_id) const
+{
+    // DBから値を取り出す
+    std::vector<std::string> schemas;
+    auto ifs = std::ifstream(shareDbPath + data_id + "/0");
+    std::string data;
+    getline(ifs, data);
+    auto json = nlohmann::json::parse(data);
+    auto j = json["meta"]["schema"];
+    schemas = std::vector<std::string>(j.begin(), j.end());
+    return schemas;
 }
 
 // Job を DB に新規登録する
@@ -128,9 +134,9 @@ ValueTable Client::readTable(const managetocomputation::JoinOrder &table)
     }
     std::vector<ValueTable> tables;
     tables.reserve(size + 1);
-    for (const auto &dataId : table.dataids())
+    for (const auto &data_id : table.dataids())
     {
-        tables.emplace_back(this->readShare(dataId));
+        tables.emplace_back(readTable(data_id), readSchema(data_id));
     }
     return parseRead(tables, join, index);
 }

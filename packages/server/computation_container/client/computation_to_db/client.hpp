@@ -22,8 +22,9 @@ public:
     Client();
     static std::shared_ptr<Client> getInstance();
 
-    // shareの取り出し
-    ValueTable readShare(const std::string &) const;
+    // Tableの取り出し
+    std::vector<std::vector<std::string>> readTable(const std::string &) const;
+    std::vector<std::string> readSchema(const std::string &) const;
 
     // Job を DB に新規登録する
     void registerJob(const std::string &job_uuid, const int &status) const;

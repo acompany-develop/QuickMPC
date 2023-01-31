@@ -12,12 +12,11 @@ auto initialize(const std::string &id)
     fs::remove_all("/db/share/" + id);
     fs::remove_all("/db/result/" + id);
 }
-
-// shareの取り出し
-// qmpc::ComputationToDb::ValueTable Client::readShare(const std::string &data_id);
-TEST(ComputationToDbTest, SuccessReadShareTest)
+// tableの取り出し
+// qmpc::ComputationToDb::ValueTable Client::readTable(const std::string &data_id);
+TEST(ComputationToDbTest, SuccessReadTableTest)
 {
-    const std::string data_id = "SuccessReadShareTest";
+    const std::string data_id = "SuccessReadTableTest";
     initialize(data_id);
 
     const std::string data = R"({"value":[["1","2"],["3","4"]])"
@@ -28,19 +27,16 @@ TEST(ComputationToDbTest, SuccessReadShareTest)
     ofs.close();
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readShare(data_id);
+    auto read_data = cc_to_db->readTable(data_id);
 
     std::vector<std::vector<std::string>> true_table = {{"1", "2"}, {"3", "4"}};
-    std::vector<std::string> true_schema = {"attr1", "attr2"};
-    EXPECT_EQ(true_table, read_data.getTable());
-    EXPECT_EQ(true_schema, read_data.getSchemas());
+    EXPECT_EQ(true_table, read_data);
 
     initialize(data_id);
 }
-
-TEST(ComputationToDbTest, SuccessReadSharePieceTest)
+TEST(ComputationToDbTest, SuccessReadTablePieceTest)
 {
-    const std::string data_id = "SuccessReadSharePieceTest";
+    const std::string data_id = "SuccessReadTablePieceTest";
     initialize(data_id);
 
     const std::vector<std::string> data = {
@@ -59,19 +55,17 @@ TEST(ComputationToDbTest, SuccessReadSharePieceTest)
     }
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readShare(data_id);
+    auto read_data = cc_to_db->readTable(data_id);
 
     std::vector<std::vector<std::string>> true_table = {
         {"1", "2"}, {"3", "4"}, {"5", "6"}, {"7", "8"}, {"9", "10"}};
-    std::vector<std::string> true_schema = {"attr1", "attr2"};
-    EXPECT_EQ(true_table, read_data.getTable());
-    EXPECT_EQ(true_schema, read_data.getSchemas());
+    EXPECT_EQ(true_table, read_data);
 
     initialize(data_id);
 }
-TEST(ComputationToDbTest, SuccessReadShareLargeTest)
+TEST(ComputationToDbTest, SuccessReadTableLargeTest)
 {
-    std::string data_id = "SuccessReadShareLargeTest";
+    std::string data_id = "SuccessReadTableLargeTest";
     initialize(data_id);
 
     constexpr int H = 500;
@@ -96,12 +90,34 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
     }
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readShare(data_id);
+    auto read_data = cc_to_db->readTable(data_id);
 
     std::vector<std::vector<std::string>> true_data;
     for (int i = 0; i < H; i++) true_data.push_back(data);
-    EXPECT_EQ(true_data, read_data.getTable());
-    EXPECT_EQ(schema, read_data.getSchemas());
+    EXPECT_EQ(true_data, read_data);
+
+    initialize(data_id);
+}
+
+// schemaの取り出し
+// qmpc::ComputationToDb::ValueTable Client::readSchema(const std::string &data_id);
+TEST(ComputationToDbTest, SuccessReadSchemaTest)
+{
+    const std::string data_id = "SuccessReadSchemaTest";
+    initialize(data_id);
+
+    const std::string data = R"({"value":[["1","2"],["3","4"]])"
+                             R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})";
+    fs::create_directories("/Db/share/" + data_id);
+    auto ofs = std::ofstream("/Db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto read_data = cc_to_db->readSchema(data_id);
+
+    std::vector<std::string> true_schema = {"attr1", "attr2"};
+    EXPECT_EQ(true_schema, read_data);
 
     initialize(data_id);
 }
