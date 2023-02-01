@@ -424,7 +424,7 @@ services:
     env_file:
       - ../Config/BeaverTripleService/.env
       - ../Config/BeaverTripleService/server.sample.env
-    expos:
+    expose:
       - "50020"
 
   medium_cc1:
