@@ -1,7 +1,7 @@
 #!/bin/bash
 
 build() {
-    docker buildx bake -f small_bts --load
+    docker buildx bake -f docker-compose.yml small_bts --load
 }
 
 setup() {
