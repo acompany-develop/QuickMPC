@@ -82,10 +82,12 @@ RUN --mount=type=cache,target=/root/go/pkg/mod \
     go build
 
 FROM builder as dev
+ENV STAGE=dev
 WORKDIR /QuickMPC
 
 # image for deploy
 FROM alpine:3.16.2 as dep-runner
+ENV STAGE=dep
 RUN apk update && \
     apk add --no-cache bash && \
     # CVE-2022-0778 対策
@@ -97,7 +99,9 @@ COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.15 /ko-app/grpc-health
 WORKDIR /QuickMPC
 
 FROM builder as small
+ENV STAGE=small
 WORKDIR /QuickMPC
 
 FROM builder as medium
+ENV STAGE=medium
 WORKDIR /QuickMPC
