@@ -1,10 +1,5 @@
-BeverTripleService Container
-====
-
-## 前準備
-<span style="color: red; ">※ 必ず全員やること</span>
-
-[ghcr.ioにイメージをpushまたはpullする時にやること](/Docs/ghcr-io-push-pull.md)を行ってghcrからBTSのイメージをpullする権限を得る
+# BTS
+QuickMPCで使われるTripleを生成するサービス
 
 ## ローカルでの起動方法
 `packages/server/BeaverTripleService/`で以下のコマンドを実行
@@ -14,7 +9,7 @@ make run
 これにより, 同一ホストネットワーク内であれば `127.0.0.1:64101`で接続可能
 以下の様に`grpcurl`でCLIからリクエストを送ることも可能
 ```sh
-$ grpcurl -plaintext -d '{"job_id": 1, "amount": 5}' 127.0.0.1:64101 engineToBts.EngineToBts/GetTriples
+$ grpcurl -plaintext -d '{"job_id": 1, "amount": 5}' 127.0.0.1:64101 enginetobts.EngineToBts/GetTriples
 {
   "triples": [
     {
@@ -46,46 +41,65 @@ $ grpcurl -plaintext -d '{"job_id": 1, "amount": 5}' 127.0.0.1:64101 engineToBts
 }
 ```
 
-## 使用方法
-バックグラウンドでコンテナを起動したい場合は今のコマンドを実行
-```bash
-make upd # docker-compose up -d --build
+## テスト方法
+`scripts/`で以下のコマンドを実行
+```sh
+make test
+```
+特定のtestを指定して実行したい場合は以下のようにする
+```sh
+make test t=./BeaverTripleService/TripleGenerator
+# Test/BeaverTripleService/TripleGenerator/ 直下のみのテストを実行したい場合
+make test p=unit # `uint*test.sh`を実行したい場合
+make test m=build # `*test.sh`のbuild処理のみ実行したい場合
+make test m=run # `*test.sh`のrun処理のみ実行したい場合
 ```
 
-### イメージを構築
-事前にイメージを構築したい場合は以下のコマンドを実行
-```bash
-make build # docker-compose build
+## 開発方法
+`packages/server/BeaverTripleService/`で以下のコマンドを実行
+```sh
+make up-build
+make upd-build # バックグラウンドで起動したい場合はこちら
 ```
 
-### イメージからコンテナの起動
-構築済みのイメージからコンテナを起動する場合は以下のコマンドを実行
-```bash
-make up # docker-compose up --build
-```
-バックグラウンドで実行したい場合は以下:
-```bash
-make upd # docker-compose up -d --build
-```
-もし存在していない場合は、自動的に構築
+その後, VSCodeの左タブから`Remote Explorer` > 上のトグルから`Containers`を選択 > `beavertripleservice`にカーソルを合わせる > 新規フォルダアイコンを選択 > 開く場所を選択してsrc_btsコンテナの中で開発が行えるようになる.
 
-### 起動中のコンテナに入る
-実行中のコンテナのbashに入る時、以下のコマンドを実行
-```bash
-make login # docker-compose exec cc /bin/bash
-```
+![image](https://user-images.githubusercontent.com/33140349/142567126-52b8e392-a81c-4630-bf6c-6f801653770a.png)
 
-### 削除
-containers, networks, images, and volumesを停止かつ削除するとき以下のコマンドを実行
+## Container Image
+
+GitHub Packages のコンテナレジストリにイメージを用意している
+
+| tag             | description                                                    |
+|-----------------|----------------------------------------------------------------|
+| ${date}        | 日時: `${date}` に作成されたイメージ                   |
+| ${version}     | GitHub tagをトリガーにreleaseされたイメージ |
+
+Dockerfile で使用される各 build stage については以下のリンクを参照
+
+[QuickMPC/scripts/README.md#how-to-develop-docker-composeyml](../../../scripts/README.md#how-to-develop-docker-composeyml)
+
+## grpcurlでのdebug
+※ portはよしなに変更してください
 ```bash
-make rm-all # docker-compose down --rmi all --volumes
-```
-コンテナのみを削除する場合は以下を実行
-```bash
-make rm # docker-compose rm -fs
+grpcurl -d '{"job_id": 1, "amount": 10}' beaver_triple_service:54100 enginetobts.EngineToBts/GetTriples
 ```
 
-コンテナとネットワークを削除する場合は以下を実行
+## grpcサーバのヘルスチェック
 ```bash
-make down # docker-compose down
+grpc_health_probe -addr=localhost:54100
 ```
+
+## JWT token の生成
+
+YAML ファイルを入力に JWT token を生成します
+
+```console
+root@container:/QuickMPC/packages/server/BeaverTripleService# go run Cmd/JWTGenerator/main.go     # generate from sample.yml
+root@container:/QuickMPC# go run Cmd/JWTGenerator/main.go \
+>                                 -file /path/to/config.yml   \
+>                                 -o ./output/envs                # use own configuration
+root@container:/QuickMPC/packages/server/BeaverTripleService# go run Cmd/JWTGenerator/main.go -h  # show help
+```
+
+クライアントとサーバ向けにそれぞれ `.env` ファイル形式の設定ファイルが書き込まれます

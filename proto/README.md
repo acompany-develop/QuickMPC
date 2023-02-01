@@ -10,7 +10,7 @@ proto
 `proto` のワークスペースを参照し、gRPC 利用時に必要な設定を読込・実行する
 
 ```bazel
-# Enable Proto
+# Enable proto
 local_repository(
     name = "proto",
     path = "/proto"

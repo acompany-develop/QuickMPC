@@ -1,0 +1,66 @@
+admin: # 管理者画面の設定
+  access_log_path: /tmp/admin_access.log # ログを保存するファイル
+  address:
+    socket_address: { address: 0.0.0.0, port_value: 9901 } # 9901番ポートでlisten
+
+static_resources:
+  listeners:
+    - name: listener_0
+      address:
+        socket_address: { address: 0.0.0.0, port_value: 51020 } # 51020番ポートでlisten
+      filter_chains: # リクエストのフィルタリングの設定
+        - filters:
+            - name: envoy.filters.network.http_connection_manager # HTTP接続用に設計された組み込みフィルター
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                codec_type: auto
+                stat_prefix: ingress_http # 接続マネージャの統計を発行する時に使用する人間が読める形式のprefix
+                access_log:
+                  - name: envoy.access_loggers.file
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog
+                      path: "/dev/stdout" # ログは標準出力
+                route_config:
+                  name: local_route
+                  virtual_hosts:
+                    - name: local_service
+                      domains: ["*"] # virtual_hostのドメイン
+                      routes:
+                        - match: { prefix: "/" } # "/"がリクエストのルートと一致
+                          route:
+                            cluster: cc_to_bts
+                http_filters:
+                  - name: envoy.filters.http.router
+                use_remote_address: true
+                skip_xff_append: false
+      # TLS を用いて通信を行う場合コメントを外す
+      # transport_socket:
+      #   name: envoy.transport_sockets.tls
+      #   typed_config:
+      #     "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+      #     common_tls_context:
+      #       alpn_protocols: ["h2"]
+      #       tls_certificates:
+      #         - certificate_chain:
+      #             filename: /Certificates/Server.pem
+      #           private_key:
+      #             filename: /Certificates/Server.key
+  clusters: # リクエストがフィルタに一致するとclusterに渡される
+    - name: cc_to_bts
+      connect_timeout: 10s # クラスター内のホストへのネットワーク接続のタイムアウト
+      type: logical_dns
+      http2_protocol_options: {}
+      lb_policy: round_robin
+      dns_lookup_family: V4_ONLY
+      upstream_connection_options:
+        tcp_keepalive:
+          keepalive_time: 300
+      load_assignment:
+        cluster_name: cluster_2
+        endpoints: # 中継先のエンドポイントの設定
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      address: 10.0.4.1
+                      port_value: 54000

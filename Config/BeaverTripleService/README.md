@@ -26,9 +26,9 @@ func init() {
     stage := getEnv("STAGE", "")
     var ConfigJsonFilePath string
     if stage == "src" {
-        ConfigJsonFilePath = "/QuickMPC-BTS/Config/Config.src.json"
+        ConfigJsonFilePath = "/QuickMPC/Config/Config.src.json"
     } else {
-        ConfigJsonFilePath = "/QuickMPC-BTS/Config/Config.json"
+        ConfigJsonFilePath = "/QuickMPC/Config/Config.json"
     }
     err := utils.ParseJsonFIle(ConfigJsonFilePath, &Conf)
     if err != nil {
