@@ -74,9 +74,24 @@ jobs:
         run: make test t=./ManageContainer m=run p=small
         working-directory: ./scripts
 
+  small_test_bts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build BeaverTripleService binary
+        run: make test t=./BeaverTripleService m=build
+        working-directory: ./scripts
+
+      - name: Run test in BeaverTripleService
+        run: make test t=./BeaverTripleService m=run
+        working-directory: ./scripts
+
   small_test:
     runs-on: ubuntu-latest
-    needs: [lint, small_test_cc, small_test_mc]
+    needs: [lint, small_test_cc, small_test_mc, small_test_bts]
 
     steps:
       - name: Merge All small_test

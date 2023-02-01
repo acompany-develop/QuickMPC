@@ -143,9 +143,76 @@ jobs:
         run: |
           docker push ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.version }}
 
+  build_and_push_bts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set current date as env variable
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y%m%d')"
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/quickmpc-bts
+
+      - name: Build BTS image with branch
+        if: startsWith(github.ref, 'refs/heads/')
+        run: |
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.date.outputs.date }} --load
+        working-directory: ./packages/server/BeaverTripleService/
+
+      - name: Build BTS image with tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.meta.outputs.version }} --load
+        working-directory: ./packages/server/BeaverTripleService/
+
+      - name: Run Trivy vulnerability scanner for BTS with branch
+        if: startsWith(github.ref, 'refs/heads/')
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.date.outputs.date }}"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+
+      - name: Run Trivy vulnerability scanner for BTS with tag
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.meta.outputs.version }}"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          vuln-type: "os,library"
+          severity: "CRITICAL,HIGH"
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Push image with branch
+        if: startsWith(github.ref, 'refs/heads/')
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.date.outputs.date }}
+
+      - name: Push image with tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          docker push ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.meta.outputs.version }}
+
   build_and_push:
     runs-on: ubuntu-latest
-    needs: [build_and_push_cc, build_and_push_mc]
+    needs: [build_and_push_cc, build_and_push_mc, build_and_push_bts]
 
     steps:
       - name: Merge All build_and_push
