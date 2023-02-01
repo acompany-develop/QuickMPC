@@ -1,3 +1,3 @@
 module github.com/acompany-develop/QuickMPC/proto/common_types
 
-go 1.14
+go 1.18

@@ -165,5 +165,5 @@ protoc --go_out=. --go_opt=paths=source_relative \
 ```
 module github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer
 
-go 1.14
+go 1.18
 ```

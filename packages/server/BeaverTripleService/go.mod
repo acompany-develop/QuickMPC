@@ -1,6 +1,6 @@
 module github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService
 
-go 1.14
+go 1.18
 
 replace github.com/acompany-develop/QuickMPC/proto/EngineToBts => ./../proto/EngineToBts
 
