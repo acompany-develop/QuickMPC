@@ -144,10 +144,13 @@ services:
 
   dev_bts:
     container_name: beaver_triple_service
+    image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
     build:
       context: ../
       dockerfile: packages/server/BeaverTripleService/Dockerfile
       target: dev
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
     volumes:
       - type: bind
         source: ../Config/BeaverTripleService
@@ -403,6 +406,26 @@ services:
         target: /Db/result
     env_file:
       - ../Config/ManageContainer/Manage1/.env
+
+  small_bts:
+    container_name: beaver_triple_service
+    tty: true # 起動しっぱなし
+    image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
+    build:
+      context: ../
+      dockerfile: packages/server/ManageContainer/Dockerfile
+      target: small
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
+    volumes:
+      - type: bind
+        source: ../Config/BeaverTripleService
+        target: /QuickMPC/Config
+    env_file:
+      - ../Config/BeaverTripleService/.env
+      - ../Config/BeaverTripleService/server.sample.env
+    expos:
+      - "50020"
 
   medium_cc1:
     container_name: computation_container1
