@@ -413,7 +413,7 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/BeaverTripleService/Dockerfile
       target: small
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-small

@@ -1,5 +1,5 @@
 #!make
-t     = src_bts
+t     = bts
 
 NETWORK_NAME = shared-network
 NETWORK_GATEWAY = 10.0.0.1
