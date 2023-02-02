@@ -7,12 +7,7 @@ bazel-tools
 .bazel
 result
 
-packages/server/ManageContainer/vendor
-packages/server/ManageContainer/ManageContainer
-
-packages/server/DbContainer/DbGate/vendor
-packages/server/DbContainer/DbGate/DbGate
-packages/server/DbContainer/DbGate/bench/log/*
+**/vendor
 
 **/Db/**/data/*
 **/Db/**/nodestatus/initialized
