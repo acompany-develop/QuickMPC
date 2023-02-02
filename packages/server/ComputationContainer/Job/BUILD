@@ -29,6 +29,7 @@ cc_library(
         "//TransactionQueue:transaction_queue",
         "//Job/Jobs:meshcodeJob",
         "//Client/ComputationToComputationContainerForJob:client",
+        "//Client/ComputationToBts:client",
         "//ConfigParse:config_parse",
         "//Job:progressManager",
         "//Logging:log"
