@@ -154,3 +154,9 @@ func InitTripleStore() error {
 	Db.Triples = map[uint32](map[uint32]([]*pb.Triple)){}
 	return nil
 }
+
+func DeleteJobIdTriple(jobId uint32) error {
+	// jobIdに紐付いたTripleを削除
+	delete(Db.Triples, jobId)
+	return nil
+}
