@@ -127,6 +127,38 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 	return &emptypb.Empty{},err
 }
 
+func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
+	var reqIpAddrAndPort string
+	// ClientのIPアドレスを取得
+	if cs.Conf.WithEnvoy {
+		md, _ := metadata.FromIncomingContext(ctx)
+		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
+		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
+	} else {
+		p, _ := peer.FromContext(ctx)
+		reqIpAddrAndPort = p.Addr.String()
+	}
+
+	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
+	if err != nil {
+		return nil, err
+	}
+	logger.Infof("Ip %s, jobId: %d, partyId: %d\n", reqIpAddrAndPort, in.GetJobId(), partyId)
+
+	// TODO: read claims, and use these party information
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if ok {
+		logger.Infof("claims: %v\n", claims)
+	}
+
+	err = tg.DeleteJobIdTriple(in.GetJobId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{},err
+}
+
 func btsAuthFunc(ctx context.Context) (context.Context, error) {
 	tokenString, err := grpc_auth.AuthFromMD(ctx, "bearer")
 	if err != nil {
