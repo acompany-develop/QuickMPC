@@ -14,5 +14,6 @@
             "PartyId": 3,
             "IpAddress": "10.0.3.120"
         }
-    ]
+    ],
+    "WithEnvoy": false
 }

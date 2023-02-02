@@ -1,4 +1,5 @@
-t     = bts
+#!make
+t     = src_bts
 
 NETWORK_NAME = shared-network
 NETWORK_GATEWAY = 10.0.0.1
@@ -29,6 +30,7 @@ up-build: upnet
 
 down:
 	docker-compose down
+	- $(MAKE) downnet
 
 rm:
 	docker-compose rm -fs
@@ -50,3 +52,7 @@ logs:
 
 login:
 	docker-compose exec $(t) /bin/bash
+
+run: upnet
+	docker-compose up -d --build
+	docker-compose exec $(t) /bin/bash -c "go mod vendor && go build && ./BeaverTripleService"

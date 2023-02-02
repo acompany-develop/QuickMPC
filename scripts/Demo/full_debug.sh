@@ -3,7 +3,7 @@
 
 # build処理を記述する関数
 build() {
-    docker buildx bake -f docker-compose.yml dev_cc1 dev_cc2 dev_cc3 dev_mc1 dev_mc2 dev_mc3 --load
+    docker buildx bake -f docker-compose.yml dev_bts dev_cc1 dev_cc2 dev_cc3 dev_mc1 dev_mc2 dev_mc3 --load
 }
 
 # runの前に実行されるsetup処理を記述する関数

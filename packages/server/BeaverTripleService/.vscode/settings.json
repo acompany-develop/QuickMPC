@@ -1,0 +1,7 @@
+{
+    "go.useLanguageServer": true,
+    "go.inferGopath": false,
+    "go.toolsEnvVars": {
+        "GO111MODULE": "on",
+    },
+}
