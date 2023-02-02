@@ -28,6 +28,7 @@ import (
 	logger "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Log"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleGenerator"
 	pb "github.com/acompany-develop/QuickMPC/proto/EngineToBts"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type server struct {
@@ -92,6 +93,38 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	return &pb.GetTriplesResponse{
 		Triples: triples,
 	}, nil
+}
+
+func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
+	var reqIpAddrAndPort string
+	// ClientのIPアドレスを取得
+	if cs.Conf.WithEnvoy {
+		md, _ := metadata.FromIncomingContext(ctx)
+		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
+		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
+	} else {
+		p, _ := peer.FromContext(ctx)
+		reqIpAddrAndPort = p.Addr.String()
+	}
+
+	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
+	if err != nil {
+		return nil, err
+	}
+	logger.Infof("Ip %s, partyId: %d \n", reqIpAddrAndPort, partyId)
+
+	// TODO: read claims, and use these party information
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if ok {
+		logger.Infof("claims: %v\n", claims)
+	}
+
+	err = tg.InitTripleStore()
+	if err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{},err
 }
 
 func btsAuthFunc(ctx context.Context) (context.Context, error) {
