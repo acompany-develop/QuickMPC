@@ -6,11 +6,11 @@
 void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
 {
     // triple read Test
-    auto cc_to_db = qmpc::ComputationToBts::Client::getInstance();
+    auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
     for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
     {
         QMPC_LOG_INFO("jobId[{}]: ...", jobId);
-        auto triples = cc_to_db->readTriples<FixedPoint>(jobId, amount);
+        auto triples = cc_to_bts->readTriples<FixedPoint>(jobId, amount);
         EXPECT_EQ(triples.size(), amount);
         // TODO: Party間で足並みを揃えてa*b=cのチェック
 
@@ -44,16 +44,16 @@ TEST(ComputationToBtsTest, InitTripleStoreTest)
     const unsigned int jobIdMax = 5;
     const unsigned int amount = 1000;
     Config *conf = Config::getInstance();
-    auto cc_to_db = qmpc::ComputationToBts::Client::getInstance();
+    auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
 
     if (conf->party_id == 1)
     {
         for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++){
-            auto triples = cc_to_db->readTriples<FixedPoint>(jobId, amount);
+            auto triples = cc_to_bts->readTriples<FixedPoint>(jobId, amount);
         }
 
         // BTSの初期化
-        cc_to_db->initTripleStore();
+        cc_to_bts->initTripleStore();
     }
 
     // partyで足並みを揃えるため
@@ -79,17 +79,17 @@ TEST(ComputationToBtsTest, DeleteJobIdTripleTest)
     const unsigned int jobIdMax = 5;
     const unsigned int amount = 1000;
     Config *conf = Config::getInstance();
-    auto cc_to_db = qmpc::ComputationToBts::Client::getInstance();
+    auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
 
     if (conf->party_id == 1)
     {
         for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++){
-            auto triples = cc_to_db->readTriples<FixedPoint>(jobId, amount);
+            auto triples = cc_to_bts->readTriples<FixedPoint>(jobId, amount);
         }
 
         // 各jobIdに紐付いたTripleを削除する
         for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++){
-            cc_to_db->deleteJobIdTriple(jobId);
+            cc_to_bts->deleteJobIdTriple(jobId);
         }
     }
 
