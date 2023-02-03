@@ -14,7 +14,7 @@ cc_library(
 cc_library(
     name = "sgd",
     hdrs = [
-        "SGD.hpp",
+        "sgd.hpp",
     ],
     srcs = [
     ],
@@ -67,7 +67,7 @@ cc_library(
     hdrs = [
         "optimizer.hpp",
         "gradient_descent.hpp",
-        "SGD.hpp",
+        "sgd.hpp",
         "momentum.hpp",
         "adam.hpp",
     ],

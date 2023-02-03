@@ -3,4 +3,4 @@
 #include "optimizer/adam.hpp"
 #include "optimizer/gradient_descent.hpp"
 #include "optimizer/momentum.hpp"
-#include "optimizer/SGD.hpp"
+#include "optimizer/sgd.hpp"
