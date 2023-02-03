@@ -20,7 +20,7 @@ FROM base as builder
 
 アプリケーションで以下のように分岐することで切り替えを実現
 ```go
-// packages/server/beaver_triple_service/ConfigStore/config.go
+// packages/server/beaver_triple_service/config_store/config.go
 ...
 func init() {
     stage := getEnv("STAGE", "")
