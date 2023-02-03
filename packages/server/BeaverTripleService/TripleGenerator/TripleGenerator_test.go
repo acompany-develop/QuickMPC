@@ -141,3 +141,46 @@ func TestTripleGenerator_Float_10000_100(t *testing.T) {
 func TestTripleGenerator_Float_1000000_1(t *testing.T) {
 	testTripleGenerator(t, 1000000, 1, pb.Type_TYPE_FLOAT)
 }
+
+func TestInitTripleStore(t *testing.T) {
+	jobId := uint32(1)
+	partyId := uint32(1)
+	amount := uint32(10)
+	triple_type := pb.Type_TYPE_FLOAT
+	_, err := tg.GetTriples(jobId, partyId, amount, triple_type)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = tg.InitTripleStore()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	testDbIsEmpty(t)
+}
+
+func TestDeleteJobIdTriple(t *testing.T) {
+	jobNum := uint32(10)
+	partyId := uint32(1)
+	amount := uint32(10)
+	triple_type := pb.Type_TYPE_FLOAT
+	for jobId := uint32(0); jobId < jobNum; jobId++ {
+		_, err := tg.GetTriples(jobId, partyId, amount, triple_type)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	for jobId := uint32(0); jobId < jobNum; jobId++ {
+		err := tg.DeleteJobIdTriple(jobId)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if len(Db.Triples[jobId]) != 0 {
+			t.Log(Db.Triples[jobId])
+			t.Fatal("残存Tripleあり")
+		}
+	}
+}
