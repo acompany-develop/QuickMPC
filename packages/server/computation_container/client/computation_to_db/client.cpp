@@ -10,7 +10,6 @@
 #include <google/protobuf/util/json_util.h>
 
 #include "ValueTable.hpp"
-#include "external/Proto/common_types/common_types.pb.h"
 
 namespace qmpc::ComputationToDb
 {
