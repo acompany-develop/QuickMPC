@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 
-#include "OptInterface.hpp"
+#include "opt_interface.hpp"
 #include "share/share.hpp"
 
 namespace qmpc::Optimizer

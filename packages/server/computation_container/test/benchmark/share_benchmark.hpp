@@ -8,7 +8,7 @@
 #include "benchmark.hpp"
 #include "random/random.hpp"
 #include "server/computation_to_computation_container/server.hpp"
-#include "share/Compare.hpp"
+#include "share/compare.hpp"
 #include "share/share.hpp"
 #include "gtest/gtest.h"
 #include "unistd.h"
@@ -111,8 +111,8 @@ TEST(ShareBenchmark, AddBetweenSharesAndFixedPoint)
         Share(FixedPoint("-4.2"))};
     FixedPoint b("2.0");
 
-    // IntagrationTest/ShareTest.hpp からコピペ
-    // ShareTest では a + b と b + a をやっているが，ここでは a + b だけ
+    // IntagrationTest/share_test.hpp からコピペ
+    // share_test では a + b と b + a をやっているが，ここでは a + b だけ
     measureExecTime("AddBetweenSharesAndFixedPoint", 5, [&]() { auto c = a + b; });
 }
 
@@ -125,8 +125,8 @@ TEST(ShareBenchmark, SubBetweenSharesAndFixedPoint)
         Share(FixedPoint("-4.2"))};
     FixedPoint b("2.0");
 
-    // IntagrationTest/ShareTest.hpp からコピペ
-    // ShareTest では a - b と b - a をやっているが，ここでは a - b だけ
+    // IntagrationTest/share_test.hpp からコピペ
+    // share_test では a - b と b - a をやっているが，ここでは a - b だけ
     measureExecTime("SubBetweenSharesAndFixedPoint", 5, [&]() { auto c = a - b; });
 }
 
@@ -139,8 +139,8 @@ TEST(ShareBenchmark, MulBetweenSharesAndFixedPoint)
         Share(FixedPoint("-4.2"))};
     FixedPoint b("2.0");
 
-    // IntagrationTest/ShareTest.hpp からコピペ
-    // ShareTest では a * b と b * a をやっているが，ここでは a * b だけ
+    // IntagrationTest/share_test.hpp からコピペ
+    // share_test では a * b と b * a をやっているが，ここでは a * b だけ
     measureExecTime("MulBetweenSharesAndFixedPoint", 5, [&]() { auto c = a * b; });
 }
 
@@ -153,15 +153,15 @@ TEST(ShareBenchmark, DivBetweenSharesAndFixedPoint)
         Share(FixedPoint("-4.2"))};
     FixedPoint b("2.0");
 
-    // IntagrationTest/ShareTest.hpp からコピペ
-    // ShareTest では a / b と b / a をやっているが，ここでは a / b だけ
+    // IntagrationTest/share_test.hpp からコピペ
+    // share_test では a / b と b / a をやっているが，ここでは a / b だけ
     measureExecTime("DivBetweenSharesAndFixedPoint", 5, [&]() { auto c = a / b; });
 }
 
 TEST(ShareBenchmark, ModuloBetweenShareAndFixedPoint)
 {
-    // IntagrationTest/ShareTest.hpp からコピペ
-    // ShareTest にある テスト14 のみを計測
+    // IntagrationTest/share_test.hpp からコピペ
+    // share_test にある テスト14 のみを計測
     Share a = Share(FixedPoint("-430333161.0"));
     FixedPoint b = FixedPoint("683330992.0");
     measureExecTime("ModuloBetweenShareAndFixedPoint", 5, [&]() { auto c = a % b; });
@@ -221,7 +221,7 @@ TEST(ShareBenchmark, BulkRandBitShare)
 
 TEST(ShareBenchmark, LSBShare)
 {
-    // IntagrationTest/ShareTest.hpp からコピペ
+    // IntagrationTest/share_test.hpp からコピペ
     // ShareTestから1個取ってきた
     Share s = Share(FixedPoint("5"));
 
@@ -232,7 +232,7 @@ TEST(ShareBenchmark, LSBShare)
 // 一括LSBShareのテスト
 TEST(ShareBenchmark, BulkLSBShare)
 {
-    // IntagrationTest/ShareTest.hpp からコピペ
+    // IntagrationTest/share_test.hpp からコピペ
     // ShareTestと同じ
     std::vector<Share> s = {
         Share(FixedPoint("5")),
@@ -247,7 +247,7 @@ TEST(ShareBenchmark, BulkLSBShare)
 
 TEST(ShareBenchmark, Floor)
 {
-    // IntagrationTest/ShareTest.hpp からコピペ
+    // IntagrationTest/share_test.hpp からコピペ
     // ShareTestから1個取ってきた
     Share s = Share(FixedPoint("3.5"));
 
@@ -258,7 +258,7 @@ TEST(ShareBenchmark, Floor)
 // 一括Floorのテスト
 TEST(ShareBenchmark, BulkFloor)
 {
-    // IntagrationTest/ShareTest.hpp からコピペ
+    // IntagrationTest/share_test.hpp からコピペ
     // ShareTestと同じ
     std::vector<Share> s = {
         Share(FixedPoint("3.5")),
@@ -281,7 +281,7 @@ TEST(ShareBenchmark, BulkFloor)
 // LTZ (= Less Than Zero)
 TEST(ShareBenchmark, LTZ)
 {
-    // IntagrationTest/ShareTest.hpp からコピペ
+    // IntagrationTest/share_test.hpp からコピペ
     // ShareTestから1個取ってきた
     Share s = Share(FixedPoint("-3.0"));
     // ランダム要素を含むため，計測回数は1回
@@ -486,8 +486,8 @@ TEST(ShareBenchmark, Sort)
 // sqrtのテスト
 TEST(ShareBenchmark, Sqrt)
 {
-    // IntagrationTest/ShareTest.hpp からコピペ
-    // ShareTest にある b = 121 のみ計測
+    // IntagrationTest/share_test.hpp からコピペ
+    // share_test にある b = 121 のみ計測
     Share b;
     b += FixedPoint(121);
 

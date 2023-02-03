@@ -1,7 +1,7 @@
 cc_library(
     name = "log_header",
     hdrs = [
-        "LogHeader.hpp"
+        "log_header.hpp"
     ],
     deps = [
         "@libspdlog//:spdlog"
@@ -12,7 +12,7 @@ cc_library(
 cc_library(
     name = "log",
     hdrs = [
-        "Logger.hpp",
+        "logger.hpp",
     ],
     linkopts=["-lboost_stacktrace_backtrace", "-ldl", "-lbacktrace"],
     defines=["BOOST_STACKTRACE_LINK",

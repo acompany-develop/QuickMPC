@@ -1,8 +1,8 @@
-#include "random/Csprng.hpp"
+#include "random/csprng.hpp"
 
 #include <memory>
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 // randombytes_buf_deterministic の内部はChaCha20
 // ((2**32[ctrが4byte長])*64[byte/block])/10**9[byte->GB] = 274GB[俗にいう256GB]
 // 内部ctrの範囲が1~2**32なので、1つのkey(seed)で274GB分のRNが生成できる

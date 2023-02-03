@@ -1,7 +1,7 @@
 cc_library(
     name = "job",
     hdrs = [
-        "JobBase.hpp",
+        "job_base.hpp",
     ],
     deps = [
         "//job:jobStatus",
@@ -17,9 +17,9 @@ cc_library(
 cc_library(
     name = "jobManager",
     hdrs = [
-        "JobManager.hpp",
-        "JobSelector.hpp",
-        "JobParameter.hpp"
+        "job_manager.hpp",
+        "job_selector.hpp",
+        "job_parameter.hpp"
     ],
     deps = [
         "//job:job",
@@ -40,7 +40,7 @@ cc_library(
 cc_library(
     name = "jobStatus",
     hdrs = [
-        "JobStatus.hpp",
+        "job_status.hpp",
     ],
     deps = [
         "//client/computation_to_db:client",
@@ -54,10 +54,10 @@ cc_library(
 cc_library(
     name = "progressManager",
     srcs = [
-        "ProgressManager.cpp",
+        "progress_manager.cpp",
     ],
     hdrs = [
-        "ProgressManager.hpp",
+        "progress_manager.hpp",
     ],
     deps = [
         "//logging:log",

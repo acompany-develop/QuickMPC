@@ -6,7 +6,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 #include "spdlog/sinks/ostream_sink.h"
 
 #include "gtest/gtest.h"

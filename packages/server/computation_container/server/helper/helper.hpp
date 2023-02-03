@@ -6,7 +6,7 @@
 #include <grpcpp/server_builder.h>
 #include <grpcpp/server_context.h>
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 
 class LoggingServerInterceptor : public grpc::experimental::Interceptor
 {

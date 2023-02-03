@@ -6,10 +6,10 @@
 #include <string>
 #include <tuple>
 
-#include "AddressId.hpp"
+#include "address_id.hpp"
 #include "config_parse/config_parse.hpp"
-#include "logging/Logger.hpp"
-#include "Networking.hpp"
+#include "logging/logger.hpp"
+#include "networking.hpp"
 #include "random/random.hpp"
 #include "triple_handler/triple_handler.hpp"
 namespace qmpc::Share

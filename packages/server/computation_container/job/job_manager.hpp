@@ -9,12 +9,12 @@
 #include "client/computation_to_bts/client.hpp"
 #include "client/computation_to_computation_container_for_job/client.hpp"
 #include "config_parse/config_parse.hpp"
-#include "JobBase.hpp"
-#include "JobParameter.hpp"
-#include "JobSelector.hpp"
-#include "JobStatus.hpp"
-#include "logging/Logger.hpp"
-#include "ProgressManager.hpp"
+#include "job_base.hpp"
+#include "job_parameter.hpp"
+#include "job_selector.hpp"
+#include "job_status.hpp"
+#include "logging/logger.hpp"
+#include "progress_manager.hpp"
 #include "transaction_queue/transaction_queue.hpp"
 
 namespace qmpc::Job

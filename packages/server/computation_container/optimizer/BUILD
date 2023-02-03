@@ -1,7 +1,7 @@
 cc_library(
     name = "gradient_descent",
     hdrs = [
-        "GradientDescent.hpp",
+        "gradient_descent.hpp",
     ],
     srcs = [
     ],
@@ -27,7 +27,7 @@ cc_library(
 cc_library(
     name = "momentum",
     hdrs = [
-        "Momentum.hpp",
+        "momentum.hpp",
     ],
     srcs = [
     ],
@@ -40,7 +40,7 @@ cc_library(
 cc_library(
     name = "adam",
     hdrs = [
-        "Adam.hpp",
+        "adam.hpp",
     ],
     srcs = [
     ],
@@ -53,7 +53,7 @@ cc_library(
 cc_library(
     name = "optInterface",
     hdrs = [
-        "OptInterface.hpp",
+        "opt_interface.hpp",
     ],
     deps = [
         "//share:share",
@@ -66,10 +66,10 @@ cc_library(
     name = "optimizer",
     hdrs = [
         "optimizer.hpp",
-        "GradientDescent.hpp",
+        "gradient_descent.hpp",
         "SGD.hpp",
-        "Momentum.hpp",
-        "Adam.hpp",
+        "momentum.hpp",
+        "adam.hpp",
     ],
     deps = [
         "//optimizer:gradient_descent",

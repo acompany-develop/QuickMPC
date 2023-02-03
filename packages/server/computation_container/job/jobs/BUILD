@@ -2,7 +2,7 @@
 cc_library(
     name = "correljob",
     hdrs = [
-        "CorrelJob.hpp"
+        "correl_job.hpp"
     ],
     deps = [
         "//job:job",
@@ -14,7 +14,7 @@ cc_library(
 cc_library(
     name = "mathjob",
     hdrs = [
-        "MathJob.hpp"
+        "math_job.hpp"
     ],
     deps = [
         "//job:job",
@@ -25,7 +25,7 @@ cc_library(
 cc_library(
     name = "meshcodeJob",
     hdrs = [
-        "MeshCodeJob.hpp"
+        "mesh_code_job.hpp"
     ],
     deps = [
         "//job:job"
@@ -36,7 +36,7 @@ cc_library(
 cc_library(
     name = "jointablejob",
     hdrs = [
-        "JoinTableJob.hpp"
+        "join_table_job.hpp"
     ],
     deps = [
         "//job:job",

@@ -1,4 +1,4 @@
-#include "ProgressManager.hpp"
+#include "progress_manager.hpp"
 
 #include <chrono>
 #include <optional>
@@ -10,7 +10,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 #include "external/proto/common_types/common_types.pb.h"
 
 namespace qmpc::Job

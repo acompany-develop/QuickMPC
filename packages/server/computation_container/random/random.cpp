@@ -4,7 +4,7 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-#include "random/Csprng.hpp"
+#include "random/csprng.hpp"
 
 unsigned long long RandGenerator::generateRand()
 {

@@ -1,10 +1,10 @@
 cc_library(
     name = "math_lib",
     srcs = [
-        "MathLib.cpp"
+        "math_lib.cpp"
     ],
     hdrs = [
-        "MathLib.hpp",
+        "math_lib.hpp",
     ],
     visibility = ["//visibility:public"]
 )

@@ -1,4 +1,4 @@
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 #include "share/share.hpp"
 #include "gtest/gtest.h"
 

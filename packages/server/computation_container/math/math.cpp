@@ -1,6 +1,6 @@
 #include "math.hpp"
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 namespace qmpc::Math
 {
 Share sum(const std::vector<Share> &v)

@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-#include "job/job/MeshCodeJob.hpp"
-#include "logging/Logger.hpp"
+#include "job/jobs/mesh_code_job.hpp"
+#include "logging/logger.hpp"
 #include "math/math.hpp"
 #include "server/computation_to_computation_container/server.hpp"
 #include "share/share.hpp"

@@ -1,5 +1,5 @@
 #include "client/computation_to_bts/client.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 

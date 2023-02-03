@@ -1,8 +1,8 @@
 #include "server.hpp"
 
 #include "config_parse/config_parse.hpp"
-#include "logging/Logger.hpp"
-#include "share/AddressId.hpp"
+#include "logging/logger.hpp"
+#include "share/address_id.hpp"
 
 namespace qmpc::ComputationToComputation
 {

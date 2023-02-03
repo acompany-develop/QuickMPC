@@ -3,8 +3,8 @@
 #include <future>
 
 #include "config_parse/config_parse.hpp"
-#include "FixedPoint/FixedPoint.hpp"
-#include "Networking.hpp"
+#include "fixed_point/fixed_point.hpp"
+#include "networking.hpp"
 #include "share.hpp"
 namespace qmpc::Share
 {

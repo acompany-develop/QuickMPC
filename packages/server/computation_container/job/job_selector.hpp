@@ -1,12 +1,12 @@
 #pragma once
 #include <memory>
 
-#include "JobParameter.hpp"
-#include "jobs/CorrelJob.hpp"
-#include "jobs/JoinTableJob.hpp"
-#include "jobs/MathJob.hpp"
-#include "jobs/MeshCodeJob.hpp"
-#include "logging/Logger.hpp"
+#include "job_parameter.hpp"
+#include "jobs/correl_job.hpp"
+#include "jobs/join_table_job.hpp"
+#include "jobs/math_job.hpp"
+#include "jobs/mesh_code_job.hpp"
+#include "logging/logger.hpp"
 #include "math/math.hpp"
 #include "external/proto/common_types/common_types.pb.h"
 

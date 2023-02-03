@@ -12,7 +12,7 @@ cc_library(
 cc_library(
     name = "share_benchmark",
     srcs = [
-        "ShareBenchmark.hpp",
+        "share_benchmark.hpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [

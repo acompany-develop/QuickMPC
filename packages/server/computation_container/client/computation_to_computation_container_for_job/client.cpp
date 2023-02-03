@@ -6,8 +6,8 @@
 #include <string>
 #include <thread>
 
-#include "logging/Logger.hpp"
-#include "share/AddressId.hpp"
+#include "logging/logger.hpp"
+#include "share/address_id.hpp"
 namespace qmpc::ComputationToComputationForJob
 {
 Client::Client(const Url &endpoint) noexcept

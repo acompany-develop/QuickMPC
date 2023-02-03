@@ -1,7 +1,7 @@
 cc_test(
-    name = "MathTest",
+    name = "math_test",
     srcs = [
-        "MathTest.cpp",
+        "math_test.cpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -17,9 +17,9 @@ cc_test(
 )
 
 cc_test(
-    name = "ShareTest",
+    name = "share_test",
     srcs = [
-        "ShareTest.cpp",
+        "share_test.cpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -33,9 +33,9 @@ cc_test(
 )
 
 cc_test(
-    name = "RandomTest",
+    name = "random_test",
     srcs = [
-        "RandomTest.cpp",
+        "random_test.cpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -48,7 +48,7 @@ cc_test(
 cc_test(
     name = "CtoCTest",
     srcs = [
-        "CtoC_test.cpp",
+        "ctoc_test.cpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -64,9 +64,9 @@ cc_test(
 )
 
 cc_test(
-    name = "FixedPointTest",
+    name = "fixed_point_test",
     srcs = [
-        "FixedPointTest.cpp",
+        "fixed_point_test.cpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -77,9 +77,9 @@ cc_test(
 )
 
 cc_test(
-    name = "TransactionQueueTest",
+    name = "transaction_queue_test",
     srcs = [
-        "TransactionQueueTest.cpp"
+        "transaction_queue_test.cpp"
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -89,9 +89,9 @@ cc_test(
 )
 
 cc_test(
-    name = "CsprngTest",
+    name = "csprng_test",
     srcs = [
-        "CsprngTest.cpp"
+        "csprng_test.cpp"
     ],
     copts = ["-Iexternal/gtest/include",],
     deps = [
@@ -102,9 +102,9 @@ cc_test(
 )
 
 cc_test(
-    name = "LogTest",
+    name = "log_test",
     srcs = [
-        "LogTest.cpp",
+        "log_test.cpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -115,9 +115,9 @@ cc_test(
 )
 
 cc_test(
-    name = "CtoDBTest",
+    name = "ctodb_test",
     srcs = [
-        "CtoDBTest.cpp",
+        "ctodb_test.cpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [

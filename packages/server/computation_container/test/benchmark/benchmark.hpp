@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 
 /**
  * 演算 operation_func の実行時間を計測する．

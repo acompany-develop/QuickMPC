@@ -21,10 +21,10 @@ cc_library(
 cc_library(
     name = "valuetable",
     srcs = [
-        "ValueTable.cpp"
+        "value_table.cpp"
     ],
     hdrs = [
-        "ValueTable.hpp",
+        "value_table.hpp",
     ],
     deps = [
         "@nlohmann_json//:json",

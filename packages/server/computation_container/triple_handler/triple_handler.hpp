@@ -5,7 +5,7 @@
 
 #include "client/computation_to_bts/client.hpp"
 #include "fixed_point/fixed_point.hpp"
-#include "share/AddressId.hpp"
+#include "share/address_id.hpp"
 
 namespace qmpc::TripleHandler
 {

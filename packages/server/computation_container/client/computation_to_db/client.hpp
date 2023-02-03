@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "logging/Logger.hpp"
-#include "ValueTable.hpp"
+#include "logging/logger.hpp"
+#include "value_table.hpp"
 #include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "external/proto/common_types/common_types.pb.h"
 #include "nlohmann/json.hpp"

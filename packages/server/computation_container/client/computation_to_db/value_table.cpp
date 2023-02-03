@@ -1,4 +1,4 @@
-#include "ValueTable.hpp"
+#include "value_table.hpp"
 
 #include <algorithm>
 #include <chrono>
@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "job/ProgressManager.hpp"
-#include "share/Compare.hpp"
+#include "job/progress_manager.hpp"
+#include "share/compare.hpp"
 
 namespace qmpc::ComputationToDb
 {

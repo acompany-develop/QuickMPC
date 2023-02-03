@@ -3,7 +3,7 @@
 #include <memory>
 #include <set>
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 #include "random/Csprng.hpp"
 #include "gtest/gtest.h"
 

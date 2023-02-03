@@ -2,7 +2,7 @@
 cc_library(
     name = "share_test",
     srcs = [
-        "ShareTest.hpp",
+        "share_test.hpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -17,7 +17,7 @@ cc_library(
 cc_library(
     name = "math_test",
     srcs = [
-        "MathTest.hpp",
+        "math_test.hpp",
     ],
     deps = [
         "@gtest//:main",
@@ -30,7 +30,7 @@ cc_library(
 cc_library(
     name = "matrix_test",
     hdrs = [
-        "MatrixTest.hpp",
+        "matrix_test.hpp",
     ],
     deps = [
         "@gtest//:main",
@@ -43,7 +43,7 @@ cc_library(
 cc_library(
     name = "meshcode_test",
     srcs = [
-        "MeshCodeTest.hpp",
+        "mesh_code_test.hpp",
     ],
     deps = [
         "@gtest//:main",
@@ -55,7 +55,7 @@ cc_library(
 cc_library(
     name = "read_triple_test",
     srcs = [
-        "ReadTripleFromBtsTest.hpp",
+        "read_triple_from_bts_test.hpp",
     ],
     copts = ["-Iexternal/gtest/include"],
     deps = [
@@ -69,7 +69,7 @@ cc_library(
 cc_library(
     name = "value_table_test",
     hdrs = [
-        "ValueTableTest.hpp",
+        "value_table_test.hpp",
     ],
     deps = [
         "@gtest//:main",

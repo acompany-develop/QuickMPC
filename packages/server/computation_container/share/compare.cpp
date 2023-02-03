@@ -1,8 +1,8 @@
 
-#include "Compare.hpp"
+#include "compare.hpp"
 
 #include "config_parse/config_parse.hpp"
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 
 namespace qmpc::Share
 {

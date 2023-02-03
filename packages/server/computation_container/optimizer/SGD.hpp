@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "job/ProgressManager.hpp"
-#include "OptInterface.hpp"
+#include "job/progress_manager.hpp"
+#include "opt_interface.hpp"
 #include "share/share.hpp"
 
 namespace qmpc::Optimizer

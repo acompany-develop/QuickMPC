@@ -1,6 +1,6 @@
 #include <vector>
 
-#include "logging/Logger.hpp"
+#include "logging/logger.hpp"
 #include "math/math.hpp"
 #include "gtest/gtest.h"
 

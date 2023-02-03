@@ -1,4 +1,4 @@
-#include "MathLib.hpp"
+#include "math_lib.hpp"
 
 template <class T, class U>
 T pow(T x, U n)

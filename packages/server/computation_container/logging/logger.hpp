@@ -13,7 +13,7 @@
 #include "spdlog/sinks/dist_sink.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 
-#include "LogHeader.hpp"
+#include "log_header.hpp"
 
 #define QMPC_LOG_LOCATION() \
     spdlog::source_loc { __FILE__, __LINE__, SPDLOG_FUNCTION }
@@ -34,7 +34,7 @@ private:
     std::unique_ptr<spdlog::logger> logger;
     Log()
         : sinks(std::make_shared<spdlog::sinks::dist_sink_mt>())
-        , logger(std::make_unique<spdlog::logger>("QMPC Logger", sinks))
+        , logger(std::make_unique<spdlog::logger>("QMPC logger", sinks))
     {
         auto stdout_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
         sinks->add_sink(stdout_sink);

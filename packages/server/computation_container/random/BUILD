@@ -17,10 +17,10 @@ cc_library(
 cc_library(
     name = "csprng",
     srcs = [
-        "Csprng.cpp"
+        "csprng.cpp"
     ],
     hdrs = [
-        "Csprng.hpp",
+        "csprng.hpp",
     ],
     deps = [
         "@libsodium//:sodium",

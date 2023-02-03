@@ -4,10 +4,10 @@
 #include <tuple>
 
 #include "config_parse/config_parse.hpp"
-#include "job/JobManager.hpp"
-#include "job/JobParameter.hpp"
-#include "logging/Logger.hpp"
-#include "share/AddressId.hpp"
+#include "job/job_manager.hpp"
+#include "job/job_parameter.hpp"
+#include "logging/logger.hpp"
+#include "share/address_id.hpp"
 
 namespace qmpc::ComputationToComputationForJob
 {
