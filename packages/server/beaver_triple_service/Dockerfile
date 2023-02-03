@@ -67,13 +67,13 @@ ENV PATH $PATH:/root/.local/bin
 WORKDIR /QuickMPC
 
 FROM base as builder
-COPY packages/server/BeaverTripleService/ /QuickMPC
+COPY packages/server/beaver_triple_service/ /QuickMPC
 # github actionsで使用されているdockerがCOPYを2連続で行うとたまにエラーが出る問題を抱えている
 # その問題を回避するために、COPYの間にRun trueを挟んでいる
 RUN true
 COPY proto/ /proto
 RUN true
-COPY Config/BeaverTripleService/ /QuickMPC
+COPY config/beaver_triple_service/ /QuickMPC
 WORKDIR /QuickMPC
 RUN --mount=type=cache,target=/root/go/pkg/mod \
     go mod download
@@ -93,7 +93,7 @@ RUN apk update && \
     # CVE-2022-0778 対策
     # 公式イメージの upgrade がされていないため
     apk upgrade
-COPY --from=builder /QuickMPC/BeaverTripleService /QuickMPC/BeaverTripleService
+COPY --from=builder /QuickMPC/beaver_triple_service /QuickMPC/beaver_triple_service
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.15 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC

@@ -2,7 +2,7 @@
 QuickMPCで使われるTripleを生成するサービス
 
 ## ローカルでの起動方法
-`packages/server/BeaverTripleService/`で以下のコマンドを実行
+`packages/server/beaver_triple_service/`で以下のコマンドを実行
 ```sh
 make run
 ```
@@ -48,15 +48,15 @@ make test
 ```
 特定のtestを指定して実行したい場合は以下のようにする
 ```sh
-make test t=./BeaverTripleService/TripleGenerator
-# Test/BeaverTripleService/TripleGenerator/ 直下のみのテストを実行したい場合
+make test t=./beaver_triple_service/triple_generator
+# Test/beaver_triple_service/triple_generator/ 直下のみのテストを実行したい場合
 make test p=unit # `uint*test.sh`を実行したい場合
 make test m=build # `*test.sh`のbuild処理のみ実行したい場合
 make test m=run # `*test.sh`のrun処理のみ実行したい場合
 ```
 
 ## 開発方法
-`packages/server/BeaverTripleService/`で以下のコマンドを実行
+`packages/server/beaver_triple_service/`で以下のコマンドを実行
 ```sh
 make up-build
 make upd-build # バックグラウンドで起動したい場合はこちら
@@ -95,11 +95,11 @@ grpc_health_probe -addr=localhost:54100
 YAML ファイルを入力に JWT token を生成します
 
 ```console
-root@container:/QuickMPC/packages/server/BeaverTripleService# go run Cmd/JWTGenerator/main.go     # generate from sample.yml
-root@container:/QuickMPC# go run Cmd/JWTGenerator/main.go \
+root@container:/QuickMPC/packages/server/beaver_triple_service# go run cmd/jwt_generator/main.go     # generate from sample.yml
+root@container:/QuickMPC# go run cmd/jwt_generator/main.go \
 >                                 -file /path/to/config.yml   \
 >                                 -o ./output/envs                # use own configuration
-root@container:/QuickMPC/packages/server/BeaverTripleService# go run Cmd/JWTGenerator/main.go -h  # show help
+root@container:/QuickMPC/packages/server/beaver_triple_service# go run cmd/jwt_generator/main.go -h  # show help
 ```
 
 クライアントとサーバ向けにそれぞれ `.env` ファイル形式の設定ファイルが書き込まれます

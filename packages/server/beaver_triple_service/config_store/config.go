@@ -3,8 +3,8 @@ package config
 import (
 	"os"
 
-	logger "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Log"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Utils"
+	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 )
 
 type Party struct {
@@ -32,12 +32,12 @@ func init() {
 	stage := getEnv("STAGE", "")
 	var ConfigJsonFilePath string
 	if stage == "src" {
-		ConfigJsonFilePath = "/QuickMPC/Config/Config.src.json"
+		ConfigJsonFilePath = "/QuickMPC/config/config.src.json"
 	} else {
-		ConfigJsonFilePath = "/QuickMPC/Config/Config.json"
+		ConfigJsonFilePath = "/QuickMPC/config/config.json"
 	}
 	err := utils.ParseJsonFIle(ConfigJsonFilePath, &Conf)
 	if err != nil {
-		logger.Fatalf("Config.jsonのParseに失敗: %v", err)
+		logger.Fatalf("config.jsonのParseに失敗: %v", err)
 	}
 }

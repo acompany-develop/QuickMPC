@@ -3,8 +3,8 @@ package triplestore
 import (
 	"sync"
 
-	logger "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Log"
-	pb "github.com/acompany-develop/QuickMPC/proto/EngineToBts"
+	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 // TripleGeneratorでpbをimportしなくていいようにaliasを貼る

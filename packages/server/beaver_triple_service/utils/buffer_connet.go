@@ -8,7 +8,7 @@ import (
 	"context"
 	"net"
 
-	logger "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Log"
+	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 )

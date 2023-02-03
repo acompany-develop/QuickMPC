@@ -3,11 +3,11 @@ package triplegenerator
 import (
 	"errors"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/ConfigStore"
-	logger "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Log"
-	ts "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleStore"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/EngineToBts"
+	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
+	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 var Db *ts.SafeTripleStore

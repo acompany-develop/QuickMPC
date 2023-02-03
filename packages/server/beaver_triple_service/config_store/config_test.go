@@ -3,7 +3,7 @@ package config_test
 import (
 	"testing"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/ConfigStore"
+	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
 )
 
 func TestConfigStore(t *testing.T) {

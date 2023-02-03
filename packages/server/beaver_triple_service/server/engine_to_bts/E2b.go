@@ -23,11 +23,11 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/ConfigStore"
-	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/JWT"
-	logger "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Log"
-	tg "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleGenerator"
-	pb "github.com/acompany-develop/QuickMPC/proto/EngineToBts"
+	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
+	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
+	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 

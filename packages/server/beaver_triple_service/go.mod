@@ -1,11 +1,11 @@
-module github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService
+module github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service
 
 go 1.18
 
-replace github.com/acompany-develop/QuickMPC/proto/EngineToBts => ./../proto/EngineToBts
+replace github.com/acompany-develop/QuickMPC/proto/engine_to_bts => ./../proto/engine_to_bts
 
 require (
-	github.com/acompany-develop/QuickMPC/proto/EngineToBts v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/engine_to_bts v0.0.0-00010101000000-000000000000
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0

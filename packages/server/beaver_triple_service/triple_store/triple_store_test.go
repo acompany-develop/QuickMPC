@@ -2,8 +2,8 @@ package triplestore_test
 
 import (
 	"fmt"
-	cs "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/ConfigStore"
-	ts "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleStore"
+	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	"testing"
 )
 

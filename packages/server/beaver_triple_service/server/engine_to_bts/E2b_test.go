@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/ConfigStore"
-	ts "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleStore"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/EngineToBts"
+	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	"github.com/golang-jwt/jwt/v4"
 )

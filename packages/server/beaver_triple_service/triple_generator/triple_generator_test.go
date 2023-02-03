@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/ConfigStore"
-	tg "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleGenerator"
-	ts "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleStore"
-	pb "github.com/acompany-develop/QuickMPC/proto/EngineToBts"
+	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
+	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 var Db *ts.SafeTripleStore

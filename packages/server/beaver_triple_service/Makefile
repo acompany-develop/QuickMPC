@@ -55,4 +55,4 @@ login:
 
 run: upnet
 	docker-compose up -d --build
-	docker-compose exec $(t) /bin/bash -c "go mod vendor && go build && ./BeaverTripleService"
+	docker-compose exec $(t) /bin/bash -c "go mod vendor && go build && ./beaver_triple_service"

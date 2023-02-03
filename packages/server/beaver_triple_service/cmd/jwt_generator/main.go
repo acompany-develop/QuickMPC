@@ -17,7 +17,7 @@ import (
 	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
 
-	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/JWT"
+	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 )
 
 func store_client_env(path string, token string) error {
@@ -56,7 +56,7 @@ func main() {
 		log.Printf("WARN: os.Getwd() is failed, err = %s\n", err)
 	}
 
-	default_inout_root := path.Join(work_dir, "Cmd", "JWTGenerator", "sample")
+	default_inout_root := path.Join(work_dir, "cmd", "jwt_generator", "sample")
 
 	filepath := flag.String("file", path.Join(default_inout_root, "sample.yml"), "configuration file path")
 	output_dir := flag.String("o", default_inout_root, "directory which stores output files")

@@ -3,7 +3,7 @@ package utils_test
 import (
 	"testing"
 
-	utils "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Utils"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 )
 
 var randMax = int64(10000000)
