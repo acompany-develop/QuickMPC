@@ -85,6 +85,6 @@ WORKDIR /QuickMPC
 
 FROM builder as small
 ENV PARTY_ID=1
-COPY config/manage_container/Manage${PARTY_ID} /QuickMPC/config
+COPY config/manage_container/manage${PARTY_ID} /QuickMPC/config
 
 FROM builder as medium

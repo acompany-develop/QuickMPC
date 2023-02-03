@@ -4,7 +4,7 @@
 #include <set>
 
 #include "logging/logger.hpp"
-#include "random/Csprng.hpp"
+#include "random/csprng.hpp"
 #include "gtest/gtest.h"
 
 TEST(CsprngTest, GetRand)

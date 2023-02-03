@@ -48,8 +48,8 @@ make test
 ```
 特定のtestを指定して実行したい場合は以下のようにする
 ```sh
-make test t=./beaver_triple_service/TripleGenerator
-# scripts/beaver_triple_service/TripleGenerator/ 直下のみのテストを実行したい場合
+make test t=./beaver_triple_service/triple_generator
+# scripts/beaver_triple_service/triple_generator/ 直下のみのテストを実行したい場合
 make test p=unit # `unit*test.sh`を実行したい場合
 make test m=build # `*test.sh`のbuild処理のみ実行したい場合
 make test m=run # `*test.sh`のrun処理のみ実行したい場合

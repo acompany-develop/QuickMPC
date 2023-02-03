@@ -9,7 +9,7 @@ setup() {
 }
 
 run() {
-    docker-compose run small_bts /bin/sh -c 'cd /QuickMPC && go mod vendor && go test -cover -v $(go list github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/TripleStore/...)'
+    docker-compose run small_bts /bin/sh -c 'cd /QuickMPC && go mod vendor && go test -cover -v $(go list github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store/...)'
 }
 
 teardown() {

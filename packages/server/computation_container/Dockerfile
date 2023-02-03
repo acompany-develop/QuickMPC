@@ -120,11 +120,11 @@ WORKDIR /QuickMPC
 
 FROM builder_debug as small
 ENV PARTY_ID=1
-COPY config/computation_container/Compute${PARTY_ID}/.src.env /QuickMPC/config/.env
+COPY config/computation_container/compute${PARTY_ID}/.src.env /QuickMPC/config/.env
 
 FROM builder_base as small_tmp
 ENV PARTY_ID=1
-COPY config/computation_container/Compute${PARTY_ID}/.src.env /QuickMPC/config/.env
+COPY config/computation_container/compute${PARTY_ID}/.src.env /QuickMPC/config/.env
 
 FROM builder_debug as medium
 
