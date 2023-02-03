@@ -20,14 +20,14 @@ type localCC struct{}
 type localMC struct{}
 type localTokenCA struct{}
 
-func (localDb) InsertShares(string, []string, int32, string, string, int32) error {
+func (localDb) InsertShares(string, []*pb_types.ColumnSchema, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
 	return nil
 }
-func (localDb) GetSchema(string) ([]string, error) {
-	return []string{"attr1"}, nil
+func (localDb) GetSchema(string) ([]*pb_types.ColumnSchema, error) {
+	return []*pb_types.ColumnSchema{{Name: "attr1"}}, nil
 }
 func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
 	return &pb_types.JobErrorInfo{What: "test"}, nil
@@ -86,7 +86,7 @@ func TestGetSchema(t *testing.T) {
 		t.Fatal(err)
 	}
 	schema := result.GetSchema()
-	if schema[0] != "attr1" {
+	if schema[0].Name != "attr1" {
 		t.Fatal("GetScheme Failed")
 	}
 }
