@@ -7,6 +7,7 @@
 #include <string>
 #include <thread>
 
+#include "Client/ComputationToBts/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "Job/JobManager.hpp"
 #include "Logging/Logger.hpp"
@@ -24,6 +25,10 @@ int main()
     const Url mtoc_ip = conf->mc_to_cc;
 
     grpc::EnableDefaultHealthCheckService(true);
+
+    // TODO BTS初期化リクエスト
+    auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
+    cc_to_bts->initTripleStore();
 
     const std::string ctc_my_ip_str("0.0.0.0:" + ctoc_ip.port);
     std::thread th1(qmpc::ComputationToComputation::Server::runServer, ctc_my_ip_str);

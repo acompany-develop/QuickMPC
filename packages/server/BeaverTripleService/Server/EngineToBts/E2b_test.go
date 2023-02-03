@@ -15,6 +15,7 @@ import (
 	ts "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/TripleStore"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/BeaverTripleService/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/EngineToBts"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	"github.com/golang-jwt/jwt/v4"
 )
 
@@ -141,6 +142,28 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 
 	if err == nil {
 		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
+	}
+}
+
+func TestInitTripleStore(t * testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewEngineToBtsClient(conn)
+
+	_,err := client.InitTripleStore(context.Background(), &emptypb.Empty{})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestDeleteJobIdTriple(t * testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewEngineToBtsClient(conn)
+
+	_,err := client.DeleteJobIdTriple(context.Background(), &pb.DeleteJobIdTripleRequest{JobId: 0})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 

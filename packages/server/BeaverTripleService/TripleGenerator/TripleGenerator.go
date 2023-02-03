@@ -148,3 +148,15 @@ func GetTriples(jobId uint32, partyId uint32, amount uint32, triple_type pb.Type
 
 	return triples, nil
 }
+
+func InitTripleStore() error {
+	// Dbを初期化
+	Db.Triples = map[uint32](map[uint32]([]*pb.Triple)){}
+	return nil
+}
+
+func DeleteJobIdTriple(jobId uint32) error {
+	// jobIdに紐付いたTripleを削除
+	delete(Db.Triples, jobId)
+	return nil
+}

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Client/ComputationToBts/Client.hpp"
 #include "Client/ComputationToComputationContainerForJob/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "JobBase.hpp"
@@ -47,6 +48,7 @@ class JobManager
         try
         {
             func();
+            return true;
         }
         catch (const std::runtime_error &e)
         {
@@ -82,6 +84,7 @@ class JobManager
                 statusManager.error(e, std::nullopt);
             }
         }
+        return false;
     }
 
 public:
@@ -178,7 +181,8 @@ public:
      Jobの実行を行わせるための関数
      1. JobReqQueueに何かが入ってくるまで待機してそれを取ってくる
      2. JobIDを決める
-     3. JobReqの内容を全パーティに伝える
+     3. JobIDに紐付いたTripleを削除する
+     4. JobReqの内容を全パーティに伝える
     */
     static void runJobManager()
     {
@@ -192,8 +196,23 @@ public:
             // 2. JobIDを決める
             auto job_id = job_manager->pollingPopJobId();
 
-            // 3. 取りだしたJobReqの内容を全パーティに伝える
-            try_catch_run(job_req.job_uuid(), [&]() { job_manager->sendJobInfo(job_req, job_id); });
+            // 3. JobIDに紐付いたTripleを削除する
+            auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
+            bool is_ok =
+                try_catch_run(job_req.job_uuid(), [&]() { cc_to_bts->deleteJobIdTriple(job_id); });
+
+            // 4. 取りだしたJobReqの内容を全パーティに伝える
+            if (is_ok)
+            {
+                try_catch_run(
+                    job_req.job_uuid(), [&]() { job_manager->sendJobInfo(job_req, job_id); }
+                );
+            }
+            else
+            {
+                // 使わないjob_idをjob_id_queueに戻す
+                job_manager->pushJobId(job_id);
+            }
         }
     }
 };
