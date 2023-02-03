@@ -122,7 +122,7 @@ class Config
         {
             if (env_map.empty())
             {
-                std::ifstream ifs("/QuickMPC/Config/.env");
+                std::ifstream ifs("/QuickMPC/config/.env");
                 std::string env;
                 while (getline(ifs, env))
                 {

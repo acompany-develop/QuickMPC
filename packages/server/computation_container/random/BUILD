@@ -1,13 +1,13 @@
 cc_library(
     name = "random",
     srcs = [
-        "Random.cpp"
+        "random.cpp"
     ],
     hdrs = [
-        "Random.hpp",
+        "random.hpp",
     ],
     deps = [
-        "//Random:csprng",
+        "//random:csprng",
         "@libsodium//:sodium",
         "//FixedPoint:fixed_point"
     ],

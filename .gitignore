@@ -13,19 +13,19 @@ result
 **/Db/**/nodestatus/initialized
 
 !.gitkeep
-packages/server/ComputationContainer/setup.sh
-packages/server/ComputationContainer/.vscode/c_cpp_properties.json
+packages/server/computation_container/setup.sh
+packages/server/computation_container/.vscode/c_cpp_properties.json
 
 **/.cache/**
 **/compose-bundle.zip
 !.gitkeep
-packages/server/ComputationContainer/start.dev.sh
-packages/server/ManageContainer/start.dev.sh
+packages/server/computation_container/start.dev.sh
+packages/server/manage_container/start.dev.sh
 packages/server/_DbContainer/DbGate/start.dev.sh
 
 __pycache__
 
-Deploy/Application/Config/Party*
+Deploy/Application/config/Party*
 
 !**/Db/**
 **/Db/*/**

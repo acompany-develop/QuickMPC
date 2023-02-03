@@ -8,8 +8,8 @@
 #include <thread>
 
 #include "Client/ComputationToBts/Client.hpp"
-#include "ConfigParse/ConfigParse.hpp"
-#include "Job/JobManager.hpp"
+#include "config_parse/config_parse.hpp"
+#include "job/JobManager.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Server/ComputationToComputationContainerForJob/Server.hpp"
@@ -35,8 +35,8 @@ int main()
     std::thread th2(qmpc::ComputationToComputationForJob::Server::runServer, ctc_for_j_my_ip_str);
     const std::string mtoc_ip_str("0.0.0.0:" + mtoc_ip.port);
     std::thread th3(qmpc::ManageToComputation::runServer, mtoc_ip_str);
-    std::thread th4(qmpc::Job::JobManager::runJobManager);
-    std::thread progress_manager_thread(qmpc::Job::ProgressManager::runProgressManager);
+    std::thread th4(qmpc::job::JobManager::runJobManager);
+    std::thread progress_manager_thread(qmpc::job::ProgressManager::runProgressManager);
 
     QMPC_LOG_INFO(
         "My_ip_addr = [Cc2Cc] {0:<15} | [Cc2CcForJob] {1:<15} |[Mc2Cc] %{2:<15}",
@@ -49,6 +49,6 @@ int main()
     th2.join();
     th3.join();
     th4.join();
-    qmpc::Job::ProgressManager::getInstance()->shutdown();
+    qmpc::job::ProgressManager::getInstance()->shutdown();
     progress_manager_thread.join();
 }

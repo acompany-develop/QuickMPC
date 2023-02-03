@@ -1,6 +1,6 @@
 #include "Server.hpp"
 
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "Logging/Logger.hpp"
 #include "Share/AddressId.hpp"
 

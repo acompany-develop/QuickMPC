@@ -8,7 +8,7 @@ cc_library(
     ],
     deps = [
         "//Client/Helper:helper",
-        "//ConfigParse:config_parse",
+        "//config_parse:config_parse",
         "@proto//EngineToBts:engine_to_bts_cc_grpc",
         "//Logging:log",
     ],

@@ -10,10 +10,10 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/status"
 
-	helper "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/Helper"
-	datastore "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/DataStore"
-	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	helper "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/Helper"
+	datastore "github.com/acompany-develop/QuickMPC/packages/server/manage_container/DataStore"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer"
 	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
@@ -97,13 +97,13 @@ func checkStateOfComputationContainer() {
 
 	state, err := checkState(conn)
 	if err != nil || state != grpc_health_v1.HealthCheckResponse_SERVING {
-		AppLogger.Error("ComputationContainer is not working.")
+		AppLogger.Error("computation_container is not working.")
 		AppLogger.Error(err)
 		AppLogger.Error(state)
 		// 応答なし
 		datastore.StateOfComputationContainer = 2
 	} else {
-		AppLogger.Info("ComputationContainer is working.")
+		AppLogger.Info("computation_container is working.")
 		datastore.StateOfComputationContainer = 1
 	}
 }

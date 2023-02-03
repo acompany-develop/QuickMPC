@@ -21,7 +21,7 @@ nlohmann::json
 }
 
 {
-    std::ifstream ifs("/QuickMPC/Config/Config.json");
+    std::ifstream ifs("/QuickMPC/config/config.json");
     nlohmann::json obj = nlohmann::json::parse(ifs);
     std::cout << obj.dump(4) << std::endl;
 }

@@ -41,16 +41,15 @@ make down # docker-compose down
 ```
 
 ## テスト方法
-### UnitTest
+### unit_test
 各ソースファイルと同じディレクトリ内に配置されている．
 ```console
-$ go test $(go list -f {{.Dir}} ./... | grep -v IntegrationTest)
+$ go test $(go list -f {{.Dir}} ./... | grep -v integration_test)
 ```
 
-### IntegrationTest
+### integration_test
 `IntegraionTest/`以下に配置されている．
 MC，DBを3-Party立てている必要がある．
 ```console
-$ go test ./IntegrationTest/...
+$ go test ./integration_test/...
 ```
-

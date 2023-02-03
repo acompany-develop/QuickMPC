@@ -27,7 +27,7 @@ Proto_extra_deps()
 - `BUILD`
 
 依存関係に `@proto//${分類}:${ターゲット名}` を指定する
-例: `packages/server/ComputationContainer/Server/ComputationToComputationContainer/BUILD`
+例: `packages/server/computation_container/Server/ComputationToComputationContainer/BUILD`
 ```bazel
 cc_library(
     ...,
@@ -40,7 +40,7 @@ cc_library(
 - `#include` 時
 
 `external/proto/${分類}/${プロトコル名}.grpc.pb.h` のように指定する
-例: `packages/server/ComputationContainer/Server/ComputationToComputationContainer/Server.hpp`
+例: `packages/server/computation_container/Server/ComputationToComputationContainer/Server.hpp`
 
 ```cpp
 #include "external/proto/ComputationToComputationContainer/ComputationToComputation.grpc.pb.h"

@@ -1,10 +1,10 @@
-#include "Random.hpp"
+#include "random.hpp"
 
 #include <linux/random.h>
 #include <sys/syscall.h>
 #include <unistd.h>
 
-#include "Random/Csprng.hpp"
+#include "random/Csprng.hpp"
 
 unsigned long long RandGenerator::generateRand()
 {

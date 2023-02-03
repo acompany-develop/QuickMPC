@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"

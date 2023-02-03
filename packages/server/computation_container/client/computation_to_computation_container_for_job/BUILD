@@ -7,7 +7,7 @@ cc_library(
         "Client.hpp",
     ],
     deps = [
-        "//ConfigParse:config_parse",
+        "//config_parse:config_parse",
         "//Client/Helper:helper",
         "@proto//ComputationToComputationContainerForJob:computation_to_computation_for_job_cc_grpc",
         "//Share:address",

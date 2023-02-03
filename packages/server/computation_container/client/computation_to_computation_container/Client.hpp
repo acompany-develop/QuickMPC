@@ -10,7 +10,7 @@
 #include <string>
 
 #include "Client/Helper/Helper.hpp"
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "Share/AddressId.hpp"
 #include "external/proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
 

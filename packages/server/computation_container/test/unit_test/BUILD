@@ -9,7 +9,7 @@ cc_test(
         "@com_github_grpc_grpc//:grpc++",
         "//Math:math",
         "//Share:share",
-        "//ConfigParse:config_parse",
+        "//config_parse:config_parse",
         "//Server/ComputationToComputationContainer:server",
         "//Logging:log",
     ],
@@ -26,7 +26,7 @@ cc_test(
         "@gtest//:main",
         "@com_github_grpc_grpc//:grpc++",
         "//Share:share",
-        "//ConfigParse:config_parse",
+        "//config_parse:config_parse",
         "//Server/ComputationToComputationContainer:server",
         "//Logging:log",
     ],
@@ -40,7 +40,7 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//Random:random",
+        "//random:random",
         "//FixedPoint:fixed_point"
     ],
 )
@@ -55,7 +55,7 @@ cc_test(
         "@gtest//:main",
         "//Server/ComputationToComputationContainer:server",
         "//Client/Helper:helper",
-        "//ConfigParse:config_parse",
+        "//config_parse:config_parse",
         "@proto//ComputationToComputationContainer:computation_to_computation_cc_grpc",
         "//Share:address",
         "//Logging:log"
@@ -96,7 +96,7 @@ cc_test(
     copts = ["-Iexternal/gtest/include",],
     deps = [
         "@gtest//:main",
-        "//Random:csprng",
+        "//random:csprng",
         "//Logging:log",
     ],
 )

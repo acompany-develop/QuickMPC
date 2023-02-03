@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer"
 )
 

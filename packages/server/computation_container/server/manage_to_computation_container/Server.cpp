@@ -5,8 +5,8 @@
 #include <string>
 #include <thread>
 
-#include "ConfigParse/ConfigParse.hpp"
-#include "Job/JobManager.hpp"
+#include "config_parse/config_parse.hpp"
+#include "job/JobManager.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/ComputationToComputationContainerForJob/Server.hpp"
 #include "Share/Share.hpp"

@@ -33,7 +33,7 @@ cd QuickMPC/scripts
 ```
 2. 全コンテナを起動する
 ```sh
-make debug t=./ManageContainer # 全てのコンテナが起動
+make debug t=./manage_container # 全てのコンテナが起動
 ```
 3. libclientのdemoを実行する
 - [libClient-py/demo](packages/client/libclient-py/demo/README-ja.md)
@@ -49,24 +49,24 @@ cd QuickMPC/scripts
 # 全てのコンテナをテストする場合
 make test
 # Computation Containerの場合
-make test t=./ComputationContainer/
+make test t=./computation_container/
 # Manage Containerの場合
-make test t=./ManageContainer/
+make test t=./manage_container/
 ```
 
 ## 各コンテナの起動方法
 2コンテナ立ててあえて手動でtestしたい時に使用する
 ```sh
-make debug t=./ComputationContainer # dev_cc{1,2,3}, dev_btsの立ち上げ
-make debug t=./ManageContainer # 全てのコンテナが起動
+make debug t=./computation_container # dev_cc{1,2,3}, dev_btsの立ち上げ
+make debug t=./manage_container # 全てのコンテナが起動
 ```
 
 ## 各コンテナの開発方法
 ### Computation Container
-[詳細はこちら](packages/server/ComputationContainer/README.md)
+[詳細はこちら](packages/server/computation_container/README.md)
 1. ディレクトリを移動する
 ```sh
-cd packages/server/ComputationContainer
+cd packages/server/computation_container
 ```
 2. コンテナを起動してコンテナに入る
 ```sh
@@ -93,10 +93,10 @@ bazel clean
 
 ### Manage Container
 
-[詳細はこちら](packages/server/ManageContainer/README.md)
+[詳細はこちら](packages/server/manage_container/README.md)
 1. ディレクトリを移動する
 ```sh
-cd packages/server/ManageContainer
+cd packages/server/manage_container
 ```
 2. コンテナを起動してコンテナに入る
 ```sh

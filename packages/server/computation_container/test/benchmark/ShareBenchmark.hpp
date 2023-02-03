@@ -5,8 +5,8 @@
 #include <string>
 #include <thread>
 
-#include "Benchmark.hpp"
-#include "Random/Random.hpp"
+#include "benchmark.hpp"
+#include "random/random.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/Compare.hpp"
 #include "Share/Share.hpp"

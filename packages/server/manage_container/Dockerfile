@@ -56,7 +56,7 @@ ENV PATH=$PATH:/root/.local/bin
 WORKDIR /QuickMPC
 
 FROM base as builder
-COPY packages/server/ManageContainer/ /QuickMPC
+COPY packages/server/manage_container/ /QuickMPC
 # github actionsで使用されているdockerがCOPYを2連続で行うとたまにエラーが出る問題を抱えている
 # その問題を回避するために、COPYの間にRun trueを挟んでいる
 RUN true
@@ -78,13 +78,13 @@ RUN apk update && \
   # CVE-2022-0778 対策
   # 公式イメージの upgrade がされていないため
   apk upgrade
-COPY --from=builder /QuickMPC/ManageContainer /QuickMPC/ManageContainer
+COPY --from=builder /QuickMPC/manage_container /QuickMPC/manage_container
 RUN mkdir /lib64 && ln -s /lib/libc.musl-x86_64.so.1 /lib64/ld-linux-x86-64.so.2
 COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.15 /ko-app/grpc-health-probe /bin/grpc_health_probe
 WORKDIR /QuickMPC
 
 FROM builder as small
 ENV PARTY_ID=1
-COPY Config/ManageContainer/Manage${PARTY_ID} /QuickMPC/Config
+COPY config/manage_container/Manage${PARTY_ID} /QuickMPC/config
 
 FROM builder as medium

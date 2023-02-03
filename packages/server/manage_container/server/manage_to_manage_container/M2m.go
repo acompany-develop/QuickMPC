@@ -3,10 +3,10 @@ package m2mserver
 import (
 	"context"
 
-	m2db "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToDb"
-	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
-	common "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToDb"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
+	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Server"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer"
 )
 
@@ -45,7 +45,7 @@ func (s *server) Sync(ctx context.Context, in *pb.SyncRequest) (*pb.SyncResponse
 func RunServer() {
 	config, err := utils.GetConfig()
 	if err != nil {
-		AppLogger.Fatalf("failed to parse Config: %v", err)
+		AppLogger.Fatalf("failed to parse config: %v", err)
 	}
 	partyID := config.PartyID
 	ip := config.Containers.PartyList[partyID-1].IpAddress

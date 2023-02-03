@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	m2m "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToManageContainer"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToManageContainer"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer"
 	"google.golang.org/grpc"
 )

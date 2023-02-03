@@ -7,8 +7,8 @@ import (
 	"reflect"
 	"testing"
 
-	m2db "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToDb"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToDb"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer"
 	pb_m2c "github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer"
 	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"

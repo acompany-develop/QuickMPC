@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"time"
 
-	helper "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/Helper"
-	m2mserver "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server/ManageToManageContainer"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	helper "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/Helper"
+	m2mserver "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Server/ManageToManageContainer"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"

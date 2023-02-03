@@ -5,7 +5,7 @@ cc_library(
         "CorrelJob.hpp"
     ],
     deps = [
-        "//Job:job",
+        "//job:job",
     ],
     visibility = ["//visibility:public"],
 )
@@ -17,7 +17,7 @@ cc_library(
         "MathJob.hpp"
     ],
     deps = [
-        "//Job:job",
+        "//job:job",
     ],
     visibility = ["//visibility:public"],
 )
@@ -28,7 +28,7 @@ cc_library(
         "MeshCodeJob.hpp"
     ],
     deps = [
-        "//Job:job"
+        "//job:job"
     ],
     visibility = ["//visibility:public"],
 )
@@ -39,7 +39,7 @@ cc_library(
         "JoinTableJob.hpp"
     ],
     deps = [
-        "//Job:job",
+        "//job:job",
     ],
     visibility = ["//visibility:public"],
 )

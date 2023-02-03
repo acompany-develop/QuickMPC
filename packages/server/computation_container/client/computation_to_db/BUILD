@@ -30,7 +30,7 @@ cc_library(
         "@nlohmann_json//:json",
         "//Share:share",
         "//Share:compare",
-        "//Job:progressManager",
+        "//job:progressManager",
         "//Logging:log"
     ],
     visibility = ["//visibility:public"],

@@ -2,10 +2,10 @@
 #include <memory>
 
 #include "JobParameter.hpp"
-#include "Jobs/CorrelJob.hpp"
-#include "Jobs/JoinTableJob.hpp"
-#include "Jobs/MathJob.hpp"
-#include "Jobs/MeshCodeJob.hpp"
+#include "jobs/CorrelJob.hpp"
+#include "jobs/JoinTableJob.hpp"
+#include "jobs/MathJob.hpp"
+#include "jobs/MeshCodeJob.hpp"
 #include "Logging/Logger.hpp"
 #include "Math/Math.hpp"
 #include "external/proto/common_types/common_types.pb.h"

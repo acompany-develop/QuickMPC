@@ -10,13 +10,13 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	m2c "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToComputationContainer"
-	m2db "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToDb"
-	m2m "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToManageContainer"
-	m2t "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Client/ManageToTokenCA"
-	. "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Log"
-	common "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Server"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/Utils"
+	m2c "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToComputationContainer"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToDb"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToManageContainer"
+	m2t "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToTokenCA"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
+	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Server"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer"
 )
 
@@ -397,7 +397,7 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 func RunServer() {
 	config, err := utils.GetConfig()
 	if err != nil {
-		AppLogger.Fatalf("failed to parse Config: %v", err)
+		AppLogger.Fatalf("failed to parse config: %v", err)
 	}
 	ip := config.Containers.Manage
 	lis, port := common.Listen(ip)

@@ -2,7 +2,7 @@
 
 #include <list>
 
-#include "Job/JobBase.hpp"
+#include "job/JobBase.hpp"
 #include "Share/Share.hpp"
 
 namespace qmpc::Job

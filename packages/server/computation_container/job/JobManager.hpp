@@ -8,7 +8,7 @@
 
 #include "Client/ComputationToBts/Client.hpp"
 #include "Client/ComputationToComputationContainerForJob/Client.hpp"
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "JobBase.hpp"
 #include "JobParameter.hpp"
 #include "JobSelector.hpp"

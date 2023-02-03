@@ -3,15 +3,15 @@
 #include <string>
 #include <thread>
 
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Server/ManageToComputationContainer/Server.hpp"
-#include "Test/IntegrationTest/MathTest.hpp"
-#include "Test/IntegrationTest/MatrixTest.hpp"
-#include "Test/IntegrationTest/MeshCodeTest.hpp"
-#include "Test/IntegrationTest/ReadTripleFromBtsTest.hpp"
-#include "Test/IntegrationTest/ShareTest.hpp"
-#include "Test/IntegrationTest/ValueTableTest.hpp"
+#include "test/integration_test/MathTest.hpp"
+#include "test/integration_test/MatrixTest.hpp"
+#include "test/integration_test/MeshCodeTest.hpp"
+#include "test/integration_test/ReadTripleFromBtsTest.hpp"
+#include "test/integration_test/ShareTest.hpp"
+#include "test/integration_test/ValueTableTest.hpp"
 #include "unistd.h"
 
 int main(int argc, char **argv);

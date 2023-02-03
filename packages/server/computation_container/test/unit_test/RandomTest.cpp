@@ -2,7 +2,7 @@
 #include <type_traits>
 
 #include "FixedPoint/FixedPoint.hpp"
-#include "Random/Random.hpp"
+#include "random/random.hpp"
 #include "gtest/gtest.h"
 
 TEST(RandomTest, getRandTypeTest)

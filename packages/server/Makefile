@@ -3,9 +3,9 @@ NETWORK_NAME = shared-network
 NETWORK_GATEWAY = 10.0.0.1
 NETWORK_SUBNET = 10.0.0.0/16
 
-CC = ComputationContainer
-MC = ManageContainer
-BTS = BeaverTripleService
+CC = computation_container
+MC = manage_container
+BTS = beaver_triple_service
 
 # docker-composeを束ねるネットワークの作成
 upnet:

@@ -3,7 +3,7 @@
 #include <memory>
 #include <vector>
 
-#include "Job/ProgressManager.hpp"
+#include "job/ProgressManager.hpp"
 #include "OptInterface.hpp"
 #include "Share/Share.hpp"
 

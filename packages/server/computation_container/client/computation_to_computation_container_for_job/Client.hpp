@@ -9,7 +9,7 @@
 #include <string>
 
 #include "Client/Helper/Helper.hpp"
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "Share/AddressId.hpp"
 #include "external/proto/ComputationToComputationContainerForJob/computation_to_computation_for_job.grpc.pb.h"
 

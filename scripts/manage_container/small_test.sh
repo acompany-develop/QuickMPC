@@ -15,7 +15,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose -f docker-compose.yml run small_mc /bin/sh -c 'go test -cover -v $(go list github.com/acompany-develop/QuickMPC/packages/server/ManageContainer/... | grep -v IntegrationTest)'
+    docker-compose -f docker-compose.yml run small_mc /bin/sh -c 'go test -cover -v $(go list github.com/acompany-develop/QuickMPC/packages/server/manage_container/... | grep -v integration_test)'
 }
 
 # runの後に実行されるteardown処理を記述する関数

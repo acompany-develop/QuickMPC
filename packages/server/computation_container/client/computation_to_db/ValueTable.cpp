@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "Job/ProgressManager.hpp"
+#include "job/ProgressManager.hpp"
 #include "Share/Compare.hpp"
 
 namespace qmpc::ComputationToDb

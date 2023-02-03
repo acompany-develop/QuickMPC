@@ -4,7 +4,7 @@ cc_library(
         "JobBase.hpp",
     ],
     deps = [
-        "//Job:jobStatus",
+        "//job:jobStatus",
         "//Computation:computation",
         "//Share:share",
         "//Client/ComputationToDb:client",
@@ -22,16 +22,16 @@ cc_library(
         "JobParameter.hpp"
     ],
     deps = [
-        "//Job:job",
-        "//Job/Jobs:correljob",
-        "//Job/Jobs:mathjob",
-        "//Job/Jobs:jointablejob",
+        "//job:job",
+        "//job/jobs:correljob",
+        "//job/jobs:mathjob",
+        "//job/jobs:jointablejob",
         "//TransactionQueue:transaction_queue",
-        "//Job/Jobs:meshcodeJob",
+        "//job/jobs:meshcodeJob",
         "//Client/ComputationToComputationContainerForJob:client",
         "//Client/ComputationToBts:client",
-        "//ConfigParse:config_parse",
-        "//Job:progressManager",
+        "//config_parse:config_parse",
+        "//job:progressManager",
         "//Logging:log"
     ],
     visibility = ["//visibility:public"],
@@ -46,7 +46,7 @@ cc_library(
         "//Client/ComputationToDb:client",
         "@proto//common_types:common_types_cc_proto",
         "//Logging:log",
-        "//Job:progressManager",
+        "//job:progressManager",
     ],
     visibility = ["//visibility:public"],
 )

@@ -49,13 +49,13 @@ make down # docker-compose down
 
 #### Host side settings
 
-This is an optional instruction.  
+This is an optional instruction.
 If it is skipped, logging stack trace will be skipped when Comutation Container is killed with signal.
 
 Set core dump file destination using shell script.
 
 ```bash
-./Scripts/host_core_setting.sh  # needs permission to write /proc/sys/kernel/core_pattern
+./scripts/host_core_setting.sh  # needs permission to write /proc/sys/kernel/core_pattern
 ```
 
 #### Start Computation Container inside a container
@@ -63,5 +63,5 @@ Set core dump file destination using shell script.
 Launch Computation Container executable using shell script.
 
 ```bash
-/QuickMPC/Scripts/wrapped_run.sh /QuickMPC/bazel-bin/computation_container
+/QuickMPC/scripts/wrapped_run.sh /QuickMPC/bazel-bin/computation_container
 ```

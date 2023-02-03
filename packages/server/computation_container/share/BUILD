@@ -8,7 +8,7 @@ cc_library(
     deps = [
         "//Server/ComputationToComputationContainer:server",
         "//TripleHandler:triple_handler",
-        "//Random:random"
+        "//random:random"
     ],
     visibility = ["//visibility:public"],
 )
@@ -24,7 +24,7 @@ cc_library(
     deps = [
         "//Server/ComputationToComputationContainer:server",
         "//TripleHandler:triple_handler",
-        "//Random:random",
+        "//random:random",
         "//Share:share",
         "//Logging:log"
     ],

@@ -9,7 +9,7 @@
 #include <thread>
 #include <vector>
 
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "Logging/Logger.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 #include "Share/AddressId.hpp"

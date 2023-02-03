@@ -1,10 +1,10 @@
 ## 概要
-srcステージのみ `Config.src.json` それ以外のステージでは `Config.json` を読みにいくようにしている.
+srcステージのみ `config.src.json` それ以外のステージでは `config.json` を読みにいくようにしている.
 
 ## 仕組み
 Dockerfileで
 ```Dockerfile
-# packages/server/BeaverTripleService/Dockerfile
+# packages/server/beaver_triple_service/Dockerfile
 FROM ubuntu:18.04 as base
 ...
 
@@ -20,15 +20,15 @@ FROM base as builder
 
 アプリケーションで以下のように分岐することで切り替えを実現
 ```go
-// packages/server/BeaverTripleService/ConfigStore/Config.go
+// packages/server/beaver_triple_service/ConfigStore/config.go
 ...
 func init() {
     stage := getEnv("STAGE", "")
     var ConfigJsonFilePath string
     if stage == "src" {
-        ConfigJsonFilePath = "/QuickMPC/Config/Config.src.json"
+        ConfigJsonFilePath = "/QuickMPC/config/config.src.json"
     } else {
-        ConfigJsonFilePath = "/QuickMPC/Config/Config.json"
+        ConfigJsonFilePath = "/QuickMPC/config/config.json"
     }
     err := utils.ParseJsonFIle(ConfigJsonFilePath, &Conf)
     if err != nil {

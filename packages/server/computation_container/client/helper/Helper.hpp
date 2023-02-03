@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 
 class RetryManager
 {

@@ -7,7 +7,7 @@ cc_library(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//Random:random",
+        "//random:random",
         "//Share:compare",
         "//Logging:log"
     ],

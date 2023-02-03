@@ -1,7 +1,7 @@
 cc_library(
     name = "config_parse",
     hdrs = [
-        "ConfigParse.hpp",
+        "config_parse.hpp",
     ],
     deps = [
         "@nlohmann_json//:json",

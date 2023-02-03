@@ -3,9 +3,9 @@
 #include <string>
 #include <tuple>
 
-#include "ConfigParse/ConfigParse.hpp"
-#include "Job/JobManager.hpp"
-#include "Job/JobParameter.hpp"
+#include "config_parse/config_parse.hpp"
+#include "job/JobManager.hpp"
+#include "job/JobParameter.hpp"
 #include "Logging/Logger.hpp"
 #include "Share/AddressId.hpp"
 

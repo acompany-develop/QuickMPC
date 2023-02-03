@@ -1,21 +1,21 @@
 cc_library(
     name = "computation_test",
     srcs = [
-        "ComputationTest.cpp"
+        "computation_test.cpp"
     ],
     copts = ["-Iexternal/gtest/include","-DDEBUG"],
     hdrs = [
-        "ComputationTest.hpp",
+        "computation_test.hpp",
     ],
     deps = [
         "@gtest//:main",
-        "//Test/IntegrationTest:share_test",
-        "//Test/IntegrationTest:meshcode_test",
-        "//Test/IntegrationTest:math_test",
-        "//Test/IntegrationTest:matrix_test",
-        "//Test/IntegrationTest:read_triple_test",
-        "//Test/IntegrationTest:value_table_test",
-        "//ConfigParse:config_parse",
+        "//test/integration_test:share_test",
+        "//test/integration_test:meshcode_test",
+        "//test/integration_test:math_test",
+        "//test/integration_test:matrix_test",
+        "//test/integration_test:read_triple_test",
+        "//test/integration_test:value_table_test",
+        "//config_parse:config_parse",
         "//Server/ComputationToComputationContainer:server",
         "//Server/ManageToComputationContainer:server",
         "@com_github_grpc_grpc//src/proto/grpc/health/v1:health_proto",

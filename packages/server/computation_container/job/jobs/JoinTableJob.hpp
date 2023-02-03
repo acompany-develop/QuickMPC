@@ -2,7 +2,7 @@
 #include <functional>
 #include <unordered_set>
 
-#include "Job/JobBase.hpp"
+#include "job/JobBase.hpp"
 #include "Math/Math.hpp"
 #include "Share/Share.hpp"
 

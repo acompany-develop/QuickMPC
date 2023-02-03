@@ -1,4 +1,4 @@
-module github.com/acompany-develop/QuickMPC/packages/server/ManageContainer
+module github.com/acompany-develop/QuickMPC/packages/server/manage_container
 
 go 1.18
 

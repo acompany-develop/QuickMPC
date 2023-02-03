@@ -1,16 +1,16 @@
 cc_library(
     name = "computation_benchmark",
     srcs = [
-        "ComputationBenchmark.cpp"
+        "computation_benchmark.cpp"
     ],
     copts = ["-Iexternal/gtest/include","-DDEBUG"],
     hdrs = [
-        "ComputationBenchmark.hpp",
+        "computation_benchmark.hpp",
     ],
     deps = [
         "@gtest//:main",
-        "//Test/Benchmark:benchmark",
-        "//Test/Benchmark:share_benchmark",
+        "//test/benchmark:benchmark",
+        "//test/benchmark:share_benchmark",
         "//Server/ComputationToComputationContainer:server",
         "//Server/ManageToComputationContainer:server",
         "//Logging:log",

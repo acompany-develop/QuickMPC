@@ -2,7 +2,7 @@
 
 #include <future>
 
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "FixedPoint/FixedPoint.hpp"
 #include "Networking.hpp"
 #include "Share.hpp"

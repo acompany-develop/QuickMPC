@@ -66,13 +66,13 @@ FROM base as src
 COPY ./.vscode/settings.json /QuickMPC/.vscode/
 
 FROM base as builder_base
-COPY packages/server/ComputationContainer/ /QuickMPC
+COPY packages/server/computation_container/ /QuickMPC
 # github actionsで使用されているdockerがCOPYを2連続で行うとたまにエラーが出る問題を抱えている
 # その問題を回避するために、COPYの間にRun trueを挟んでいる
 RUN true
 COPY proto/ /proto
 RUN true
-COPY packages/server/ComputationContainer/sa.json /root/sa.json
+COPY packages/server/computation_container/sa.json /root/sa.json
 WORKDIR /QuickMPC
 
 FROM builder_base as builder
@@ -103,7 +103,7 @@ RUN apk update && \
 RUN true
 COPY --from=builder /QuickMPC/computation_container /QuickMPC/bazel-bin/computation_container
 RUN true
-COPY --from=builder /QuickMPC/Scripts /QuickMPC/Scripts
+COPY --from=builder /QuickMPC/scripts /QuickMPC/scripts
 RUN true
 COPY --from=builder /usr/local/lib /usr/local/lib
 RUN true
@@ -120,11 +120,11 @@ WORKDIR /QuickMPC
 
 FROM builder_debug as small
 ENV PARTY_ID=1
-COPY Config/ComputationContainer/Compute${PARTY_ID}/.src.env /QuickMPC/Config/.env
+COPY config/computation_container/Compute${PARTY_ID}/.src.env /QuickMPC/config/.env
 
 FROM builder_base as small_tmp
 ENV PARTY_ID=1
-COPY Config/ComputationContainer/Compute${PARTY_ID}/.src.env /QuickMPC/Config/.env
+COPY config/computation_container/Compute${PARTY_ID}/.src.env /QuickMPC/config/.env
 
 FROM builder_debug as medium
 
@@ -134,7 +134,7 @@ RUN apk update && apk add curl
 RUN true
 COPY --from=builder /QuickMPC/bazel-bin/computation_container /QuickMPC/bazel-bin/computation_container
 RUN true
-COPY --from=builder /QuickMPC/Scripts /QuickMPC/Scripts
+COPY --from=builder /QuickMPC/scripts /QuickMPC/scripts
 RUN true
 # テスト用バイナリ
 COPY --from=builder /QuickMPC/bazel-bin/computation_container_test /QuickMPC/bazel-bin/computation_container_test

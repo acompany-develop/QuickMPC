@@ -4,7 +4,7 @@ cc_library(
         "Helper.hpp"
     ],
     deps = [
-        "//ConfigParse:config_parse",
+        "//config_parse:config_parse",
         "@proto//ComputationToComputationContainer:computation_to_computation_cc_grpc",
     ],
     visibility = ["//visibility:public"],

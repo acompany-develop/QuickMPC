@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "AddressId.hpp"
-#include "ConfigParse/ConfigParse.hpp"
+#include "config_parse/config_parse.hpp"
 #include "FixedPoint/FixedPoint.hpp"
 #include "Server/ComputationToComputationContainer/Server.hpp"
 namespace qmpc::Share

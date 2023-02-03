@@ -10,14 +10,14 @@ cc_binary(
 cc_binary(
     name = "computation_container_test",
     deps = [
-        "//Test/IntegrationTest/ComputationTest:computation_test"
+        "//test/integration_test/computation_test:computation_test"
     ]
 )
 
 cc_binary(
     name = "computation_container_benchmark",
     deps = [
-        "//Test/Benchmark/ComputationBenchmark:computation_benchmark"
+        "//test/benchmark/computation_benchmark:computation_benchmark"
     ]
 )
 

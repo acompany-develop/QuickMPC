@@ -31,7 +31,7 @@ services:
 
 
 ## テスト方法
-`Test/`で以下のコマンドを実行
+`scripts/`で以下のコマンドを実行
 ```sh
 make test
 ```
@@ -45,11 +45,11 @@ m = build	# test.shのbuild()のみ実行<br>
 m = run		# test.shのrun()のみ実行 <br>
 
 ```sh
-make test t=./ComputationContainer/ # Test/ComputationContainer/ 直下のみのテストを実行したい場合
+make test t=./computation_container/ # scripts/computation_container/ 直下のみのテストを実行したい場合
 make test p=small # `small*test.sh`を実行したい場合
 make test m=build # `*test.sh`のbuild処理のみ実行したい場合
 make test m=run # `*test.sh`のrun処理のみ実行したい場合
-make test t=./ComputationContainer/ p=small m=run # Test/ComputationContainer/直下のsmall*test.shでrun処理のみ実行したい場合
+make test t=./computation_container/ p=small m=run # scripts/computation_container/直下のsmall*test.shでrun処理のみ実行したい場合
 ```
 
 ## テストの追加
@@ -86,7 +86,7 @@ setup() {
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
 	# ここにtest実行処理を記述
-	docker-compose -f docker-compose.yml run small_cc /bin/sh -c "cd /QuickMPC && bazel test //Test/UnitTest:all --test_env=IS_TEST=true --test_output=errors"
+	docker-compose -f docker-compose.yml run small_cc /bin/sh -c "cd /QuickMPC && bazel test //test/unit_test:all --test_env=IS_TEST=true --test_output=errors"
 }
 
 # runの後に実行されるteardown処理を記述する関数
@@ -98,7 +98,7 @@ teardown() {
 ```
 
 ## デバッグ方法
-`Test/`で以下のコマンドを実行
+`scripts/`で以下のコマンドを実行
 ```sh
 make debug # `make debug p=mc`と等価
 ```
@@ -112,11 +112,11 @@ m = build	# debug.shのbuild()のみ実行<br>
 m = run		# debug.shのrun()のみ実行 <br>
 
 ```sh
-make debug t=./ComputationContainer/ # Test/ComputationContainer/ 直下のみのデバッグを実行したい場合
+make debug t=./computation_container/ # scripts/computation_container/ 直下のみのデバッグを実行したい場合
 make debug p=cc # `cc*debug.sh`を実行したい場合
 make debug m=build # `*debug.sh`のbuild処理のみ実行したい場合
 make debug m=run # `*debug.sh`のrun処理のみ実行したい場合
-make debug t=./ComputationContainer/ m=run # Test/ComputationContainer/直下のdebug.shでrun処理のみ実行したい場合
+make debug t=./computation_container/ m=run # scripts/computation_container/直下のdebug.shでrun処理のみ実行したい場合
 ```
 
 ## テストの追加
