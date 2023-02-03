@@ -26,7 +26,6 @@ int main()
 
     grpc::EnableDefaultHealthCheckService(true);
 
-    // TODO BTS初期化リクエスト
     auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
     cc_to_bts->initTripleStore();
 

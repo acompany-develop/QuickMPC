@@ -61,9 +61,9 @@ var GetPartyIdFromIp = func(reqIpAddrAndPort string) (uint32, error) {
 	return partyId, nil
 }
 
-func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
+// ClientのIPアドレスを取得する関数
+func GetReqIpAddrAndPort(ctx context.Context) string {
 	var reqIpAddrAndPort string
-	// ClientのIPアドレスを取得
 	if cs.Conf.WithEnvoy {
 		md, _ := metadata.FromIncomingContext(ctx)
 		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
@@ -73,17 +73,18 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 		reqIpAddrAndPort = p.Addr.String()
 	}
 
+	return reqIpAddrAndPort
+}
+
+func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
+	// ClientのIPアドレスを取得
+	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
+
 	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}
 	logger.Infof("Ip %s, jobId: %d, partyId: %d Type: %v\n", reqIpAddrAndPort, in.GetJobId(), partyId, in.GetTripleType())
-
-	// TODO: read claims, and use these party information
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if ok {
-		logger.Infof("claims: %v\n", claims)
-	}
 
 	triples, err := tg.GetTriples(in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
 	if err != nil {
@@ -96,28 +97,14 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 }
 
 func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
-	var reqIpAddrAndPort string
 	// ClientのIPアドレスを取得
-	if cs.Conf.WithEnvoy {
-		md, _ := metadata.FromIncomingContext(ctx)
-		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
-		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
-	} else {
-		p, _ := peer.FromContext(ctx)
-		reqIpAddrAndPort = p.Addr.String()
-	}
+	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
 	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}
 	logger.Infof("Ip %s, partyId: %d \n", reqIpAddrAndPort, partyId)
-
-	// TODO: read claims, and use these party information
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if ok {
-		logger.Infof("claims: %v\n", claims)
-	}
 
 	err = tg.InitTripleStore()
 	if err != nil {
@@ -128,28 +115,14 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 }
 
 func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
-	var reqIpAddrAndPort string
 	// ClientのIPアドレスを取得
-	if cs.Conf.WithEnvoy {
-		md, _ := metadata.FromIncomingContext(ctx)
-		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
-		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
-	} else {
-		p, _ := peer.FromContext(ctx)
-		reqIpAddrAndPort = p.Addr.String()
-	}
+	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
 	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}
 	logger.Infof("Ip %s, jobId: %d, partyId: %d\n", reqIpAddrAndPort, in.GetJobId(), partyId)
-
-	// TODO: read claims, and use these party information
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if ok {
-		logger.Infof("claims: %v\n", claims)
-	}
 
 	err = tg.DeleteJobIdTriple(in.GetJobId())
 	if err != nil {
@@ -227,6 +200,13 @@ func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServ
 	}
 
 	logger.Infof("received: %s", info.FullMethod)
+
+	// TODO: read claims, and use these party information
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if ok {
+		logger.Infof("claims: %v\n", claims)
+	}
+
 	// 処理を実行する
 	res, err := handler(ctx, req)
 
