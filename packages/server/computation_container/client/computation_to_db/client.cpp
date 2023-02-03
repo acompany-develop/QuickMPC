@@ -82,16 +82,34 @@ static std::vector<SchemaType> load_schema(const nlohmann::json &json)
     std::vector<SchemaType> schema;
     for (const auto &elem : json)
     {
-        pb_common_types::ColumnSchema column;
-        const google::protobuf::util::Status status =
-            google::protobuf::util::JsonStringToMessage(elem.dump(), &column);
-        if (!status.ok())
+        if (elem.is_object())
         {
-            qmpc::Log::throw_with_trace(
-                std::invalid_argument((boost::format("%s") % status.message()).str())
+            pb_common_types::ColumnSchema column;
+            const google::protobuf::util::Status status =
+                google::protobuf::util::JsonStringToMessage(elem.dump(), &column);
+            if (!status.ok())
+            {
+                qmpc::Log::throw_with_trace(
+                    std::invalid_argument((boost::format("object is not represented by %s: %s")
+                                           % column.GetDescriptor()->full_name() % status.message())
+                                              .str())
+                );
+            }
+            schema.emplace_back(column.name(), column.type());
+        }
+        else if (elem.is_string())
+        {
+            schema.emplace_back(
+                elem.get<std::string>(),
+                pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT
             );
         }
-        schema.emplace_back(column.name(), column.type());
+        else
+        {
+            qmpc::Log::throw_with_trace(std::invalid_argument(
+                (boost::format("schema type: %s is not supported") % elem.type_name()).str()
+            ));
+        }
     }
     return schema;
 }
