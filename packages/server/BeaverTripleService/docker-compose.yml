@@ -1,0 +1,39 @@
+version: "3.3"
+services:
+  bts:
+    container_name: beaver_triple_service
+    tty: true # 起動しっぱなし
+    build:
+      context: ../../../
+      dockerfile: packages/server/BeaverTripleService/Dockerfile
+      target: src
+    volumes:
+      - type: bind
+        source: .
+        target: /QuickMPC
+      - type: bind
+        source: ../../../Config/BeaverTripleService
+        target: /QuickMPC/Config
+      - type: bind
+        source: ../../../proto
+        target: /proto
+    env_file:
+      - ./Cmd/JWTGenerator/sample/server.sample.env
+    ports:
+      - "127.0.0.1:64101:54100"
+    networks:
+      shared-network:
+        aliases:
+            - beaver_triple_service
+        ipv4_address: 10.0.4.101
+    # command: ["/bin/bash", "-c", "go mod vendor && go build && ./BeaverTripleService"]
+    # healthcheck:
+    #   test: ["CMD-SHELL", "/bin/grpc_health_probe -addr=beaver_triple_service:54100"]
+    #   interval: 3s
+    #   timeout: 5s
+    #   start_period: 5s
+
+
+networks:
+  shared-network:
+    external: true
