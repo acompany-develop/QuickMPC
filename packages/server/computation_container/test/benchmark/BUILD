@@ -4,7 +4,7 @@ cc_library(
         "benchmark.hpp",
     ],
     deps =[
-        "//Logging:log",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -18,7 +18,7 @@ cc_library(
     deps = [
         "@gtest//:main",
         "//random:random",
-        "//Share:compare",
+        "//share:compare",
     ],
     visibility = ["//visibility:public"],
 )

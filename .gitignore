@@ -9,8 +9,8 @@ result
 
 **/vendor
 
-**/Db/**/data/*
-**/Db/**/nodestatus/initialized
+**/db/**/data/*
+**/db/**/nodestatus/initialized
 
 !.gitkeep
 packages/server/computation_container/setup.sh
@@ -27,6 +27,6 @@ __pycache__
 
 Deploy/Application/config/Party*
 
-!**/Db/**
-**/Db/*/**
-!**/Db/**/.gitkeep
+!**/db/**
+**/db/*/**
+!**/db/**/.gitkeep

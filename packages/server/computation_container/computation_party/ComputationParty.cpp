@@ -1,4 +1,4 @@
-#include "ComputationParty.hpp"
+#include "computation_party.hpp"
 
 #include <grpcpp/health_check_service_interface.h>
 
@@ -7,13 +7,13 @@
 #include <string>
 #include <thread>
 
-#include "Client/ComputationToBts/Client.hpp"
+#include "client/computation_to_bts/client.hpp"
 #include "config_parse/config_parse.hpp"
 #include "job/JobManager.hpp"
-#include "Logging/Logger.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Server/ComputationToComputationContainerForJob/Server.hpp"
-#include "Server/ManageToComputationContainer/Server.hpp"
+#include "logging/Logger.hpp"
+#include "server/computation_to_computation_container/server.hpp"
+#include "server/computation_to_computation_container_for_job/server.hpp"
+#include "server/manage_to_computation_container/server.hpp"
 #include "unistd.h"
 
 int main()

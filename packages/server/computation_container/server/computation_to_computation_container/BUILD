@@ -1,18 +1,18 @@
 cc_library(
     name = "server",
     srcs = [
-        "Server.cpp"
+        "server.cpp"
     ],
     hdrs = [
-        "Server.hpp",
+        "server.hpp",
     ],
     deps = [
         "//config_parse:config_parse",
-        "//Client/Helper:helper",
-        "@proto//ComputationToComputationContainer:computation_to_computation_cc_grpc",
-        "//Client/ComputationToComputationContainer:client",
-        "//Logging:log",
-        "//Server/Helper:helper",
+        "//client/helper:helper",
+        "@proto//computation_to_computation_container:computation_to_computation_cc_grpc",
+        "//client/computation_to_computation_container:client",
+        "//logging:log",
+        "//server/helper:helper",
     ],
     visibility = ["//visibility:public"],
 )

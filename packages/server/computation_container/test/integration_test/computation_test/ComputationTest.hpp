@@ -4,8 +4,8 @@
 #include <thread>
 
 #include "config_parse/config_parse.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Server/ManageToComputationContainer/Server.hpp"
+#include "server/computation_to_computation_container/server.hpp"
+#include "server/manage_to_computation_container/server.hpp"
 #include "test/integration_test/MathTest.hpp"
 #include "test/integration_test/MatrixTest.hpp"
 #include "test/integration_test/MeshCodeTest.hpp"

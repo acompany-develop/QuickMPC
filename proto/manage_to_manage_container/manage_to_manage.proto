@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package managetomanage;
 
-option go_package = "github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer";
+option go_package = "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container";
 
 /**
  * ManagecToManage service

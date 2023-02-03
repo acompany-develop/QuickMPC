@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToDb"
-	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToManageContainer"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_db"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_manage_container"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 )
 
 func TestDeleteShares(t *testing.T) {
@@ -29,7 +29,7 @@ func TestDeleteShares(t *testing.T) {
 
 	// 同期させてから削除されてるかチェック
 	m2m_client.Sync("delete_all")
-	_, err = os.Stat(fmt.Sprintf("/Db/share/%s", dataID))
+	_, err = os.Stat(fmt.Sprintf("/db/share/%s", dataID))
 	if err == nil {
 		t.Fatal("dataID must be deleted")
 	}
@@ -72,7 +72,7 @@ func TestDeleteShares1PT(t *testing.T) {
 		// PT1のdata削除リクエストの終了を待機
 		m2m_client.Sync("delete")
 		// 同期させてから削除されてるかチェック
-		_, err = os.Stat(fmt.Sprintf("/Db/share/%s", dataID))
+		_, err = os.Stat(fmt.Sprintf("/db/share/%s", dataID))
 		if err == nil {
 			t.Fatal("dataID must be deleted")
 		}

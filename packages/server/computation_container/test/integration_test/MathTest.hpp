@@ -3,8 +3,8 @@
 #include <random>
 #include <vector>
 
-#include "Logging/Logger.hpp"
-#include "Math/Math.hpp"
+#include "logging/Logger.hpp"
+#include "math/math.hpp"
 #include "gtest/gtest.h"
 
 TEST(MathTest, Smean)

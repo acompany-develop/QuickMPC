@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "FixedPoint/FixedPoint.hpp"
+#include "fixed_point/fixed_point.hpp"
 
 class RandGenerator
 {

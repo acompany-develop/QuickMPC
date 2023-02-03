@@ -16,11 +16,11 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Client/ComputationToComputationContainer/Client.hpp"
-#include "Client/Helper/Helper.hpp"
-#include "Logging/Logger.hpp"
-#include "Server/Helper/Helper.hpp"
-#include "external/proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
+#include "client/computation_to_computation_container/client.hpp"
+#include "client/helper/helper.hpp"
+#include "logging/Logger.hpp"
+#include "server/helper/helper.hpp"
+#include "external/proto/computation_to_computation_container/computation_to_computation.grpc.pb.h"
 #include "unistd.h"
 namespace qmpc::ComputationToComputation
 {

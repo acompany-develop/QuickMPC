@@ -3,7 +3,7 @@ package(default_visibility = ["//visibility:public"])
 cc_binary(
     name = "computation_container",
     deps = [
-        "//ComputationParty:computation_party",
+        "//computation_party:computation_party",
     ]
 )
 

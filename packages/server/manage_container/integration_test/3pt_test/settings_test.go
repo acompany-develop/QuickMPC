@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToManageContainer"
-	l2mserver "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Server/LibcToManageContainer"
-	m2mserver "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Server/ManageToManageContainer"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_manage_container"
+	l2mserver "github.com/acompany-develop/QuickMPC/packages/server/manage_container/server/libc_to_manage_container"
+	m2mserver "github.com/acompany-develop/QuickMPC/packages/server/manage_container/server/manage_to_manage_container"
 )
 
 func TestMain(m *testing.M) {
@@ -33,6 +33,6 @@ func TestMain(m *testing.M) {
 }
 
 func deleteId(t *testing.T, id string) {
-	os.RemoveAll(fmt.Sprintf("/Db/share/%s", id))
-	os.RemoveAll(fmt.Sprintf("/Db/result/%s", id))
+	os.RemoveAll(fmt.Sprintf("/db/share/%s", id))
+	os.RemoveAll(fmt.Sprintf("/db/result/%s", id))
 }

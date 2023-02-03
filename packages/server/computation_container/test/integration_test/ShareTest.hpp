@@ -5,11 +5,11 @@
 #include <string>
 #include <thread>
 
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "random/random.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Share/Compare.hpp"
-#include "Share/Share.hpp"
+#include "server/computation_to_computation_container/server.hpp"
+#include "share/Compare.hpp"
+#include "share/share.hpp"
 #include "gtest/gtest.h"
 #include "unistd.h"
 

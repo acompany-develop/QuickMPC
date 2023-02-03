@@ -4,7 +4,7 @@
 // 	protoc        v3.19.1
 // source: manage_to_manage.proto
 
-package ManageToManageContainer
+package manage_to_manage_container
 
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"

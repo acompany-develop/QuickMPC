@@ -3,9 +3,9 @@
 #include <queue>
 #include <tuple>
 
-#include "Client/ComputationToBts/Client.hpp"
-#include "FixedPoint/FixedPoint.hpp"
-#include "Share/AddressId.hpp"
+#include "client/computation_to_bts/client.hpp"
+#include "fixed_point/fixed_point.hpp"
+#include "share/AddressId.hpp"
 
 namespace qmpc::TripleHandler
 {

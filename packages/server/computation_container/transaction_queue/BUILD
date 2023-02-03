@@ -1,7 +1,7 @@
 cc_library(
     name = "transaction_queue",
     hdrs = [
-        "TransactionQueue.hpp"
+        "transaction_queue.hpp"
     ],
     visibility = ["//visibility:public"]
 )

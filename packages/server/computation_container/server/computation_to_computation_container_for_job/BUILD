@@ -1,18 +1,18 @@
 cc_library(
     name = "server",
     srcs = [
-        "Server.cpp"
+        "server.cpp"
     ],
     hdrs = [
-        "Server.hpp",
+        "server.hpp",
     ],
     deps = [
         "//config_parse:config_parse",
-        "//Client/Helper:helper",
-        "@proto//ComputationToComputationContainerForJob:computation_to_computation_for_job_cc_grpc",
+        "//client/helper:helper",
+        "@proto//computation_to_computation_container_for_job:computation_to_computation_for_job_cc_grpc",
         "//job:jobManager",
-        "//Logging:log",
-        "//Server/Helper:helper",
+        "//logging:log",
+        "//server/helper:helper",
     ],
     visibility = ["//visibility:public"],
 )

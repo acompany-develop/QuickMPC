@@ -7,7 +7,7 @@
 #include <unordered_set>
 
 #include "job/ProgressManager.hpp"
-#include "Share/Compare.hpp"
+#include "share/Compare.hpp"
 
 namespace qmpc::ComputationToDb
 {

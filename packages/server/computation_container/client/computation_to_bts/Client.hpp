@@ -3,10 +3,10 @@
 #include <string>
 #include <vector>
 
-#include "Client/Helper/Helper.hpp"
+#include "client/helper/helper.hpp"
 #include "config_parse/config_parse.hpp"
-#include "Logging/Logger.hpp"
-#include "external/proto/EngineToBts/engine_to_bts.grpc.pb.h"
+#include "logging/Logger.hpp"
+#include "external/proto/engine_to_bts/engine_to_bts.grpc.pb.h"
 
 namespace qmpc::ComputationToBts
 {

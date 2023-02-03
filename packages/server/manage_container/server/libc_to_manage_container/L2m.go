@@ -10,14 +10,14 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	m2c "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToComputationContainer"
-	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToDb"
-	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToManageContainer"
-	m2t "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToTokenCA"
-	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
-	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Server"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer"
+	m2c "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_computation_container"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_db"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_manage_container"
+	m2t "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_token_ca"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
+	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/server"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
 )
 
 // ServerのInterface定義
@@ -273,7 +273,7 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 
 	if err != nil {
 		stream.Send(&pb.GetComputationResultResponse{
-			Message: "Internal Server Error",
+			Message: "Internal server Error",
 			IsOk:    false,
 		})
 		return err
@@ -407,7 +407,7 @@ func RunServer() {
 
 	pb.RegisterLibcToManageServer(s, &server{m2dbclient: m2db.Client{}, m2cclient: m2c.Client{}, m2mclient: m2m.Client{}, m2tclient: m2t.Client{}})
 
-	AppLogger.Info("L2m Server listening on", port)
+	AppLogger.Info("L2m server listening on", port)
 	if err := s.Serve(lis); err != nil {
 		AppLogger.Fatalf("failed to serve: %v", err)
 	}

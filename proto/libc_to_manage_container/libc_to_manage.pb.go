@@ -4,7 +4,7 @@
 // 	protoc        v3.19.1
 // source: libc_to_manage.proto
 
-package LibcToManageContainer
+package libc_to_manage_container
 
 import (
 	common_types "github.com/acompany-develop/QuickMPC/proto/common_types"

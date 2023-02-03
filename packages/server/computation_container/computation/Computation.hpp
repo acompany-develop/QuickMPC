@@ -5,8 +5,8 @@
 #include <typeinfo>
 #include <vector>
 
-#include "Math/Math.hpp"
-#include "Share/Share.hpp"
+#include "math/math.hpp"
+#include "share/share.hpp"
 #include "nlohmann/json.hpp"
 
 // 計算の状態を管理

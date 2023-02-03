@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package managetocomputation;
 
-option go_package = "github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer";
+option go_package = "github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container";
 
 // 引数無しにする際に使用
 import "google/protobuf/empty.proto";

@@ -9,7 +9,7 @@ make run
 これにより, 同一ホストネットワーク内であれば `127.0.0.1:64101`で接続可能
 以下の様に`grpcurl`でCLIからリクエストを送ることも可能
 ```sh
-$ grpcurl -plaintext -d '{"job_id": 1, "amount": 5}' 127.0.0.1:64101 enginetobts.EngineToBts/GetTriples
+$ grpcurl -plaintext -d '{"job_id": 1, "amount": 5}' 127.0.0.1:64101 enginetobts.engine_to_bts/GetTriples
 {
   "triples": [
     {
@@ -82,7 +82,7 @@ Dockerfile で使用される各 build stage については以下のリンク�
 ## grpcurlでのdebug
 ※ portはよしなに変更してください
 ```bash
-grpcurl -d '{"job_id": 1, "amount": 10}' beaver_triple_service:54100 enginetobts.EngineToBts/GetTriples
+grpcurl -d '{"job_id": 1, "amount": 10}' beaver_triple_service:54100 enginetobts.engine_to_bts/GetTriples
 ```
 
 ## grpcサーバのヘルスチェック

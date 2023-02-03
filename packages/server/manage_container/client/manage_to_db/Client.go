@@ -12,14 +12,14 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
 
 // DBの役割を果たすディレクトリのパス
-const shareDbPath = "/Db/share"
-const resultDbPath = "/Db/result"
+const shareDbPath = "/db/share"
+const resultDbPath = "/db/result"
 
 // 同一IDに対する同時処理を防ぐためのもの
 var ls = utils.NewLockSet()

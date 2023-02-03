@@ -8,10 +8,10 @@
 
 #include "AddressId.hpp"
 #include "config_parse/config_parse.hpp"
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "Networking.hpp"
 #include "random/random.hpp"
-#include "TripleHandler/TripleHandler.hpp"
+#include "triple_handler/triple_handler.hpp"
 namespace qmpc::Share
 {
 template <typename SV>

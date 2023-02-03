@@ -295,7 +295,7 @@ $ aws cloudformation delete-stack --stack-name compose-infrastructure
 
 ### Q. compose-applicationの削除でDELETE_FAILEDが発生する
 
-![compose-applicationの削除でDELETE_FAILEDが発生する](./Images/dc-ecs-delete-failed.png)
+![compose-applicationの削除でDELETE_FAILEDが発生する](./images/dc-ecs-delete-failed.png)
 
 A.
 
@@ -305,23 +305,23 @@ A.
 
 以下のようにスタックの情報からIAMロールを探して `arn:aws...` の部分をコピー
 
-![Untitled](./Images/dc-ecs-find-iam-role-then-copy.png)
+![Untitled](./images/dc-ecs-find-iam-role-then-copy.png)
 
 IAM > ロール > ロールを作成する
 
-![スクリーンショット 2022-03-22 20.39.15.png](./Images/dc-ecs-create-role.pngd)
+![スクリーンショット 2022-03-22 20.39.15.png](./images/dc-ecs-create-role.pngd)
 
 ユースケースでCloudFormationを選択する
 
-![スクリーンショット 2022-03-22 20.39.55.png](./Images/dc-ecs-choose-cfn.png)
+![スクリーンショット 2022-03-22 20.39.55.png](./images/dc-ecs-choose-cfn.png)
 
 許可を追加で `AdministratorAccess` を選択して `次へ`
 
-![スクリーンショット 2022-03-22 20.40.36.png](./Images/dc-ecs-admin-access.png)
+![スクリーンショット 2022-03-22 20.40.36.png](./images/dc-ecs-admin-access.png)
 
 ロール名に先ほどコピーした `arn:aws:iam::hoge:role/{role-name}` の `{role-name}` をペーストして `ロールを作成`
 
-![スクリーンショット 2022-03-22 20.41.27.png](./Images/dc-ecs-create-role-with-copied-role-name.png)
+![スクリーンショット 2022-03-22 20.41.27.png](./images/dc-ecs-create-role-with-copied-role-name.png)
 
 CloudFormationに戻って、DELETE_FAILEDしたスタックを削除する
 

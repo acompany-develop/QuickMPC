@@ -15,9 +15,9 @@
 #include <tuple>
 #include <vector>
 
-#include "Client/Helper/Helper.hpp"
-#include "Server/Helper/Helper.hpp"
-#include "external/proto/ComputationToComputationContainerForJob/computation_to_computation_for_job.grpc.pb.h"
+#include "client/helper/helper.hpp"
+#include "server/helper/helper.hpp"
+#include "external/proto/computation_to_computation_container_for_job/computation_to_computation_for_job.grpc.pb.h"
 #include "unistd.h"
 
 namespace qmpc::ComputationToComputationForJob

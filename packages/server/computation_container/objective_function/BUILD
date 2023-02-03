@@ -4,7 +4,7 @@ cc_library(
         "ObjectiveFunctionInterface.hpp",
     ],
     deps = [
-        "//Share:share",
+        "//share:share",
     ],
     visibility = ["//visibility:public"],
 )
@@ -14,8 +14,8 @@ cc_library(
         "CrossEntropyError.hpp",
     ],
     deps = [
-        "//ObjectiveFunction:objective_function",
-        "//Logging:log",
+        "//objective_function:objective_function",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )

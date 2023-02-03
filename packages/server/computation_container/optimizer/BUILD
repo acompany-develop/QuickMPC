@@ -6,8 +6,8 @@ cc_library(
     srcs = [
     ],
     deps = [
-        "//Share:share",
-        "//Optimizer:optInterface",
+        "//share:share",
+        "//optimizer:optInterface",
     ],
     visibility = ["//visibility:public"],
 )
@@ -19,8 +19,8 @@ cc_library(
     srcs = [
     ],
     deps = [
-        "//Share:share",
-        "//Optimizer:optInterface",
+        "//share:share",
+        "//optimizer:optInterface",
     ],
     visibility = ["//visibility:public"],
 )
@@ -32,8 +32,8 @@ cc_library(
     srcs = [
     ],
     deps = [
-        "//Share:share",
-        "//Optimizer:optInterface",
+        "//share:share",
+        "//optimizer:optInterface",
     ],
     visibility = ["//visibility:public"],
 )
@@ -45,8 +45,8 @@ cc_library(
     srcs = [
     ],
     deps = [
-        "//Share:share",
-        "//Optimizer:optInterface",
+        "//share:share",
+        "//optimizer:optInterface",
     ],
     visibility = ["//visibility:public"],
 )
@@ -56,9 +56,9 @@ cc_library(
         "OptInterface.hpp",
     ],
     deps = [
-        "//Share:share",
-        "//ObjectiveFunction:objective_function",
-        
+        "//share:share",
+        "//objective_function:objective_function",
+
     ],
     visibility = ["//visibility:public"],
 )
@@ -72,10 +72,10 @@ cc_library(
         "Adam.hpp",
     ],
     deps = [
-        "//Optimizer:gradient_descent",
-        "//Optimizer:sgd",
-        "//Optimizer:momentum",
-        "//Optimizer:adam",
+        "//optimizer:gradient_descent",
+        "//optimizer:sgd",
+        "//optimizer:momentum",
+        "//optimizer:adam",
     ],
     visibility = ["//visibility:public"],
 )

@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "ValueTable.hpp"
-#include "external/proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
+#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "external/proto/common_types/common_types.pb.h"
 #include "nlohmann/json.hpp"
 
@@ -15,8 +15,8 @@ namespace qmpc::ComputationToDb
 {
 class Client final
 {
-    static inline const std::string shareDbPath = "/Db/share/";
-    static inline const std::string resultDbPath = "/Db/result/";
+    static inline const std::string shareDbPath = "/db/share/";
+    static inline const std::string resultDbPath = "/db/result/";
 
 public:
     Client();

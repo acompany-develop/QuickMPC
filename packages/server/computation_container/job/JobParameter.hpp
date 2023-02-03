@@ -1,6 +1,6 @@
 #pragma once
 
-#include "external/proto/ManageToComputationContainer/manage_to_computation.grpc.pb.h"
+#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 namespace qmpc::Job
 {
 class JobParameter

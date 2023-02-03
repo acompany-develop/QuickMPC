@@ -38,7 +38,7 @@ rm-all:
 
 # Dbのデータを削除
 rm-db:
-	rm -r ../Db/**/*
+	rm -r ../db/**/*
 
 ps:
 	docker-compose ps

@@ -9,7 +9,7 @@ cc_library(
     deps = [
         "//random:csprng",
         "@libsodium//:sodium",
-        "//FixedPoint:fixed_point"
+        "//fixed_point:fixed_point"
     ],
     visibility = ["//visibility:public"],
 )
@@ -24,7 +24,7 @@ cc_library(
     ],
     deps = [
         "@libsodium//:sodium",
-        "//Logging:log",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )

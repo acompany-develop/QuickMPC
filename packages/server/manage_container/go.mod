@@ -3,16 +3,16 @@ module github.com/acompany-develop/QuickMPC/packages/server/manage_container
 go 1.18
 
 replace (
-	github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer => ./../proto/LibcToManageContainer
-	github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer => ./../proto/ManageToComputationContainer
-	github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer => ./../proto/ManageToManageContainer
+	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container => ./../proto/libc_to_manage_container
+	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container => ./../proto/manage_to_computation_container
+	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container => ./../proto/manage_to_manage_container
 	github.com/acompany-develop/QuickMPC/proto/common_types => ./../proto/common_types
 )
 
 require (
-	github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer v0.0.0-00010101000000-000000000000
-	github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer v0.0.0-00010101000000-000000000000
-	github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.5.0
 	github.com/google/uuid v1.1.2

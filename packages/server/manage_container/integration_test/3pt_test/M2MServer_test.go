@@ -6,9 +6,9 @@ import (
 	"os"
 	"testing"
 
-	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToManageContainer"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer"
+	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_manage_container"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
 	"google.golang.org/grpc"
 )
 
@@ -70,7 +70,7 @@ func TestSendShare(t *testing.T) {
 	// 削除リクエストにより削除されるのを待機
 	m2m_client.Sync("send_end")
 
-	_, err = os.Stat(fmt.Sprintf("/Db/share/%s", dataID))
+	_, err = os.Stat(fmt.Sprintf("/db/share/%s", dataID))
 	if err == nil {
 		t.Fatal("dataID must be deleted")
 	}

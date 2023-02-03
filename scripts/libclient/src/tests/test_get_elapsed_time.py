@@ -27,7 +27,7 @@ def send_share(filename: str) -> tuple:
 def test_get_elapsed_time(table_file: str):
 
     # share送信
-    secrets, data_id = send_share(f"Data/{table_file}.csv")
+    secrets, data_id = send_share(f"data/{table_file}.csv")
 
     # table情報と列指定情報を定義して計算
     length = len(secrets[0])

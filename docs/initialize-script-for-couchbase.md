@@ -25,7 +25,7 @@ Couchbaseをコンテナの外で永続化したい場合は, `data/` ディレ�
 ```bash
 volumes:
 	- type: bind
-	        source: ./Db/data
+	        source: ./db/data
 	        target: /opt/couchbase/var
 ```
 

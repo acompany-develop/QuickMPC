@@ -16,10 +16,10 @@ cc_library(
         "//test/integration_test:read_triple_test",
         "//test/integration_test:value_table_test",
         "//config_parse:config_parse",
-        "//Server/ComputationToComputationContainer:server",
-        "//Server/ManageToComputationContainer:server",
+        "//server/computation_to_computation_container:server",
+        "//server/manage_to_computation_container:server",
         "@com_github_grpc_grpc//src/proto/grpc/health/v1:health_proto",
-        "//Logging:log",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )

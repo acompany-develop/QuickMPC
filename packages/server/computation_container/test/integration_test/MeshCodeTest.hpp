@@ -5,10 +5,10 @@
 #include <string>
 
 #include "job/job/MeshCodeJob.hpp"
-#include "Logging/Logger.hpp"
-#include "Math/Math.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Share/Share.hpp"
+#include "logging/Logger.hpp"
+#include "math/math.hpp"
+#include "server/computation_to_computation_container/server.hpp"
+#include "share/share.hpp"
 #include "gtest/gtest.h"
 
 TEST(MeshCodeTest, BulkMeshCode)

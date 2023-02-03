@@ -9,10 +9,10 @@
 #include <iostream>
 #include <string>
 
-#include "Client/Helper/Helper.hpp"
+#include "client/helper/helper.hpp"
 #include "config_parse/config_parse.hpp"
-#include "Share/AddressId.hpp"
-#include "external/proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
+#include "share/AddressId.hpp"
+#include "external/proto/computation_to_computation_container/computation_to_computation.grpc.pb.h"
 
 namespace qmpc::ComputationToComputation
 {

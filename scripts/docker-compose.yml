@@ -19,10 +19,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute1/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -63,10 +63,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute2/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -104,10 +104,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute3/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -197,10 +197,10 @@ services:
         target: /QuickMPC/.vscode
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage1/.env
     expose:
@@ -259,10 +259,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage2/.env
     expose:
@@ -321,10 +321,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage3/.env
     expose:
@@ -373,10 +373,10 @@ services:
     volumes:
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
     build:
       context: ../
@@ -400,10 +400,10 @@ services:
     volumes:
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage1/.env
 
@@ -445,10 +445,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute1/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -478,10 +478,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute2/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -512,10 +512,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute3/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -545,10 +545,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute1/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -579,10 +579,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute2/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -614,10 +614,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/computation_container/compute3/.env
       - ../config/computation_container/jwt/client.sample.env
@@ -645,10 +645,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage1/.env
     expose:
@@ -675,10 +675,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage2/.env
     expose:
@@ -705,10 +705,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage3/.env
     expose:
@@ -740,10 +740,10 @@ services:
         target: /QuickMPC/.vscode
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage1/.env
     expose:
@@ -773,10 +773,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage2/.env
     expose:
@@ -806,10 +806,10 @@ services:
         target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
       - ../config/manage_container/manage3/.env
     expose:
@@ -834,8 +834,8 @@ services:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     volumes:
       - type: bind
-        source: ./libclient/Data
-        target: /libclient/Data
+        source: ./libclient/data
+        target: /libclient/data
       - type: bind
         source: ./libclient/src
         target: /libclient/src
@@ -865,8 +865,8 @@ services:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     volumes:
       - type: bind
-        source: ./libclient/Data
-        target: /libclient/Data
+        source: ./libclient/data
+        target: /libclient/data
       - type: bind
         source: ./libclient/src
         target: /libclient/src

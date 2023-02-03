@@ -4,7 +4,7 @@
 // 	protoc        v3.19.1
 // source: manage_to_computation.proto
 
-package ManageToComputationContainer
+package manage_to_computation_container
 
 import (
 	common_types "github.com/acompany-develop/QuickMPC/proto/common_types"

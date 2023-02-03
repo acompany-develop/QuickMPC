@@ -3,7 +3,7 @@
 #include <list>
 
 #include "job/JobBase.hpp"
-#include "Share/Share.hpp"
+#include "share/share.hpp"
 
 namespace qmpc::Job
 {
@@ -22,7 +22,7 @@ public:
     }
 
     // アルゴリズムの詳細はこちら:
-    // Docs/meshcode-conversion-protocol.md
+    // docs/meshcode-conversion-protocol.md
     std::vector<std::vector<Share>> meshcode_transform()
     {
         std::vector<Share> p = qmpc::Share::getFloor(FixedPoint("1.5") * latitude);

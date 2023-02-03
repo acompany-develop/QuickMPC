@@ -38,7 +38,7 @@ http_archive(
     urls = [
         "https://github.com/nlohmann/json/releases/download/v3.9.1/include.zip",
     ],
-    build_file = "@//ThirdParty/nlohmann_json:nlohmann_json.BUILD",
+    build_file = "@//third_party/nlohmann_json:nlohmann_json.BUILD",
 )
 
 # Eigen

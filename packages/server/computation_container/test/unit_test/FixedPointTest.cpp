@@ -1,4 +1,4 @@
-#include "FixedPoint/FixedPoint.hpp"
+#include "fixed_point/fixed_point.hpp"
 #include "gtest/gtest.h"
 
 TEST(FixedPointTest, Add)

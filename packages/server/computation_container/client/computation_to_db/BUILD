@@ -1,15 +1,15 @@
 cc_library(
     name = "client",
     srcs = [
-        "Client.cpp"
+        "client.cpp"
     ],
     hdrs = [
-        "Client.hpp",
+        "client.hpp",
     ],
     deps = [
         "@nlohmann_json//:json",
-        "//Client/ComputationToDb:valuetable",
-        "@proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
+        "//client/computation_to_db:valuetable",
+        "@proto//manage_to_computation_container:manage_to_computation_cc_grpc",
         "@proto//common_types:common_types_cc_proto",
     ],
     linkopts = [
@@ -28,10 +28,10 @@ cc_library(
     ],
     deps = [
         "@nlohmann_json//:json",
-        "//Share:share",
-        "//Share:compare",
+        "//share:share",
+        "//share:compare",
         "//job:progressManager",
-        "//Logging:log"
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )

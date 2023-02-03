@@ -2,7 +2,7 @@
 #include "Compare.hpp"
 
 #include "config_parse/config_parse.hpp"
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 
 namespace qmpc::Share
 {
@@ -44,7 +44,7 @@ auto convertFpToBool(const FixedPoint &fp, const std::string &op_name)
 }
 
 // アルゴリズムの詳細はこちら:
-// Docs/faster-comparison-operators.md
+// docs/faster-comparison-operators.md
 bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
 {
     Share<FixedPoint> s = left - right;
@@ -56,7 +56,7 @@ bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
 
 // [left == right] <=> [not (left < right)] and [not (right < left)]
 // アルゴリズムの詳細はこちら:
-// Docs/faster-comparison-operators.md
+// docs/faster-comparison-operators.md
 bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
 {
     auto x_ret = (left < right);
@@ -161,7 +161,7 @@ std::vector<bool> allEq(
 
 // Less Than Zero ([s < 0])
 // アルゴリズムの詳細はこちら:
-// Docs/faster-comparison-operators.md
+// docs/faster-comparison-operators.md
 Share<FixedPoint> LTZ(const Share<FixedPoint> &s)
 {
     // Experimented and adjusted.

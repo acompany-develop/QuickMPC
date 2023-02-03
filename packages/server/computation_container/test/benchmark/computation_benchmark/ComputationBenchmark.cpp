@@ -1,6 +1,6 @@
 #include "computation_benchmark.hpp"
 
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "external/com_github_grpc_grpc/src/proto/grpc/health/v1/health.grpc.pb.h"
 #include "gtest/gtest.h"
 

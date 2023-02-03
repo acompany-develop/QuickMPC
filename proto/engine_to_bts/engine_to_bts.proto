@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package enginetobts;
 
-option go_package = "github.com/acompany-develop/QuickMPC/proto/EngineToBts";
+option go_package = "github.com/acompany-develop/QuickMPC/proto/engine_to_bts";
 
 import "google/protobuf/empty.proto";
 

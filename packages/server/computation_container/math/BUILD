@@ -1,14 +1,14 @@
 cc_library(
     name = "math",
     srcs = [
-        "Math.cpp"
+        "math.cpp"
     ],
     hdrs = [
-        "Math.hpp",
+        "math.hpp",
     ],
     deps = [
-        "//Share:share",
-        "//Logging:log",
+        "//share:share",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )

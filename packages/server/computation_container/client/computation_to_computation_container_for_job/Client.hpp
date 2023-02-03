@@ -8,10 +8,10 @@
 
 #include <string>
 
-#include "Client/Helper/Helper.hpp"
+#include "client/helper/helper.hpp"
 #include "config_parse/config_parse.hpp"
-#include "Share/AddressId.hpp"
-#include "external/proto/ComputationToComputationContainerForJob/computation_to_computation_for_job.grpc.pb.h"
+#include "share/AddressId.hpp"
+#include "external/proto/computation_to_computation_container_for_job/computation_to_computation_for_job.grpc.pb.h"
 
 namespace qmpc::ComputationToComputationForJob
 {

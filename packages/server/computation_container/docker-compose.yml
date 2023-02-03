@@ -37,8 +37,8 @@ services:
         source: ../.clang-format
         target: /QuickMPC/.clang-format
       - type: bind
-        source: ../Db/
-        target: /Db
+        source: ../db/
+        target: /db
     env_file:
       - ../../../config/computation_container/compute1/.src.env
       - ../../../config/computation_container/jwt/client.sample.env

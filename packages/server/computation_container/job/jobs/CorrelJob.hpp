@@ -3,8 +3,8 @@
 #include <list>
 
 #include "job/JobBase.hpp"
-#include "Math/Math.hpp"
-#include "Share/Share.hpp"
+#include "math/math.hpp"
+#include "share/share.hpp"
 
 namespace qmpc::Job
 {

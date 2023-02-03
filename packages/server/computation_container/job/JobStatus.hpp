@@ -6,8 +6,8 @@
 #include <boost/format.hpp>
 #include <boost/stacktrace/stacktrace.hpp>
 
-#include "Client/ComputationToDb/Client.hpp"
-#include "Logging/Logger.hpp"
+#include "client/computation_to_db/client.hpp"
+#include "logging/Logger.hpp"
 #include "ProgressManager.hpp"
 #include "external/proto/common_types/common_types.pb.h"
 namespace qmpc::Job

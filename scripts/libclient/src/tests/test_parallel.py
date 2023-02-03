@@ -19,7 +19,7 @@ parallel_num = [
 )
 def test_send_share(parallel_num: int):
     # csv dataをパースする
-    filename: str = "Data/table_data_5x5.csv"
+    filename: str = "data/table_data_5x5.csv"
     secrets, schema = qmpc.parse_csv_file(filename)
 
     # 並列にsend_share
@@ -44,7 +44,7 @@ def test_send_share(parallel_num: int):
     ("parallel_num"), parallel_num
 )
 def test_execute(parallel_num: int):
-    filename: str = "Data/table_data_5x5.csv"
+    filename: str = "data/table_data_5x5.csv"
     secrets, schema = qmpc.parse_csv_file(filename)
     res = qmpc.send_share(secrets, schema)
     data_id = res["data_id"]

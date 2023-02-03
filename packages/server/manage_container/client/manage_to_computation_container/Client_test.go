@@ -7,9 +7,9 @@ import (
 
 	"google.golang.org/grpc"
 
-	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container"
 	empty "github.com/golang/protobuf/ptypes/empty"
 )
 

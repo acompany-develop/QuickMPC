@@ -17,7 +17,7 @@ import (
 // DBを初期化する
 func initialize() {
 	isGitkeep := regexp.MustCompile(".*.gitkeep")
-	files, _ := filepath.Glob("/Db/*/*")
+	files, _ := filepath.Glob("/db/*/*")
 	for _, f := range files {
 		if !isGitkeep.MatchString(f) {
 			os.RemoveAll(f)
@@ -49,7 +49,7 @@ func TestInsertSharesSuccess(t *testing.T) {
 	if errInsert != nil {
 		t.Error("insert shares failed: " + errInsert.Error())
 	}
-	_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID))
+	_, errExist := os.Stat(fmt.Sprintf("/db/share/%s/%d", defaultDataID, defaultPieceID))
 	if errExist != nil {
 		t.Error("insert shares failed: " + errExist.Error())
 	}
@@ -85,7 +85,7 @@ func TestInsertSharesParallelSuccess(t *testing.T) {
 			if errInsert != nil {
 				t.Error("insert shares failed: " + errInsert.Error())
 			}
-			_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, pieceId))
+			_, errExist := os.Stat(fmt.Sprintf("/db/share/%s/%d", defaultDataID, pieceId))
 			if errExist != nil {
 				t.Error("insert shares failed: " + errExist.Error())
 			}
@@ -124,15 +124,15 @@ func TestInsertSharesParallelRejectDuplicate(t *testing.T) {
 func TestDeleteSharesSuccess(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/share/%s", defaultDataID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/share/%s", defaultDataID), 0777)
 	var dataIds = []string{defaultDataID}
 
 	client := Client{}
 	client.DeleteShares(dataIds)
 
-	_, errExist := os.Stat(fmt.Sprintf("/Db/share/%s", defaultDataID))
+	_, errExist := os.Stat(fmt.Sprintf("/db/share/%s", defaultDataID))
 	if errExist == nil {
-		t.Error(fmt.Sprintf("delete shares failed: '/Db/share/%s' must be deleted, but exist", defaultDataID))
+		t.Error(fmt.Sprintf("delete shares failed: '/db/share/%s' must be deleted, but exist", defaultDataID))
 	}
 	initialize()
 }
@@ -142,9 +142,9 @@ func TestDeleteSharesSuccess(t *testing.T) {
 func TestGetSchemaSuccess(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/share/%s", defaultDataID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/share/%s", defaultDataID), 0777)
 	data := `{"meta":{"schema":["attr1","attr2","attr3"]}}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
 	schema, err := client.GetSchema(defaultDataID)
@@ -179,11 +179,11 @@ func TestGetSchemaFailedEmptyID(t *testing.T) {
 func TestGetComputationResultSuccessDim1(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/dim1_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
-	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/dim1_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
+	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
+	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
 	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
@@ -209,11 +209,11 @@ func TestGetComputationResultSuccessDim1(t *testing.T) {
 func TestGetComputationResultSuccessDim2(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/dim2_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
-	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/dim2_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
+	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
+	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
 	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim2"})
@@ -239,11 +239,11 @@ func TestGetComputationResultSuccessDim2(t *testing.T) {
 func TestGetComputationResultSuccessSchema(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/schema_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
-	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/schema_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
+	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
+	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
 	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"schema"})
@@ -271,9 +271,9 @@ func TestGetComputationResultSuccessSchema(t *testing.T) {
 func TestGetComputationResultFailedEmptyOnlyComputationResult(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
-	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID))
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
+	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
+	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
 	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1", "dim2", "schema"})
@@ -307,9 +307,9 @@ func TestGetComputationResultFailedEmptyResult(t *testing.T) {
 func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","status":1,"result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
 	_, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
@@ -325,12 +325,12 @@ func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
 func TestGetComputationResultSuccessGetStatus(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	statusSize := len(pb_types.JobStatus_value)
 	// UNKNOWN, ERRORを除く各Statusについて昇順にチェック
 	for i := 2; i < statusSize; i++ {
 		status := pb_types.JobStatus_name[int32(i)]
-		os.Create(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, status))
+		os.Create(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, status))
 
 		client := Client{}
 		result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
@@ -352,9 +352,9 @@ func TestGetComputationResultFailedJobErrorInfo(t *testing.T) {
 	initialize()
 	defer initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{"what": "test"}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
 
 	client := Client{}
 	_, info, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
@@ -382,14 +382,14 @@ func TestGetComputationResultFailedJobErrorInfoWithStacktrace(t *testing.T) {
 	initialize()
 	defer initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{
 		"what": "test",
 		"stacktrace": {
 			"frames": []
 		}
 	}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
 
 	client := Client{}
 	_, info, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
@@ -417,14 +417,14 @@ func TestGetJobErrorInfoSuccess(t *testing.T) {
 	initialize()
 	defer initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{
 		"what": "test",
 		"stacktrace": {
 			"frames": []
 		}
 	}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
 
 	client := Client{}
 	info, err := client.GetJobErrorInfo(defaultJobUUID)
@@ -463,14 +463,14 @@ func TestGetJobErrorInfoFailed(t *testing.T) {
 func TestGetElapsedTimeSuccess(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/result/%s", defaultJobUUID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":"[\"1\",\"2\",\"3\"]","meta":{"piece_id":0}}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 	clock_start := "1666942928259"
 	clock_end := "1666943026561"
-	os.Create(fmt.Sprintf("/Db/result/%s/completed", defaultJobUUID))
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_PRE_JOB", defaultJobUUID), []byte(clock_start), 0666)
-	ioutil.WriteFile(fmt.Sprintf("/Db/result/%s/status_COMPLETED", defaultJobUUID), []byte(clock_end), 0666)
+	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_PRE_JOB", defaultJobUUID), []byte(clock_start), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID), []byte(clock_end), 0666)
 	expect := 98.302
 
 	client := Client{}
@@ -489,9 +489,9 @@ func TestGetElapsedTimeSuccess(t *testing.T) {
 func TestGetMatchingColumnSuccess(t *testing.T) {
 	initialize()
 
-	os.Mkdir(fmt.Sprintf("/Db/share/%s", defaultDataID), 0777)
+	os.Mkdir(fmt.Sprintf("/db/share/%s", defaultDataID), 0777)
 	data := `{"meta":{"matching_column":1}}`
-	ioutil.WriteFile(fmt.Sprintf("/Db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
+	ioutil.WriteFile(fmt.Sprintf("/db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
 	matching_column, err := client.GetMatchingColumn(defaultDataID)

@@ -2,7 +2,7 @@
 #include <Eigen/Core>
 #include <vector>
 
-#include "Share.hpp"
+#include "share.hpp"
 
 // 自作クラスでEigenの行列を扱うための各種宣言
 // 参考1: https://eigen.tuxfamily.org/dox/TopicCustomizing_CustomScalar.html

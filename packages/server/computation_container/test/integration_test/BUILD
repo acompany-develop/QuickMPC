@@ -8,8 +8,8 @@ cc_library(
     deps = [
         "@gtest//:main",
         "//random:random",
-        "//Share:compare",
-        "//Logging:log"
+        "//share:compare",
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -21,8 +21,8 @@ cc_library(
     ],
     deps = [
         "@gtest//:main",
-        "//Math:math",
-        "//Logging:log"
+        "//math:math",
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -34,8 +34,8 @@ cc_library(
     ],
     deps = [
         "@gtest//:main",
-        "//Share:matrix",
-        "//Logging:log",
+        "//share:matrix",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -47,7 +47,7 @@ cc_library(
     ],
     deps = [
         "@gtest//:main",
-        "//Share:share",
+        "//share:share",
     ],
     visibility = ["//visibility:public"],
 )
@@ -60,8 +60,8 @@ cc_library(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//TripleHandler:triple_handler",
-        "//Logging:log",
+        "//triple_handler:triple_handler",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -73,7 +73,7 @@ cc_library(
     ],
     deps = [
         "@gtest//:main",
-        "//Client/ComputationToDb:valuetable",
+        "//client/computation_to_db:valuetable",
     ],
     visibility = ["//visibility:public"],
 )

@@ -21,7 +21,7 @@
 - 2, 5行目で使用されている LSB (最下位ビット取得) のアルゴリズムは、以下を参照。
     - [MeshCode 変換プロトコル](./meshcode-conversion-protocol.md)
 
-![スクリーンショット 2021-12-18 16.34.25.png](./Images/comparison-operators-simple-ltz.png)
+![スクリーンショット 2021-12-18 16.34.25.png](./images/comparison-operators-simple-ltz.png)
 
 **前提条件**
 

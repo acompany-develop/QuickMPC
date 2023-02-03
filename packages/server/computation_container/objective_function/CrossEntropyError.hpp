@@ -1,9 +1,9 @@
 #pragma once
 #include <random>
 
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "ObjectiveFunctionInterface.hpp"
-#include "Share/Share.hpp"
+#include "share/share.hpp"
 namespace qmpc::ObjectiveFunction
 {
 /*

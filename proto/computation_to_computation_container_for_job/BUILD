@@ -6,7 +6,7 @@ load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
 proto_library(
     name = "computation_to_computation_for_job_proto",
     srcs = ["computation_to_computation_for_job.proto"],
-    deps = ["@proto//ManageToComputationContainer:manage_to_computation_proto",
+    deps = ["@proto//manage_to_computation_container:manage_to_computation_proto",
             "@com_google_protobuf//:empty_proto"],
 )
 

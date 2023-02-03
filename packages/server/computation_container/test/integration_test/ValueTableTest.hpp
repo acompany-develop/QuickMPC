@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
 
-#include "Client/ComputationToDb/ValueTable.hpp"
+#include "client/computation_to_db/ValueTable.hpp"
 #include "gtest/gtest.h"
 
 /****************** Test用の各データ ******************/

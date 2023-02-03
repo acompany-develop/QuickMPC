@@ -1,22 +1,22 @@
 cc_library(
     name = "server",
     srcs = [
-        "Server.cpp"
+        "server.cpp"
     ],
     hdrs = [
-        "Server.hpp",
+        "server.hpp",
     ],
     deps = [
         "//config_parse:config_parse",
-        "//Computation:computation",
-        "//Share:share",
+        "//computation:computation",
+        "//share:share",
         "@nlohmann_json//:json",
-        "@proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
-        "//Server/ComputationToComputationContainerForJob:server",
+        "@proto//manage_to_computation_container:manage_to_computation_cc_grpc",
+        "//server/computation_to_computation_container_for_job:server",
         "//job:jobManager",
         "@com_github_grpc_grpc//:grpc++",
         "@com_github_grpc_grpc//:grpc++_reflection",
-        "//Logging:log"
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )

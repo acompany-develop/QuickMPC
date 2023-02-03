@@ -12,7 +12,7 @@ cc_library(
 cc_library(
     name = "fixed_point",
     hdrs = [
-        "FixedPoint.hpp",
+        "fixed_point.hpp",
     ],
     visibility = ["//visibility:public"]
 )

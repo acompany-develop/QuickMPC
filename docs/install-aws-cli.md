@@ -14,15 +14,15 @@
 2. awsのcredentialを作成する
     1. awsのコンソールにsign inして右上のトグルを開く
 
-        ![Untitled](./Images/aws-cli-open-toggle.png)
+        ![Untitled](./images/aws-cli-open-toggle.png)
 
     2. セキュリティ認証情報を押す
 
-        ![Untitled](./Images/aws-cli-security-credential.png)
+        ![Untitled](./images/aws-cli-security-credential.png)
 
     3. アクセスキーを作成して認証情報のcsvをダウンロードする
 
-        ![Untitled](./Images/aws-cli-download-credential-csv.png)
+        ![Untitled](./images/aws-cli-download-credential-csv.png)
 
     4. aws configureコマンドでcredentialファイルを作成する
 

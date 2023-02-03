@@ -11,7 +11,7 @@
     - 出力: $[b]$
 - アルゴリズムは以下を参照のこと。
 
-    ![スクリーンショット 2021-11-27 12.50.33.png](./Images/meshcode-get-rand-bit-share.png)
+    ![スクリーンショット 2021-11-27 12.50.33.png](./images/meshcode-get-rand-bit-share.png)
 
 - 上記は素体ベースのプロトコル。
     - 実数体でもほぼ同じプロトコルになる。
@@ -26,7 +26,7 @@
     - 出力: $[LSB(x)]$
 - アルゴリズムは以下を参照のこと。
 
-    ![スクリーンショット 2021-11-27 13.03.53.png](./Images/meshcode-get-lsb-share.png)
+    ![スクリーンショット 2021-11-27 13.03.53.png](./images/meshcode-get-lsb-share.png)
 
 - 上記は素体ベースのプロトコル
     - 実数体でもほぼ同じプロトコルになる。
@@ -40,11 +40,11 @@
     - 出力: $[Floor(y)]$
 - 床関数プロトコルのイメージ
 
-    ![スクリーンショット 2021-11-27 14.34.38.png](./Images/meshcode-get-floor.png)
+    ![スクリーンショット 2021-11-27 14.34.38.png](./images/meshcode-get-floor.png)
 
 - trunc のアルゴリズム (f は m に読み替えてください)
 
-    ![スクリーンショット 2021-11-27 14.35.49.png](./Images/meshcode-trunc.png)
+    ![スクリーンショット 2021-11-27 14.35.49.png](./images/meshcode-trunc.png)
 
 
 ### MeshCode 変換プロトコル
@@ -53,7 +53,7 @@ getFloor と四則演算を用いることで、MeshCode 変換が可能。
 
 現在は、4分の1地域メッシュ・コードを生成。
 
-![Untitled](./Images/meshcode-conversion-protocol.png)
+![Untitled](./images/meshcode-conversion-protocol.png)
 
 ## その他
 

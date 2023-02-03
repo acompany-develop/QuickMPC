@@ -5,11 +5,11 @@ cc_library(
     ],
     deps = [
         "//job:jobStatus",
-        "//Computation:computation",
-        "//Share:share",
-        "//Client/ComputationToDb:client",
-        "@proto//ManageToComputationContainer:manage_to_computation_cc_grpc",
-        "//Logging:log"
+        "//computation:computation",
+        "//share:share",
+        "//client/computation_to_db:client",
+        "@proto//manage_to_computation_container:manage_to_computation_cc_grpc",
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -26,13 +26,13 @@ cc_library(
         "//job/jobs:correljob",
         "//job/jobs:mathjob",
         "//job/jobs:jointablejob",
-        "//TransactionQueue:transaction_queue",
+        "//transaction_queue:transaction_queue",
         "//job/jobs:meshcodeJob",
-        "//Client/ComputationToComputationContainerForJob:client",
-        "//Client/ComputationToBts:client",
+        "//client/computation_to_computation_container_for_job:client",
+        "//client/computation_to_bts:client",
         "//config_parse:config_parse",
         "//job:progressManager",
-        "//Logging:log"
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -43,9 +43,9 @@ cc_library(
         "JobStatus.hpp",
     ],
     deps = [
-        "//Client/ComputationToDb:client",
+        "//client/computation_to_db:client",
         "@proto//common_types:common_types_cc_proto",
-        "//Logging:log",
+        "//logging:log",
         "//job:progressManager",
     ],
     visibility = ["//visibility:public"],
@@ -60,7 +60,7 @@ cc_library(
         "ProgressManager.hpp",
     ],
     deps = [
-        "//Logging:log",
+        "//logging:log",
         "@proto//common_types:common_types_cc_proto",
     ],
     visibility = ["//visibility:public"],

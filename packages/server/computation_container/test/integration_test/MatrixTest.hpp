@@ -3,8 +3,8 @@
 #include <list>
 #include <random>
 
-#include "Logging/Logger.hpp"
-#include "Share/Matrix.hpp"
+#include "logging/Logger.hpp"
+#include "share/Matrix.hpp"
 #include "gtest/gtest.h"
 
 std::random_device rnd;

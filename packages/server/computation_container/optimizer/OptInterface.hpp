@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ObjectiveFunction/ObjectiveFunctionInterface.hpp"
+#include "objective_function/ObjectiveFunctionInterface.hpp"
 
 namespace qmpc::Optimizer
 {

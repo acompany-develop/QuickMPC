@@ -1,13 +1,13 @@
 cc_library(
     name = "share",
     hdrs = [
-        "Share.hpp",
+        "share.hpp",
         "Networking.hpp",
         "AddressId.hpp"
     ],
     deps = [
-        "//Server/ComputationToComputationContainer:server",
-        "//TripleHandler:triple_handler",
+        "//server/computation_to_computation_container:server",
+        "//triple_handler:triple_handler",
         "//random:random"
     ],
     visibility = ["//visibility:public"],
@@ -22,11 +22,11 @@ cc_library(
         "Compare.hpp"
     ],
     deps = [
-        "//Server/ComputationToComputationContainer:server",
-        "//TripleHandler:triple_handler",
+        "//server/computation_to_computation_container:server",
+        "//triple_handler:triple_handler",
         "//random:random",
-        "//Share:share",
-        "//Logging:log"
+        "//share:share",
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )
@@ -48,8 +48,8 @@ cc_library(
         "Matrix.cpp"
     ],
     deps = [
-        "//Share:share",
-        "//Server/ComputationToComputationContainer:server",
+        "//share:share",
+        "//server/computation_to_computation_container:server",
         "@eigen//:eigen",
     ],
     visibility = ["//visibility:public"],

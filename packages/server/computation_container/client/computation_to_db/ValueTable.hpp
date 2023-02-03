@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Share/Share.hpp"
+#include "share/share.hpp"
 
 namespace qmpc::ComputationToDb
 {

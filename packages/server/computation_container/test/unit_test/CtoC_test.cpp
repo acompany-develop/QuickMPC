@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "config_parse/config_parse.hpp"
-#include "Logging/Logger.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Share/AddressId.hpp"
-#include "external/proto/ComputationToComputationContainer/computation_to_computation.grpc.pb.h"
+#include "logging/Logger.hpp"
+#include "server/computation_to_computation_container/server.hpp"
+#include "share/AddressId.hpp"
+#include "external/proto/computation_to_computation_container/computation_to_computation.grpc.pb.h"
 #include "gtest/gtest.h"
 
 void runServer(std::string endpoint)

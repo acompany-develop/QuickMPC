@@ -91,7 +91,7 @@ rm-all:
 
 # Dbのデータを削除
 rm-db:
-	rm -r ../Db/**/*
+	rm -r ../db/**/*
 
 logs-cc:
 	docker-compose -f $(CC)/docker-compose.yml logs -f

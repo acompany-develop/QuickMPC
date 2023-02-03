@@ -7,11 +7,11 @@ cc_test(
     deps = [
         "@gtest//:main",
         "@com_github_grpc_grpc//:grpc++",
-        "//Math:math",
-        "//Share:share",
+        "//math:math",
+        "//share:share",
         "//config_parse:config_parse",
-        "//Server/ComputationToComputationContainer:server",
-        "//Logging:log",
+        "//server/computation_to_computation_container:server",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -25,10 +25,10 @@ cc_test(
     deps = [
         "@gtest//:main",
         "@com_github_grpc_grpc//:grpc++",
-        "//Share:share",
+        "//share:share",
         "//config_parse:config_parse",
-        "//Server/ComputationToComputationContainer:server",
-        "//Logging:log",
+        "//server/computation_to_computation_container:server",
+        "//logging:log",
     ],
 )
 
@@ -41,7 +41,7 @@ cc_test(
     deps = [
         "@gtest//:main",
         "//random:random",
-        "//FixedPoint:fixed_point"
+        "//fixed_point:fixed_point"
     ],
 )
 
@@ -53,12 +53,12 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//Server/ComputationToComputationContainer:server",
-        "//Client/Helper:helper",
+        "//server/computation_to_computation_container:server",
+        "//client/helper:helper",
         "//config_parse:config_parse",
-        "@proto//ComputationToComputationContainer:computation_to_computation_cc_grpc",
-        "//Share:address",
-        "//Logging:log"
+        "@proto//computation_to_computation_container:computation_to_computation_cc_grpc",
+        "//share:address",
+        "//logging:log"
     ],
     linkopts = ["-pthread"],
 )
@@ -71,8 +71,8 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//FixedPoint:fixed_point",
-        "//FixedPoint:math_lib"
+        "//fixed_point:fixed_point",
+        "//fixed_point:math_lib"
     ],
 )
 
@@ -84,7 +84,7 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-       "//TransactionQueue:transaction_queue"
+       "//transaction_queue:transaction_queue"
      ],
 )
 
@@ -97,7 +97,7 @@ cc_test(
     deps = [
         "@gtest//:main",
         "//random:csprng",
-        "//Logging:log",
+        "//logging:log",
     ],
 )
 
@@ -109,7 +109,7 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//Logging:log",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )
@@ -122,7 +122,7 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//Client/ComputationToDb:client",
+        "//client/computation_to_db:client",
         "@proto//common_types:common_types_cc_proto",
     ],
     linkopts = [

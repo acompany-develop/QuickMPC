@@ -5,7 +5,7 @@ cc_library(
     ],
     deps = [
         "@nlohmann_json//:json",
-        "//Logging:log",
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )

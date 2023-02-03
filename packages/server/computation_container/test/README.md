@@ -32,8 +32,8 @@ cc_library(
         "//test/integration_test:model_test",
         "//test/integration_test:triple_recons_test",
         "//config_parse:config_parse",
-        "//Server/ComputationToComputationContainer:server",
-        "//Server/ManageToComputationContainer:server"
+        "//server/computation_to_computation_container:server",
+        "//server/manage_to_computation_container:server"
     ],
     visibility = ["//visibility:public"],
 )
@@ -48,8 +48,8 @@ cc_library(
 #include "unistd.h"
 
 #include "config_parse/config_parse.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
-#include "Server/ManageToComputationContainer/Server.hpp"
+#include "server/computation_to_computation_container/server.hpp"
+#include "server/manage_to_computation_container/server.hpp"
 #include "test/integration_test/ShareCompTest.hpp"
 #include "test/integration_test/ShareTest.hpp"
 #include "test/integration_test/MathTest.hpp"

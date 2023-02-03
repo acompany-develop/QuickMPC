@@ -7,7 +7,7 @@ from quickmpc.exception import QMPCServerError
 from utils import get_result, qmpc
 
 # 各種リクエストに用いる変数
-filename_table: str = "Data/table_data_5x5.csv"
+filename_table: str = "data/table_data_5x5.csv"
 secrets, schema = qmpc.parse_csv_file(filename_table)
 length: int = len(secrets[0])
 inp = [i for i in range(2, length + 1)]

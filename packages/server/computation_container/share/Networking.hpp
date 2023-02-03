@@ -11,8 +11,8 @@
 
 #include "AddressId.hpp"
 #include "config_parse/config_parse.hpp"
-#include "FixedPoint/FixedPoint.hpp"
-#include "Server/ComputationToComputationContainer/Server.hpp"
+#include "fixed_point/fixed_point.hpp"
+#include "server/computation_to_computation_container/server.hpp"
 namespace qmpc::Share
 {
 using std::to_string;

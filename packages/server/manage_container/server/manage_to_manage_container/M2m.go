@@ -3,11 +3,11 @@ package m2mserver
 import (
 	"context"
 
-	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Client/ManageToDb"
-	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Log"
-	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Server"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/Utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/ManageToManageContainer"
+	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_db"
+	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
+	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/server"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container"
 )
 
 type server struct {

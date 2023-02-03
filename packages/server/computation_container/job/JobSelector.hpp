@@ -6,8 +6,8 @@
 #include "jobs/JoinTableJob.hpp"
 #include "jobs/MathJob.hpp"
 #include "jobs/MeshCodeJob.hpp"
-#include "Logging/Logger.hpp"
-#include "Math/Math.hpp"
+#include "logging/Logger.hpp"
+#include "math/math.hpp"
 #include "external/proto/common_types/common_types.pb.h"
 
 namespace qmpc::Job

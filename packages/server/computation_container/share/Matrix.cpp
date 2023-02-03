@@ -2,7 +2,7 @@
 
 #include <Eigen/LU>
 
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "Networking.hpp"
 namespace qmpc::Share
 {

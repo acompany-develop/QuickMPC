@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package computationtocomputationforjob;
 
-import "ManageToComputationContainer/manage_to_computation.proto";
+import "manage_to_computation_container/manage_to_computation.proto";
 
 // 引数無しにする際に使用
 import "google/protobuf/empty.proto";

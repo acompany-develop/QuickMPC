@@ -1,4 +1,4 @@
-#include "Client.hpp"
+#include "client.hpp"
 
 #include <grpc/grpc.h>
 #include <grpcpp/channel.h>

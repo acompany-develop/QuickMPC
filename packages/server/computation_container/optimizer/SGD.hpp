@@ -5,7 +5,7 @@
 
 #include "job/ProgressManager.hpp"
 #include "OptInterface.hpp"
-#include "Share/Share.hpp"
+#include "share/share.hpp"
 
 namespace qmpc::Optimizer
 {

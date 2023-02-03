@@ -6,16 +6,16 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Client/ComputationToBts/Client.hpp"
-#include "Client/ComputationToComputationContainerForJob/Client.hpp"
+#include "client/computation_to_bts/client.hpp"
+#include "client/computation_to_computation_container_for_job/client.hpp"
 #include "config_parse/config_parse.hpp"
 #include "JobBase.hpp"
 #include "JobParameter.hpp"
 #include "JobSelector.hpp"
 #include "JobStatus.hpp"
-#include "Logging/Logger.hpp"
+#include "logging/Logger.hpp"
 #include "ProgressManager.hpp"
-#include "TransactionQueue/TransactionQueue.hpp"
+#include "transaction_queue/transaction_queue.hpp"
 
 namespace qmpc::Job
 {

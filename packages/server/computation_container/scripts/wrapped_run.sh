@@ -9,7 +9,7 @@ readonly SCRIPT_DIR
 readonly CORE_PATTERN_FILE="${SCRIPT_DIR}/data/core_pattern.txt"
 readonly GDB_CMD_FILE="${SCRIPT_DIR}/data/gdb_print_stacktrace_cmd.txt"
 
-readonly JOB_RESULT_ROOT='/Db/result'
+readonly JOB_RESULT_ROOT='/db/result'
 readonly ERROR_JSON='{"what": "Unexpected error occured.  Contact your administrator."}'
 
 function write_status_error()

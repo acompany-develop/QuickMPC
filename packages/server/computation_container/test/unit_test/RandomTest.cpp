@@ -1,7 +1,7 @@
 #include <iostream>
 #include <type_traits>
 
-#include "FixedPoint/FixedPoint.hpp"
+#include "fixed_point/fixed_point.hpp"
 #include "random/random.hpp"
 #include "gtest/gtest.h"
 

@@ -1,15 +1,15 @@
 cc_library(
     name = "computation",
     srcs = [
-        "Computation.cpp"
+        "computation.cpp"
     ],
     hdrs = [
-        "Computation.hpp",
+        "computation.hpp",
     ],
     deps = [
-        "//Math:math",
+        "//math:math",
         "@nlohmann_json//:json",
-        "//Logging:log"
+        "//logging:log"
     ],
     visibility = ["//visibility:public"],
 )

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Optimizer/Adam.hpp"
-#include "Optimizer/GradientDescent.hpp"
-#include "Optimizer/Momentum.hpp"
-#include "Optimizer/SGD.hpp"
+#include "optimizer/Adam.hpp"
+#include "optimizer/GradientDescent.hpp"
+#include "optimizer/Momentum.hpp"
+#include "optimizer/SGD.hpp"
