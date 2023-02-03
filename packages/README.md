@@ -2,14 +2,14 @@
 QuickMPCで使われるTripleを生成するサービス
 
 ## ローカルでの起動方法
-`packages/server/BeaverTripleService/`で以下のコマンドを実行
+`packages/server/beaver_triple_service/`で以下のコマンドを実行
 ```sh
 make run
 ```
 これにより, 同一ホストネットワーク内であれば `127.0.0.1:64101`で接続可能
 以下の様に`grpcurl`でCLIからリクエストを送ることも可能
 ```sh
-$ grpcurl -plaintext -d '{"job_id": 1, "amount": 5}' 127.0.0.1:64101 enginetobts.EngineToBts/GetTriples
+$ grpcurl -plaintext -d '{"job_id": 1, "amount": 5}' 127.0.0.1:64101 enginetobts.engine_to_bts/GetTriples
 {
   "triples": [
     {
@@ -48,15 +48,15 @@ make test
 ```
 特定のtestを指定して実行したい場合は以下のようにする
 ```sh
-make test t=./BeaverTripleService/TripleGenerator
-# Test/BeaverTripleService/TripleGenerator/ 直下のみのテストを実行したい場合
-make test p=unit # `uint*test.sh`を実行したい場合
+make test t=./beaver_triple_service/TripleGenerator
+# scripts/beaver_triple_service/TripleGenerator/ 直下のみのテストを実行したい場合
+make test p=unit # `unit*test.sh`を実行したい場合
 make test m=build # `*test.sh`のbuild処理のみ実行したい場合
 make test m=run # `*test.sh`のrun処理のみ実行したい場合
 ```
 
 ## 開発方法
-`packages/server/BeaverTripleService/`で以下のコマンドを実行
+`packages/server/beaver_triple_service/`で以下のコマンドを実行
 ```sh
 make up-build
 make upd-build # バックグラウンドで起動したい場合はこちら
@@ -82,7 +82,7 @@ Dockerfile で使用される各 build stage については以下のリンク�
 ## grpcurlでのdebug
 ※ portはよしなに変更してください
 ```bash
-grpcurl -d '{"job_id": 1, "amount": 10}' beaver_triple_service:54100 enginetobts.EngineToBts/GetTriples
+grpcurl -d '{"job_id": 1, "amount": 10}' beaver_triple_service:54100 enginetobts.engine_to_bts/GetTriples
 ```
 
 ## grpcサーバのヘルスチェック
@@ -95,11 +95,11 @@ grpc_health_probe -addr=localhost:54100
 YAML ファイルを入力に JWT token を生成します
 
 ```console
-root@container:/QuickMPC/packages/server/BeaverTripleService# go run Cmd/JWTGenerator/main.go     # generate from sample.yml
+root@container:/QuickMPC/packages/server/beaver_triple_service# go run Cmd/JWTGenerator/main.go     # generate from sample.yml
 root@container:/QuickMPC# go run Cmd/JWTGenerator/main.go \
 >                                 -file /path/to/config.yml   \
 >                                 -o ./output/envs                # use own configuration
-root@container:/QuickMPC/packages/server/BeaverTripleService# go run Cmd/JWTGenerator/main.go -h  # show help
+root@container:/QuickMPC/packages/server/beaver_triple_service# go run Cmd/JWTGenerator/main.go -h  # show help
 ```
 
 クライアントとサーバ向けにそれぞれ `.env` ファイル形式の設定ファイルが書き込まれます
