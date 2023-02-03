@@ -48,7 +48,8 @@ TEST(ComputationToBtsTest, InitTripleStoreTest)
 
     if (conf->party_id == 1)
     {
-        for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++){
+        for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
+        {
             auto triples = cc_to_bts->readTriples<FixedPoint>(jobId, amount);
         }
 
@@ -71,7 +72,6 @@ TEST(ComputationToBtsTest, InitTripleStoreTest)
     auto _ = recons(fixed_triples);
 
     readTriplesTest(jobIdMax, amount);
-
 }
 
 TEST(ComputationToBtsTest, DeleteJobIdTripleTest)
@@ -83,12 +83,14 @@ TEST(ComputationToBtsTest, DeleteJobIdTripleTest)
 
     if (conf->party_id == 1)
     {
-        for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++){
+        for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
+        {
             auto triples = cc_to_bts->readTriples<FixedPoint>(jobId, amount);
         }
 
         // 各jobIdに紐付いたTripleを削除する
-        for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++){
+        for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
+        {
             cc_to_bts->deleteJobIdTriple(jobId);
         }
     }
@@ -108,7 +110,6 @@ TEST(ComputationToBtsTest, DeleteJobIdTripleTest)
     auto _ = recons(fixed_triples);
 
     readTriplesTest(jobIdMax, amount);
-
 }
 
 // TODO: 異なる引数で連続でテストする場合はParty間で足並みを揃える処理が必要

@@ -71,7 +71,8 @@ public:
         return triples;
     }
 
-    void initTripleStore(){
+    void initTripleStore()
+    {
         grpc::Status status;
         google::protobuf::Empty request, response;
 
@@ -86,7 +87,8 @@ public:
         } while (retry_manager.retry(status));
     }
 
-    void deleteJobIdTriple(const unsigned int job_id){
+    void deleteJobIdTriple(const unsigned int job_id)
+    {
         grpc::Status status;
         enginetobts::DeleteJobIdTripleRequest request;
         request.set_job_id(job_id);

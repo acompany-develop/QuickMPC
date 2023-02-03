@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Client/ComputationToComputationContainerForJob/Client.hpp"
 #include "Client/ComputationToBts/Client.hpp"
+#include "Client/ComputationToComputationContainerForJob/Client.hpp"
 #include "ConfigParse/ConfigParse.hpp"
 #include "JobBase.hpp"
 #include "JobParameter.hpp"
@@ -198,12 +198,15 @@ public:
 
             // 3. JobIDに紐付いたTripleを削除する
             auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
-            bool is_ok = try_catch_run(job_req.job_uuid(), [&]() { cc_to_bts->deleteJobIdTriple(job_id); });
+            bool is_ok =
+                try_catch_run(job_req.job_uuid(), [&]() { cc_to_bts->deleteJobIdTriple(job_id); });
 
             // 4. 取りだしたJobReqの内容を全パーティに伝える
             if (is_ok)
             {
-                try_catch_run(job_req.job_uuid(), [&]() { job_manager->sendJobInfo(job_req, job_id); });
+                try_catch_run(
+                    job_req.job_uuid(), [&]() { job_manager->sendJobInfo(job_req, job_id); }
+                );
             }
             else
             {
