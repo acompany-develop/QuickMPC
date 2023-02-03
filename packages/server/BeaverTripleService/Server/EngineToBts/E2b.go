@@ -61,9 +61,9 @@ var GetPartyIdFromIp = func(reqIpAddrAndPort string) (uint32, error) {
 	return partyId, nil
 }
 
-func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
+// ClientのIPアドレスを取得する関数
+func GetReqIpAddrAndPort(ctx context.Context) string {
 	var reqIpAddrAndPort string
-	// ClientのIPアドレスを取得
 	if cs.Conf.WithEnvoy {
 		md, _ := metadata.FromIncomingContext(ctx)
 		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
@@ -72,6 +72,13 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 		p, _ := peer.FromContext(ctx)
 		reqIpAddrAndPort = p.Addr.String()
 	}
+
+	return reqIpAddrAndPort
+}
+
+func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
+	// ClientのIPアドレスを取得
+	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
 	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
 	if err != nil {
@@ -96,16 +103,8 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 }
 
 func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
-	var reqIpAddrAndPort string
 	// ClientのIPアドレスを取得
-	if cs.Conf.WithEnvoy {
-		md, _ := metadata.FromIncomingContext(ctx)
-		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
-		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
-	} else {
-		p, _ := peer.FromContext(ctx)
-		reqIpAddrAndPort = p.Addr.String()
-	}
+	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
 	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
 	if err != nil {
@@ -128,16 +127,8 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 }
 
 func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
-	var reqIpAddrAndPort string
 	// ClientのIPアドレスを取得
-	if cs.Conf.WithEnvoy {
-		md, _ := metadata.FromIncomingContext(ctx)
-		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
-		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
-	} else {
-		p, _ := peer.FromContext(ctx)
-		reqIpAddrAndPort = p.Addr.String()
-	}
+	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
 	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
 	if err != nil {
