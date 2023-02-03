@@ -3,6 +3,21 @@
 #include "gtest/gtest.h"
 #include "nlohmann/json.hpp"
 
+void sync()
+{
+    // partyで足並みを揃えるための関数
+    std::vector<Share> fixed_triples;
+    Share a(1);
+    Share b(1);
+    Share c(1);
+    fixed_triples.emplace_back(Share(1));
+    fixed_triples.emplace_back(Share(1));
+    fixed_triples.emplace_back(Share(1));
+
+    open(fixed_triples);
+    auto _ = recons(fixed_triples);
+}
+
 void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
 {
     // triple read Test
@@ -58,18 +73,7 @@ TEST(ComputationToBtsTest, InitTripleStoreTest)
     }
 
     // partyで足並みを揃えるため
-    std::vector<Share> fixed_triples;
-    for (unsigned int i = 0; i < amount; i++)
-    {
-        Share a(1);
-        Share b(1);
-        Share c(1);
-        fixed_triples.emplace_back(Share(1));
-        fixed_triples.emplace_back(Share(1));
-        fixed_triples.emplace_back(Share(1));
-    }
-    open(fixed_triples);
-    auto _ = recons(fixed_triples);
+    sync();
 
     readTriplesTest(jobIdMax, amount);
 }
@@ -96,18 +100,7 @@ TEST(ComputationToBtsTest, DeleteJobIdTripleTest)
     }
 
     // partyで足並みを揃えるため
-    std::vector<Share> fixed_triples;
-    for (unsigned int i = 0; i < amount; i++)
-    {
-        Share a(1);
-        Share b(1);
-        Share c(1);
-        fixed_triples.emplace_back(Share(1));
-        fixed_triples.emplace_back(Share(1));
-        fixed_triples.emplace_back(Share(1));
-    }
-    open(fixed_triples);
-    auto _ = recons(fixed_triples);
+    sync();
 
     readTriplesTest(jobIdMax, amount);
 }
