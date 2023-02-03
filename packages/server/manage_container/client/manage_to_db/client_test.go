@@ -25,7 +25,11 @@ func initialize() {
 	}
 }
 
-var defaultSchema = []string{"attr1", "attr2", "attr3"}
+var defaultSchema = []*pb_types.ColumnSchema{
+	{Name: "attr1", Type: pb_types.ShareValueTypeEnum_SHARE_VALUE_TYPE_FIXED_POINT},
+	{Name: "attr2", Type: pb_types.ShareValueTypeEnum_SHARE_VALUE_TYPE_FIXED_POINT},
+	{Name: "attr2", Type: pb_types.ShareValueTypeEnum_SHARE_VALUE_TYPE_FIXED_POINT},
+}
 
 const defaultDataID = "m2db_test_dataid"
 const defaultPieceID = 0
@@ -143,7 +147,11 @@ func TestGetSchemaSuccess(t *testing.T) {
 	initialize()
 
 	os.Mkdir(fmt.Sprintf("/db/share/%s", defaultDataID), 0777)
-	data := `{"meta":{"schema":["attr1","attr2","attr3"]}}`
+	data := `{"meta":{"schema":[
+		{"name": "attr1"},
+		{"name": "attr2"},
+		{"name": "attr3"}
+	]}}`
 	ioutil.WriteFile(fmt.Sprintf("/db/share/%s/%d", defaultDataID, defaultPieceID), []byte(data), 0666)
 
 	client := Client{}
@@ -152,7 +160,7 @@ func TestGetSchemaSuccess(t *testing.T) {
 	if err != nil {
 		t.Error("get schema failed: " + err.Error())
 	}
-	cor := []string{"attr1", "attr2", "attr3"}
+	cor := []*pb_types.ColumnSchema{{Name: "attr1"}, {Name: "attr2"}, {Name: "attr3"}}
 	if !reflect.DeepEqual(schema, cor) {
 		t.Errorf("get schema failed: schema must be %v, but value is %v", cor, schema)
 	}

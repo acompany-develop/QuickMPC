@@ -13,14 +13,14 @@ import (
 // Test用のDbGとCCのmock
 type localDb struct{}
 
-func (localDb) InsertShares(string, []string, int32, string, string, int32) error {
+func (localDb) InsertShares(string, []*pb_types.ColumnSchema, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
 	return nil
 }
-func (localDb) GetSchema(string) ([]string, error) {
-	return []string{""}, nil
+func (localDb) GetSchema(string) ([]*pb_types.ColumnSchema, error) {
+	return []*pb_types.ColumnSchema{{Name: ""}}, nil
 }
 func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
 	return &pb_types.JobErrorInfo{}, nil
