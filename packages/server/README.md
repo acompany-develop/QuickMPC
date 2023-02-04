@@ -131,9 +131,9 @@ root@container_id:/QuickMPC# bazel //:compdb
 ```
 
 詳細は以下のMarkdownを参照:
-- [Visual Studio Codeでコンテナの中に入って開発する方法](/Docs/how-to-develop-with-vscode.md#例-intellisense)
+- [Visual Studio Codeでコンテナの中に入って開発する方法](/docs/how-to-develop-with-vscode.md#例-intellisense)
 ### formatter機能の有効化(VSCodeを使っている人)
 この機能を使うと自動的に整形してくれる
 
 詳細は以下のMarkdownを参照:
-- [Visual Studio Codeでコンテナの中に入って開発する方法](/Docs/how-to-develop-with-vscode.md)
+- [Visual Studio Codeでコンテナの中に入って開発する方法](/docs/how-to-develop-with-vscode.md)

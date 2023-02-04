@@ -1,4 +1,4 @@
-name: Python CI
+name: Syntax Check and Unit Test on libclient-py
 
 on:
   pull_request:
