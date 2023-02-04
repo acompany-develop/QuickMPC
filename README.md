@@ -33,7 +33,7 @@ cd QuickMPC/scripts
 ```
 2. Launch all containers
 ```sh
-make debug t=./manage_container
+make debug t=./ManageContainer
 ```
 3. Execute libClient Demo
 - [libClient-py/demo](packages/client/libclient-py/demo/README.md)
@@ -49,16 +49,16 @@ cd QuickMPC/scripts
 # Testing all containers
 make test
 # Only the Computation Container test
-make test t=./computation_container/
+make test t=./ComputationContainer/
 # Only the Manage Container test
-make test t=./manage_container/
+make test t=./ManageContainer/
 ```
 
 ## How to start each container
 This section is usefule when you want to stand 2 containers and dare to test manually.
 ```sh
-make debug t=./computation_container # Launch of the dev_cc{1,2,3}
-make debug t=./manage_container # Then, all container is launched
+make debug t=./ComputationContainer # Launch of the dev_cc{1,2,3}
+make debug t=./ManageContainer # Then, all container is launched
 ```
 
 ## How to develop each container
@@ -95,7 +95,7 @@ bazel clean
 [Detail](packages/server/manage_container/README.md)
 1. Change your current directory
 ```sh
-cd packages/server/manage_container
+cd packages/server/ManageContainer
 ```
 2. Start the container and enter the container
 ```sh

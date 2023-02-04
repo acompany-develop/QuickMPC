@@ -66,7 +66,7 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 [詳細はこちら](packages/server/computation_container/README.md)
 1. ディレクトリを移動する
 ```sh
-cd packages/server/computation_container
+cd packages/server/ComputationContainer
 ```
 2. コンテナを起動してコンテナに入る
 ```sh
