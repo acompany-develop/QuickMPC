@@ -63,7 +63,7 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 
 ## 各コンテナの開発方法
 ### Computation Container
-[詳細はこちら](packages/server/computation_container/README.md)
+[詳細はこちら](packages/server/ComputationContainer/README.md)
 1. ディレクトリを移動する
 ```sh
 cd packages/server/ComputationContainer
@@ -93,7 +93,7 @@ bazel clean
 
 ### Manage Container
 
-[詳細はこちら](packages/server/manage_container/README.md)
+[詳細はこちら](packages/server/ManageContainer/README.md)
 1. ディレクトリを移動する
 ```sh
 cd packages/server/ManageContainer

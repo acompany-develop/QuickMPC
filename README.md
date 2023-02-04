@@ -63,10 +63,10 @@ make debug t=./ManageContainer # Then, all container is launched
 
 ## How to develop each container
 ### Computation Container
-[Detail](packages/server/computation_container/README.md)
+[Detail](packages/server/ComputationContainer/README.md)
 1. Change your current directory
 ```sh
-cd packages/server/computation_container
+cd packages/server/ComputationContainer
 ```
 2. Start the container and enter the container
 ```sh
@@ -92,7 +92,7 @@ bazel clean
 
 ### Manage Container
 
-[Detail](packages/server/manage_container/README.md)
+[Detail](packages/server/ManageContainer/README.md)
 1. Change your current directory
 ```sh
 cd packages/server/ManageContainer
