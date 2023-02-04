@@ -3,9 +3,9 @@
 #include <random>
 #include <vector>
 
+#include "gtest/gtest.h"
 #include "logging/logger.hpp"
 #include "math/math.hpp"
-#include "gtest/gtest.h"
 
 TEST(MathTest, Smean)
 {

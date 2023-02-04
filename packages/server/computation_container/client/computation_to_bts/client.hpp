@@ -5,8 +5,8 @@
 
 #include "client/helper/helper.hpp"
 #include "config_parse/config_parse.hpp"
-#include "logging/logger.hpp"
 #include "external/proto/engine_to_bts/engine_to_bts.grpc.pb.h"
+#include "logging/logger.hpp"
 
 namespace qmpc::ComputationToBts
 {

@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "math/math.hpp"
-#include "share/share.hpp"
 #include "nlohmann/json.hpp"
+#include "share/share.hpp"
 
 // 計算の状態を管理
 extern bool is_computing;

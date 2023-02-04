@@ -4,12 +4,12 @@
 #include <iostream>
 #include <string>
 
+#include "gtest/gtest.h"
 #include "job/jobs/mesh_code_job.hpp"
 #include "logging/logger.hpp"
 #include "math/math.hpp"
 #include "server/computation_to_computation_container/server.hpp"
 #include "share/share.hpp"
-#include "gtest/gtest.h"
 
 TEST(MeshCodeTest, BulkMeshCode)
 {

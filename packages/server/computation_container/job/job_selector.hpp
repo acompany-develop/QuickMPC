@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 
+#include "external/proto/common_types/common_types.pb.h"
 #include "job_parameter.hpp"
 #include "jobs/correl_job.hpp"
 #include "jobs/join_table_job.hpp"
@@ -8,7 +9,6 @@
 #include "jobs/mesh_code_job.hpp"
 #include "logging/logger.hpp"
 #include "math/math.hpp"
-#include "external/proto/common_types/common_types.pb.h"
 
 namespace qmpc::Job
 {

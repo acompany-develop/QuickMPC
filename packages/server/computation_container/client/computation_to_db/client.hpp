@@ -5,11 +5,11 @@
 #include <utility>
 #include <vector>
 
-#include "logging/logger.hpp"
-#include "value_table.hpp"
-#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "external/proto/common_types/common_types.pb.h"
+#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
+#include "logging/logger.hpp"
 #include "nlohmann/json.hpp"
+#include "value_table.hpp"
 
 namespace qmpc::ComputationToDb
 {

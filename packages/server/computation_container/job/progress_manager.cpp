@@ -10,8 +10,8 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
-#include "logging/logger.hpp"
 #include "external/proto/common_types/common_types.pb.h"
+#include "logging/logger.hpp"
 
 namespace qmpc::Job
 {

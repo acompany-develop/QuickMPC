@@ -1,6 +1,6 @@
 #include "client/computation_to_bts/client.hpp"
-#include "logging/logger.hpp"
 #include "gtest/gtest.h"
+#include "logging/logger.hpp"
 #include "nlohmann/json.hpp"
 
 void sync()

@@ -6,11 +6,11 @@
 #include <thread>
 
 #include "config_parse/config_parse.hpp"
+#include "external/proto/common_types/common_types.pb.h"
 #include "job/job_manager.hpp"
 #include "logging/logger.hpp"
 #include "server/computation_to_computation_container_for_job/server.hpp"
 #include "share/share.hpp"
-#include "external/proto/common_types/common_types.pb.h"
 #include "unistd.h"
 
 namespace qmpc::ManageToComputation

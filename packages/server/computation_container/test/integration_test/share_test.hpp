@@ -5,12 +5,12 @@
 #include <string>
 #include <thread>
 
+#include "gtest/gtest.h"
 #include "logging/logger.hpp"
 #include "random/random.hpp"
 #include "server/computation_to_computation_container/server.hpp"
 #include "share/compare.hpp"
 #include "share/share.hpp"
-#include "gtest/gtest.h"
 #include "unistd.h"
 
 TEST(ShareTest, IncrementShareId)

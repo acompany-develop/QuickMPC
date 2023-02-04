@@ -1,9 +1,9 @@
 #include "computation_test.hpp"
 
 #include "config_parse/config_parse.hpp"
-#include "logging/logger.hpp"
 #include "external/com_github_grpc_grpc/src/proto/grpc/health/v1/health.grpc.pb.h"
 #include "gtest/gtest.h"
+#include "logging/logger.hpp"
 
 // 25分経過するとプログラムを終了させる
 void timekeep()

@@ -3,9 +3,9 @@
 #include <list>
 #include <random>
 
+#include "gtest/gtest.h"
 #include "logging/logger.hpp"
 #include "share/matrix.hpp"
-#include "gtest/gtest.h"
 
 std::random_device rnd;
 std::mt19937_64 mt(rnd());

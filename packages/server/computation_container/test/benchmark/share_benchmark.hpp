@@ -6,11 +6,11 @@
 #include <thread>
 
 #include "benchmark.hpp"
+#include "gtest/gtest.h"
 #include "random/random.hpp"
 #include "server/computation_to_computation_container/server.hpp"
 #include "share/compare.hpp"
 #include "share/share.hpp"
-#include "gtest/gtest.h"
 #include "unistd.h"
 
 TEST(ShareBenchmark, AddBetweenShares)

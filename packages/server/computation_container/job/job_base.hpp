@@ -14,11 +14,11 @@
 
 #include "client/computation_to_db/client.hpp"
 #include "client/computation_to_db/value_table.hpp"
+#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "job_parameter.hpp"
 #include "job_status.hpp"
 #include "logging/logger.hpp"
 #include "share/share.hpp"
-#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 
 namespace qmpc::Job
 {

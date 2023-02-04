@@ -3,9 +3,9 @@
 #include <memory>
 #include <set>
 
+#include "gtest/gtest.h"
 #include "logging/logger.hpp"
 #include "random/csprng.hpp"
-#include "gtest/gtest.h"
 
 TEST(CsprngTest, GetRand)
 {

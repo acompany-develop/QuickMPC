@@ -2,8 +2,8 @@
 #include <thread>
 #include <vector>
 
-#include "transaction_queue/transaction_queue.hpp"
 #include "gtest/gtest.h"
+#include "transaction_queue/transaction_queue.hpp"
 
 const long long SIZE = 5000;
 

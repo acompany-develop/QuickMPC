@@ -7,9 +7,9 @@
 #include <boost/stacktrace/stacktrace.hpp>
 
 #include "client/computation_to_db/client.hpp"
+#include "external/proto/common_types/common_types.pb.h"
 #include "logging/logger.hpp"
 #include "progress_manager.hpp"
-#include "external/proto/common_types/common_types.pb.h"
 namespace qmpc::Job
 {
 // Protocol Buffers の定義を引っ張ってくる

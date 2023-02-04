@@ -1,6 +1,6 @@
-#include "logging/logger.hpp"
 #include "share/share.hpp"
 #include "gtest/gtest.h"
+#include "logging/logger.hpp"
 
 TEST(ShareTest, GetValue)
 {

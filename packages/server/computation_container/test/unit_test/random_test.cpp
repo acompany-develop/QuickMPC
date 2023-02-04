@@ -2,8 +2,8 @@
 #include <type_traits>
 
 #include "fixed_point/fixed_point.hpp"
-#include "random/random.hpp"
 #include "gtest/gtest.h"
+#include "random/random.hpp"
 
 TEST(RandomTest, getRandTypeTest)
 {
