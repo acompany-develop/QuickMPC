@@ -1,11 +1,10 @@
-[English version](/demo/README.md)
+[English version](./README.md)
 
 # デモの実行方法
 デモは実際の使用状況を想定して，QuickMPC-libClient-pyをpip installしたDemo用の環境で行う．開発用のPython環境とは異なる環境が必要な点に注意する．
 
 ### 1. コンテナを立ちあげる
-[QuickMPC/scripts/README.md](https://github.com/acompany-develop/QuickMPC/tree/develop/scripts)の**デバッグ方法**を参考にして，QuickMPCの全てのコンテナをdevステージで立ち上げる
-
+[QuickMPC/scripts/README-ja.md](../../../../scripts/README-ja.md)の**デバッグ方法**を参考にして，QuickMPCの全てのコンテナをdevステージで立ち上げる
 
 
 ### 2. 本ディレクトリで下記コマンドを実行して環境を構築する

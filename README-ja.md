@@ -1,5 +1,6 @@
 # QuickMPC
-[![Build CC, MC, DC and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml)
+[![Build and Run Tests on CC, MC, and BTS Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-server-all.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-server-all.yml)
+[![Syntax Check and Unit Test on libclient-py](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-client-libclient-py.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-client-libclient-py.yml)
 
 <img src="https://user-images.githubusercontent.com/1694907/182115030-90fda7cf-068a-48bb-ba50-ee12be6af0b4.png" width=128>
 
@@ -8,6 +9,7 @@
 QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Secure Multiparty Computation）の実用的なエンジンです。
 
 基本的な統計量計算や軽量な機械学習に用いるプライバシーデータを、秘匿化しつつ計算することができます。これにより世界中の企業やエンジニアはSMPCの専門的な知識不要で、PythonとJavaScript(TypeScript)のクライアントライブラリを用いて、SMPC機能を利用したSaaSプロダクトを簡単に開発できるようになります。
+
 ![oss_eg](https://user-images.githubusercontent.com/1694907/182254973-ee3092a6-ee28-49bb-aaf6-637225271a0b.png)
 
 ## 依存ツール/コマンド
@@ -16,13 +18,14 @@ QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Sec
 - `docker-compose`
 
 ## Getting Started
-[QuickMPC-libClient-pyのデモ](https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo/README.md)
+[QuickMPC-libClient-pyのデモ](packages/client/libclient-py/demo/README-ja.md)
 
 ## 開発時の注意
 ### 推奨スペック
 
 - メモリ `16GB` 以上
 - ストレージ `20GB` 以上
+
 ## QuickMPC全体のテスト方法
 1. ディレクトリを移動する
 ```sh
@@ -32,12 +35,11 @@ cd QuickMPC/scripts
 ```sh
 make debug t=./ManageContainer # 全てのコンテナが起動
 ```
-3. libClientのDemoを実行する
-- libClient-ts(https://github.com/acompany-develop/QuickMPC-libClient-ts/tree/develop/Demo/Develop)
-- libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo)
+3. libclientのdemoを実行する
+- [libClient-py/demo](packages/client/libclient-py/demo/README-ja.md)
 
 ## 各コンテナのテスト方法
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/scripts
+[詳細はこちら](scripts/README-ja.md)
 1. ディレクトリを移動する
 ```sh
 cd QuickMPC/scripts
@@ -61,10 +63,10 @@ make debug t=./ManageContainer # 全てのコンテナが起動
 
 ## 各コンテナの開発方法
 ### Computation Container
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ComputationContainer#readme
+[詳細はこちら](packages/server/computation_container/README.md)
 1. ディレクトリを移動する
 ```sh
-cd packages/server/ComputationContainer
+cd packages/server/computation_container
 ```
 2. コンテナを起動してコンテナに入る
 ```sh
@@ -91,7 +93,7 @@ bazel clean
 
 ### Manage Container
 
-詳細：https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ManageContainer#readme
+[詳細はこちら](packages/server/manage_container/README.md)
 1. ディレクトリを移動する
 ```sh
 cd packages/server/ManageContainer

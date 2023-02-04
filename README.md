@@ -1,5 +1,6 @@
 # QuickMPC
-[![Build CC, MC, and Run Build and Test in Each Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/develop.yml)
+[![Build and Run Tests on CC, MC, and BTS Containers](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-server-all.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-server-all.yml)
+[![Syntax Check and Unit Test on libclient-py](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-client-libclient-py.yml/badge.svg)](https://github.com/acompany-develop/QuickMPC/actions/workflows/test-client-libclient-py.yml)
 
 <img src="https://user-images.githubusercontent.com/1694907/182115030-90fda7cf-068a-48bb-ba50-ee12be6af0b4.png" width=128>
 
@@ -11,13 +12,13 @@ This will enable businesses and engineers worldwide to use Python and JavaScript
 
 ![oss_eg](https://user-images.githubusercontent.com/1694907/182254973-ee3092a6-ee28-49bb-aaf6-637225271a0b.png)
 
-## Getting Started
-[The demonstration with QuickMPC-libClient-py](https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo/README.md)
-
 ## Dependent Tools/Commands
 - `make`
 - `docker`
 - `docker-compose`
+
+## Getting Started
+[The demonstration with libClient-py](packages/client/libclient-py/demo/README.md)
 
 ## Development Requirements
 ### Recommended
@@ -26,21 +27,20 @@ This will enable businesses and engineers worldwide to use Python and JavaScript
 - storage: `20 GB`
 
 ## Run all test suite
-1. Change your current directory into `Test/`
+1. Change your current directory into `scripts/`
 ```sh
 cd QuickMPC/scripts
 ```
 2. Launch all containers
 ```sh
-make debug t=./ManageContainer
+make debug t=./manage_container
 ```
 3. Execute libClient Demo
-- libClient-ts(https://github.com/acompany-develop/QuickMPC-libClient-ts/tree/develop/Demo/Develop)
-- libClient-py(https://github.com/acompany-develop/QuickMPC-libClient-py/tree/develop/demo)
+- [libClient-py/demo](packages/client/libclient-py/demo/README.md)
 
 ## How to test each container
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/scripts
-1. Change your current directory into `Test/`
+[Detail](scripts/README.md)
+1. Change your current directory into `scripts/`
 ```sh
 cd QuickMPC/scripts
 ```
@@ -49,24 +49,24 @@ cd QuickMPC/scripts
 # Testing all containers
 make test
 # Only the Computation Container test
-make test t=./ComputationContainer/
+make test t=./computation_container/
 # Only the Manage Container test
-make test t=./ManageContainer/
+make test t=./manage_container/
 ```
 
 ## How to start each container
 This section is usefule when you want to stand 2 containers and dare to test manually.
 ```sh
-make debug t=./ComputationContainer # Launch of the dev_cc{1,2,3}
-make debug t=./ManageContainer # Then, all container is launched
+make debug t=./computation_container # Launch of the dev_cc{1,2,3}
+make debug t=./manage_container # Then, all container is launched
 ```
 
 ## How to develop each container
 ### Computation Container
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ComputationContainer#readme
+[Detail](packages/server/computation_container/README.md)
 1. Change your current directory
 ```sh
-cd packages/server/ComputationContainer
+cd packages/server/computation_container
 ```
 2. Start the container and enter the container
 ```sh
@@ -92,10 +92,10 @@ bazel clean
 
 ### Manage Container
 
-Detail: https://github.com/acompany-develop/QuickMPC/tree/develop/packages/server/ManageContainer#readme
+[Detail](packages/server/manage_container/README.md)
 1. Change your current directory
 ```sh
-cd packages/server/ManageContainer
+cd packages/server/manage_container
 ```
 2. Start the container and enter the container
 ```sh
