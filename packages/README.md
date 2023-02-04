@@ -77,7 +77,7 @@ GitHub Packages のコンテナレジストリにイメージを用意してい�
 
 Dockerfile で使用される各 build stage については以下のリンクを参照
 
-[QuickMPC/scripts/README.md#how-to-develop-docker-composeyml](../../../scripts/README.md#how-to-develop-docker-composeyml)
+[QuickMPC/scripts/README-ja.md#how-to-develop-docker-composeyml](../scripts/README-ja.md#how-to-develop-docker-composeyml)
 
 ## grpcurlでのdebug
 ※ portはよしなに変更してください
