@@ -27,12 +27,12 @@ Proto_extra_deps()
 - `BUILD`
 
 依存関係に `@proto//${分類}:${ターゲット名}` を指定する
-例: `packages/server/ComputationContainer/Server/ComputationToComputationContainer/BUILD`
+例: `packages/server/computation_container/server/computation_to_computation_container/BUILD`
 ```bazel
 cc_library(
     ...,
     deps = [
-        "@proto//ComputationToComputationContainer:computation_to_computation_cc_grpc",
+        "@proto//computation_to_computation_container:computation_to_computation_cc_grpc",
     ],
 )
 ```
@@ -40,10 +40,10 @@ cc_library(
 - `#include` 時
 
 `external/proto/${分類}/${プロトコル名}.grpc.pb.h` のように指定する
-例: `packages/server/ComputationContainer/Server/ComputationToComputationContainer/Server.hpp`
+例: `packages/server/computation_container/server/computation_to_computation_container/server.hpp`
 
 ```cpp
-#include "external/proto/ComputationToComputationContainer/ComputationToComputation.grpc.pb.h"
+#include "external/proto/computation_to_computation_container/ComputationToComputation.grpc.pb.h"
 ```
 
 ## Go
@@ -163,7 +163,7 @@ protoc --go_out=. --go_opt=paths=source_relative \
 ### `go.mod` 作成
 
 ```
-module github.com/acompany-develop/QuickMPC/proto/ManageToComputationContainer
+module github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container
 
 go 1.18
 ```

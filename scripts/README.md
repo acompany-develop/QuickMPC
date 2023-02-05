@@ -31,7 +31,7 @@ services:
 
 
 ## How to run test suites
-Run the following commands in `Test/`
+Run the following commands in `scripts/`
 ```sh
 make test
 ```
@@ -44,11 +44,11 @@ m = build	# Run only build() of test.sh<br>
 m = run		# Run only run() of test.sh<br>
 
 ```sh
-make test t=./ComputationContainer/ #  Run the test directly under Test/ComputationContainer/
+make test t=./computation_container/ #  Run the test directly under scripts/computation_container/
 make test p=small # Run `small*test.sh`
 make test m=build # Run only the build process of `*test.sh`
 make test m=run # Run only the run process of `*test.sh`
-make test t=./ComputationContainer/ p=small m=run # Run only the `run` process in small*test.sh under Test/ComputationContainer/
+make test t=./computation_container/ p=small m=run # Run only the `run` process in small*test.sh under scripts/computation_container/
 ```
 
 ## Adding Tests
@@ -85,7 +85,7 @@ setup() {
 # NOTE: This function is an exception and does not have to be written in a one-liner
 run() {
 	# Describe the `test` execution process here
-	docker-compose -f docker-compose.yml run small_cc /bin/sh -c "cd /QuickMPC && bazel test //Test/UnitTest:all --test_env=IS_TEST=true --test_output=errors"
+	docker-compose -f docker-compose.yml run small_cc /bin/sh -c "cd /QuickMPC && bazel test //test/unit_test:all --test_env=IS_TEST=true --test_output=errors"
 }
 
 # Function describing the teardown process to be executed after run
@@ -97,7 +97,7 @@ teardown() {
 ```
 
 ## How to debug
-Run the following commands in `Test/`
+Run the following commands in `scripts/`
 ```sh
 make debug # same as `make debug p=mc`
 ```
@@ -110,11 +110,11 @@ m = build	# Run only build() of debug.sh<br>
 m = run		# Run only run() of debug.sh<br>
 
 ```sh
-make debug t=./ComputationContainer/ # Run the debugging directly under Test/
+make debug t=./computation_container/ # Run the debugging directly under scripts/
 make debug p=cc # Run `cc*debug.sh`
 make debug m=build # Run only the build process of `*debug.sh`
 make debug m=run # Run only the run processes of `*debug.sh`
-make debug t=./ComputationContainer/ m=run # Run only the `run` process in debug.sh under Test/ComputationContainer/
+make debug t=./computation_container/ m=run # Run only the `run` process in debug.sh under scripts/computation_container/
 ```
 
 ## テストの追加

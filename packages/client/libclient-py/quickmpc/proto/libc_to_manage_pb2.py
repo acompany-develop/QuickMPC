@@ -164,7 +164,7 @@ _LIBCTOMANAGE = DESCRIPTOR.services_by_name['LibcToManage']
 if _descriptor._USE_C_DESCRIPTORS == False:
 
     DESCRIPTOR._options = None
-    DESCRIPTOR._serialized_options = b'Z@github.com/acompany-develop/QuickMPC/proto/LibcToManageContainer'
+    DESCRIPTOR._serialized_options = b'Z@github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container'
     _SENDSHARESREQUEST._serialized_start = 72
     _SENDSHARESREQUEST._serialized_end = 215
     _SENDSHARESRESPONSE._serialized_start = 217

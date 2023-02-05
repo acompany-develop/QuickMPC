@@ -33,13 +33,13 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/')
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.date.outputs.date }} --load
-        working-directory: ./packages/server/ComputationContainer/
+        working-directory: ./packages/server/computation_container/
 
       - name: Build CC image by tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-cc:${{ steps.meta.outputs.version }} --load
-        working-directory: ./packages/server/ComputationContainer/
+        working-directory: ./packages/server/computation_container/
 
       - name: Run Trivy vulnerability scanner for CC with branch
         if: startsWith(github.ref, 'refs/heads/')
@@ -100,13 +100,13 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/')
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.date.outputs.date }} --load
-        working-directory: ./packages/server/ManageContainer/
+        working-directory: ./packages/server/manage_container/
 
       - name: Build MC image with tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-mc:${{ steps.meta.outputs.version }} --load
-        working-directory: ./packages/server/ManageContainer/
+        working-directory: ./packages/server/manage_container/
 
       - name: Run Trivy vulnerability scanner for MC with branch
         if: startsWith(github.ref, 'refs/heads/')
@@ -167,13 +167,13 @@ jobs:
         if: startsWith(github.ref, 'refs/heads/')
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.date.outputs.date }} --load
-        working-directory: ./packages/server/BeaverTripleService/
+        working-directory: ./packages/server/beaver_triple_service/
 
       - name: Build BTS image with tag
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           docker buildx build ../../../ --file Dockerfile --target dep-runner --tag ghcr.io/${{ github.repository_owner }}/quickmpc-bts:${{ steps.meta.outputs.version }} --load
-        working-directory: ./packages/server/BeaverTripleService/
+        working-directory: ./packages/server/beaver_triple_service/
 
       - name: Run Trivy vulnerability scanner for BTS with branch
         if: startsWith(github.ref, 'refs/heads/')

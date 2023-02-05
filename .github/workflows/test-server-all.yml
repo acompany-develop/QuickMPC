@@ -40,22 +40,22 @@ jobs:
 
       # Setup config for using GCS as bazel remote cache
       - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/ComputationContainer/sa.json
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
         env:
           CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
       - name: Update .bazelrc for using remote cache
         run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/ComputationContainer/.bazelrc
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
         env:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
-      - name: Build images and run ComputationContainer
-        run: make test t=./ComputationContainer m=build p=small
+      - name: Build images and run computation_container
+        run: make test t=./computation_container m=build p=small
         working-directory: ./scripts
 
-      - name: Run bazel test in ComputationContainer
-        run: make test t=./ComputationContainer m=run p=small
+      - name: Run bazel test in computation_container
+        run: make test t=./computation_container m=run p=small
         working-directory: ./scripts
 
   small_test_mc:
@@ -66,12 +66,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build images and run ManageContainer
-        run: make test t=./ManageContainer m=build p=small
+      - name: Build images and run manage_container
+        run: make test t=./manage_container m=build p=small
         working-directory: ./scripts
 
-      - name: Run Go test in ManageContainer
-        run: make test t=./ManageContainer m=run p=small
+      - name: Run Go test in manage_container
+        run: make test t=./manage_container m=run p=small
         working-directory: ./scripts
 
   small_test_bts:
@@ -82,12 +82,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build BeaverTripleService binary
-        run: make test t=./BeaverTripleService m=build
+      - name: Build beaver_triple_service binary
+        run: make test t=./beaver_triple_service m=build
         working-directory: ./scripts
 
-      - name: Run test in BeaverTripleService
-        run: make test t=./BeaverTripleService m=run
+      - name: Run test in beaver_triple_service
+        run: make test t=./beaver_triple_service m=run
         working-directory: ./scripts
 
   small_test:
@@ -107,25 +107,25 @@ jobs:
 
       # Setup config for using GCS as bazel remote cache
       - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/ComputationContainer/sa.json
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
         env:
           CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
       - name: Update .bazelrc for using remote cache
         run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/ComputationContainer/.bazelrc
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
         env:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Build images and run ComputationContainer
-        run: make test t=./ComputationContainer m=build p=medium
+      - name: Build images and run computation_container
+        run: make test t=./computation_container m=build p=medium
         working-directory: ./scripts
 
-      - name: Run bazel test in ComputationContainer
-        run: make test t=./ComputationContainer m=run p=medium
+      - name: Run bazel test in computation_container
+        run: make test t=./computation_container m=run p=medium
         working-directory: ./scripts
 
   medium_test_mc:
@@ -135,12 +135,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Build images and run ManageContainer
-        run: make test t=./ManageContainer m=build p=medium
+      - name: Build images and run manage_container
+        run: make test t=./manage_container m=build p=medium
         working-directory: ./scripts
 
-      - name: Run bazel test in ManageContainer
-        run: make test t=./ManageContainer m=run p=medium
+      - name: Run bazel test in manage_container
+        run: make test t=./manage_container m=run p=medium
         working-directory: ./scripts
 
   medium_test_libclient:
@@ -155,25 +155,25 @@ jobs:
           submodules: true
 
       - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/ComputationContainer/sa.json
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
         env:
           CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
       - name: Update .bazelrc for using remote cache
         run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/ComputationContainer/.bazelrc
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
         env:
           BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Build images and run LibClient
-        run: make test t=./LibClient m=build p=medium
+      - name: Build images and run libclient
+        run: make test t=./libclient m=build p=medium
         working-directory: ./scripts
 
-      - name: Run bazel test in LibClient
-        run: make test t=./LibClient m=run p=medium
+      - name: Run bazel test in libclient
+        run: make test t=./libclient m=run p=medium
         working-directory: ./scripts
 
   medium_test:

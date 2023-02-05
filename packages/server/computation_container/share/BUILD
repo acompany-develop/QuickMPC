@@ -1,0 +1,56 @@
+cc_library(
+    name = "share",
+    hdrs = [
+        "share.hpp",
+        "networking.hpp",
+        "address_id.hpp"
+    ],
+    deps = [
+        "//server/computation_to_computation_container:server",
+        "//triple_handler:triple_handler",
+        "//random:random"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "compare",
+    srcs = [
+        "compare.cpp"
+    ],
+    hdrs = [
+        "compare.hpp"
+    ],
+    deps = [
+        "//server/computation_to_computation_container:server",
+        "//triple_handler:triple_handler",
+        "//random:random",
+        "//share:share",
+        "//logging:log"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "address",
+    hdrs = [
+        "address_id.hpp"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "matrix",
+    hdrs = [
+        "matrix.hpp",
+    ],
+    srcs = [
+        "matrix.cpp"
+    ],
+    deps = [
+        "//share:share",
+        "//server/computation_to_computation_container:server",
+        "@eigen//:eigen",
+    ],
+    visibility = ["//visibility:public"],
+)

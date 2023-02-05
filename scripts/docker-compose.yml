@@ -9,23 +9,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute1
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute1
+        target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute1/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute1/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.20
@@ -53,23 +53,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute2
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute2
+        target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute2/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute2/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -94,23 +94,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute3
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute3
+        target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute3/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute3/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
@@ -131,7 +131,7 @@ services:
   #   image: envoyproxy/envoy:v1.17.1
   #   volumes:
   #     - type: bind
-  #       source: ../Config/envoy.yaml
+  #       source: ../config/envoy.yaml
   #       target: /etc/envoy/envoy.yaml
   #   expose:
   #     - "9901"
@@ -147,17 +147,17 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
     build:
       context: ../
-      dockerfile: packages/server/BeaverTripleService/Dockerfile
+      dockerfile: packages/server/beaver_triple_service/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
     volumes:
       - type: bind
-        source: ../Config/BeaverTripleService
-        target: /QuickMPC/Config
+        source: ../config/beaver_triple_service
+        target: /QuickMPC/config
     env_file:
-      - ../Config/BeaverTripleService/.env
-      - ../Config/BeaverTripleService/server.sample.env
+      - ../config/beaver_triple_service/.env
+      - ../config/beaver_triple_service/server.sample.env
     ports:
       - "0.0.0.0:60020:50020"
     networks:
@@ -165,7 +165,7 @@ services:
         aliases:
           - beaver_triple_service
         ipv4_address: 10.0.1.40
-    command: ["/bin/bash", "-c", "./BeaverTripleService"]
+    command: ["/bin/bash", "-c", "./beaver_triple_service"]
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -183,33 +183,33 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage1
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage1
+        target: /QuickMPC/config
       # 開発環境のフォーマッタを統一
       - type: bind
         source: ../.vscode
         target: /QuickMPC/.vscode
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage1/.env
+      - ../config/manage_container/manage1/.env
     expose:
       - "50010"
       - "50011"
     networks:
       shared-network:
         ipv4_address: 10.0.1.10
-    command: ["/bin/bash", "-c", "printenv && ./ManageContainer"]
+    command: ["/bin/bash", "-c", "printenv && ./manage_container"]
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -232,7 +232,7 @@ services:
     image: envoyproxy/envoy:v1.17.1
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage1/envoy.yaml
+        source: ../config/manage_container/manage1/envoy.yaml
         target: /etc/envoy/envoy.yaml
     expose:
       - "15000"
@@ -249,29 +249,29 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage2
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage2
+        target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage2/.env
+      - ../config/manage_container/manage2/.env
     expose:
       - "50010"
       - "50011"
     networks:
       shared-network:
         ipv4_address: 10.0.2.10
-    command: ["/bin/bash", "-c", "printenv && ./ManageContainer"]
+    command: ["/bin/bash", "-c", "printenv && ./manage_container"]
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -294,7 +294,7 @@ services:
     image: envoyproxy/envoy:v1.17.1
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage2/envoy.yaml
+        source: ../config/manage_container/manage2/envoy.yaml
         target: /etc/envoy/envoy.yaml
     expose:
       - "15000"
@@ -311,29 +311,29 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage3
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage3
+        target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage3/.env
+      - ../config/manage_container/manage3/.env
     expose:
       - "50010"
       - "50011"
     networks:
       shared-network:
         ipv4_address: 10.0.3.10
-    command: ["/bin/bash", "-c", "printenv && ./ManageContainer"]
+    command: ["/bin/bash", "-c", "printenv && ./manage_container"]
     healthcheck:
       test: [
           "CMD-SHELL",
@@ -356,7 +356,7 @@ services:
     image: envoyproxy/envoy:v1.17.1
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage3/envoy.yaml
+        source: ../config/manage_container/manage3/envoy.yaml
         target: /etc/envoy/envoy.yaml
     expose:
       - "15000"
@@ -373,14 +373,14 @@ services:
     volumes:
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       # temporarily change build stage from `small` to `small_tmp` because it takes long time.
       # TODO(#36): improve performance
       target: small_tmp
@@ -393,19 +393,19 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: small
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
     volumes:
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage1/.env
+      - ../config/manage_container/manage1/.env
 
   small_bts:
     container_name: beaver_triple_service
@@ -413,17 +413,17 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
     build:
       context: ../
-      dockerfile: packages/server/BeaverTripleService/Dockerfile
+      dockerfile: packages/server/beaver_triple_service/Dockerfile
       target: small
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
     volumes:
       - type: bind
-        source: ../Config/BeaverTripleService
-        target: /QuickMPC/Config
+        source: ../config/beaver_triple_service
+        target: /QuickMPC/config
     env_file:
-      - ../Config/BeaverTripleService/.env
-      - ../Config/BeaverTripleService/server.sample.env
+      - ../config/beaver_triple_service/.env
+      - ../config/beaver_triple_service/server.sample.env
     expose:
       - "50020"
 
@@ -435,23 +435,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute1
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute1
+        target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute1/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute1/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.20
@@ -468,23 +468,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute2
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute2
+        target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute2/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute2/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -502,23 +502,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute3
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute3
+        target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute3/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute3/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
@@ -535,23 +535,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute1
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute1
+        target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute1/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute1/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.20
@@ -569,23 +569,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute2
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute2
+        target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute2/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute2/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -604,23 +604,23 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     build:
       context: ../
-      dockerfile: packages/server/ComputationContainer/Dockerfile
+      dockerfile: packages/server/computation_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
     volumes:
       - type: bind
-        source: ../Config/ComputationContainer/Compute3
-        target: /QuickMPC/Config
+        source: ../config/computation_container/compute3
+        target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ComputationContainer/Compute3/.env
-      - ../Config/ComputationContainer/JWT/client.sample.env
+      - ../config/computation_container/compute3/.env
+      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
@@ -635,22 +635,22 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage1
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage1
+        target: /QuickMPC/config
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage1/.env
+      - ../config/manage_container/manage1/.env
     expose:
       - "50010"
       - "50011"
@@ -658,29 +658,29 @@ services:
       shared-network:
         ipv4_address: 10.0.1.10
     command:
-      ["/bin/bash", "-c", "printenv && go test ./IntegrationTest/... -v -cover"]
+      ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
   medium_mc2:
     container_name: manage_container2
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage2
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage2
+        target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage2/.env
+      - ../config/manage_container/manage2/.env
     expose:
       - "50010"
       - "50011"
@@ -688,29 +688,29 @@ services:
       shared-network:
         ipv4_address: 10.0.2.10
     command:
-      ["/bin/bash", "-c", "printenv && go test ./IntegrationTest/... -v -cover"]
+      ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
   medium_mc3:
     container_name: manage_container3
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage3
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage3
+        target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage3/.env
+      - ../config/manage_container/manage3/.env
     expose:
       - "50010"
       - "50011"
@@ -718,7 +718,7 @@ services:
       shared-network:
         ipv4_address: 10.0.3.10
     command:
-      ["/bin/bash", "-c", "printenv && go test ./IntegrationTest/... -v -cover"]
+      ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
   send_share_mc1:
     container_name: manage_container1
@@ -726,33 +726,33 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage1
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage1
+        target: /QuickMPC/config
       # 開発環境のフォーマッタを統一
       - type: bind
         source: ../.vscode
         target: /QuickMPC/.vscode
       - type: volume
         source: sharedb1
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb1
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage1/.env
+      - ../config/manage_container/manage1/.env
     expose:
       - "50010"
       - "50011"
     networks:
       shared-network:
         ipv4_address: 10.0.1.10
-    command: ["/bin/bash", "-c", "printenv && ./ManageContainer"]
+    command: ["/bin/bash", "-c", "printenv && ./manage_container"]
     depends_on:
       dev_mc_envoy1:
         condition: service_started
@@ -763,29 +763,29 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage2
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage2
+        target: /QuickMPC/config
       - type: volume
         source: sharedb2
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb2
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage2/.env
+      - ../config/manage_container/manage2/.env
     expose:
       - "50010"
       - "50011"
     networks:
       shared-network:
         ipv4_address: 10.0.2.10
-    command: ["/bin/bash", "-c", "printenv && ./ManageContainer"]
+    command: ["/bin/bash", "-c", "printenv && ./manage_container"]
     depends_on:
       dev_mc_envoy2:
         condition: service_started
@@ -796,49 +796,49 @@ services:
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
-      dockerfile: packages/server/ManageContainer/Dockerfile
+      dockerfile: packages/server/manage_container/Dockerfile
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     volumes:
       - type: bind
-        source: ../Config/ManageContainer/Manage3
-        target: /QuickMPC/Config
+        source: ../config/manage_container/manage3
+        target: /QuickMPC/config
       - type: volume
         source: sharedb3
-        target: /Db/share
+        target: /db/share
       - type: volume
         source: resultdb3
-        target: /Db/result
+        target: /db/result
     env_file:
-      - ../Config/ManageContainer/Manage3/.env
+      - ../config/manage_container/manage3/.env
     expose:
       - "50010"
       - "50011"
     networks:
       shared-network:
         ipv4_address: 10.0.3.10
-    command: ["/bin/bash", "-c", "printenv && ./ManageContainer"]
+    command: ["/bin/bash", "-c", "printenv && ./manage_container"]
     depends_on:
       dev_mc_envoy3:
         condition: service_started
 
   medium-libc:
-    container_name: lib_client
+    container_name: libclient
     image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     build:
       context: ../
-      dockerfile: scripts/LibClient/Dockerfile
+      dockerfile: scripts/libclient/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     volumes:
       - type: bind
-        source: ./LibClient/Data
-        target: /LibClient/Data
+        source: ./libclient/data
+        target: /libclient/data
       - type: bind
-        source: ./LibClient/src
-        target: /LibClient/src
+        source: ./libclient/src
+        target: /libclient/src
     command:
       [
         "/bin/bash",
@@ -855,21 +855,21 @@ services:
         condition: service_healthy
 
   benchmark-libc:
-    container_name: lib_client
+    container_name: libclient
     image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     build:
       context: ../
-      dockerfile: scripts/LibClient/Dockerfile
+      dockerfile: scripts/libclient/Dockerfile
       target: medium
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     volumes:
       - type: bind
-        source: ./LibClient/Data
-        target: /LibClient/Data
+        source: ./libclient/data
+        target: /libclient/data
       - type: bind
-        source: ./LibClient/src
-        target: /LibClient/src
+        source: ./libclient/src
+        target: /libclient/src
     command:
       [
         "/bin/bash",

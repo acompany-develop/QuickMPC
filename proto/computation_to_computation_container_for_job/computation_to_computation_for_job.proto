@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package computationtocomputationforjob;
+
+import "manage_to_computation_container/manage_to_computation.proto";
+
+// 引数無しにする際に使用
+import "google/protobuf/empty.proto";
+
+/**
+ * ComputationToComputationForJob service
+*/
+service ComputationToComputationForJob {
+    // send share to another computation container
+    rpc ExecuteComputeFromSP(ExecuteComputeFromSPRequest) returns(google.protobuf.Empty) {}
+}
+/**
+ ExecuteComputationRequest : request #definded by ManageToComputa
+ job_id : job_id_number
+*/
+message ExecuteComputeFromSPRequest{
+    managetocomputation.ExecuteComputationRequest exec_request = 1;
+    uint32 job_id = 2;
+    bool is_job_trigger_party = 3;
+}

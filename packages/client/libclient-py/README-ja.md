@@ -10,7 +10,7 @@ $ cd QuickMPC-libClient-py
 $ pipenv sync --dev
 ```
 
-## UnitTest
+## unit_test
 
 ### 全てのテスト
 ```console
