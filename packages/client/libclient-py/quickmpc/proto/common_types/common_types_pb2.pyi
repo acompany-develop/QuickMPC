@@ -208,18 +208,24 @@ class JobErrorInfo(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     WHAT_FIELD_NUMBER: builtins.int
+    ADDITIONAL_INFO_FIELD_NUMBER: builtins.int
     STACKTRACE_FIELD_NUMBER: builtins.int
     what: builtins.str
+    additional_info: builtins.str
     @property
     def stacktrace(self) -> global___Stacktrace: ...
     def __init__(
         self,
         *,
         what: builtins.str = ...,
+        additional_info: builtins.str | None = ...,
         stacktrace: global___Stacktrace | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["_stacktrace", b"_stacktrace", "stacktrace", b"stacktrace"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["_stacktrace", b"_stacktrace", "stacktrace", b"stacktrace", "what", b"what"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["_additional_info", b"_additional_info", "_stacktrace", b"_stacktrace", "additional_info", b"additional_info", "stacktrace", b"stacktrace"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["_additional_info", b"_additional_info", "_stacktrace", b"_stacktrace", "additional_info", b"additional_info", "stacktrace", b"stacktrace", "what", b"what"]) -> None: ...
+    @typing.overload
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["_additional_info", b"_additional_info"]) -> typing_extensions.Literal["additional_info"] | None: ...
+    @typing.overload
     def WhichOneof(self, oneof_group: typing_extensions.Literal["_stacktrace", b"_stacktrace"]) -> typing_extensions.Literal["stacktrace"] | None: ...
 
 global___JobErrorInfo = JobErrorInfo
