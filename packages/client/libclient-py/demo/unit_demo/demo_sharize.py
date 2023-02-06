@@ -32,4 +32,4 @@ if __name__ == '__main__':
     # データをシェア化する
     res = qmpc.demo_sharize(secrets)
     for party_id, share in enumerate(res['results']):
-        output_table(party_id+1, schema, share)
+        output_table(party_id + 1, [col.name for col in schema], share)

@@ -2,7 +2,7 @@
 
 import logging
 
-from quickmpc import QMPC
+from quickmpc import QMPC, ColumnSchema
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -18,7 +18,7 @@ if __name__ == '__main__':
     # 複数のシェアを作成・送信
     data_ids = []
     for i in range(3):
-        res = qmpc.send_share([[1]], ["key"])
+        res = qmpc.send_share([[1]], [ColumnSchema(name="key", type=0)])
         data_ids.append(res['data_id'])
         logger.info(res)
 

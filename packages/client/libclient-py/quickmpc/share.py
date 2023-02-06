@@ -1,12 +1,14 @@
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, List, Tuple, Callable, Any, Union
+from typing import ClassVar, List, Tuple, Callable, Any, Union, Optional
 
 import numpy as np
 
 from .utils.overload_tools import (DictList, DictList2,
                                    Dim1, Dim2, Dim3, methoddispatch)
+from .proto.common_types.common_types_pb2 import ShareValueTypeEnum
+from .proto.libc_to_manage_pb2 import ColumnSchema
 from .utils.random import ChaCha20, RandomInterface
 from .exception import ArgmentError
 
@@ -45,6 +47,12 @@ class Share:
     @staticmethod
     def recons(_):
         logger.error("Invalid argument on recons.")
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @methoddispatch(is_static_method=True)
+    @staticmethod
+    def convert_type(_, __):
+        logger.error("Invalid argument on convert_type.")
         raise ArgmentError("不正な引数が与えられています．")
 
     @sharize.register(int)
@@ -97,7 +105,6 @@ class Share:
     def __sharize_2dimension(secrets: List[List[Union[float, int]]],
                              party_size: int = 3) -> List[List[List[str]]]:
         """ 2次元リストのシェア化 """
-        print('__sharize_2dimension')
         transposed: List[Union[List[int], List[float]]
                          ] = np.array(secrets).transpose().tolist()
         dst: List[List[List[str]]] = []
@@ -139,7 +146,7 @@ class Share:
             [float(x) for x in shares]
         except ValueError:
             return shares[0]
-        return f(sum([Decimal(x) for x in shares]))
+        return sum(shares)
 
     @recons.register(Dim2)
     @recons.register(Dim3)
@@ -178,3 +185,72 @@ class Share:
                 val.append(s[i])
             secrets.append(Share.recons(val, f))
         return secrets
+
+    @staticmethod
+    def get_pre_convert_func(
+            schema: Optional[ColumnSchema]) -> Callable[[str], Any]:
+        """ スキーマに合った変換関数を返す  """
+        if schema is None:
+            return Decimal
+        type = schema.type
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_UNSPECIFIED'):
+            return Decimal
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'):
+            return Decimal
+        if type == ShareValueTypeEnum.Value(
+                'SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION'):
+            # TODO: Decimal の経由を不要にする
+            return lambda x: int(Decimal(x))
+        return float
+
+    @staticmethod
+    def convert_int_to_str(x: int):
+        bytes_repr: bytes = x.to_bytes((x.bit_length() + 7) //
+                                       8, byteorder='big')
+        str_repr: str = bytes_repr.decode('utf-8')
+        return str_repr
+
+    @staticmethod
+    def get_convert_func(
+            schema: Optional[ColumnSchema]) -> Callable[[Any], Any]:
+        """ スキーマに合った変換関数を返す  """
+        if schema is None:
+            return float
+        type = schema.type
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_UNSPECIFIED'):
+            return float
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'):
+            return float
+        if type == ShareValueTypeEnum.Value(
+                'SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION'):
+            return Share.convert_int_to_str
+        return float
+
+    @convert_type.register((Dim1, str))
+    @staticmethod
+    def __pre_convert_type_list(
+            values: List[str], schema: Optional[ColumnSchema]) -> list:
+        func = Share.get_pre_convert_func(schema)
+        return [func(x) for x in values]
+
+    @convert_type.register(Dim1)
+    @staticmethod
+    def __convert_type_list(
+            values: List[Any], schema: Optional[ColumnSchema]) -> list:
+        func = Share.get_convert_func(schema)
+        return [func(x) for x in values]
+
+    @convert_type.register(Dim2)
+    @staticmethod
+    def __convert_type_table(
+            table: List[List], schema: Optional[List[ColumnSchema]]) -> list:
+        transposed = np.array(table).transpose().tolist()
+        schema_converted: List[Optional[ColumnSchema]] = [
+            None] * len(transposed)
+        if schema is not None:
+            schema_converted = [s for s in schema]
+        converted = [
+            Share.convert_type(
+                col, sch) for col, sch in zip(
+                transposed, schema_converted)]
+        return np.array(converted).transpose().tolist()
