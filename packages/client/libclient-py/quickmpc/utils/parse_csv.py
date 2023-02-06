@@ -166,13 +166,16 @@ def parse_to_bitvector(data: List[List[str]], exclude: List[int] = []) \
             sch_val: str = sch.name + "#" + str(val)
             secrets_bitbevtor.append(bitvector)
             schema_bitvector.append(
-                ColumnSchema(name=sch_val, type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT))
+                ColumnSchema(
+                    name=sch_val,
+                    type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT))
 
     return np.transpose(secrets_bitbevtor).tolist(), schema_bitvector
 
 
 def parse_csv(
-        filename: str) -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+    filename: str) \
+        -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
     with open(filename) as f:
         reader = csv.reader(f)
         text: List[List[str]] = [row for row in reader]

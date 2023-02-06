@@ -1,8 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
-from google.protobuf.reflection import GeneratedProtocolMessageType
 
-from .proto.common_types.common_types_pb2 import JobStatus, JobErrorInfo
+from .proto.common_types.common_types_pb2 import JobErrorInfo
 
 
 @dataclass(frozen=True)

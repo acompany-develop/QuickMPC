@@ -69,7 +69,8 @@ class Share:
 
     @sharize.register((Dim1, float))
     @staticmethod
-    def __sharize_1dimension_float(secrets: List[Union[float, Decimal]], party_size: int = 3) \
+    def __sharize_1dimension_float(secrets: List[Union[float, Decimal]],
+                                   party_size: int = 3) \
             -> List[List[str]]:
         """ 1次元リストのシェア化 """
         rnd: RandomInterface = ChaCha20()
@@ -85,7 +86,8 @@ class Share:
 
     @sharize.register((Dim1, Decimal))
     @staticmethod
-    def __sharize_1dimension_decimal(secrets: List[Decimal], party_size: int = 3) \
+    def __sharize_1dimension_decimal(secrets: List[Decimal],
+                                     party_size: int = 3) \
             -> List[List[str]]:
         return Share.__sharize_1dimension_float(secrets, party_size)
 
@@ -94,7 +96,8 @@ class Share:
     def __sharize_1dimension_int(secrets: List[int], party_size: int = 3) \
             -> List[List[str]]:
         """ 1次元リストのシェア化 """
-        rnd: RandomInterface = ChaCha20()
+        # TODO: use rnd
+        # rnd: RandomInterface = ChaCha20()
         secrets_size: int = len(secrets)
         shares: np.ndarray = np.array([
             # TODO: generate random for integers
@@ -111,8 +114,8 @@ class Share:
     def __sharize_2dimension(secrets: List[List[Union[float, int]]],
                              party_size: int = 3) -> List[List[List[str]]]:
         """ 2次元リストのシェア化 """
-        transposed: List[Union[List[int], List[float]]
-                         ] = np.array(secrets, dtype=object).transpose().tolist()
+        transposed: List[Union[List[int], List[float]]] \
+            = np.array(secrets, dtype=object).transpose().tolist()
         dst: List[List[List[str]]] = []
         for col in transposed:
             sharized_col: List[List[str]] = Share.sharize(col, party_size)
@@ -263,7 +266,8 @@ class Share:
     @convert_type.register(Dim2)
     @staticmethod
     def __convert_type_table(
-            table: List[List], schema: Optional[List[ColumnSchema]] = None) -> list:
+            table: List[List],
+            schema: Optional[List[ColumnSchema]] = None) -> list:
         transposed = np.array(table).transpose().tolist()
         schema_converted: List[Optional[ColumnSchema]] = [
             None] * len(transposed)

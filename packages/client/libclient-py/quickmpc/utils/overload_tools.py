@@ -2,7 +2,7 @@
 listの次元によるオーバロードが可能となるような自作dispatch
 """
 
-from functools import singledispatch, update_wrapper
+from functools import update_wrapper
 
 
 class Dim1:
@@ -67,8 +67,6 @@ def _convert_list_type(registry, type):
 
 def methoddispatch(is_static_method: bool = False):
     def _dimdispatch(func):
-        dispatcher = singledispatch(func)
-
         registry: dict = {}
         default_function = func
 
