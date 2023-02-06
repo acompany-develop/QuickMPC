@@ -1,7 +1,9 @@
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, List, Tuple, Callable, Any, Union, Optional, Sequence
+from typing import (ClassVar, List, Tuple,
+                    Callable, Any, Union,
+                    Optional, Sequence)
 
 import numpy as np
 
@@ -243,7 +245,9 @@ class Share:
     @convert_type.register((Dim1, str))
     @staticmethod
     def __pre_convert_type_list(
-            values: List[str], schema: Optional[Sequence[Optional[ColumnSchema]]] = None) -> list:
+        values: List[str],
+        schema: Optional[Sequence[Optional[ColumnSchema]]] = None) \
+            -> list:
         if schema is None:
             schema = [None] * len(values)
         return [Share.convert_type(x, sch)
@@ -266,7 +270,8 @@ class Share:
     @convert_type.register(Dim1)
     @staticmethod
     def __convert_type_list(
-            values: List[Any], schema: Optional[Sequence[Optional[ColumnSchema]]] = None) -> list:
+            values: List[Any],
+            schema: Optional[Sequence[Optional[ColumnSchema]]] = None) -> list:
         if schema is None:
             schema = [None] * len(values)
         return [Share.convert_type(x, sch)

@@ -37,33 +37,39 @@ class QMPC:
             endpoints, token))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
-    def parse_csv_file(self, filename: str) \
+    def parse_csv_file(self,
+                       filename: str,
+                       matching_column: Optional[int] = 1) \
             -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
         logger.info("parse_csv_file. "
                     f"[filename]='{filename}'")
-        return parse_csv(filename)
+        return parse_csv(filename, matching_column)
 
     def parse_csv_file_to_bitvector(self, filename: str,
-                                    exclude: List[int] = []) \
+                                    exclude: List[int] = [],
+                                    matching_column: Optional[int] = 1) \
             -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
         logger.info("parse_csv_file_to_bitvector. "
                     f"[filename]='{filename}' "
                     f"[not bitvector columns]={exclude}")
-        return parse_csv_to_bitvector(filename, exclude)
+        return parse_csv_to_bitvector(filename, exclude, matching_column)
 
-    def parse_csv_data(self, data: List[List[str]]) \
+    def parse_csv_data(self,
+                       data: List[List[str]],
+                       matching_column: Optional[int] = 1) \
             -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
         logger.info("parse_csv_data. "
                     f"[data size]={len(data)}x{len(data[0])}")
-        return parse(data)
+        return parse(data, matching_column)
 
     def parse_csv_data_to_bitvector(self, data: List[List[str]],
-                                    exclude: List[int] = []) \
+                                    exclude: List[int] = [],
+                                    matching_column: Optional[int] = 1) \
             -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
         logger.info("parse_csv_file_to_bitvector. "
                     f"[data size]={len(data)}x{len(data[0])} "
                     f"[not bitvector columns]={exclude}")
-        return parse_to_bitvector(data, exclude)
+        return parse_to_bitvector(data, exclude, matching_column)
 
     def send_share(self, secrets: List, schema: List[ColumnSchema],
                    matching_column: int = 1,
