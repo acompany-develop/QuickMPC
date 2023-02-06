@@ -1,6 +1,6 @@
 from quickmpc.qmpc import (
     QMPC, JobStatus, JobErrorInfo,
-    ColumnSchema, ShareValueTypeEnum
+    Schema, ShareValueTypeEnum
 )
 from .version import __version__
 
@@ -8,7 +8,7 @@ __all__ = [
     "QMPC",
     "JobStatus",
     "JobErrorInfo",
-    "ColumnSchema",
+    "Schema",
     "ShareValueTypeEnum",
     "__version__",
 ]

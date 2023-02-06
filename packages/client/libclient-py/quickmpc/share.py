@@ -10,7 +10,7 @@ import numpy as np
 from .utils.overload_tools import (DictList, DictList2,
                                    Dim1, Dim2, Dim3, methoddispatch)
 from .proto.common_types.common_types_pb2 import (ShareValueTypeEnum,
-                                                  ColumnSchema)
+                                                  Schema)
 from .utils.random import ChaCha20, RandomInterface
 from .exception import ArgmentError
 
@@ -197,7 +197,7 @@ class Share:
 
     @staticmethod
     def get_pre_convert_func(
-            schema: Optional[ColumnSchema]) -> Callable[[str], Any]:
+            schema: Optional[Schema]) -> Callable[[str], Any]:
         """ スキーマに合った変換関数を返す  """
         if schema is None:
             return Decimal
@@ -221,7 +221,7 @@ class Share:
 
     @staticmethod
     def get_convert_func(
-            schema: Optional[ColumnSchema]) -> Callable[[Any], Any]:
+            schema: Optional[Schema]) -> Callable[[Any], Any]:
         """ スキーマに合った変換関数を返す  """
         if schema is None:
             return float
@@ -238,7 +238,7 @@ class Share:
     @convert_type.register(str)
     @staticmethod
     def __pre_convert_type_str(
-            value: str, schema: Optional[ColumnSchema] = None) -> list:
+            value: str, schema: Optional[Schema] = None) -> list:
         func = Share.get_pre_convert_func(schema)
         return func(value)
 
@@ -246,7 +246,7 @@ class Share:
     @staticmethod
     def __pre_convert_type_list(
         values: List[str],
-        schema: Optional[Sequence[Optional[ColumnSchema]]] = None) \
+        schema: Optional[Sequence[Optional[Schema]]] = None) \
             -> list:
         if schema is None:
             schema = [None] * len(values)
@@ -256,14 +256,14 @@ class Share:
     @convert_type.register(Decimal)
     @staticmethod
     def __convert_type_decimal(
-            value: Decimal, schema: Optional[ColumnSchema] = None) -> list:
+            value: Decimal, schema: Optional[Schema] = None) -> list:
         func = Share.get_convert_func(schema)
         return func(value)
 
     @convert_type.register(int)
     @staticmethod
     def __convert_type_int(
-            value: int, schema: Optional[ColumnSchema] = None) -> list:
+            value: int, schema: Optional[Schema] = None) -> list:
         func = Share.get_convert_func(schema)
         return func(value)
 
@@ -271,7 +271,7 @@ class Share:
     @staticmethod
     def __convert_type_list(
             values: List[Any],
-            schema: Optional[Sequence[Optional[ColumnSchema]]] = None) -> list:
+            schema: Optional[Sequence[Optional[Schema]]] = None) -> list:
         if schema is None:
             schema = [None] * len(values)
         return [Share.convert_type(x, sch)
@@ -281,5 +281,5 @@ class Share:
     @staticmethod
     def __convert_type_table(
             table: List[List],
-            schema: Optional[List[ColumnSchema]] = None) -> list:
+            schema: Optional[List[Schema]] = None) -> list:
         return [Share.convert_type(row, schema) for row in table]

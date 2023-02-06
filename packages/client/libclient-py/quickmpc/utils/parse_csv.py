@@ -8,7 +8,7 @@ from .overload_tools import (Dim1, methoddispatch)
 from ..exception import ArgmentError
 
 from ..proto.common_types.common_types_pb2 import (ShareValueTypeEnum,
-                                                   ColumnSchema)
+                                                   Schema)
 
 import numpy as np
 
@@ -38,19 +38,19 @@ class FormatChecker:
     def check_duplicate_strs(schema: List[str]) -> bool:
         return len(schema) == len(set(schema))
 
-    @check_duplicate.register((Dim1, ColumnSchema))
+    @check_duplicate.register((Dim1, Schema))
     @staticmethod
-    def check_duplicate_typed(schema: List[ColumnSchema]) -> bool:
+    def check_duplicate_typed(schema: List[Schema]) -> bool:
         return len(schema) == len(set([sch.name for sch in schema]))
 
     @staticmethod
     def check_size(secrets: Sequence[Sequence[Union[str, ShareValueType]]],
-                   schema: Sequence[Union[str, ColumnSchema]]) -> np.bool_:
+                   schema: Sequence[Union[str, Schema]]) -> np.bool_:
         return np.all([len(s) == len(schema) for s in secrets])
 
 
 def format_check(secrets: List[List[ShareValueType]],
-                 schema: Sequence[Union[str, ColumnSchema]]) -> bool:
+                 schema: Sequence[Union[str, Schema]]) -> bool:
     # 存在チェック
     if not (schema and secrets):
         logger.error("Schema or secrets table are not exists.")
@@ -142,10 +142,10 @@ def convert(element: str,
 
 
 def parse(data: List[List[str]], matching_column: Optional[int] = None) \
-        -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+        -> Tuple[List[List[ShareValueType]], List[Schema]]:
     schema_name: List[str] = data[0]
     types = find_types(schema_name, data[1:], matching_column)
-    schema = [ColumnSchema(name=name, type=type)
+    schema = [Schema(name=name, type=type)
               for name, type in zip(schema_name, types)]
 
     # check size first because an iterator which `zip` bultin function returns
@@ -166,17 +166,17 @@ def parse(data: List[List[str]], matching_column: Optional[int] = None) \
 def parse_to_bitvector(data: List[List[str]],
                        exclude: List[int] = [],
                        matching_column: Optional[int] = None) \
-        -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+        -> Tuple[List[List[ShareValueType]], List[Schema]]:
     secrets, schema = parse(data, matching_column)
 
     secrets_bitbevtor: List[List[float]] = []
-    schema_bitvector: List[ColumnSchema] = []
+    schema_bitvector: List[Schema] = []
     for col, (sec, sch) in enumerate(zip(np.transpose(secrets), schema)):
         # 列が除外リストに含まれていたらそのままappend
         if col in exclude:
             secrets_bitbevtor.append(sec)
             schema_bitvector.append(
-                ColumnSchema(
+                Schema(
                     name=sch.name + "#0",
                     type=sch.type))
             continue
@@ -195,7 +195,7 @@ def parse_to_bitvector(data: List[List[str]],
             sch_val: str = sch.name + "#" + str(val)
             secrets_bitbevtor.append(bitvector)
             schema_bitvector.append(
-                ColumnSchema(
+                Schema(
                     name=sch_val,
                     type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT))
 
@@ -204,7 +204,7 @@ def parse_to_bitvector(data: List[List[str]],
 
 def parse_csv(
     filename: str, matching_column: Optional[int] = None) \
-        -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+        -> Tuple[List[List[ShareValueType]], List[Schema]]:
     with open(filename) as f:
         reader = csv.reader(f)
         text: List[List[str]] = [row for row in reader]
@@ -214,7 +214,7 @@ def parse_csv(
 def parse_csv_to_bitvector(filename: str,
                            exclude: List[int] = [],
                            matching_column: Optional[int] = None) ->  \
-        Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+        Tuple[List[List[ShareValueType]], List[Schema]]:
     with open(filename) as f:
         reader = csv.reader(f)
         text: List[List[str]] = [row for row in reader]
