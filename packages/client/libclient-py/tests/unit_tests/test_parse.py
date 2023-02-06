@@ -6,6 +6,7 @@ import pytest
 
 from quickmpc.utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
                                       parse_to_bitvector)
+from quickmpc import ColumnSchema, ShareValueTypeEnum
 
 # 元データ
 data1: List[List[str]] = [s.split(",") for s in [
@@ -25,8 +26,13 @@ data2: List[List[str]] = [s.split(",") for s in [
 ]]
 
 # 正しくparseされたデータ
-d1_schema: List[str] = ['id', 'attr1', 'attr2',
-                        'attr3', 'attr4', 'attr5', 'attr6']
+d1_schema_str: List[str] = ['id', 'attr1', 'attr2',
+                            'attr3', 'attr4', 'attr5', 'attr6']
+d1_schema: List[ColumnSchema] = [
+    ColumnSchema(
+        name=name,
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
+    for name in d1_schema_str]
 d1_secrets: List[List[float]] = [
     [230379555.4797964, 0, 0.77, 0.63, 0.35, 0.39, 0.35],
     [10723675.973257065, 0, 0.37, 0.36, 0.43, 0.41, 0.39],
@@ -35,9 +41,14 @@ d1_secrets: List[List[float]] = [
     [13292676.303739548, 0, 0.67, 0.41, 0.25, 0.49, 0.25]
 ]
 
-d2_schema: List[str] = ['id#0', 'attr1#0', 'attr1#1',
-                        'attr2#0', 'attr2#1', 'attr2#2',
-                        'attr3#0', 'attr3#1', 'attr3#2', 'attr3#3']
+d2_schema_str: List[str] = ['id#0', 'attr1#0', 'attr1#1',
+                            'attr2#0', 'attr2#1', 'attr2#2',
+                            'attr3#0', 'attr3#1', 'attr3#2', 'attr3#3']
+d2_schema: List[ColumnSchema] = [
+    ColumnSchema(
+        name=name,
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
+    for name in d2_schema_str]
 d2_secrets: List[List[float]] = [
     [230379555.4797964, 1, 0, 1, 0, 0, 1, 0, 0, 0],
     [10723675.973257065, 1, 0, 0, 1, 0, 0, 1, 0, 0],
