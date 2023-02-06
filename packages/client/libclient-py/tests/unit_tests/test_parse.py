@@ -24,6 +24,13 @@ data2: List[List[str]] = [s.split(",") for s in [
     "moge,1,0,4",
     "moga,0,1,2",
 ]]
+data3: List[List[str]] = [s.split(",") for s in [
+    "id,id:id",
+    "hoge,hoge",
+    "huga,huga",
+    "moge,moge",
+    "moga,moga",
+]]
 
 # 正しくparseされたデータ
 d1_schema_str: List[str] = ['id', 'attr1', 'attr2',
@@ -56,6 +63,21 @@ d2_secrets: List[List[float]] = [
     [13292676.303739548, 1, 0, 1, 0, 0, 0, 0, 0, 1]
 ]
 
+d3_schema: List[ColumnSchema] = [
+    ColumnSchema(
+        name='id',
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION),
+    ColumnSchema(
+        name='id:id',
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT),
+]
+d3_secrets: List[List[float]] = [
+    [1752131429, 230379555.4797964],
+    [1752524641, 10723675.973257065],
+    [1836017509, 211114761.8482437],
+    [1836017505, 13292676.303739548]
+]
+
 
 def test_parse():
     """ 正しくパースできるかTest """
@@ -69,6 +91,12 @@ def test_parse_to_bitvector():
     secrets, schema = parse_to_bitvector(data2, [0], matching_column=1)
     assert (np.allclose(secrets, d2_secrets))
     assert (schema == d2_schema)
+
+
+def test_parse_str():
+    secrets, schema = parse(data3)
+    assert (np.allclose(secrets, d3_secrets))
+    assert (schema == d3_schema)
 
 
 def test_parse_errorhandring():
