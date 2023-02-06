@@ -36,7 +36,7 @@ class SendSharesRequest(google.protobuf.message.Message):
     data_id: builtins.str
     shares: builtins.str
     @property
-    def schema(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[common_types.common_types_pb2.ColumnSchema]: ...
+    def schema(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[common_types.common_types_pb2.Schema]: ...
     piece_id: builtins.int
     sent_at: builtins.str
     matching_column: builtins.int
@@ -46,7 +46,7 @@ class SendSharesRequest(google.protobuf.message.Message):
         *,
         data_id: builtins.str = ...,
         shares: builtins.str = ...,
-        schema: collections.abc.Iterable[common_types.common_types_pb2.ColumnSchema] | None = ...,
+        schema: collections.abc.Iterable[common_types.common_types_pb2.Schema] | None = ...,
         piece_id: builtins.int = ...,
         sent_at: builtins.str = ...,
         matching_column: builtins.int = ...,
@@ -159,13 +159,13 @@ class GetSchemaResponse(google.protobuf.message.Message):
     message: builtins.str
     is_ok: builtins.bool
     @property
-    def schema(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[common_types.common_types_pb2.ColumnSchema]: ...
+    def schema(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[common_types.common_types_pb2.Schema]: ...
     def __init__(
         self,
         *,
         message: builtins.str = ...,
         is_ok: builtins.bool = ...,
-        schema: collections.abc.Iterable[common_types.common_types_pb2.ColumnSchema] | None = ...,
+        schema: collections.abc.Iterable[common_types.common_types_pb2.Schema] | None = ...,
     ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["is_ok", b"is_ok", "message", b"message", "schema", b"schema"]) -> None: ...
 

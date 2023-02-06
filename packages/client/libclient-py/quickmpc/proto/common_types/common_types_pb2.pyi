@@ -202,7 +202,7 @@ class JobErrorInfo(google.protobuf.message.Message):
 global___JobErrorInfo = JobErrorInfo
 
 @typing_extensions.final
-class ColumnSchema(google.protobuf.message.Message):
+class Schema(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     NAME_FIELD_NUMBER: builtins.int
@@ -217,4 +217,4 @@ class ColumnSchema(google.protobuf.message.Message):
     ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["name", b"name", "type", b"type"]) -> None: ...
 
-global___ColumnSchema = ColumnSchema
+global___Schema = Schema
