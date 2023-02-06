@@ -20,7 +20,7 @@ ComputationMethod \
     = common_types_pb2.ComputationMethod
 JobErrorInfo = common_types_pb2.JobErrorInfo
 ColumnSchema = libc_to_manage_pb2.ColumnSchema
-
+ShareValueTypeEnum = common_types_pb2.ShareValueTypeEnum
 
 @dataclass(frozen=True)
 class QMPC:
