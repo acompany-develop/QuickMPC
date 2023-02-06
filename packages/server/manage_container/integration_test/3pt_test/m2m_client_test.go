@@ -17,7 +17,7 @@ func TestDeleteShares(t *testing.T) {
 	deleteId(t, dataID)
 	// delete用のdataを送信
 	dbclient := m2db.Client{}
-	dbclient.InsertShares(dataID, []*pb_types.ColumnSchema{}, 1, "[]", "", 1)
+	dbclient.InsertShares(dataID, []*pb_types.Schema{}, 1, "[]", "", 1)
 
 	// insertを同期してから他のPTへdata削除リクエスト
 	m2m_client := m2m.Client{}
@@ -67,7 +67,7 @@ func TestDeleteShares1PT(t *testing.T) {
 		// NOTE: PT2,3は削除リクエストを受け取る
 		// delete用のdataを送信
 		dbclient := m2db.Client{}
-		dbclient.InsertShares(dataID, []*pb_types.ColumnSchema{}, 0, "[]", "", 1)
+		dbclient.InsertShares(dataID, []*pb_types.Schema{}, 0, "[]", "", 1)
 		// PT1にdata送信の終了を通知
 		m2m_client.Sync("insert")
 		// PT1のdata削除リクエストの終了を待機

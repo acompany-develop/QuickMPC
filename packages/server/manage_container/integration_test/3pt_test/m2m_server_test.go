@@ -39,7 +39,7 @@ func TestSendShare(t *testing.T) {
 	req := &pb.SendSharesRequest{
 		DataId:  dataID,
 		Shares:  "[]",
-		Schema:  []*pb_types.ColumnSchema{},
+		Schema:  []*pb_types.Schema{},
 		PieceId: 0,
 		SentAt:  "",
 		Token:   "token_demo",

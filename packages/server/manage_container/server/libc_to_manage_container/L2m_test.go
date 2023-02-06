@@ -9,9 +9,9 @@ import (
 
 	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_db"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
 	pb_m2c "github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container"
-	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
 
 // Test用のDbGとCCのmock
@@ -20,14 +20,14 @@ type localCC struct{}
 type localMC struct{}
 type localTokenCA struct{}
 
-func (localDb) InsertShares(string, []*pb_types.ColumnSchema, int32, string, string, int32) error {
+func (localDb) InsertShares(string, []*pb_types.Schema, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
 	return nil
 }
-func (localDb) GetSchema(string) ([]*pb_types.ColumnSchema, error) {
-	return []*pb_types.ColumnSchema{{Name: "attr1"}}, nil
+func (localDb) GetSchema(string) ([]*pb_types.Schema, error) {
+	return []*pb_types.Schema{{Name: "attr1"}}, nil
 }
 func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
 	return &pb_types.JobErrorInfo{What: "test"}, nil
