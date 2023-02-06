@@ -1,7 +1,11 @@
 import csv
 import logging
 from hashlib import sha512
-from typing import List, Tuple, Dict, Union
+from dataclasses import dataclass
+from typing import List, Tuple, Dict, Union, Sequence
+
+from .overload_tools import (Dim1, methoddispatch)
+from ..exception import ArgmentError
 
 from ..proto.common_types.common_types_pb2 import ShareValueTypeEnum
 from ..proto.libc_to_manage_pb2 import ColumnSchema
@@ -21,18 +25,46 @@ SUPPORT_TYPES: Dict[str, ShareValueTypeEnum.ValueType] = {
 ShareValueType = Union[float, int]
 
 
+@dataclass(frozen=True)
+class FormatChecker:
+    @methoddispatch(is_static_method=True)
+    @staticmethod
+    def check_duplicate(_):
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @check_duplicate.register(Dim1)
+    @staticmethod
+    def check_duplicate_dummy(schema: List[str]):
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @check_duplicate.register((Dim1, str))
+    @staticmethod
+    def check_duplicate_strs(schema: List[str]) -> bool:
+        return len(schema) == len(set(schema))
+
+    @check_duplicate.register((Dim1, ColumnSchema))
+    @staticmethod
+    def check_duplicate_typed(schema: List[ColumnSchema]) -> bool:
+        return len(schema) == len(set([sch.name for sch in schema]))
+
+    @staticmethod
+    def check_size(secrets: Sequence[Sequence[Union[str, ShareValueType]]],
+                   schema: Sequence[Union[str, ColumnSchema]]) -> np.bool_:
+        return np.all([len(s) == len(schema) for s in secrets])
+
+
 def format_check(secrets: List[List[ShareValueType]],
-                 schema: List[ColumnSchema]) -> bool:
+                 schema: Sequence[Union[str, ColumnSchema]]) -> bool:
     # 存在チェック
     if not (schema and secrets):
         logger.error("Schema or secrets table are not exists.")
         return False
     # 重複チェック
-    if len(schema) != len(set([sch.name for sch in schema])):
+    if not FormatChecker.check_duplicate(schema):
         logger.error("Duplicate schema name.")
         return False
     # サイズチェック
-    if np.any([len(s) != len(schema) for s in secrets]):
+    if not FormatChecker.check_size(secrets, schema):
         logger.error("schema size and table colummn size are different.")
         return False
     return True
@@ -88,6 +120,13 @@ def parse(data: List[List[str]]) \
     types = find_types(schema_name)
     schema = [ColumnSchema(name=name, type=type)
               for name, type in zip(schema_name, types)]
+
+    # check size first because an iterator which `zip` bultin function returns
+    # stops when the shortest iterable is exhausted
+    if not FormatChecker.check_size(data[1:], schema):
+        logger.error("schema size and table colummn size are different.")
+        raise RuntimeError("規定されたフォーマットでないデータです．")
+
     secrets: List[List[ShareValueType]] = [
         [convert(x, t) for x, t in zip(row, types)] for row in data[1:]]
 
