@@ -5,10 +5,11 @@ from typing import Dict, List, Optional, Tuple
 from google.protobuf.internal import enum_type_wrapper
 
 from .proto.common_types import common_types_pb2
+from .proto import libc_to_manage_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
 from .utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
-                              parse_to_bitvector)
+                              parse_to_bitvector, ShareValueType)
 from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ JobStatus \
 ComputationMethod \
     = common_types_pb2.ComputationMethod
 JobErrorInfo = common_types_pb2.JobErrorInfo
+ColumnSchema = libc_to_manage_pb2.ColumnSchema
 
 
 @dataclass(frozen=True)

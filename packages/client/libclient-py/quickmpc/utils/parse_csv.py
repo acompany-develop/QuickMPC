@@ -4,14 +4,13 @@ from hashlib import sha512
 from typing import List, Tuple, Dict, Union
 
 from ..proto.common_types.common_types_pb2 import ShareValueTypeEnum
+from ..proto.libc_to_manage_pb2 import ColumnSchema
 
 import numpy as np
 
 logger = logging.getLogger(__name__)
 
-ProtobufEnumType = int
-
-SUPPORT_TYPES: Dict[str, ProtobufEnumType] = {
+SUPPORT_TYPES: Dict[str, ShareValueTypeEnum.ValueType] = {
     'float': ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'),
     'str':
         ShareValueTypeEnum.Value(
@@ -21,8 +20,6 @@ SUPPORT_TYPES: Dict[str, ProtobufEnumType] = {
 
 ShareValueType = Union[float, int]
 
-ColumnSchema = Tuple[str, ProtobufEnumType]
-
 
 def format_check(secrets: List[List[ShareValueType]],
                  schema: List[ColumnSchema]) -> bool:
@@ -31,7 +28,7 @@ def format_check(secrets: List[List[ShareValueType]],
         logger.error("Schema or secrets table are not exists.")
         return False
     # 重複チェック
-    if len(schema) != len(set(schema)):
+    if len(schema) != len(set([sch.name for sch in schema])):
         logger.error("Duplicate schema name.")
         return False
     # サイズチェック
@@ -62,7 +59,7 @@ def to_int(val: str, encoding='utf-8') -> int:
     return int.from_bytes(encoded, byteorder='big')
 
 
-def find_type(col_schema: str) -> int:
+def find_type(col_schema: str) -> ShareValueTypeEnum.ValueType:
     type_str, *_ = col_schema.split(':')
 
     if type_str in SUPPORT_TYPES:
@@ -71,11 +68,12 @@ def find_type(col_schema: str) -> int:
     return ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT')
 
 
-def find_types(schema: List[str]) -> List[ProtobufEnumType]:
+def find_types(schema: List[str]) -> List[ShareValueTypeEnum.ValueType]:
     return [find_type(col) for col in schema]
 
 
-def convert(element: str, type_info: ProtobufEnumType) -> ShareValueType:
+def convert(element: str,
+            type_info: ShareValueTypeEnum.ValueType) -> ShareValueType:
     if type_info == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'):
         return to_float(element)
     if type_info == ShareValueTypeEnum.Value(
@@ -86,15 +84,17 @@ def convert(element: str, type_info: ProtobufEnumType) -> ShareValueType:
 
 def parse(data: List[List[str]]) \
         -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
-    schema: List[str] = data[0]
-    types = find_types(schema)
+    schema_name: List[str] = data[0]
+    types = find_types(schema_name)
+    schema = [ColumnSchema(name=name, type=type)
+              for name, type in zip(schema_name, types)]
     secrets: List[List[ShareValueType]] = [
         [convert(x, t) for x, t in zip(row, types)] for row in data[1:]]
 
     if not format_check(secrets, schema):
         raise RuntimeError("規定されたフォーマットでないデータです．")
 
-    return secrets, list(zip(schema, types))
+    return secrets, schema
 
 
 def parse_to_bitvector(data: List[List[str]], exclude: List[int] = []) \
@@ -107,7 +107,10 @@ def parse_to_bitvector(data: List[List[str]], exclude: List[int] = []) \
         # 列が除外リストに含まれていたらそのままappend
         if col in exclude:
             secrets_bitbevtor.append(sec)
-            schema_bitvector.append((sch[0] + "#0", sch[1]))
+            schema_bitvector.append(
+                ColumnSchema(
+                    name=sch.name + "#0",
+                    type=sch.type))
             continue
 
         # 座標圧縮
@@ -121,11 +124,10 @@ def parse_to_bitvector(data: List[List[str]], exclude: List[int] = []) \
         # bitvector化
         for key, val in position.items():
             bitvector: list = [1 if (key == k) else 0 for k in sec]
-            sch_val: str = sch[0] + "#" + str(val)
+            sch_val: str = sch.name + "#" + str(val)
             secrets_bitbevtor.append(bitvector)
             schema_bitvector.append(
-                (sch_val,
-                 ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT')))
+                ColumnSchema(name=sch_val, type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT))
 
     return np.transpose(secrets_bitbevtor).tolist(), schema_bitvector
 
