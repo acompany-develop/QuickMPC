@@ -107,6 +107,12 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
         )
         return res
 
+    def GetElapsedTime(self, request, context):
+        pass
+
+    def GetSchema(self, request, context):
+        pass
+
 
 def serve(num: int):
     """ server setting """

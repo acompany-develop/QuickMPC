@@ -13,9 +13,9 @@ from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
 # qmpc.JobStatus でアクセスできるようにエイリアスを設定する
-JobStatus: enum_type_wrapper.EnumTypeWrapper \
+JobStatus \
     = common_types_pb2.JobStatus
-ComputationMethod: enum_type_wrapper.EnumTypeWrapper \
+ComputationMethod \
     = common_types_pb2.ComputationMethod
 JobErrorInfo = common_types_pb2.JobErrorInfo
 
