@@ -50,7 +50,10 @@ class JoinTableJob : public JobBase<JoinTableJob>
     }
 
 public:
-    JoinTableJob(const JobParameter &request) : JobBase<JoinTableJob>(request) {}
+    JoinTableJob(const JobParameter &request) : JobBase<JoinTableJob>(request)
+    {
+        use_write_db = false;
+    }
     nlohmann::json compute(
         const std::vector<std::vector<Share>> &table,
         const std::vector<std::string> &schemas,

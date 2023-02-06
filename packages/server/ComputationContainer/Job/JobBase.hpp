@@ -35,12 +35,15 @@ class JobBase : public Interface
     Config *conf;
     const managetocomputation::ExecuteComputationRequest request;
     const unsigned int job_id;
-
     std::shared_ptr<qmpc::ComputationToDb::Client> db_client =
         qmpc::ComputationToDb::Client::getInstance();
 
     StatusManager statusManager;
 
+protected:
+    bool use_write_db;
+
+private:
     auto readDb()
     {
         statusManager.nextStatus();
@@ -143,6 +146,7 @@ public:
     JobBase(const JobParameter &request)
         : request(request.getRequest())
         , job_id(request.getJobId())
+        , use_write_db(true)
         , statusManager(request.getRequest().job_uuid())
     {
         qmpc::Share::AddressId::setJobId(job_id);
@@ -165,7 +169,10 @@ public:
         auto [share_table, schemas] = readDb();
         validate_cols(schemas, arg);
         auto result = static_cast<T *>(this)->compute(share_table, schemas, arg);
-        writeDb(result);
+        if (use_write_db)
+        {
+            writeDb(result);
+        }
 
         return static_cast<int>(statusManager.getStatus());
     }
