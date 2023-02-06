@@ -32,6 +32,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy1:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container"]
     healthcheck:
       test: [
@@ -43,6 +45,22 @@ services:
       interval: 3s
       timeout: 5s
       start_period: 5s
+
+  dev_cc_envoy1:
+    container_name: compute_envoy_container1
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: ../config/computation_container/compute1/envoy.yaml
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "50020"
+      - "51020"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.21
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
 
   dev_cc2:
     tty: true # docker run -t
@@ -70,6 +88,9 @@ services:
     env_file:
       - ../config/computation_container/compute2/.env
       - ../config/computation_container/jwt/client.sample.env
+    depends_on:
+      dev_cc_envoy2:
+        condition: service_started
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -84,6 +105,22 @@ services:
       interval: 3s
       timeout: 5s
       start_period: 5s
+
+  dev_cc_envoy2:
+    container_name: compute_envoy_container2
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: ../config/computation_container/compute2/envoy.yaml
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "50020"
+      - "51020"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.21
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
 
   dev_cc3:
     tty: true
@@ -111,6 +148,9 @@ services:
     env_file:
       - ../config/computation_container/compute3/.env
       - ../config/computation_container/jwt/client.sample.env
+    depends_on:
+      dev_cc_envoy3:
+        condition: service_started
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
@@ -125,6 +165,22 @@ services:
       interval: 3s
       timeout: 5s
       start_period: 5s
+
+  dev_cc_envoy3:
+    container_name: compute_envoy_container3
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: ../config/computation_container/compute3/envoy.yaml
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "50020"
+      - "51020"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.3.21
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
 
   # dev_bts_envoy:
   #   tty: true # 起動しっぱなし
@@ -458,6 +514,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy1:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc2:
@@ -491,6 +549,9 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+    depends_on:
+      dev_cc_envoy2:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc3:
@@ -525,6 +586,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy3:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   benchmark_cc1:
@@ -558,6 +621,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy1:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
@@ -592,6 +657,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy2:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
@@ -627,6 +694,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy3:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
