@@ -9,7 +9,7 @@ import time
 from decimal import Decimal
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, InitVar
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 import grpc
@@ -19,7 +19,7 @@ from grpc_status import rpc_status  # type: ignore
 import google.protobuf.json_format
 
 from .exception import ArgmentError, QMPCJobError, QMPCServerError
-from .proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
+from .proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus, ShareValueTypeEnum
 from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        ExecuteComputationRequest,
                                        GetComputationResultRequest,
@@ -34,7 +34,7 @@ from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
 from .share import Share
 from .utils.if_present import if_present
 from .utils.make_pieces import MakePiece
-from .utils.overload_tools import Dim2, Dim3, methoddispatch
+from .utils.overload_tools import Dim1, Dim2, Dim3, methoddispatch
 from .utils.parse_csv import format_check
 
 abs_file = os.path.abspath(__file__)
@@ -169,13 +169,35 @@ class QMPCServer:
         res_dict: Dict = {"is_ok": is_ok, "responses": res_list}
         return res_dict
 
+    @methoddispatch(is_static_method=True)
+    @staticmethod
+    def __convert_schema(_):
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @__convert_schema.register(Dim1)
+    @staticmethod
+    def __convert_schema_dummy(schema: List):
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @__convert_schema.register((Dim1, str))
+    @staticmethod
+    def __convert_schema_str(schema: List[str]) -> List[ColumnSchema]:
+        return [ColumnSchema(
+            name=name, type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT) for name in schema]
+
+    @__convert_schema.register((Dim1, ColumnSchema))
+    @staticmethod
+    def __convert_schema_typed(
+            schema: List[ColumnSchema]) -> List[ColumnSchema]:
+        return schema
+
     @methoddispatch()
     def send_share(self, _):
         raise ArgmentError("不正な引数が与えられています．")
 
     @send_share.register(Dim2)
     @send_share.register(Dim3)
-    def __send_share_impl(self, secrets: List, schema: List[ColumnSchema],
+    def __send_share_impl(self, secrets: List, schema: List[Union[str, ColumnSchema]],
                           matching_column: int,
                           piece_size: int) -> Dict:
         if piece_size < 1000 or piece_size > 1_000_000:
@@ -186,6 +208,8 @@ class QMPCServer:
             raise RuntimeError(
                 "matching_column must be in the "
                 "range of 1 to the size of schema")
+
+        typed_schema: List[ColumnSchema] = QMPCServer.__convert_schema(schema)
 
         # TODO parse_csv経由でsend_shareをすると同じチェックをすることになる．
         if not format_check(secrets, schema):
@@ -210,7 +234,7 @@ class QMPCServer:
                                    SendSharesRequest(
                                        data_id=data_id,
                                        shares=json.dumps(s),
-                                       schema=schema,
+                                       schema=typed_schema,
                                        piece_id=piece_id,
                                        sent_at=sent_at,
                                        matching_column=matching_column,
