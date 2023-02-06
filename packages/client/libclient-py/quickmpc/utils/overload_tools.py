@@ -26,21 +26,27 @@ class DictList2:
 
 
 def d(lst):
-    if type(lst) != list:
+    if not isinstance(lst, list):
         return 0
     if not lst:
         return 1
-    return 1+d(lst[0])
+    return 1 + d(lst[0])
+
+
+def find_element_type(lst) -> type:
+    if not isinstance(lst, list):
+        return lst.__class__
+    return find_element_type(lst[0])
 
 
 def _get_dim_class(lst: list):
     dim: int = d(lst)
     if dim == 1:
-        if len(lst) and type(lst[0]) == dict:
+        if len(lst) and isinstance(lst[0], dict):
             return DictList()
         return Dim1()
     elif dim == 2:
-        if len(lst) and len(lst[0]) and type(lst[0][0]) == dict:
+        if len(lst) and len(lst[0]) and isinstance(lst[0][0], dict):
             return DictList2()
         return Dim2()
     elif dim == 3:
@@ -61,18 +67,27 @@ def methoddispatch(is_static_method: bool = False):
     def _dimdispatch(func):
         dispatcher = singledispatch(func)
 
+        registry: dict = {}
+
         def wrapper(*args, **kw):
             arg = args[0] if is_static_method else args[1]
-            type = _convert_list_type(dispatcher.registry, arg)
+            type = _convert_list_type(registry, arg)
+            elem_type = find_element_type(arg)
+            key = (type.__class__, elem_type)
+            if key not in registry:
+                key = type.__class__
             if is_static_method:
-                return dispatcher.dispatch(
-                    type.__class__
-                ).__func__(*args, **kw)
+                return registry[key].__func__(*args, **kw)
             else:
-                return dispatcher.dispatch(
-                    type.__class__
-                )(*args, **kw)
-        wrapper.register = dispatcher.register
+                return registry[key](*args, **kw)
+
+        def register(types, func=None):
+            if func is None:
+                return lambda f: register(types, f)
+            registry[types] = func
+            return func
+
+        wrapper.register = register
         update_wrapper(wrapper, func)
         return wrapper
     return _dimdispatch
