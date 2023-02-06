@@ -229,21 +229,21 @@ class Share:
     @convert_type.register((Dim1, str))
     @staticmethod
     def __pre_convert_type_list(
-            values: List[str], schema: Optional[ColumnSchema]) -> list:
+            values: List[str], schema: Optional[ColumnSchema] = None) -> list:
         func = Share.get_pre_convert_func(schema)
         return [func(x) for x in values]
 
     @convert_type.register(Dim1)
     @staticmethod
     def __convert_type_list(
-            values: List[Any], schema: Optional[ColumnSchema]) -> list:
+            values: List[Any], schema: Optional[ColumnSchema] = None) -> list:
         func = Share.get_convert_func(schema)
         return [func(x) for x in values]
 
     @convert_type.register(Dim2)
     @staticmethod
     def __convert_type_table(
-            table: List[List], schema: Optional[List[ColumnSchema]]) -> list:
+            table: List[List], schema: Optional[List[ColumnSchema]] = None) -> list:
         transposed = np.array(table).transpose().tolist()
         schema_converted: List[Optional[ColumnSchema]] = [
             None] * len(transposed)
