@@ -40,9 +40,9 @@ type ComputationResult struct {
 
 // Share形式
 type ShareMeta struct {
-	Schema         []*pb_types.ColumnSchema `json:"schema"`
-	PieceID        int32                    `json:"piece_id"`
-	MatchingColumn int32                    `json:"matching_column"`
+	Schema         []*pb_types.Schema `json:"schema"`
+	PieceID        int32              `json:"piece_id"`
+	MatchingColumn int32              `json:"matching_column"`
 }
 type Share struct {
 	DataID string      `json:"data_id"`
@@ -54,9 +54,9 @@ type Share struct {
 // 外部から呼ばれるinterface
 type Client struct{}
 type M2DbClient interface {
-	InsertShares(string, []*pb_types.ColumnSchema, int32, string, string, int32) error
+	InsertShares(string, []*pb_types.Schema, int32, string, string, int32) error
 	DeleteShares([]string) error
-	GetSchema(string) ([]*pb_types.ColumnSchema, error)
+	GetSchema(string) ([]*pb_types.Schema, error)
 	GetComputationResult(string, []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
@@ -71,7 +71,7 @@ func isExists(path string) bool {
 }
 
 // DBにシェアを保存する
-func (c Client) InsertShares(dataID string, schema []*pb_types.ColumnSchema, pieceID int32, shares string, sentAt string, matchingColumn int32) error {
+func (c Client) InsertShares(dataID string, schema []*pb_types.Schema, pieceID int32, shares string, sentAt string, matchingColumn int32) error {
 	dataPath := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, pieceID)
 	ls.Lock(dataPath)
 	defer ls.Unlock(dataPath)
@@ -126,7 +126,7 @@ func (c Client) DeleteShares(dataIDs []string) error {
 }
 
 // DBからschemaを得る
-func (c Client) GetSchema(dataID string) ([]*pb_types.ColumnSchema, error) {
+func (c Client) GetSchema(dataID string) ([]*pb_types.Schema, error) {
 
 	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
 	ls.Lock(path)

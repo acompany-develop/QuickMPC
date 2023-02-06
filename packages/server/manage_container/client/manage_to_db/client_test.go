@@ -25,7 +25,7 @@ func initialize() {
 	}
 }
 
-var defaultSchema = []*pb_types.ColumnSchema{
+var defaultSchema = []*pb_types.Schema{
 	{Name: "attr1", Type: pb_types.ShareValueTypeEnum_SHARE_VALUE_TYPE_FIXED_POINT},
 	{Name: "attr2", Type: pb_types.ShareValueTypeEnum_SHARE_VALUE_TYPE_FIXED_POINT},
 	{Name: "attr2", Type: pb_types.ShareValueTypeEnum_SHARE_VALUE_TYPE_FIXED_POINT},
@@ -160,7 +160,7 @@ func TestGetSchemaSuccess(t *testing.T) {
 	if err != nil {
 		t.Error("get schema failed: " + err.Error())
 	}
-	cor := []*pb_types.ColumnSchema{{Name: "attr1"}, {Name: "attr2"}, {Name: "attr3"}}
+	cor := []*pb_types.Schema{{Name: "attr1"}, {Name: "attr2"}, {Name: "attr3"}}
 	if !reflect.DeepEqual(schema, cor) {
 		t.Errorf("get schema failed: schema must be %v, but value is %v", cor, schema)
 	}
