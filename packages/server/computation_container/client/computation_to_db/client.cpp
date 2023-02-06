@@ -83,7 +83,7 @@ static std::vector<SchemaType> load_schema(const nlohmann::json &json)
     {
         if (elem.is_object())
         {
-            pb_common_types::ColumnSchema column;
+            pb_common_types::Schema column;
             const google::protobuf::util::Status status =
                 google::protobuf::util::JsonStringToMessage(elem.dump(), &column);
             if (!status.ok())
