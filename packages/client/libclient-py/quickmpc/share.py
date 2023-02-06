@@ -96,17 +96,16 @@ class Share:
     def __sharize_1dimension_int(secrets: List[int], party_size: int = 3) \
             -> List[List[str]]:
         """ 1次元リストのシェア化 """
-        # TODO: use rnd
-        # rnd: RandomInterface = ChaCha20()
+        rnd: RandomInterface = ChaCha20()
         secrets_size: int = len(secrets)
+        max_val = max(secrets) * 2
         shares: np.ndarray = np.array([
-            # TODO: generate random for integers
-            [0] * secrets_size
+            rnd.get_list(-max_val, max_val, secrets_size)
             for __ in range(party_size - 1)])
         s1: np.ndarray = np.subtract(np.frompyfunc(int, 1, 1)(secrets),
                                      np.sum(shares, axis=0))
-        shares_str: List[List[str]] = \
-            np.vectorize(Share.__to_str)([s1, *shares]).tolist()
+        shares_str: List[List[str]] = np.vectorize(
+            Share.__to_str)([s1, *shares]).tolist()
         return shares_str
 
     @sharize.register(Dim2)
