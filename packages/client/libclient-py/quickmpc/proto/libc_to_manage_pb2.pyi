@@ -19,24 +19,6 @@ else:
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing_extensions.final
-class ColumnSchema(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    NAME_FIELD_NUMBER: builtins.int
-    TYPE_FIELD_NUMBER: builtins.int
-    name: builtins.str
-    type: common_types.common_types_pb2.ShareValueTypeEnum.ValueType
-    def __init__(
-        self,
-        *,
-        name: builtins.str = ...,
-        type: common_types.common_types_pb2.ShareValueTypeEnum.ValueType = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["name", b"name", "type", b"type"]) -> None: ...
-
-global___ColumnSchema = ColumnSchema
-
-@typing_extensions.final
 class SendSharesRequest(google.protobuf.message.Message):
     """*
     the message of SendSharesRequest
@@ -54,7 +36,7 @@ class SendSharesRequest(google.protobuf.message.Message):
     data_id: builtins.str
     shares: builtins.str
     @property
-    def schema(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___ColumnSchema]: ...
+    def schema(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[common_types.common_types_pb2.ColumnSchema]: ...
     piece_id: builtins.int
     sent_at: builtins.str
     matching_column: builtins.int
@@ -64,7 +46,7 @@ class SendSharesRequest(google.protobuf.message.Message):
         *,
         data_id: builtins.str = ...,
         shares: builtins.str = ...,
-        schema: collections.abc.Iterable[global___ColumnSchema] | None = ...,
+        schema: collections.abc.Iterable[common_types.common_types_pb2.ColumnSchema] | None = ...,
         piece_id: builtins.int = ...,
         sent_at: builtins.str = ...,
         matching_column: builtins.int = ...,
@@ -177,13 +159,13 @@ class GetSchemaResponse(google.protobuf.message.Message):
     message: builtins.str
     is_ok: builtins.bool
     @property
-    def schema(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    def schema(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[common_types.common_types_pb2.ColumnSchema]: ...
     def __init__(
         self,
         *,
         message: builtins.str = ...,
         is_ok: builtins.bool = ...,
-        schema: collections.abc.Iterable[builtins.str] | None = ...,
+        schema: collections.abc.Iterable[common_types.common_types_pb2.ColumnSchema] | None = ...,
     ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["is_ok", b"is_ok", "message", b"message", "schema", b"schema"]) -> None: ...
 
@@ -266,7 +248,7 @@ global___ExecuteComputationRequest = ExecuteComputationRequest
 
 @typing_extensions.final
 class ExecuteComputationResponse(google.protobuf.message.Message):
-    """*
+    """
     the message of ExecuteComputationResponse
     """
 
@@ -363,116 +345,6 @@ class GetComputationResultResponse(google.protobuf.message.Message):
     def WhichOneof(self, oneof_group: typing_extensions.Literal["result_type", b"result_type"]) -> typing_extensions.Literal["is_dim1", "is_dim2", "is_schema"] | None: ...
 
 global___GetComputationResultResponse = GetComputationResultResponse
-
-@typing_extensions.final
-class SendModelParamRequest(google.protobuf.message.Message):
-    """*
-    the message of SendModelParamRequest
-    """
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    JOB_UUID_FIELD_NUMBER: builtins.int
-    PARAMS_FIELD_NUMBER: builtins.int
-    PIECE_ID_FIELD_NUMBER: builtins.int
-    TOKEN_FIELD_NUMBER: builtins.int
-    job_uuid: builtins.str
-    @property
-    def params(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
-    piece_id: builtins.int
-    token: builtins.str
-    def __init__(
-        self,
-        *,
-        job_uuid: builtins.str = ...,
-        params: collections.abc.Iterable[builtins.str] | None = ...,
-        piece_id: builtins.int = ...,
-        token: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["job_uuid", b"job_uuid", "params", b"params", "piece_id", b"piece_id", "token", b"token"]) -> None: ...
-
-global___SendModelParamRequest = SendModelParamRequest
-
-@typing_extensions.final
-class SendModelParamResponse(google.protobuf.message.Message):
-    """*
-    the message of SendModelParamResponse
-    """
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    MESSAGE_FIELD_NUMBER: builtins.int
-    IS_OK_FIELD_NUMBER: builtins.int
-    message: builtins.str
-    is_ok: builtins.bool
-    def __init__(
-        self,
-        *,
-        message: builtins.str = ...,
-        is_ok: builtins.bool = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["is_ok", b"is_ok", "message", b"message"]) -> None: ...
-
-global___SendModelParamResponse = SendModelParamResponse
-
-@typing_extensions.final
-class PredictRequest(google.protobuf.message.Message):
-    """*
-    the message of PredictRequest
-    """
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    JOB_UUID_FIELD_NUMBER: builtins.int
-    MODEL_PARAM_JOB_UUID_FIELD_NUMBER: builtins.int
-    MODEL_ID_FIELD_NUMBER: builtins.int
-    TABLE_FIELD_NUMBER: builtins.int
-    SRC_FIELD_NUMBER: builtins.int
-    TOKEN_FIELD_NUMBER: builtins.int
-    job_uuid: builtins.str
-    model_param_job_uuid: builtins.str
-    model_id: common_types.common_types_pb2.PredictMethod.ValueType
-    @property
-    def table(self) -> global___JoinOrder: ...
-    @property
-    def src(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
-    token: builtins.str
-    def __init__(
-        self,
-        *,
-        job_uuid: builtins.str = ...,
-        model_param_job_uuid: builtins.str = ...,
-        model_id: common_types.common_types_pb2.PredictMethod.ValueType = ...,
-        table: global___JoinOrder | None = ...,
-        src: collections.abc.Iterable[builtins.int] | None = ...,
-        token: builtins.str = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["table", b"table"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["job_uuid", b"job_uuid", "model_id", b"model_id", "model_param_job_uuid", b"model_param_job_uuid", "src", b"src", "table", b"table", "token", b"token"]) -> None: ...
-
-global___PredictRequest = PredictRequest
-
-@typing_extensions.final
-class PredictResponse(google.protobuf.message.Message):
-    """*
-    the message of PredictResponse
-    """
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    MESSAGE_FIELD_NUMBER: builtins.int
-    IS_OK_FIELD_NUMBER: builtins.int
-    message: builtins.str
-    is_ok: builtins.bool
-    def __init__(
-        self,
-        *,
-        message: builtins.str = ...,
-        is_ok: builtins.bool = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["is_ok", b"is_ok", "message", b"message"]) -> None: ...
-
-global___PredictResponse = PredictResponse
 
 @typing_extensions.final
 class GetDataListRequest(google.protobuf.message.Message):

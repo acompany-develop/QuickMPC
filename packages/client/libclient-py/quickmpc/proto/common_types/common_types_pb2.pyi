@@ -29,8 +29,7 @@ class _JobStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._Enum
     PRE_JOB: _JobStatus.ValueType  # 2
     READ_DB: _JobStatus.ValueType  # 3
     COMPUTE: _JobStatus.ValueType  # 4
-    WRITE_DB: _JobStatus.ValueType  # 5
-    COMPLETED: _JobStatus.ValueType  # 6
+    COMPLETED: _JobStatus.ValueType  # 5
 
 class JobStatus(_JobStatus, metaclass=_JobStatusEnumTypeWrapper): ...
 
@@ -39,8 +38,7 @@ ERROR: JobStatus.ValueType  # 1
 PRE_JOB: JobStatus.ValueType  # 2
 READ_DB: JobStatus.ValueType  # 3
 COMPUTE: JobStatus.ValueType  # 4
-WRITE_DB: JobStatus.ValueType  # 5
-COMPLETED: JobStatus.ValueType  # 6
+COMPLETED: JobStatus.ValueType  # 5
 global___JobStatus = JobStatus
 
 class _ComputationMethod:
@@ -54,11 +52,8 @@ class _ComputationMethodEnumTypeWrapper(google.protobuf.internal.enum_type_wrapp
     COMPUTATION_METHOD_VARIANCE: _ComputationMethod.ValueType  # 2
     COMPUTATION_METHOD_SUM: _ComputationMethod.ValueType  # 3
     COMPUTATION_METHOD_CORREL: _ComputationMethod.ValueType  # 4
-    COMPUTATION_METHOD_LINEAR_REGRESSION: _ComputationMethod.ValueType  # 5
-    COMPUTATION_METHOD_LOGISTIC_REGRESSION: _ComputationMethod.ValueType  # 6
-    COMPUTATION_METHOD_MESH_CODE: _ComputationMethod.ValueType  # 7
-    COMPUTATION_METHOD_DECISION_TREE: _ComputationMethod.ValueType  # 8
-    COMPUTATION_METHOD_JOIN_TABLE: _ComputationMethod.ValueType  # 9
+    COMPUTATION_METHOD_MESH_CODE: _ComputationMethod.ValueType  # 5
+    COMPUTATION_METHOD_JOIN_TABLE: _ComputationMethod.ValueType  # 6
 
 class ComputationMethod(_ComputationMethod, metaclass=_ComputationMethodEnumTypeWrapper): ...
 
@@ -67,33 +62,9 @@ COMPUTATION_METHOD_MEAN: ComputationMethod.ValueType  # 1
 COMPUTATION_METHOD_VARIANCE: ComputationMethod.ValueType  # 2
 COMPUTATION_METHOD_SUM: ComputationMethod.ValueType  # 3
 COMPUTATION_METHOD_CORREL: ComputationMethod.ValueType  # 4
-COMPUTATION_METHOD_LINEAR_REGRESSION: ComputationMethod.ValueType  # 5
-COMPUTATION_METHOD_LOGISTIC_REGRESSION: ComputationMethod.ValueType  # 6
-COMPUTATION_METHOD_MESH_CODE: ComputationMethod.ValueType  # 7
-COMPUTATION_METHOD_DECISION_TREE: ComputationMethod.ValueType  # 8
-COMPUTATION_METHOD_JOIN_TABLE: ComputationMethod.ValueType  # 9
+COMPUTATION_METHOD_MESH_CODE: ComputationMethod.ValueType  # 5
+COMPUTATION_METHOD_JOIN_TABLE: ComputationMethod.ValueType  # 6
 global___ComputationMethod = ComputationMethod
-
-class _PredictMethod:
-    ValueType = typing.NewType("ValueType", builtins.int)
-    V: typing_extensions.TypeAlias = ValueType
-
-class _PredictMethodEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_PredictMethod.ValueType], builtins.type):
-    DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-    PREDICT_METHOD_UNSPECIFIED: _PredictMethod.ValueType  # 0
-    PREDICT_METHOD_LINEAR_REGRESSION: _PredictMethod.ValueType  # 1
-    PREDICT_METHOD_LOGISTIC_REGRESSION: _PredictMethod.ValueType  # 2
-    PREDICT_METHOD_DECISION_TREE: _PredictMethod.ValueType  # 3
-    PREDICT_METHOD_SID3_TREE: _PredictMethod.ValueType  # 4
-
-class PredictMethod(_PredictMethod, metaclass=_PredictMethodEnumTypeWrapper): ...
-
-PREDICT_METHOD_UNSPECIFIED: PredictMethod.ValueType  # 0
-PREDICT_METHOD_LINEAR_REGRESSION: PredictMethod.ValueType  # 1
-PREDICT_METHOD_LOGISTIC_REGRESSION: PredictMethod.ValueType  # 2
-PREDICT_METHOD_DECISION_TREE: PredictMethod.ValueType  # 3
-PREDICT_METHOD_SID3_TREE: PredictMethod.ValueType  # 4
-global___PredictMethod = PredictMethod
 
 class _ShareValueTypeEnum:
     ValueType = typing.NewType("ValueType", builtins.int)
@@ -229,3 +200,21 @@ class JobErrorInfo(google.protobuf.message.Message):
     def WhichOneof(self, oneof_group: typing_extensions.Literal["_stacktrace", b"_stacktrace"]) -> typing_extensions.Literal["stacktrace"] | None: ...
 
 global___JobErrorInfo = JobErrorInfo
+
+@typing_extensions.final
+class ColumnSchema(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    NAME_FIELD_NUMBER: builtins.int
+    TYPE_FIELD_NUMBER: builtins.int
+    name: builtins.str
+    type: global___ShareValueTypeEnum.ValueType
+    def __init__(
+        self,
+        *,
+        name: builtins.str = ...,
+        type: global___ShareValueTypeEnum.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["name", b"name", "type", b"type"]) -> None: ...
+
+global___ColumnSchema = ColumnSchema
