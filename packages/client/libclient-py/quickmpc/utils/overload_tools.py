@@ -75,7 +75,6 @@ def methoddispatch(is_static_method: bool = False):
             type = _convert_list_type(registry, arg)
             elem_type = find_element_type(arg)
             key = (type.__class__, elem_type)
-            print(registry.keys())
             func = default_function
             if type.__class__ in registry:
                 func = registry[type.__class__]
