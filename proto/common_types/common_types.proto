@@ -58,7 +58,7 @@ message JobErrorInfo {
   optional Stacktrace stacktrace = 3;
 }
 
-message ColumnSchema {
+message Schema {
     string name = 1;
     ShareValueTypeEnum type = 2;
 }
