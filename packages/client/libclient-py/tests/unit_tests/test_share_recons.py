@@ -27,7 +27,9 @@ class TestQMPC:
     )
     def test_recons_list(self, shares: list):
         """ 3パーティの復元が正しくできるかTest """
-        secrets: list = Share.recons(shares)
+        conved: list = [Share.convert_type(s) for s in shares]
+        secrets: list = Share.recons(conved)
+        secrets = Share.convert_type(secrets)
         shares_float: np.ndarray = \
             np.vectorize(Decimal)(Share.sharize(secrets))
         assert (np.allclose(secrets,
@@ -94,7 +96,9 @@ class TestQMPC:
     )
     def test_recons_multi(self, shares: list):
         """ nパーティのシェアの復元が正しくできるかTest """
-        secrets: list = Share.recons(shares)
+        conved: list = [Share.convert_type(s) for s in shares]
+        secrets: list = Share.recons(conved)
+        secrets = Share.convert_type(secrets)
         shares_float: np.ndarray = \
             np.vectorize(Decimal)(Share.sharize(secrets))
         assert (np.allclose(secrets,
@@ -125,7 +129,9 @@ class TestQMPC:
         """ nパーティのシェア化，復元が正しくできてるかTest"""
         for party_size in range(2, 10):
             shares: list = Share.sharize(secrets, party_size=party_size)
-            secrets_2: list = Share.recons(shares)
+            conved: list = [Share.convert_type(s) for s in shares]
+            secrets_2: list = Share.recons(conved)
+            secrets_2 = Share.convert_type(secrets_2)
             assert (np.allclose(secrets, secrets_2))
 
     @pytest.mark.parametrize(
