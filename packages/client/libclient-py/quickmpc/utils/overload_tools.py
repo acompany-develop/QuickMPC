@@ -36,6 +36,8 @@ def d(lst):
 def find_element_type(lst) -> type:
     if not isinstance(lst, list):
         return lst.__class__
+    if not lst:
+        return None.__class__
     return find_element_type(lst[0])
 
 
@@ -68,18 +70,23 @@ def methoddispatch(is_static_method: bool = False):
         dispatcher = singledispatch(func)
 
         registry: dict = {}
+        default_function = func
 
         def wrapper(*args, **kw):
             arg = args[0] if is_static_method else args[1]
             type = _convert_list_type(registry, arg)
             elem_type = find_element_type(arg)
             key = (type.__class__, elem_type)
-            if key not in registry:
-                key = type.__class__
+            print(registry.keys())
+            func = default_function
+            if type.__class__ in registry:
+                func = registry[type.__class__]
+            if key in registry:
+                func = registry[key]
             if is_static_method:
-                return registry[key].__func__(*args, **kw)
+                return func.__func__(*args, **kw)
             else:
-                return registry[key](*args, **kw)
+                return func(*args, **kw)
 
         def register(types, func=None):
             if func is None:
