@@ -49,6 +49,10 @@ class LibcToManageStub:
         libc_to_manage_pb2.GetElapsedTimeRequest,
         libc_to_manage_pb2.GetElapsedTimeResponse,
     ]
+    GetJobErrorInfo: grpc.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.GetJobErrorInfoRequest,
+        libc_to_manage_pb2.GetJobErrorInfoResponse,
+    ]
 
 class LibcToManageServicer(metaclass=abc.ABCMeta):
     """*
@@ -109,5 +113,11 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
         request: libc_to_manage_pb2.GetElapsedTimeRequest,
         context: grpc.ServicerContext,
     ) -> libc_to_manage_pb2.GetElapsedTimeResponse: ...
+    @abc.abstractmethod
+    def GetJobErrorInfo(
+        self,
+        request: libc_to_manage_pb2.GetJobErrorInfoRequest,
+        context: grpc.ServicerContext,
+    ) -> libc_to_manage_pb2.GetJobErrorInfoResponse: ...
 
 def add_LibcToManageServicer_to_server(servicer: LibcToManageServicer, server: grpc.Server) -> None: ...

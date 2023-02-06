@@ -542,3 +542,42 @@ class GetElapsedTimeResponse(google.protobuf.message.Message):
     def ClearField(self, field_name: typing_extensions.Literal["elapsed_time", b"elapsed_time", "is_ok", b"is_ok"]) -> None: ...
 
 global___GetElapsedTimeResponse = GetElapsedTimeResponse
+
+@typing_extensions.final
+class GetJobErrorInfoRequest(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    JOB_UUID_FIELD_NUMBER: builtins.int
+    TOKEN_FIELD_NUMBER: builtins.int
+    job_uuid: builtins.str
+    token: builtins.str
+    def __init__(
+        self,
+        *,
+        job_uuid: builtins.str = ...,
+        token: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["job_uuid", b"job_uuid", "token", b"token"]) -> None: ...
+
+global___GetJobErrorInfoRequest = GetJobErrorInfoRequest
+
+@typing_extensions.final
+class GetJobErrorInfoResponse(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    JOB_ERROR_INFO_FIELD_NUMBER: builtins.int
+    IS_OK_FIELD_NUMBER: builtins.int
+    @property
+    def job_error_info(self) -> common_types.common_types_pb2.JobErrorInfo: ...
+    is_ok: builtins.bool
+    def __init__(
+        self,
+        *,
+        job_error_info: common_types.common_types_pb2.JobErrorInfo | None = ...,
+        is_ok: builtins.bool = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["_job_error_info", b"_job_error_info", "job_error_info", b"job_error_info"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["_job_error_info", b"_job_error_info", "is_ok", b"is_ok", "job_error_info", b"job_error_info"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["_job_error_info", b"_job_error_info"]) -> typing_extensions.Literal["job_error_info"] | None: ...
+
+global___GetJobErrorInfoResponse = GetJobErrorInfoResponse
