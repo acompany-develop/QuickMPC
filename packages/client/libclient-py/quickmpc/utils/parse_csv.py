@@ -7,8 +7,8 @@ from typing import List, Tuple, Dict, Union, Sequence, Optional
 from .overload_tools import (Dim1, methoddispatch)
 from ..exception import ArgmentError
 
-from ..proto.common_types.common_types_pb2 import ShareValueTypeEnum
-from ..proto.libc_to_manage_pb2 import ColumnSchema
+from ..proto.common_types.common_types_pb2 import (ShareValueTypeEnum,
+                                                   ColumnSchema)
 
 import numpy as np
 

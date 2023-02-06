@@ -9,8 +9,8 @@ import numpy as np
 
 from .utils.overload_tools import (DictList, DictList2,
                                    Dim1, Dim2, Dim3, methoddispatch)
-from .proto.common_types.common_types_pb2 import ShareValueTypeEnum
-from .proto.libc_to_manage_pb2 import ColumnSchema
+from .proto.common_types.common_types_pb2 import (ShareValueTypeEnum,
+                                                  ColumnSchema)
 from .utils.random import ChaCha20, RandomInterface
 from .exception import ArgmentError
 
