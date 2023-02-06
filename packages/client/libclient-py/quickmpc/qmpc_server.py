@@ -20,6 +20,7 @@ import google.protobuf.json_format
 from .exception import ArgmentError, QMPCJobError, QMPCServerError
 from .proto.common_types.common_types_pb2 import (JobErrorInfo,
                                                   JobStatus,
+                                                  ColumnSchema,
                                                   ShareValueTypeEnum)
 from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        ExecuteComputationRequest,
@@ -28,7 +29,6 @@ from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        GetDataListRequest,
                                        GetElapsedTimeRequest,
                                        GetJobErrorInfoRequest,
-                                       ColumnSchema,
                                        Input,
                                        JoinOrder, SendSharesRequest)
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub

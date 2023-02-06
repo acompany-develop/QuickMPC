@@ -3,7 +3,6 @@ from dataclasses import dataclass, field, InitVar
 from typing import Dict, List, Optional, Tuple
 
 from .proto.common_types import common_types_pb2
-from .proto import libc_to_manage_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
 from .utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
@@ -17,7 +16,7 @@ JobStatus \
 ComputationMethod \
     = common_types_pb2.ComputationMethod
 JobErrorInfo = common_types_pb2.JobErrorInfo
-ColumnSchema = libc_to_manage_pb2.ColumnSchema
+ColumnSchema = common_types_pb2.ColumnSchema
 ShareValueTypeEnum = common_types_pb2.ShareValueTypeEnum
 
 
