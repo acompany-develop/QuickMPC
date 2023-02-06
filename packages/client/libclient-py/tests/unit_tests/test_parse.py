@@ -6,7 +6,7 @@ import pytest
 
 from quickmpc.utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
                                       parse_to_bitvector)
-from quickmpc import ColumnSchema, ShareValueTypeEnum
+from quickmpc import Schema, ShareValueTypeEnum
 
 # 元データ
 data1: List[List[str]] = [s.split(",") for s in [
@@ -35,8 +35,8 @@ data3: List[List[str]] = [s.split(",") for s in [
 # 正しくparseされたデータ
 d1_schema_str: List[str] = ['id', 'attr1', 'attr2',
                             'attr3', 'attr4', 'attr5', 'attr6']
-d1_schema: List[ColumnSchema] = [
-    ColumnSchema(
+d1_schema: List[Schema] = [
+    Schema(
         name=name,
         type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
     for name in d1_schema_str]
@@ -51,8 +51,8 @@ d1_secrets: List[List[float]] = [
 d2_schema_str: List[str] = ['id#0', 'attr1#0', 'attr1#1',
                             'attr2#0', 'attr2#1', 'attr2#2',
                             'attr3#0', 'attr3#1', 'attr3#2', 'attr3#3']
-d2_schema: List[ColumnSchema] = [
-    ColumnSchema(
+d2_schema: List[Schema] = [
+    Schema(
         name=name,
         type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
     for name in d2_schema_str]
@@ -63,11 +63,11 @@ d2_secrets: List[List[float]] = [
     [13292676.303739548, 1, 0, 1, 0, 0, 0, 0, 0, 1]
 ]
 
-d3_schema: List[ColumnSchema] = [
-    ColumnSchema(
+d3_schema: List[Schema] = [
+    Schema(
         name='id',
         type=ShareValueTypeEnum.SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION),
-    ColumnSchema(
+    Schema(
         name='id:id',
         type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT),
 ]

@@ -20,7 +20,7 @@ import google.protobuf.json_format
 from .exception import ArgmentError, QMPCJobError, QMPCServerError
 from .proto.common_types.common_types_pb2 import (JobErrorInfo,
                                                   JobStatus,
-                                                  ColumnSchema,
+                                                  Schema,
                                                   ShareValueTypeEnum)
 from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        ExecuteComputationRequest,
@@ -182,16 +182,16 @@ class QMPCServer:
 
     @__convert_schema.register((Dim1, str))
     @staticmethod
-    def __convert_schema_str(schema: List[str]) -> List[ColumnSchema]:
+    def __convert_schema_str(schema: List[str]) -> List[Schema]:
         return [
-            ColumnSchema(name=name,
-                         type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
+            Schema(name=name,
+                   type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
             for name in schema]
 
-    @__convert_schema.register((Dim1, ColumnSchema))
+    @__convert_schema.register((Dim1, Schema))
     @staticmethod
     def __convert_schema_typed(
-            schema: List[ColumnSchema]) -> List[ColumnSchema]:
+            schema: List[Schema]) -> List[Schema]:
         return schema
 
     @methoddispatch()
@@ -201,7 +201,7 @@ class QMPCServer:
     @send_share.register(Dim2)
     @send_share.register(Dim3)
     def __send_share_impl(self, secrets: List,
-                          schema: List[Union[str, ColumnSchema]],
+                          schema: List[Union[str, Schema]],
                           matching_column: int,
                           piece_size: int) -> Dict:
         if piece_size < 1000 or piece_size > 1_000_000:
@@ -213,7 +213,7 @@ class QMPCServer:
                 "matching_column must be in the "
                 "range of 1 to the size of schema")
 
-        typed_schema: List[ColumnSchema] = QMPCServer.__convert_schema(schema)
+        typed_schema: List[Schema] = QMPCServer.__convert_schema(schema)
 
         # TODO parse_csv経由でsend_shareをすると同じチェックをすることになる．
         if not format_check(secrets, schema):
@@ -365,7 +365,7 @@ class QMPCServer:
                             is_table = True
                         for val in r.result:
                             col_sch = google.protobuf.json_format.Parse(
-                                val, ColumnSchema())
+                                val, Schema())
                             schema_1p.append(col_sch)
                             # schema = col_sch
                     else:

@@ -16,7 +16,7 @@ JobStatus \
 ComputationMethod \
     = common_types_pb2.ComputationMethod
 JobErrorInfo = common_types_pb2.JobErrorInfo
-ColumnSchema = common_types_pb2.ColumnSchema
+Schema = common_types_pb2.Schema
 ShareValueTypeEnum = common_types_pb2.ShareValueTypeEnum
 
 
@@ -39,7 +39,7 @@ class QMPC:
     def parse_csv_file(self,
                        filename: str,
                        matching_column: Optional[int] = 1) \
-            -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_file. "
                     f"[filename]='{filename}'")
         return parse_csv(filename, matching_column)
@@ -47,7 +47,7 @@ class QMPC:
     def parse_csv_file_to_bitvector(self, filename: str,
                                     exclude: List[int] = [],
                                     matching_column: Optional[int] = 1) \
-            -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_file_to_bitvector. "
                     f"[filename]='{filename}' "
                     f"[not bitvector columns]={exclude}")
@@ -56,7 +56,7 @@ class QMPC:
     def parse_csv_data(self,
                        data: List[List[str]],
                        matching_column: Optional[int] = 1) \
-            -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_data. "
                     f"[data size]={len(data)}x{len(data[0])}")
         return parse(data, matching_column)
@@ -64,13 +64,13 @@ class QMPC:
     def parse_csv_data_to_bitvector(self, data: List[List[str]],
                                     exclude: List[int] = [],
                                     matching_column: Optional[int] = 1) \
-            -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_file_to_bitvector. "
                     f"[data size]={len(data)}x{len(data[0])} "
                     f"[not bitvector columns]={exclude}")
         return parse_to_bitvector(data, exclude, matching_column)
 
-    def send_share(self, secrets: List, schema: List[ColumnSchema],
+    def send_share(self, secrets: List, schema: List[Schema],
                    matching_column: int = 1,
                    piece_size: int = 1_000_000) -> Dict:
         logger.info("send_share request. "
