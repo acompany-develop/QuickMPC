@@ -69,7 +69,7 @@ class Share:
 
     @sharize.register((Dim1, float))
     @staticmethod
-    def __sharize_1dimension_float(secrets: List[float], party_size: int = 3) \
+    def __sharize_1dimension_float(secrets: List[Union[float, Decimal]], party_size: int = 3) \
             -> List[List[str]]:
         """ 1次元リストのシェア化 """
         rnd: RandomInterface = ChaCha20()
@@ -82,6 +82,12 @@ class Share:
         shares_str: List[List[str]] = \
             np.vectorize(Share.__to_str)([s1, *shares]).tolist()
         return shares_str
+
+    @sharize.register((Dim1, Decimal))
+    @staticmethod
+    def __sharize_1dimension_decimal(secrets: List[Decimal], party_size: int = 3) \
+            -> List[List[str]]:
+        return Share.__sharize_1dimension_float(secrets, party_size)
 
     @sharize.register((Dim1, int))
     @staticmethod
@@ -226,12 +232,26 @@ class Share:
             return Share.convert_int_to_str
         return float
 
+    @convert_type.register(str)
+    @staticmethod
+    def __pre_convert_type_str(
+            value: str, schema: Optional[ColumnSchema] = None) -> list:
+        func = Share.get_pre_convert_func(schema)
+        return func(value)
+
     @convert_type.register((Dim1, str))
     @staticmethod
     def __pre_convert_type_list(
             values: List[str], schema: Optional[ColumnSchema] = None) -> list:
         func = Share.get_pre_convert_func(schema)
         return [func(x) for x in values]
+
+    @convert_type.register(Decimal)
+    @staticmethod
+    def __convert_type_decimal(
+            value: Decimal, schema: Optional[ColumnSchema] = None) -> list:
+        func = Share.get_convert_func(schema)
+        return func(value)
 
     @convert_type.register(Dim1)
     @staticmethod
