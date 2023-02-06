@@ -101,6 +101,10 @@ def test_overload_dim():
         def method6(self, val):
             return 6
 
+        @method.register((Dim1, str))
+        def method7(self, val):
+            return 7
+
     d: Class = Class()
     assert (d.method({}) == 0)
     assert (d.method(0) == 1)
@@ -109,4 +113,5 @@ def test_overload_dim():
     assert (d.method([[[0]]]) == 4)
     assert (d.method([{}]) == 5)
     assert (d.method([[{}]]) == 6)
+    assert (d.method(['0']) == 7)
     assert (d.method([[[[0]]]]) == 0)
