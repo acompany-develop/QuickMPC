@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install tox
-          tox -e flake8,mypy --notest
+          tox -e flake8,mypy --notest --skip-pkg-install
 
       - name: Lint with flake8
         run: |
@@ -63,7 +63,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install tox
-          tox -e ${{ matrix.version.tox }} --notest
+          tox -e ${{ matrix.version.tox }} --notest --skip-pkg-install
 
       - name: Test with pytest
         run: |
