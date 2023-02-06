@@ -34,6 +34,13 @@ _GETELAPSEDTIMEREQUEST = DESCRIPTOR.message_types_by_name['GetElapsedTimeRequest
 _GETELAPSEDTIMERESPONSE = DESCRIPTOR.message_types_by_name['GetElapsedTimeResponse']
 _GETJOBERRORINFOREQUEST = DESCRIPTOR.message_types_by_name['GetJobErrorInfoRequest']
 _GETJOBERRORINFORESPONSE = DESCRIPTOR.message_types_by_name['GetJobErrorInfoResponse']
+ColumnSchema = _reflection.GeneratedProtocolMessageType('ColumnSchema', (_message.Message,), {
+    'DESCRIPTOR': _COLUMNSCHEMA,
+    '__module__': 'libc_to_manage_pb2'
+    # @@protoc_insertion_point(class_scope:libctomanage.ColumnSchema)
+})
+_sym_db.RegisterMessage(ColumnSchema)
+
 SendSharesRequest = _reflection.GeneratedProtocolMessageType('SendSharesRequest', (_message.Message,), {
     'DESCRIPTOR': _SENDSHARESREQUEST,
     '__module__': 'libc_to_manage_pb2'

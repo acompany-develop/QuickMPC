@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, List, Tuple, Callable, Any
+from typing import ClassVar, List, Tuple, Callable, Any, Union
 
 import numpy as np
 
@@ -18,10 +18,22 @@ class Share:
     __share_random_range: ClassVar[Tuple[Decimal, Decimal]] =\
         (Decimal(-(1 << 64)), Decimal(1 << 64))
 
+    @methoddispatch(is_static_method=True)
     @staticmethod
-    def __to_str(val: Decimal) -> str:
+    def __to_str(_):
+        logger.error("Invalid argument on stringfy.")
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @__to_str.register(Decimal)
+    @staticmethod
+    def __decimal_to_str(val: Decimal) -> str:
         # InfinityをCCで読み込めるinfに変換
         return 'inf' if Decimal.is_infinite(val) else str(val)
+
+    @__to_str.register(int)
+    @staticmethod
+    def __int_to_str(val: int) -> str:
+        return str(val)
 
     @methoddispatch(is_static_method=True)
     @staticmethod
@@ -47,9 +59,9 @@ class Share:
         shares_str: List[str] = [str(n) for n in shares]
         return shares_str
 
-    @sharize.register(Dim1)
+    @sharize.register((Dim1, float))
     @staticmethod
-    def __sharize_1dimension(secrets: List[float], party_size: int = 3) \
+    def __sharize_1dimension_float(secrets: List[float], party_size: int = 3) \
             -> List[List[str]]:
         """ 1次元リストのシェア化 """
         rnd: RandomInterface = ChaCha20()
@@ -63,25 +75,38 @@ class Share:
             np.vectorize(Share.__to_str)([s1, *shares]).tolist()
         return shares_str
 
-    @sharize.register(Dim2)
+    @sharize.register((Dim1, int))
     @staticmethod
-    def __sharize_2dimension(secrets: List[List[float]],
-                             party_size: int = 3) -> List[List[List[str]]]:
-        """ 2次元リストのシェア化 """
+    def __sharize_1dimension_int(secrets: List[int], party_size: int = 3) \
+            -> List[List[str]]:
+        """ 1次元リストのシェア化 """
         rnd: RandomInterface = ChaCha20()
         secrets_size: int = len(secrets)
-        secrets_size2: int = len(secrets[0])
         shares: np.ndarray = np.array([
-            [rnd.get_list(*Share.__share_random_range, secrets_size2)
-             for __ in range(secrets_size)]
-            for ___ in range(party_size - 1)
-        ])
-        s1: np.ndarray = np.subtract(
-            np.frompyfunc(Decimal, 1, 1)(np.array(secrets, dtype=Decimal)),
-            np.sum(shares, axis=0))
-        shares_str: List[List[List[str]]] = \
+            # TODO: generate random for integers
+            [0] * secrets_size
+            for __ in range(party_size - 1)])
+        s1: np.ndarray = np.subtract(np.frompyfunc(int, 1, 1)(secrets),
+                                     np.sum(shares, axis=0))
+        shares_str: List[List[str]] = \
             np.vectorize(Share.__to_str)([s1, *shares]).tolist()
         return shares_str
+
+    @sharize.register(Dim2)
+    @staticmethod
+    def __sharize_2dimension(secrets: List[List[Union[float, int]]],
+                             party_size: int = 3) -> List[List[List[str]]]:
+        """ 2次元リストのシェア化 """
+        print('__sharize_2dimension')
+        transposed: List[Union[List[int], List[float]]
+                         ] = np.array(secrets).transpose().tolist()
+        dst: List[List[List[str]]] = []
+        for col in transposed:
+            sharized_col: List[List[str]] = Share.sharize(col, party_size)
+            dst.append(sharized_col)
+        dst = np.array(dst).transpose(1, 2, 0).tolist()
+
+        return dst
 
     @sharize.register(dict)
     @staticmethod
