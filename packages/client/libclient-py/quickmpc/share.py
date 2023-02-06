@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, List, Tuple, Callable, Any, Union, Optional
+from typing import ClassVar, List, Tuple, Callable, Any, Union, Optional, Sequence
 
 import numpy as np
 
@@ -244,9 +244,11 @@ class Share:
     @convert_type.register((Dim1, str))
     @staticmethod
     def __pre_convert_type_list(
-            values: List[str], schema: Optional[ColumnSchema] = None) -> list:
-        func = Share.get_pre_convert_func(schema)
-        return [func(x) for x in values]
+            values: List[str], schema: Optional[Sequence[Optional[ColumnSchema]]] = None) -> list:
+        if schema is None:
+            schema = [None] * len(values)
+        return [Share.convert_type(x, sch)
+                for x, sch in zip(values, schema)]
 
     @convert_type.register(Decimal)
     @staticmethod
@@ -255,25 +257,25 @@ class Share:
         func = Share.get_convert_func(schema)
         return func(value)
 
+    @convert_type.register(int)
+    @staticmethod
+    def __convert_type_int(
+            value: int, schema: Optional[ColumnSchema] = None) -> list:
+        func = Share.get_convert_func(schema)
+        return func(value)
+
     @convert_type.register(Dim1)
     @staticmethod
     def __convert_type_list(
-            values: List[Any], schema: Optional[ColumnSchema] = None) -> list:
-        func = Share.get_convert_func(schema)
-        return [func(x) for x in values]
+            values: List[Any], schema: Optional[Sequence[Optional[ColumnSchema]]] = None) -> list:
+        if schema is None:
+            schema = [None] * len(values)
+        return [Share.convert_type(x, sch)
+                for x, sch in zip(values, schema)]
 
     @convert_type.register(Dim2)
     @staticmethod
     def __convert_type_table(
             table: List[List],
             schema: Optional[List[ColumnSchema]] = None) -> list:
-        transposed = np.array(table).transpose().tolist()
-        schema_converted: List[Optional[ColumnSchema]] = [
-            None] * len(transposed)
-        if schema is not None:
-            schema_converted = [s for s in schema]
-        converted = [
-            Share.convert_type(
-                col, sch) for col, sch in zip(
-                transposed, schema_converted)]
-        return np.array(converted).transpose().tolist()
+        return [Share.convert_type(row, schema) for row in table]
