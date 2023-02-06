@@ -2,7 +2,7 @@ import csv
 import logging
 from hashlib import sha512
 from dataclasses import dataclass
-from typing import List, Tuple, Dict, Union, Sequence
+from typing import List, Tuple, Dict, Union, Sequence, Optional
 
 from .overload_tools import (Dim1, methoddispatch)
 from ..exception import ArgmentError
@@ -14,12 +14,8 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
-SUPPORT_TYPES: Dict[str, ShareValueTypeEnum.ValueType] = {
-    'float': ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'),
-    'str':
-        ShareValueTypeEnum.Value(
-            'SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION'
-    ),
+SUPPORT_TAGS: Dict[str, ShareValueTypeEnum.ValueType] = {
+    'id': ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'),
 }
 
 ShareValueType = Union[float, int]
@@ -91,17 +87,44 @@ def to_int(val: str, encoding='utf-8') -> int:
     return int.from_bytes(encoded, byteorder='big')
 
 
-def find_type(col_schema: str) -> ShareValueTypeEnum.ValueType:
-    type_str, *_ = col_schema.split(':')
+def check_float_data(val: str) -> bool:
+    try:
+        _ = float(val)
+        return True
+    except ValueError:
+        return False
 
-    if type_str in SUPPORT_TYPES:
-        return SUPPORT_TYPES[type_str]
 
-    return ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT')
+def find_type(col_schema: str,
+              col_data: List[str], is_matching_column: bool) -> ShareValueTypeEnum.ValueType:
+    # check tag
+    type_str, *remains = col_schema.split(':')
+
+    if len(remains) > 0:
+        if type_str in SUPPORT_TAGS:
+            return SUPPORT_TAGS[type_str]
+
+    # check if the column of interest is the one used for matching
+    if is_matching_column:
+        return ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT
+
+    # determine type through number of string which is considered float value
+    res_type = ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT
+    num_float = sum([check_float_data(v) for v in col_data])
+
+    if num_float < len(col_data) / 2:
+        res_type = ShareValueTypeEnum.SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION
+
+    return res_type
 
 
-def find_types(schema: List[str]) -> List[ShareValueTypeEnum.ValueType]:
-    return [find_type(col) for col in schema]
+def find_types(schema: List[str], data: List[List[str]], matching_column: Optional[int] = None
+               ) -> List[ShareValueTypeEnum.ValueType]:
+    # transpose to get column oriented list
+    transposed: List[List[str]] = np.array(
+        data, dtype=str).transpose().tolist()
+    return [find_type(sch, col, idx == matching_column)
+            for idx, (sch, col) in enumerate(zip(schema, transposed), start=1)]
 
 
 def convert(element: str,
@@ -114,10 +137,10 @@ def convert(element: str,
     return to_float(element)
 
 
-def parse(data: List[List[str]]) \
+def parse(data: List[List[str]], matching_column: Optional[int] = None) \
         -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
     schema_name: List[str] = data[0]
-    types = find_types(schema_name)
+    types = find_types(schema_name, data[1:], matching_column)
     schema = [ColumnSchema(name=name, type=type)
               for name, type in zip(schema_name, types)]
 
@@ -136,9 +159,9 @@ def parse(data: List[List[str]]) \
     return secrets, schema
 
 
-def parse_to_bitvector(data: List[List[str]], exclude: List[int] = []) \
+def parse_to_bitvector(data: List[List[str]], exclude: List[int] = [], matching_column: Optional[int] = None) \
         -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
-    secrets, schema = parse(data)
+    secrets, schema = parse(data, matching_column)
 
     secrets_bitbevtor: List[List[float]] = []
     schema_bitvector: List[ColumnSchema] = []
@@ -174,17 +197,17 @@ def parse_to_bitvector(data: List[List[str]], exclude: List[int] = []) \
 
 
 def parse_csv(
-    filename: str) \
+    filename: str, matching_column: Optional[int] = None) \
         -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
     with open(filename) as f:
         reader = csv.reader(f)
         text: List[List[str]] = [row for row in reader]
-        return parse(text)
+        return parse(text, matching_column)
 
 
-def parse_csv_to_bitvector(filename: str, exclude: List[int] = []) ->  \
+def parse_csv_to_bitvector(filename: str, exclude: List[int] = [], matching_column: Optional[int] = None) ->  \
         Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
     with open(filename) as f:
         reader = csv.reader(f)
         text: List[List[str]] = [row for row in reader]
-        return parse_to_bitvector(text, exclude)
+        return parse_to_bitvector(text, exclude, matching_column)
