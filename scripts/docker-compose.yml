@@ -269,8 +269,8 @@ services:
     healthcheck:
       test: [
           "CMD-SHELL",
-          "/bin/grpc_health_probe -addr=manage_container1:50010 &&
-          /bin/grpc_health_probe -addr=manage_container1:50011
+          "/bin/grpc_health_probe -addr=manage_container1:50011 &&
+          /bin/grpc_health_probe -addr=manage_container1:51011
           ",
         ]
       interval: 3s
@@ -332,8 +332,8 @@ services:
     healthcheck:
       test: [
           "CMD-SHELL",
-          "/bin/grpc_health_probe -addr=manage_container2:50010 &&
-          /bin/grpc_health_probe -addr=manage_container2:50011
+          "/bin/grpc_health_probe -addr=manage_container2:50011 &&
+          /bin/grpc_health_probe -addr=manage_container2:51011
           ",
         ]
       interval: 3s
@@ -395,8 +395,8 @@ services:
     healthcheck:
       test: [
           "CMD-SHELL",
-          "/bin/grpc_health_probe -addr=manage_container3:50010 &&
-          /bin/grpc_health_probe -addr=manage_container3:50011
+          "/bin/grpc_health_probe -addr=manage_container3:50011 &&
+          /bin/grpc_health_probe -addr=manage_container3:51011
           ",
         ]
       interval: 3s
