@@ -115,10 +115,9 @@ class Share:
         """ 2次元リストのシェア化 """
         transposed: List[Union[List[int], List[float]]] \
             = np.array(secrets, dtype=object).transpose().tolist()
-        dst: List[List[List[str]]] = []
-        for col in transposed:
-            sharized_col: List[List[str]] = Share.sharize(col, party_size)
-            dst.append(sharized_col)
+        dst: List[List[List[str]]] = [
+            Share.sharize(col, party_size) for col in transposed
+        ]
         dst = np.array(dst, dtype=object).transpose(1, 2, 0).tolist()
 
         return dst
