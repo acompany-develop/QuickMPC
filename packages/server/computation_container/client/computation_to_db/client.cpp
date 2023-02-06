@@ -9,7 +9,7 @@
 
 #include <google/protobuf/util/json_util.h>
 
-#include "ValueTable.hpp"
+#include "value_table.hpp"
 
 namespace qmpc::ComputationToDb
 {
