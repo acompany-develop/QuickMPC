@@ -726,6 +726,9 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.1.10
+    depends_on:
+      dev_mc_envoy1:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
@@ -756,6 +759,9 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.2.10
+    depends_on:
+      dev_mc_envoy2:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
@@ -786,6 +792,9 @@ services:
     networks:
       shared-network:
         ipv4_address: 10.0.3.10
+    depends_on:
+      dev_mc_envoy3:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
