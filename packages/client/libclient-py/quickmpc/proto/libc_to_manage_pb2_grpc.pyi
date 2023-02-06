@@ -33,14 +33,6 @@ class LibcToManageStub:
         libc_to_manage_pb2.GetComputationResultRequest,
         libc_to_manage_pb2.GetComputationResultResponse,
     ]
-    SendModelParam: grpc.UnaryUnaryMultiCallable[
-        libc_to_manage_pb2.SendModelParamRequest,
-        libc_to_manage_pb2.SendModelParamResponse,
-    ]
-    Predict: grpc.UnaryUnaryMultiCallable[
-        libc_to_manage_pb2.PredictRequest,
-        libc_to_manage_pb2.PredictResponse,
-    ]
     GetDataList: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.GetDataListRequest,
         libc_to_manage_pb2.GetDataListResponse,
@@ -89,18 +81,6 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
         request: libc_to_manage_pb2.GetComputationResultRequest,
         context: grpc.ServicerContext,
     ) -> collections.abc.Iterator[libc_to_manage_pb2.GetComputationResultResponse]: ...
-    @abc.abstractmethod
-    def SendModelParam(
-        self,
-        request: libc_to_manage_pb2.SendModelParamRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.SendModelParamResponse: ...
-    @abc.abstractmethod
-    def Predict(
-        self,
-        request: libc_to_manage_pb2.PredictRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.PredictResponse: ...
     @abc.abstractmethod
     def GetDataList(
         self,
