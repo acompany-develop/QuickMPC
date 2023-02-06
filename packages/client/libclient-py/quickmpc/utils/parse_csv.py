@@ -96,7 +96,8 @@ def check_float_data(val: str) -> bool:
 
 
 def find_type(col_schema: str,
-              col_data: List[str], is_matching_column: bool) -> ShareValueTypeEnum.ValueType:
+              col_data: List[str], is_matching_column: bool) \
+        -> ShareValueTypeEnum.ValueType:
     # check tag
     type_str, *remains = col_schema.split(':')
 
@@ -113,12 +114,15 @@ def find_type(col_schema: str,
     num_float = sum([check_float_data(v) for v in col_data])
 
     if num_float < len(col_data) / 2:
-        res_type = ShareValueTypeEnum.SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION
+        res_type = \
+            ShareValueTypeEnum.SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION
 
     return res_type
 
 
-def find_types(schema: List[str], data: List[List[str]], matching_column: Optional[int] = None
+def find_types(schema: List[str],
+               data: List[List[str]],
+               matching_column: Optional[int] = None
                ) -> List[ShareValueTypeEnum.ValueType]:
     # transpose to get column oriented list
     transposed: List[List[str]] = np.array(
@@ -159,7 +163,9 @@ def parse(data: List[List[str]], matching_column: Optional[int] = None) \
     return secrets, schema
 
 
-def parse_to_bitvector(data: List[List[str]], exclude: List[int] = [], matching_column: Optional[int] = None) \
+def parse_to_bitvector(data: List[List[str]],
+                       exclude: List[int] = [],
+                       matching_column: Optional[int] = None) \
         -> Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
     secrets, schema = parse(data, matching_column)
 
@@ -205,7 +211,9 @@ def parse_csv(
         return parse(text, matching_column)
 
 
-def parse_csv_to_bitvector(filename: str, exclude: List[int] = [], matching_column: Optional[int] = None) ->  \
+def parse_csv_to_bitvector(filename: str,
+                           exclude: List[int] = [],
+                           matching_column: Optional[int] = None) ->  \
         Tuple[List[List[ShareValueType]], List[ColumnSchema]]:
     with open(filename) as f:
         reader = csv.reader(f)

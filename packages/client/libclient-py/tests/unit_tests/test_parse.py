@@ -130,7 +130,9 @@ def test_parse_csv():
 def test_parse_csv_to_bitvector():
     """ csvを正しくパースできるかTest """
     secrets, schema = parse_csv_to_bitvector(
-        f"{os.path.dirname(__file__)}/test_files/data3.csv", [0], matching_column=1)
+        f"{os.path.dirname(__file__)}/test_files/data3.csv",
+        [0],
+        matching_column=1)
     assert (np.allclose(secrets, d2_secrets))
     assert (schema == d2_schema)
 
