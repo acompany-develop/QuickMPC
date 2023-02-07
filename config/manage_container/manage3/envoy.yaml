@@ -1,7 +1,7 @@
 admin:  # 管理者画面の設定
   access_log_path: /tmp/admin_access.log  # ログを保存するファイル
   address:
-    socket_address: { address: 0.0.0.0, port_value: 9901 }  # 9901番ポートでlisten
+    socket_address: { address: 0.0.0.0, port_value: 9903 }  # 9903番ポートでlisten
 
 static_resources:
   listeners:
