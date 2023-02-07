@@ -109,7 +109,7 @@ TEST(ComputationToDbTest, SuccessReadShareWithSchemaTest)
     }
 }
 )";
-    std::cerr << data << std::endl;
+
     fs::create_directories("/db/share/" + data_id);
     auto ofs = std::ofstream("/db/share/" + data_id + "/0");
     ofs << data;
