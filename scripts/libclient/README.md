@@ -33,9 +33,9 @@ command: ["/bin/bash", "-c", "pipenv run pytest src/benchmark -s -v -log-cli-lev
 を対象のIPに変更する．
 ```Python
 qmpc: QMPC = QMPC([
-    "http://<party1のIP>:9000",
-    "http://<party2のIP>:9000",
-    "http://<party3のIP>:9000",
+    "http://<party1のIP>:50000",
+    "http://<party2のIP>:50000",
+    "http://<party3のIP>:50000",
 ])
 ```
 

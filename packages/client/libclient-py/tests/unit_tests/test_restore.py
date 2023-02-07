@@ -5,9 +5,9 @@ from quickmpc import QMPC
 
 class TestQMPC:
     qmpc: QMPC = QMPC(
-        ["http://localhost:9001",
-         "http://localhost:9002",
-         "http://localhost:9003"],
+        ["http://localhost:50001",
+         "http://localhost:50002",
+         "http://localhost:50003"],
         "token_demo"
     )
 

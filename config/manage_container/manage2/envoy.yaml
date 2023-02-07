@@ -7,7 +7,7 @@ static_resources:
   listeners:
   - name: listener_0
     address:
-      socket_address: { address: 0.0.0.0, port_value: 9000 }  # 9000番ポートでlisten
+      socket_address: { address: 0.0.0.0, port_value: 50000 }  # 50000番ポートでlisten
     filter_chains:  # リクエストのフィルタリングの設定
     - filters:
       - name: envoy.filters.network.http_connection_manager  # HTTP接続用に設計された組み込みフィルター

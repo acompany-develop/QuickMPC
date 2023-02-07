@@ -52,9 +52,9 @@ if __name__ == '__main__':
     """ Step 1. 諸準備 """
     # QuickMPC Setting
     qmpc: QMPC = QMPC(
-        ["http://localhost:9001",
-         "http://localhost:9002",
-         "http://localhost:9003"]
+        ["http://localhost:50001",
+         "http://localhost:50002",
+         "http://localhost:50003"]
     )
     # データ Setting
     size = 50000
