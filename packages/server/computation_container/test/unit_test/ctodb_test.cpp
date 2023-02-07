@@ -417,13 +417,14 @@ TEST(ComputationToDbTest, SuccessGetSchemasTest)
 
 TEST(ComputationToDbTest, SuccessWriteTableTest)
 {
-    initialize("tmp");
+    const std::string data_id = "SuccessWriteTableTest";
+    initialize(data_id);
 
     std::vector<std::vector<std::string>> table = {{"1", "2"}, {"3", "4"}};
     std::vector<std::string> schema = {"attr1", "attr2"};
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto data_id = cc_to_db->writeTable(table, schema);
+    cc_to_db->writeTable(data_id, table, schema);
 
     auto ifs = std::ifstream("/db/share/" + data_id + "/0");
     std::string data;
