@@ -4,9 +4,9 @@ import time
 from quickmpc import QMPC, JobStatus
 
 qmpc: QMPC = QMPC([
-    "http://localhost:9001",
-    "http://localhost:9002",
-    "http://localhost:9003",
+    "http://localhost:50001",
+    "http://localhost:50002",
+    "http://localhost:50003",
 ])
 
 def __try_get_computation_result(job_uuid, is_limit):

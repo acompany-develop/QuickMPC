@@ -113,6 +113,6 @@ def serve(num: int):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     libc_to_manage_pb2_grpc.add_LibcToManageServicer_to_server(
         LibToManageServiceServicer(), server)
-    server.add_insecure_port('localhost:900{}'.format(num))
+    server.add_insecure_port('localhost:5000{}'.format(num))
 
     return server

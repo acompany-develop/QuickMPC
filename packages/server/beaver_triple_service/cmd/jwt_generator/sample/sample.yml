@@ -2,9 +2,9 @@
 iss: 'QuickMPC'
 sub: '' # "Subject", this field is filled by generator
 aud:
-  - 'http://localhost:9001'
-  - 'http://localhost:9002'
-  - 'http://localhost:9003'
+  - 'http://localhost:50001'
+  - 'http://localhost:50002'
+  - 'http://localhost:50003'
 # "Expiration Time" represented by unix time
 # `github.com/golang-jwt/jwt/v4` v4.4.2 package will parse this as `float64`,
 # and `time.Now().Before(time.Unix(math.MaxInt64, 0))` returns `false`,

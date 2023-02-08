@@ -16,9 +16,9 @@ def output_table(title: int, schema: List[str], table: List):
 if __name__ == '__main__':
     # QuickMPC Setting
     qmpc: QMPC = QMPC(
-        ["http://localhost:9001",
-         "http://localhost:9002",
-         "http://localhost:9003"]
+        ["http://localhost:50001",
+         "http://localhost:50002",
+         "http://localhost:50003"]
     )
 
     if not len(sys.argv) == 2:

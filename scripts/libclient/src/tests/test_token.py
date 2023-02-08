@@ -28,9 +28,9 @@ def __preprocess():
 
 def check_all_request(token: str):
     qmpc_inner: QMPC = QMPC(
-        ["http://localhost:9001",
-         "http://localhost:9002",
-         "http://localhost:9003"],
+        ["http://localhost:50001",
+         "http://localhost:50002",
+         "http://localhost:50003"],
         token
     )
     data_id, job_uuid = __preprocess()

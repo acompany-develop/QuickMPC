@@ -17,9 +17,9 @@ def send_share(filename: str):
 if __name__ == '__main__':
     # QuickMPC Setting
     qmpc: QMPC = QMPC(
-        ["http://localhost:9001",
-         "http://localhost:9002",
-         "http://localhost:9003"]
+        ["http://localhost:50001",
+         "http://localhost:50002",
+         "http://localhost:50003"]
     )
 
     # 複数のシェアを作成・送信

@@ -32,6 +32,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy1:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container"]
     healthcheck:
       test: [
@@ -43,6 +45,22 @@ services:
       interval: 3s
       timeout: 5s
       start_period: 5s
+
+  dev_cc_envoy1:
+    container_name: compute_envoy_container1
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: ../config/computation_container/compute1/envoy.yaml
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "50020"
+      - "51020"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.21
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
 
   dev_cc2:
     tty: true # docker run -t
@@ -70,6 +88,9 @@ services:
     env_file:
       - ../config/computation_container/compute2/.env
       - ../config/computation_container/jwt/client.sample.env
+    depends_on:
+      dev_cc_envoy2:
+        condition: service_started
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -84,6 +105,22 @@ services:
       interval: 3s
       timeout: 5s
       start_period: 5s
+
+  dev_cc_envoy2:
+    container_name: compute_envoy_container2
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: ../config/computation_container/compute2/envoy.yaml
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "50020"
+      - "51020"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.21
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
 
   dev_cc3:
     tty: true
@@ -111,6 +148,9 @@ services:
     env_file:
       - ../config/computation_container/compute3/.env
       - ../config/computation_container/jwt/client.sample.env
+    depends_on:
+      dev_cc_envoy3:
+        condition: service_started
     networks:
       shared-network:
         ipv4_address: 10.0.3.20
@@ -125,6 +165,22 @@ services:
       interval: 3s
       timeout: 5s
       start_period: 5s
+
+  dev_cc_envoy3:
+    container_name: compute_envoy_container3
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: ../config/computation_container/compute3/envoy.yaml
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "50020"
+      - "51020"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.3.21
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
 
   # dev_bts_envoy:
   #   tty: true # 起動しっぱなし
@@ -204,8 +260,8 @@ services:
     env_file:
       - ../config/manage_container/manage1/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.1.10
@@ -213,8 +269,8 @@ services:
     healthcheck:
       test: [
           "CMD-SHELL",
-          "/bin/grpc_health_probe -addr=manage_container1:50010 &&
-          /bin/grpc_health_probe -addr=manage_container1:50011
+          "/bin/grpc_health_probe -addr=manage_container1:50011 &&
+          /bin/grpc_health_probe -addr=manage_container1:51011
           ",
         ]
       interval: 3s
@@ -236,8 +292,9 @@ services:
         target: /etc/envoy/envoy.yaml
     expose:
       - "15000"
+      - "50010"
     ports:
-      - "0.0.0.0:9001:9000"
+      - "0.0.0.0:50001:50000"
     networks:
       shared-network:
         ipv4_address: 10.0.1.11
@@ -266,8 +323,8 @@ services:
     env_file:
       - ../config/manage_container/manage2/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.2.10
@@ -275,8 +332,8 @@ services:
     healthcheck:
       test: [
           "CMD-SHELL",
-          "/bin/grpc_health_probe -addr=manage_container2:50010 &&
-          /bin/grpc_health_probe -addr=manage_container2:50011
+          "/bin/grpc_health_probe -addr=manage_container2:50011 &&
+          /bin/grpc_health_probe -addr=manage_container2:51011
           ",
         ]
       interval: 3s
@@ -298,8 +355,9 @@ services:
         target: /etc/envoy/envoy.yaml
     expose:
       - "15000"
+      - "50010"
     ports:
-      - "0.0.0.0:9002:9000"
+      - "0.0.0.0:50002:50000"
     networks:
       shared-network:
         ipv4_address: 10.0.2.11
@@ -328,8 +386,8 @@ services:
     env_file:
       - ../config/manage_container/manage3/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.3.10
@@ -337,8 +395,8 @@ services:
     healthcheck:
       test: [
           "CMD-SHELL",
-          "/bin/grpc_health_probe -addr=manage_container3:50010 &&
-          /bin/grpc_health_probe -addr=manage_container3:50011
+          "/bin/grpc_health_probe -addr=manage_container3:50011 &&
+          /bin/grpc_health_probe -addr=manage_container3:51011
           ",
         ]
       interval: 3s
@@ -360,8 +418,9 @@ services:
         target: /etc/envoy/envoy.yaml
     expose:
       - "15000"
+      - "50010"
     ports:
-      - "0.0.0.0:9003:9000"
+      - "0.0.0.0:50003:50000"
     networks:
       shared-network:
         ipv4_address: 10.0.3.11
@@ -458,6 +517,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy1:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc2:
@@ -491,6 +552,9 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+    depends_on:
+      dev_cc_envoy2:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   medium_cc3:
@@ -525,6 +589,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy3:
+        condition: service_started
     command: ["/bin/bash", "-c", "printenv && ./computation_container_test"]
 
   benchmark_cc1:
@@ -558,6 +624,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy1:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
@@ -592,6 +660,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy2:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
@@ -627,6 +697,8 @@ services:
     depends_on:
       dev_bts:
         condition: service_healthy
+      dev_cc_envoy3:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && ./computation_container_benchmark"]
 
@@ -652,11 +724,14 @@ services:
     env_file:
       - ../config/manage_container/manage1/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.1.10
+    depends_on:
+      dev_mc_envoy1:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
@@ -682,11 +757,14 @@ services:
     env_file:
       - ../config/manage_container/manage2/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.2.10
+    depends_on:
+      dev_mc_envoy2:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
@@ -712,11 +790,14 @@ services:
     env_file:
       - ../config/manage_container/manage3/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.3.10
+    depends_on:
+      dev_mc_envoy3:
+        condition: service_started
     command:
       ["/bin/bash", "-c", "printenv && go test ./integration_test/... -v -cover"]
 
@@ -747,8 +828,8 @@ services:
     env_file:
       - ../config/manage_container/manage1/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.1.10
@@ -780,8 +861,8 @@ services:
     env_file:
       - ../config/manage_container/manage2/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.2.10
@@ -813,8 +894,8 @@ services:
     env_file:
       - ../config/manage_container/manage3/.env
     expose:
-      - "50010"
       - "50011"
+      - "51011"
     networks:
       shared-network:
         ipv4_address: 10.0.3.10

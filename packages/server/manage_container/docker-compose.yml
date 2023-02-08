@@ -42,7 +42,7 @@ services:
         source: ./envoy.yaml
         target: /etc/envoy/envoy.yaml
     ports:
-      - "9001:9001"
+      - "50001:50001"
     command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
 networks:
   shared-network:
