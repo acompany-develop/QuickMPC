@@ -136,10 +136,18 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
 
     constexpr int H = 500;
     constexpr int W = 500;
-    std::vector<std::string> schema;
-    for (int i = 0; i < W; i++) schema.emplace_back("attr" + std::to_string(i + 1));
+    using SchemaType = qmpc::ComputationToDb::ValueTable::SchemaType;
+    std::vector<SchemaType> schema;
+    for (int i = 0; i < W; i++)
+        schema.emplace_back(SchemaType(
+            "attr" + std::to_string(i + 1),
+            pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT
+        ));
     std::vector<std::string> data;
     for (int i = 0; i < W; ++i) data.emplace_back(std::to_string(i + 1));
+
+    std::vector<std::string> schema_str;
+    for (const SchemaType &s : schema) schema_str.emplace_back(std::get<0>(s));
 
     fs::create_directories("/db/share/" + data_id);
     for (int piece_id = 0; piece_id < H; ++piece_id)
@@ -147,7 +155,7 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
         nlohmann::json data_json = {
             {"data_id", data_id},
             {"value", {data}},
-            {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
+            {"meta", {{"piece_id", piece_id}, {"schema", schema_str}}}};
         auto data_str = data_json.dump();
 
         auto ofs = std::ofstream("/db/share/" + data_id + "/" + std::to_string(piece_id));
