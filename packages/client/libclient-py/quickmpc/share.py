@@ -257,7 +257,7 @@ class Share:
     @staticmethod
     def __convert_type_elem(
             value: Union[Decimal, int],
-            schema: Optional[Schema] = None) -> list:
+            schema: Optional[Schema] = None) -> Union[float, str]:
         func = Share.get_convert_func(schema)
         return func(value)
 
