@@ -187,7 +187,7 @@ services:
   #   image: envoyproxy/envoy:v1.17.1
   #   volumes:
   #     - type: bind
-  #       source: ../config/envoy.yaml
+  #       source: ../config/beaver_triple_service/envoy.yaml
   #       target: /etc/envoy/envoy.yaml
   #   expose:
   #     - "9901"
