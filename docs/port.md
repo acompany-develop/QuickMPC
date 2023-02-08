@@ -4,7 +4,7 @@
 
 |  送信元      |  送信先      |  宛先ポート      |  プロトコル      |  プロトコルバージョン  |  備考      |
 |  :--------  |  :--------  |  :-----------  |  :------------  |  :---------------  |  :------- |
-|  [libclient]([libclient](https://github.com/acompany-develop/QuickMPC/tree/main/packages/client/libclient-py#readme))  |  [manage_envoy_container](https://github.com/acompany-develop/QuickMPC/blob/main/config/manage_container/manage1/envoy.yaml)   |  50000          |  https or http  |  gRPC              |           |
+|  [libclient](https://github.com/acompany-develop/QuickMPC/tree/main/packages/client/libclient-py#readme)  |  [manage_envoy_container](https://github.com/acompany-develop/QuickMPC/blob/main/config/manage_container/manage1/envoy.yaml)   |  50000          |  https or http  |  gRPC              |           |
 |  [manage_container](https://github.com/acompany-develop/QuickMPC/tree/main/packages/server/manage_container#readme)     |  [manage_envoy_container](https://github.com/acompany-develop/QuickMPC/blob/main/config/manage_container/manage1/envoy.yaml)   |  50010         |  https or http  |  gRPC              |           |
 |  [manage_envoy_container](https://github.com/acompany-develop/QuickMPC/blob/main/config/manage_container/manage1/envoy.yaml)   |  [manage_container](https://github.com/acompany-develop/QuickMPC/tree/main/packages/server/manage_container#readme)     |  50011, 51011  |  http           |  gRPC              |  内部通信  |
 |  [manage_container](https://github.com/acompany-develop/QuickMPC/tree/main/packages/server/manage_container#readme)     |  [computation_container](https://github.com/acompany-develop/QuickMPC/tree/main/packages/server/computation_container#readme)    |  50010         |  http           |  gRPC              |  内部通信  |
