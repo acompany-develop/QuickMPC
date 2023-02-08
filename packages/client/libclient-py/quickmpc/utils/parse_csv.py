@@ -109,11 +109,11 @@ def find_type(col_schema: str,
     if is_matching_column:
         return ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT
 
-    # determine type through number of string which is considered float value
+    # if even one string is not considered a floating point value,
+    # treat the column as string data
     res_type = ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT
-    num_float = sum([check_float_data(v) for v in col_data])
 
-    if num_float < len(col_data) / 2:
+    if not all([check_float_data(v) for v in col_data]):
         res_type = \
             ShareValueTypeEnum.SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION
 
