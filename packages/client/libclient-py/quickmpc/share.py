@@ -242,31 +242,6 @@ class Share:
         func = Share.get_pre_convert_func(schema)
         return func(value)
 
-    @convert_type.register((Dim1, str))
-    @staticmethod
-    def __pre_convert_type_list(
-        values: List[str],
-        schema: Optional[Sequence[Optional[Schema]]] = None) \
-            -> list:
-        if schema is None:
-            schema = [None] * len(values)
-        return [Share.convert_type(x, sch)
-                for x, sch in zip(values, schema)]
-
-    @convert_type.register(Decimal)
-    @staticmethod
-    def __convert_type_decimal(
-            value: Decimal, schema: Optional[Schema] = None) -> list:
-        func = Share.get_convert_func(schema)
-        return func(value)
-
-    @convert_type.register(int)
-    @staticmethod
-    def __convert_type_int(
-            value: int, schema: Optional[Schema] = None) -> list:
-        func = Share.get_convert_func(schema)
-        return func(value)
-
     @convert_type.register(Dim1)
     @staticmethod
     def __convert_type_list(
@@ -276,6 +251,15 @@ class Share:
             schema = [None] * len(values)
         return [Share.convert_type(x, sch)
                 for x, sch in zip(values, schema)]
+
+    @convert_type.register(Decimal)
+    @convert_type.register(int)
+    @staticmethod
+    def __convert_type_elem(
+            value: Union[Decimal, int],
+            schema: Optional[Schema] = None) -> list:
+        func = Share.get_convert_func(schema)
+        return func(value)
 
     @convert_type.register(Dim2)
     @staticmethod
