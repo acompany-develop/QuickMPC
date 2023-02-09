@@ -1,51 +1,95 @@
+#include <experimental/filesystem>
 #include <string>
 #include <vector>
 
 #include "client/computation_to_db/value_table.hpp"
 #include "gtest/gtest.h"
+namespace fs = std::experimental::filesystem;
 
 // TODO: ValueTableのコンストラクタが変更されたので全部修正する
+
 /****************** Test用の各データ ******************/
-// const std::vector<std::vector<std::string>> table_data1{{"101", "1", "2"}, {"102", "3", "4"}};
-// const std::vector<std::string> schemas1{"id", "attr1", "attr2"};
+// DBを初期化する
+auto initialize(const std::string& id)
+{
+    fs::remove_all("/Db/share/" + id);
+    fs::remove_all("/Db/result/" + id);
+}
+const std::vector<std::vector<std::string>> table_data1{{"101", "1", "2"}, {"102", "3", "4"}};
+const std::vector<std::string> schemas1{"id", "attr1", "attr2"};
 
-// const std::vector<std::vector<std::string>> table_data2{{"101", "5", "6"}, {"103", "7", "8"}};
-// const std::vector<std::string> schemas2{"id", "attr1", "attr3"};
+const std::vector<std::vector<std::string>> table_data2{{"101", "5", "6"}, {"103", "7", "8"}};
+const std::vector<std::string> schemas2{"id", "attr1", "attr3"};
 
-// const std::vector<std::vector<std::string>> table_data3{
-//     {"102", "9", "10", "11"}, {"103", "12", "13", "14"}};
-// const std::vector<std::string> schemas3{"id", "attr1", "attr3", "attr4"};
+const std::vector<std::vector<std::string>> table_data3{
+    {"102", "9", "10", "11"}, {"103", "12", "13", "14"}};
+const std::vector<std::string> schemas3{"id", "attr1", "attr3", "attr4"};
 
-// const std::vector<std::vector<std::string>> table_data4{
-//     {"103", "15", "16", "17"}, {"104", "18", "19", "20"}, {"105", "21", "22", "23"}};
-// const std::vector<std::string> schemas4{"id", "attr3", "attr4", "attr5"};
+const std::vector<std::vector<std::string>> table_data4{
+    {"103", "15", "16", "17"}, {"104", "18", "19", "20"}, {"105", "21", "22", "23"}};
+const std::vector<std::string> schemas4{"id", "attr3", "attr4", "attr5"};
 
-// const std::vector<std::vector<std::string>> table_data5{{"101", "1", "0"}, {"102", "0", "4"}};
-// const std::vector<std::string> schemas5{"id", "attr1", "attr2"};
+const std::vector<std::vector<std::string>> table_data5{{"101", "1", "0"}, {"102", "0", "4"}};
+const std::vector<std::string> schemas5{"id", "attr1", "attr2"};
 
-// const auto table1 = qmpc::ComputationToDb::ValueTable(table_data1, schemas1);
-// const auto table2 = qmpc::ComputationToDb::ValueTable(table_data2, schemas2);
-// const auto table3 = qmpc::ComputationToDb::ValueTable(table_data3, schemas3);
-// const auto table4 = qmpc::ComputationToDb::ValueTable(table_data4, schemas4);
-// const auto table5 = qmpc::ComputationToDb::ValueTable(table_data5, schemas5);
+auto writeTable(
+    const std::string& data_id,
+    const std::vector<std::vector<std::string>>& table,
+    const std::vector<std::string>& schema
+)
+{
+    const int piece_id = 0;
+    nlohmann::json data_json = {
+        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
+    const std::string data = data_json.dump();
 
-// /********************** Test **********************/
-// TEST(ValueTableTest, vjoinTest)
-// {
-//     // table1 に table2 を縦結合した場合
-//     const std::vector<std::vector<std::string>> table_data_1v2{
-//         {"101", "1"}, {"102", "3"}, {"103", "7"}};
-//     const std::vector<std::string> schemas_1v2{"id", "attr1"};
-//     const auto table_1v2 = qmpc::ComputationToDb::ValueTable(table_data_1v2, schemas_1v2);
-//     EXPECT_EQ(table_1v2, table1.vjoin(table2, 1, 1));
+    auto data_path = "/Db/share/" + data_id;
+    fs::create_directories(data_path);
+    std::ofstream ofs(data_path + "/" + std::to_string(piece_id));
+    ofs << data;
+    ofs.close();
+    return data_id;
+}
 
-//     // table3 に table4 を縦結合した場合
-//     const std::vector<std::vector<std::string>> table_data_3v4{
-//         {"102", "10", "11"}, {"103", "13", "14"}, {"104", "18", "19"}, {"105", "21", "22"}};
-//     const std::vector<std::string> schemas_3v4{"id", "attr3", "attr4"};
-//     const auto table_3v4 = qmpc::ComputationToDb::ValueTable(table_data_3v4, schemas_3v4);
-//     EXPECT_EQ(table_3v4, table3.vjoin(table4, 1, 1));
-// }
+/********************** Test **********************/
+TEST(ValueTableTest, vjoinTest)
+{
+    auto data_id1 = "vjoinTest1";
+    auto data_id2 = "vjoinTest2";
+    auto data_id3 = "vjoinTest3";
+    auto data_id4 = "vjoinTest4";
+    writeTable(data_id1, table_data1, schemas1);
+    writeTable(data_id2, table_data2, schemas2);
+    writeTable(data_id3, table_data3, schemas3);
+    writeTable(data_id4, table_data4, schemas4);
+
+    // table1 に table2 を縦結合した場合
+    auto vt1 = qmpc::ComputationToDb::ValueTable(data_id1);
+    auto vt2 = qmpc::ComputationToDb::ValueTable(data_id2);
+    auto join_table1 = vt1.vjoin(vt2, 1, 1);
+
+    const std::vector<std::vector<std::string>> table_data_1v2{
+        {"101", "1"}, {"102", "3"}, {"103", "7"}};
+    const std::vector<std::string> schemas_1v2{"id", "attr1"};
+    EXPECT_EQ(join_table1.getTable(), table_data_1v2);
+    EXPECT_EQ(join_table1.getSchemas(), schemas_1v2);
+
+    // // table3 に table4 を縦結合した場合
+    // auto vt3 = qmpc::ComputationToDb::ValueTable(data_id3);
+    // auto vt4 = qmpc::ComputationToDb::ValueTable(data_id4);
+    // auto join_table2 = vt3.vjoin(vt4, 1, 1);
+
+    // const std::vector<std::vector<std::string>> table_data_3v4{
+    //     {"102", "10", "11"}, {"103", "13", "14"}, {"104", "18", "19"}, {"105", "21", "22"}};
+    // const std::vector<std::string> schemas_3v4{"id", "attr3", "attr4"};
+    // EXPECT_EQ(join_table2.getTable(), table_data_3v4);
+    // EXPECT_EQ(join_table2.getSchemas(), schemas_3v4);
+
+    // initialize(data_id1);
+    // initialize(data_id2);
+    // initialize(data_id3);
+    // initialize(data_id4);
+}
 
 // TEST(ValueTableTest, hjoinTest)
 // {

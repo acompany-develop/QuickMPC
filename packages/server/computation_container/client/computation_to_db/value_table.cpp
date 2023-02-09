@@ -29,6 +29,11 @@ std::vector<::Share> ValueTable::getColumn(int idx) const
     }
     return column;
 }
+std::string ValueTable::joinDataId(const ValueTable &vt) const
+{
+    // TODO: sha256にする
+    return data_id + vt.data_id;
+}
 
 std::vector<std::vector<std::string>> ValueTable::getTable() const
 {
@@ -339,10 +344,10 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
         }
         new_table.emplace_back(new_row);
     }
-    // TODO: 保存してdata_idを取得する
-    const std::string new_data_id = "tmp";
+    const std::string new_data_id = joinDataId(join_table);
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
     return ValueTable(new_data_id);
-    // return ValueTable(new_table, new_schemas);
 }
 
 ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt) const
@@ -404,10 +409,10 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
         ++it_h;
         ++it_join_h;
     }
-    // TODO: 保存してdata_idを取得する
-    const std::string new_data_id = "tmp";
+    const std::string new_data_id = joinDataId(join_table);
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
     return ValueTable(new_data_id);
-    // return ValueTable(new_table, new_schemas);
 }
 
 ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx_tgt) const
@@ -461,10 +466,10 @@ ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx
         }
         new_table.emplace_back(new_row);
     }
-    // TODO: 保存してdata_idを取得する
-    const std::string new_data_id = "tmp";
+    const std::string new_data_id = joinDataId(join_table);
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
     return ValueTable(new_data_id);
-    // return ValueTable(new_table, new_schemas);
 }
 
 ValueTable parseRead(

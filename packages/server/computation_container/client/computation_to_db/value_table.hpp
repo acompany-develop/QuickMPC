@@ -14,6 +14,7 @@ class ValueTable
     const std::string data_id;
 
     std::vector<Share> getColumn(int) const;
+    std::string joinDataId(const ValueTable &vt) const;
 
 public:
     ValueTable(const std::string &);
