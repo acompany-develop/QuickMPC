@@ -12,6 +12,8 @@ aud:
 exp: 9223371974719179007
 # user defined claims is folloing
 room_uuid: '' # this field is filled by generator
+port: 50020
+party_num: 3
 party_info:
   - id: 1
     address: 10.0.1.20
@@ -19,3 +21,4 @@ party_info:
     address: 10.0.2.20
   - id: 3
     address: 10.0.3.20
+with_envoy: false
