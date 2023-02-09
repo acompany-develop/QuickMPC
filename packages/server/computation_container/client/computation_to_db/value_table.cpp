@@ -38,7 +38,22 @@ std::string ValueTable::joinDataId(const ValueTable &vt) const
 std::vector<std::vector<std::string>> ValueTable::getTable() const
 {
     auto db = Client::getInstance();
-    return db->readTable(data_id);
+    int piece_id = 0;
+    std::vector<std::vector<std::string>> read_table;
+    while (true)
+    {
+        auto piece = db->readTable(data_id, piece_id);
+        if (!piece)
+        {
+            break;
+        }
+        for (const auto &row : piece.value())
+        {
+            read_table.emplace_back(row);
+        }
+        ++piece_id;
+    }
+    return read_table;
 }
 
 std::vector<std::string> ValueTable::getSchemas() const

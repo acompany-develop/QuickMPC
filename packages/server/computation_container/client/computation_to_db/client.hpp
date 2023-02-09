@@ -2,6 +2,7 @@
 
 #include <fstream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -23,7 +24,7 @@ public:
     static std::shared_ptr<Client> getInstance();
 
     // Tableの取り出し
-    std::vector<std::vector<std::string>> readTable(const std::string &) const;
+    std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
     std::vector<std::string> readSchema(const std::string &) const;
 
     // Tableの保存

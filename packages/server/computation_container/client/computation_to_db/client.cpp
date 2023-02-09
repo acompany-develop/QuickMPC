@@ -21,33 +21,25 @@ std::shared_ptr<Client> Client::getInstance()
 }
 
 // Tableの取り出し
-std::vector<std::vector<std::string>> Client::readTable(const std::string &data_id) const
+std::optional<std::vector<std::vector<std::string>>> Client::readTable(
+    const std::string &data_id, int piece_id
+) const
 {
-    // DBから値を取り出す
-    std::map<int, nlohmann::json> pieces;
-    int all_size = 0;
-    for (const auto &entry : fs::directory_iterator(shareDbPath + data_id))
+    auto data_path = shareDbPath + data_id + "/" + std::to_string(piece_id);
+    if (!fs::exists(data_path))
     {
-        auto ifs = std::ifstream(entry.path());
-        std::string data;
-        getline(ifs, data);
-        auto json = nlohmann::json::parse(data);
-
-        all_size += json["value"].size();
-        auto piece_id = json["meta"]["piece_id"];
-        pieces.emplace(piece_id, json["value"]);
+        return std::nullopt;
     }
 
-    // piece_id順にvalueを結合
+    auto ifs = std::ifstream(data_path);
+    std::string data;
+    getline(ifs, data);
+    auto data_json = nlohmann::json::parse(data);
+
     std::vector<std::vector<std::string>> table;
-    table.reserve(all_size);
-    for (const auto &[_, piece] : pieces)
+    for (const auto &row : data_json["value"])
     {
-        static_cast<void>(_);
-        for (const auto &row : piece)
-        {
-            table.emplace_back(row);
-        }
+        table.emplace_back(row);
     }
     return table;
 }

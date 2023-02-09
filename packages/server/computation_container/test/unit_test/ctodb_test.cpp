@@ -15,7 +15,7 @@ auto initialize(const std::string& id)
 }
 
 // tableの取り出し
-// qmpc::ComputationToDb::ValueTable Client::readTable(const std::string& data_id);
+// std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
 TEST(ComputationToDbTest, SuccessReadTableTest)
 {
     const std::string data_id = "SuccessReadTableTest";
@@ -29,10 +29,10 @@ TEST(ComputationToDbTest, SuccessReadTableTest)
     ofs.close();
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readTable(data_id);
+    auto read_data = cc_to_db->readTable(data_id, 0).value();
 
     std::vector<std::vector<std::string>> true_table = {{"1", "2"}, {"3", "4"}};
-    EXPECT_EQ(true_table, read_data);
+    EXPECT_EQ(read_data, true_table);
 
     initialize(data_id);
 }
@@ -57,11 +57,19 @@ TEST(ComputationToDbTest, SuccessReadTablePieceTest)
     }
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readTable(data_id);
+    std::vector<std::vector<std::string>> read_data;
+    for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
+    {
+        auto piece = cc_to_db->readTable(data_id, piece_id);
+        for (const auto& row : piece.value())
+        {
+            read_data.emplace_back(row);
+        }
+    }
 
     std::vector<std::vector<std::string>> true_table = {
         {"1", "2"}, {"3", "4"}, {"5", "6"}, {"7", "8"}, {"9", "10"}};
-    EXPECT_EQ(true_table, read_data);
+    EXPECT_EQ(read_data, true_table);
 
     initialize(data_id);
 }
@@ -92,11 +100,19 @@ TEST(ComputationToDbTest, SuccessReadTableLargeTest)
     }
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readTable(data_id);
+    std::vector<std::vector<std::string>> read_data;
+    for (int piece_id = 0; piece_id < H; ++piece_id)
+    {
+        auto piece = cc_to_db->readTable(data_id, piece_id);
+        for (const auto& row : piece.value())
+        {
+            read_data.emplace_back(row);
+        }
+    }
 
     std::vector<std::vector<std::string>> true_data;
     for (int i = 0; i < H; i++) true_data.push_back(data);
-    EXPECT_EQ(true_data, read_data);
+    EXPECT_EQ(read_data, true_data);
 
     initialize(data_id);
 }
