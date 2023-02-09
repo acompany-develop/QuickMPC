@@ -150,6 +150,14 @@ func btsAuthFunc(ctx context.Context) (context.Context, error) {
 	return context.WithValue(ctx, "claims", claims), nil
 }
 
+func getListenPort() (string, error) {
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		return "", status.Error(codes.Internal, "port is not provided")
+	}
+	return port, nil
+}
+
 func getSecret() ([]byte, error) {
 	raw, ok := os.LookupEnv("JWT_SECRET_KEY")
 	if !ok {
@@ -220,7 +228,12 @@ func unaryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServ
 }
 
 func RunServer() {
-	listenIp := fmt.Sprintf("0.0.0.0:%d", cs.Conf.Port)
+	listenPort, err := getListenPort()
+	if err != nil{
+		logger.Fatalf("failed to get listen port: %v", err)
+	}
+
+	listenIp := fmt.Sprintf("0.0.0.0:%s", listenPort)
 	lis, err := net.Listen("tcp", listenIp)
 	if err != nil {
 		logger.Fatalf("failed to listen: %v", err)
