@@ -23,7 +23,6 @@ import (
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
@@ -36,7 +35,7 @@ type server struct {
 }
 
 // モック時に置き換わる関数
-var GetPartyIdFromIp = func(reqIpAddrAndPort string) (uint32, error) {
+var GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint32, error) {
 	arr := strings.Split(reqIpAddrAndPort, ":")
 	if len(arr) != 2 {
 		errText := fmt.Sprintf("requestのIpAddessの形式が異常: %s", reqIpAddrAndPort)
@@ -46,14 +45,15 @@ var GetPartyIdFromIp = func(reqIpAddrAndPort string) (uint32, error) {
 	reqIpAddr, _ := arr[0], arr[1]
 
 	var partyId uint32
-	for _, party := range cs.Conf.RequestPartyList {
-		if reqIpAddr == party.IpAddress {
-			partyId = party.PartyId
+	claims, _ := ctx.Value("claims").(*jwt_types.Claim)
+	for _, party := range claims.PartyInfo {
+		if reqIpAddr == party.Address {
+			partyId = party.Id
 			break
 		}
 	}
 	if partyId == 0 {
-		errText := fmt.Sprintf("PartyList[%s, %s, %s]に存在しないIPからのリクエスト: %s", cs.Conf.RequestPartyList[0].IpAddress, cs.Conf.RequestPartyList[1].IpAddress, cs.Conf.RequestPartyList[2].IpAddress, reqIpAddr)
+		errText := fmt.Sprintf("PartyList[%s, %s, %s]に存在しないIPからのリクエスト: %s", claims.PartyInfo[0].Address, claims.PartyInfo[1].Address, claims.PartyInfo[2].Address, reqIpAddr)
 		logger.Error(errText)
 		return 0, fmt.Errorf(errText)
 	}
@@ -64,9 +64,11 @@ var GetPartyIdFromIp = func(reqIpAddrAndPort string) (uint32, error) {
 // ClientのIPアドレスを取得する関数
 func GetReqIpAddrAndPort(ctx context.Context) string {
 	var reqIpAddrAndPort string
-	if cs.Conf.WithEnvoy {
+	claims, _ := ctx.Value("claims").(*jwt_types.Claim)
+
+	if claims.WithEnvoy {
 		md, _ := metadata.FromIncomingContext(ctx)
-		port := strconv.FormatUint(uint64(cs.Conf.Port), 10)
+		port := strconv.FormatUint(uint64(claims.Port), 10)
 		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
 	} else {
 		p, _ := peer.FromContext(ctx)
@@ -80,13 +82,13 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	// ClientのIPアドレスを取得
 	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
-	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
+	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}
 	logger.Infof("Ip %s, jobId: %d, partyId: %d Type: %v\n", reqIpAddrAndPort, in.GetJobId(), partyId, in.GetTripleType())
 
-	triples, err := tg.GetTriples(in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
+	triples, err := tg.GetTriples(ctx, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
 	if err != nil {
 		return nil, err
 	}
@@ -100,7 +102,7 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 	// ClientのIPアドレスを取得
 	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
-	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
+	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +120,7 @@ func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTriple
 	// ClientのIPアドレスを取得
 	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
 
-	partyId, err := GetPartyIdFromIp(reqIpAddrAndPort)
+	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}
