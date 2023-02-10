@@ -26,6 +26,10 @@ public:
     std::vector<std::vector<std::string>> readTable(const std::string &) const;
     std::vector<std::string> readSchema(const std::string &) const;
 
+    // Tableの保存
+    std::string
+    writeTable(std::vector<std::vector<std::string>> &, const std::vector<std::string> &) const;
+
     // Job を DB に新規登録する
     void registerJob(const std::string &job_uuid, const int &status) const;
 
