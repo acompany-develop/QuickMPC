@@ -1,19 +1,21 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
-#include "share/share.hpp"
 
 namespace qmpc::ComputationToDb
 {
 class ValueTable
 {
-    using Share = ::Share;
     const std::string data_id;
 
-    std::vector<Share> getColumn(int) const;
+    std::vector<std::vector<std::string>>
+    getSubTable(const std::optional<std::vector<int>> &, const std::optional<std::vector<int>> &)
+        const;
+    std::vector<std::string> getColumn(int) const;
     std::string joinDataId(const ValueTable &vt) const;
 
 public:

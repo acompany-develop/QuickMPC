@@ -9,25 +9,83 @@
 #include "client/computation_to_db/client.hpp"
 #include "job/progress_manager.hpp"
 #include "logging/logger.hpp"
-
-#include "job/progress_manager.hpp"
 #include "share/compare.hpp"
+#include "share/share.hpp"
 
 namespace qmpc::ComputationToDb
 {
-ValueTable::ValueTable(const std::string &data_id) : data_id(data_id) {}
+using Share = ::Share;
 
-std::vector<::Share> ValueTable::getColumn(int idx) const
+template <class SV = FixedPoint>
+auto toShare(const std::vector<std::string> &vec)
 {
-    // TODO: テーブル全部復元せずに取り出せるように修正
-    auto table = getTable();
-    std::vector<Share> column;
-    column.reserve(table.size());
+    auto sv_vec = std::vector<SV>(vec.begin(), vec.end());
+    auto share_vec = std::vector<Share>(sv_vec.begin(), sv_vec.end());
+    return share_vec;
+}
+template <class SV = FixedPoint>
+auto toShare(const std::vector<std::vector<std::string>> &table)
+{
+    std::vector<std::vector<Share>> &share_table;
+    share_table.reserve(table.size());
     for (const auto &row : table)
     {
-        column.emplace_back(FixedPoint(row[idx]));
+        share_table.emplace_back(toShare<SV>(row));
     }
-    return column;
+    return share_table;
+}
+
+ValueTable::ValueTable(const std::string &data_id) : data_id(data_id) {}
+
+// tableから行，列の指定したindexだけ取り出す，nulloptの場合は全ての行，列を取り出す
+std::vector<std::vector<std::string>> ValueTable::getSubTable(
+    const std::optional<std::vector<int>> &row_index,
+    const std::optional<std::vector<int>> &column_index
+) const
+{
+    auto db = Client::getInstance();
+    int piece_id = 0;
+
+    // TODO: rowについての処理を書く
+    int row = 0;
+    std::vector<std::vector<std::string>> read_table;
+    while (true)
+    {
+        auto piece = db->readTable(data_id, piece_id);
+        if (!piece)
+        {
+            break;
+        }
+        for (const auto &row : piece.value())
+        {
+            if (!column_index)
+            {
+                read_table.emplace_back(row);
+            }
+            else
+            {
+                std::vector<std::string> row_c;
+                for (const auto &idx : column_index.value())
+                {
+                    row_c.emplace_back(row[idx]);
+                }
+                read_table.emplace_back(row_c);
+            }
+        }
+        ++piece_id;
+    }
+    return read_table;
+}
+
+std::vector<std::string> ValueTable::getColumn(int column_number) const
+{
+    auto table = getSubTable(std::nullopt, std::vector<int>{column_number});
+    std::vector<std::string> ret;
+    for (const auto &row : table)
+    {
+        ret.emplace_back(row[0]);
+    }
+    return ret;
 }
 std::string ValueTable::joinDataId(const ValueTable &vt) const
 {
@@ -327,10 +385,10 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
     }
 
     // joinしたidsを構築
-    auto ids_share = getColumn(idx - 1);
+    auto ids_share = toShare(getColumn(idx - 1));
     open(ids_share);
     auto ids = recons(ids_share);
-    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
+    auto ids_tgt_share = toShare(join_table.getColumn(idx_tgt - 1));
     open(ids_tgt_share);
     auto ids_tgt = recons(ids_tgt_share);
     auto [ids_it, ids_join_it] = unionValueIndex(ids, ids_tgt);
@@ -394,10 +452,10 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
     }
 
     // joinしたidsを構築
-    auto ids_share = getColumn(idx - 1);
+    auto ids_share = toShare(getColumn(idx - 1));
     open(ids_share);
     auto ids = recons(ids_share);
-    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
+    auto ids_tgt_share = toShare(join_table.getColumn(idx_tgt - 1));
     open(ids_tgt_share);
     auto ids_tgt = recons(ids_tgt_share);
     auto [ids_it, ids_join_it] = intersectionValueIndex(ids, ids_tgt);
@@ -459,8 +517,8 @@ ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx
     }
 
     // joinしたidsを構築
-    auto ids_share = getColumn(idx - 1);
-    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
+    auto ids_share = toShare(getColumn(idx - 1));
+    auto ids_tgt_share = toShare(join_table.getColumn(idx_tgt - 1));
     auto ids_it_list = intersectionSortedValueIndex(ids_share, ids_tgt_share);
     auto new_ids_size = ids_it_list.size();
 
