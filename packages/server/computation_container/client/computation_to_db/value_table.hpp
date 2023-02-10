@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "share/share.hpp"
 
 namespace qmpc::ComputationToDb
@@ -10,14 +11,12 @@ namespace qmpc::ComputationToDb
 class ValueTable
 {
     using Share = ::Share;
-    const std::vector<std::vector<std::string>> table;
-    const std::vector<std::string> schemas;
+    const std::string data_id;
 
     std::vector<Share> getColumn(int) const;
 
 public:
-    ValueTable(const std::vector<std::vector<std::string>> &, const std::vector<std::string> &);
-    bool operator==(const ValueTable &) const;
+    ValueTable(const std::string &);
 
     std::vector<std::vector<std::string>> getTable() const;
     std::vector<std::string> getSchemas() const;
@@ -28,4 +27,5 @@ public:
 
 ValueTable
 parseRead(const std::vector<ValueTable> &, const std::vector<int> &, const std::vector<int> &);
+ValueTable readTable(const managetocomputation::JoinOrder &);
 }  // namespace qmpc::ComputationToDb

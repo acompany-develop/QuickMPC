@@ -6,24 +6,21 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "client/computation_to_db/client.hpp"
+#include "job/progress_manager.hpp"
+#include "logging/logger.hpp"
+
 #include "job/progress_manager.hpp"
 #include "share/compare.hpp"
 
 namespace qmpc::ComputationToDb
 {
-ValueTable::ValueTable(
-    const std::vector<std::vector<std::string>> &table, const std::vector<std::string> &schemas
-)
-    : table(table), schemas(schemas)
-{
-}
-bool ValueTable::operator==(const ValueTable &that) const
-{
-    return (table == that.table) & (schemas == that.schemas);
-}
+ValueTable::ValueTable(const std::string &data_id) : data_id(data_id) {}
 
 std::vector<::Share> ValueTable::getColumn(int idx) const
 {
+    // TODO: テーブル全部復元せずに取り出せるように修正
+    auto table = getTable();
     std::vector<Share> column;
     column.reserve(table.size());
     for (const auto &row : table)
@@ -33,9 +30,17 @@ std::vector<::Share> ValueTable::getColumn(int idx) const
     return column;
 }
 
-std::vector<std::vector<std::string>> ValueTable::getTable() const { return table; }
+std::vector<std::vector<std::string>> ValueTable::getTable() const
+{
+    auto db = Client::getInstance();
+    return db->readTable(data_id);
+}
 
-std::vector<std::string> ValueTable::getSchemas() const { return schemas; }
+std::vector<std::string> ValueTable::getSchemas() const
+{
+    auto db = Client::getInstance();
+    return db->readSchema(data_id);
+}
 
 struct LessFloat
 {
@@ -287,8 +292,12 @@ std::pair<std::vector<int>, std::vector<int>> unionValueIndex(
 
 ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt) const
 {
+    // TODO: 必要な列だけ取り出して結合するようにする
+    auto table = this->getTable();
+    auto schemas = this->getSchemas();
+
     // joinしたschemasを構築
-    auto [schemas_it, schemas_join_it] = intersectionValueIndex(schemas, join_table.schemas);
+    auto [schemas_it, schemas_join_it] = intersectionValueIndex(schemas, join_table.getSchemas());
     auto new_schemas_size = schemas_it.size();
     auto new_schemas = std::vector<std::string>();
     new_schemas.reserve(new_schemas_size);
@@ -326,22 +335,28 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
         new_row.reserve(new_schemas_size);
         for (const auto &it_w : schemas_join_it)
         {
-            new_row.emplace_back(join_table.table[it_h][it_w]);
+            new_row.emplace_back(join_table.getTable()[it_h][it_w]);
         }
         new_table.emplace_back(new_row);
     }
-
-    return ValueTable(new_table, new_schemas);
+    // TODO: 保存してdata_idを取得する
+    const std::string new_data_id = "tmp";
+    return ValueTable(new_data_id);
+    // return ValueTable(new_table, new_schemas);
 }
 
 ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt) const
 {
+    // TODO: 必要な列だけ取り出して結合するようにする
+    auto table = this->getTable();
+    auto schemas = this->getSchemas();
+
     // joinしたschemasを構築
     auto schemas_it = std::vector<int>(schemas.size());
     std::iota(schemas_it.begin(), schemas_it.end(), 0);
     auto schemas_join_it = std::vector<int>();
-    schemas_join_it.reserve(join_table.schemas.size());
-    for (size_t i = 0; i < join_table.schemas.size(); ++i)
+    schemas_join_it.reserve(join_table.getSchemas().size());
+    for (size_t i = 0; i < join_table.getSchemas().size(); ++i)
     {
         if (static_cast<int>(i) == idx_tgt - 1)
         {
@@ -355,7 +370,7 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
     new_schemas.reserve(new_schemas_size);
     for (const auto &it : schemas_join_it)
     {
-        new_schemas.emplace_back(join_table.schemas[it]);
+        new_schemas.emplace_back(join_table.getSchemas()[it]);
     }
 
     // joinしたidsを構築
@@ -383,14 +398,73 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
         }
         for (const auto &it_w : schemas_join_it)
         {
-            new_row.emplace_back(join_table.table[*it_join_h][it_w]);
+            new_row.emplace_back(join_table.getTable()[*it_join_h][it_w]);
         }
         new_table.emplace_back(new_row);
         ++it_h;
         ++it_join_h;
     }
+    // TODO: 保存してdata_idを取得する
+    const std::string new_data_id = "tmp";
+    return ValueTable(new_data_id);
+    // return ValueTable(new_table, new_schemas);
+}
 
-    return ValueTable(new_table, new_schemas);
+ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx_tgt) const
+{
+    // TODO: indexだけで処理できるように修正する
+    auto table = this->getTable();
+    auto schemas = this->getSchemas();
+
+    // joinしたschemasを構築
+    auto schemas_it = std::vector<int>(schemas.size());
+    std::iota(schemas_it.begin(), schemas_it.end(), 0);
+    auto schemas_join_it = std::vector<int>();
+    schemas_join_it.reserve(join_table.getSchemas().size());
+    for (size_t i = 0; i < join_table.getSchemas().size(); ++i)
+    {
+        if (static_cast<int>(i) == idx_tgt - 1)
+        {
+            continue;
+        }
+        schemas_join_it.emplace_back(i);
+    }
+
+    auto new_schemas_size = schemas_it.size() + schemas_join_it.size();
+    auto new_schemas = schemas;
+    new_schemas.reserve(new_schemas_size);
+    for (const auto &it : schemas_join_it)
+    {
+        new_schemas.emplace_back(join_table.getSchemas()[it]);
+    }
+
+    // joinしたidsを構築
+    auto ids_share = getColumn(idx - 1);
+    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
+    auto ids_it_list = intersectionSortedValueIndex(ids_share, ids_tgt_share);
+    auto new_ids_size = ids_it_list.size();
+
+    // joinしたtableを構築
+    auto new_table = std::vector<std::vector<std::string>>();
+    new_table.reserve(new_ids_size);
+    for (const auto &[it_h, it_join_h] : ids_it_list)
+    {
+        auto new_row = std::vector<std::string>();
+        new_row.reserve(new_schemas_size);
+        for (const auto &it_w : schemas_it)
+        {
+            new_row.emplace_back(table[it_h][it_w]);
+        }
+        for (const auto &it_w : schemas_join_it)
+        {
+            new_row.emplace_back(join_table.getTable()[it_join_h][it_w]);
+        }
+        new_table.emplace_back(new_row);
+    }
+    // TODO: 保存してdata_idを取得する
+    const std::string new_data_id = "tmp";
+    return ValueTable(new_data_id);
+    // return ValueTable(new_table, new_schemas);
 }
 
 ValueTable parseRead(
@@ -418,54 +492,30 @@ ValueTable parseRead(
     return joinFunc(joinFunc, values[0]);
 }
 
-ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx_tgt) const
+// tableデータを結合して取り出す
+ValueTable readTable(const managetocomputation::JoinOrder &table)
 {
-    // joinしたschemasを構築
-    auto schemas_it = std::vector<int>(schemas.size());
-    std::iota(schemas_it.begin(), schemas_it.end(), 0);
-    auto schemas_join_it = std::vector<int>();
-    schemas_join_it.reserve(join_table.schemas.size());
-    for (size_t i = 0; i < join_table.schemas.size(); ++i)
+    // requestからデータ読み取り
+    auto size = table.join().size();
+    std::vector<int> join;
+    join.reserve(size);
+    for (const auto &j : table.join())
     {
-        if (static_cast<int>(i) == idx_tgt - 1)
-        {
-            continue;
-        }
-        schemas_join_it.emplace_back(i);
+        join.emplace_back(j);
     }
-
-    auto new_schemas_size = schemas_it.size() + schemas_join_it.size();
-    auto new_schemas = schemas;
-    new_schemas.reserve(new_schemas_size);
-    for (const auto &it : schemas_join_it)
+    std::vector<int> index;
+    index.reserve(size);
+    for (const auto &j : table.index())
     {
-        new_schemas.emplace_back(join_table.schemas[it]);
+        index.emplace_back(j);
     }
-
-    // joinしたidsを構築
-    auto ids_share = getColumn(idx - 1);
-    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
-    auto ids_it_list = intersectionSortedValueIndex(ids_share, ids_tgt_share);
-    auto new_ids_size = ids_it_list.size();
-
-    // joinしたtableを構築
-    auto new_table = std::vector<std::vector<std::string>>();
-    new_table.reserve(new_ids_size);
-    for (const auto &[it_h, it_join_h] : ids_it_list)
+    std::vector<ValueTable> tables;
+    tables.reserve(size + 1);
+    for (const auto &data_id : table.dataids())
     {
-        auto new_row = std::vector<std::string>();
-        new_row.reserve(new_schemas_size);
-        for (const auto &it_w : schemas_it)
-        {
-            new_row.emplace_back(table[it_h][it_w]);
-        }
-        for (const auto &it_w : schemas_join_it)
-        {
-            new_row.emplace_back(join_table.table[it_join_h][it_w]);
-        }
-        new_table.emplace_back(new_row);
+        tables.emplace_back(data_id);
     }
-
-    return ValueTable(new_table, new_schemas);
+    return parseRead(tables, join, index);
 }
+
 }  // namespace qmpc::ComputationToDb

@@ -114,31 +114,4 @@ void Client::saveErrorInfo(const std::string &job_uuid, const pb_common_types::J
 
     ofs << dst;
 }
-
-// tableデータを結合して取り出す
-ValueTable Client::readTable(const managetocomputation::JoinOrder &table)
-{
-    // requestからデータ読み取り
-    auto size = table.join().size();
-    std::vector<int> join;
-    join.reserve(size);
-    for (const auto &j : table.join())
-    {
-        join.emplace_back(j);
-    }
-    std::vector<int> index;
-    index.reserve(size);
-    for (const auto &j : table.index())
-    {
-        index.emplace_back(j);
-    }
-    std::vector<ValueTable> tables;
-    tables.reserve(size + 1);
-    for (const auto &data_id : table.dataids())
-    {
-        tables.emplace_back(readTable(data_id), readSchema(data_id));
-    }
-    return parseRead(tables, join, index);
-}
-
 }  // namespace qmpc::ComputationToDb

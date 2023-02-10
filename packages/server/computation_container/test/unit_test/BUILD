@@ -123,6 +123,7 @@ cc_test(
     deps = [
         "@gtest//:main",
         "//client/computation_to_db:client",
+        "//client/computation_to_db:valuetable",
         "@proto//common_types:common_types_cc_proto",
     ],
     linkopts = [

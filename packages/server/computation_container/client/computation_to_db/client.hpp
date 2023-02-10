@@ -1,15 +1,15 @@
 #pragma once
 
+#include <fstream>
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "Logging/Logger.hpp"
 #include "external/proto/common_types/common_types.pb.h"
-#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "logging/logger.hpp"
 #include "nlohmann/json.hpp"
-#include "value_table.hpp"
 
 namespace qmpc::ComputationToDb
 {
@@ -35,9 +35,6 @@ public:
     // Job 実行中に発生したエラーに関する情報を保存する
     void saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
         const;
-
-    // tableデータを結合して取り出す
-    ValueTable readTable(const managetocomputation::JoinOrder &table);
 
     // resultの保存
     template <class T>
