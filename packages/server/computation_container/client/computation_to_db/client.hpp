@@ -7,7 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "Logging/Logger.hpp"
 #include "external/proto/common_types/common_types.pb.h"
 #include "logging/logger.hpp"
 #include "nlohmann/json.hpp"

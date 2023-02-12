@@ -31,7 +31,7 @@ cc_library(
         "//share:share",
         "//share:compare",
         "//job:progressManager",
-        "//logging:log"
+        "//logging:log",
         "//client/computation_to_db:client",
     ],
     visibility = ["//visibility:public"],

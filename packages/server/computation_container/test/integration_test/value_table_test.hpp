@@ -27,8 +27,8 @@ protected:
 
     static auto initialize(const std::string& id)
     {
-        fs::remove_all("/Db/share/" + id);
-        fs::remove_all("/Db/result/" + id);
+        fs::remove_all("/db/share/" + id);
+        fs::remove_all("/db/result/" + id);
     }
 
     auto genValueTable(int table_itr)
@@ -45,7 +45,7 @@ protected:
             {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
         const std::string data = data_json.dump();
 
-        auto data_path = "/Db/share/" + data_id;
+        auto data_path = "/db/share/" + data_id;
         fs::create_directories(data_path);
         std::ofstream ofs(data_path + "/" + std::to_string(piece_id));
         ofs << data;

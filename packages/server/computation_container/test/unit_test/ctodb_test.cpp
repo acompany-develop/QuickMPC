@@ -340,72 +340,7 @@ TEST(ComputationToDbTest, SuccessGetTableTest)
     auto table = vt.getTable();
 
     std::vector<std::vector<std::string>> true_table = {{"1", "2"}, {"3", "4"}};
-<<<<<<< HEAD:packages/server/computation_container/test/unit_test/ctodb_test.cpp
-    EXPECT_EQ(true_table, read_data);
-
-    initialize(data_id);
-}
-TEST(ComputationToDbTest, SuccessReadTablePieceTest)
-{
-    const std::string data_id = "SuccessReadTablePieceTest";
-    initialize(data_id);
-
-    const std::vector<std::string> data = {
-        R"({"value":[["1","2"],["3","4"]])"
-        R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})",
-        R"({"value":[["5","6"],["7","8"]])"
-        R"(,"meta":{"piece_id":1,"schema":["attr1","attr2"]}})",
-        R"({"value":[["9","10"]])"
-        R"(,"meta":{"piece_id":2,"schema":["attr1","attr2"]}})"};
-    fs::create_directories("/db/share/" + data_id);
-    for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
-    {
-        auto ofs = std::ofstream("/db/share/" + data_id + "/" + std::to_string(piece_id));
-        ofs << data[piece_id];
-        ofs.close();
-    }
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readTable(data_id);
-
-    std::vector<std::vector<std::string>> true_table = {
-        {"1", "2"}, {"3", "4"}, {"5", "6"}, {"7", "8"}, {"9", "10"}};
-    EXPECT_EQ(true_table, read_data);
-
-    initialize(data_id);
-}
-TEST(ComputationToDbTest, SuccessReadTableLargeTest)
-{
-    std::string data_id = "SuccessReadTableLargeTest";
-    initialize(data_id);
-
-    constexpr int H = 500;
-    constexpr int W = 500;
-    std::vector<std::string> schema;
-    for (int i = 0; i < W; i++) schema.emplace_back("attr" + std::to_string(i + 1));
-    std::vector<std::string> data;
-    for (int i = 0; i < W; ++i) data.emplace_back(std::to_string(i + 1));
-
-    fs::create_directories("/db/share/" + data_id);
-    for (int piece_id = 0; piece_id < H; ++piece_id)
-    {
-        nlohmann::json data_json = {
-            {"data_id", data_id},
-            {"value", {data}},
-            {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
-        auto data_str = data_json.dump();
-
-        auto ofs = std::ofstream("/db/share/" + data_id + "/" + std::to_string(piece_id));
-        ofs << data_str;
-        ofs.close();
-    }
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readTable(data_id);
-
-    std::vector<std::vector<std::string>> true_data;
-    for (int i = 0; i < H; i++) true_data.push_back(data);
-    EXPECT_EQ(true_data, read_data);
+    EXPECT_EQ(true_table, table);
 
     initialize(data_id);
 }
