@@ -99,3 +99,75 @@ TEST(ValueTableTest, SuccessPieceIterate)
 
     initialize(data_id);
 }
+
+TEST(ValueTableTest, SuccessGetTable)
+{
+    const std::string data_id = "SuccessGetTable";
+    initialize(data_id);
+
+    const std::string data = R"({"value":[["1","2"],["3","4"]])"
+                             R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})";
+    fs::create_directories("/db/share/" + data_id);
+    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto table = qmpc::ComputationToDb::ValueTable(data_id);
+    auto get_table = table.getTable();
+
+    std::vector<std::vector<std::string>> true_table = {{"1", "2"}, {"3", "4"}};
+    EXPECT_EQ(get_table, true_table);
+
+    initialize(data_id);
+}
+
+TEST(ValueTableTest, SuccessPieceGetTable)
+{
+    const std::string data_id = "SuccessPieceGetTable";
+    initialize(data_id);
+
+    const std::vector<std::string> data = {
+        R"({"value":[["1","2"],["3","4"]])"
+        R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})",
+        R"({"value":[["5","6"],["7","8"]])"
+        R"(,"meta":{"piece_id":1,"schema":["attr1","attr2"]}})",
+        R"({"value":[["9","10"]])"
+        R"(,"meta":{"piece_id":2,"schema":["attr1","attr2"]}})"};
+    fs::create_directories("/db/share/" + data_id);
+    for (size_t piece_id = 0; piece_id < data.size(); ++piece_id)
+    {
+        auto ofs = std::ofstream("/db/share/" + data_id + "/" + std::to_string(piece_id));
+        ofs << data[piece_id];
+        ofs.close();
+    }
+
+    auto table = qmpc::ComputationToDb::ValueTable(data_id);
+    auto get_table = table.getTable();
+
+    std::vector<std::vector<std::string>> true_table = {
+        {"1", "2"}, {"3", "4"}, {"5", "6"}, {"7", "8"}, {"9", "10"}};
+    EXPECT_EQ(get_table, true_table);
+
+    initialize(data_id);
+}
+
+TEST(ComputationToDbTest, SuccessGetSchema)
+{
+    const std::string data_id = "SuccessReadSchemaTest";
+    initialize(data_id);
+
+    const std::string data = R"({"value":[["1","2"],["3","4"]])"
+                             R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})";
+    fs::create_directories("/db/share/" + data_id);
+    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto table = qmpc::ComputationToDb::ValueTable(data_id);
+    auto get_schema = table.getSchemas();
+
+    std::vector<std::string> true_schema = {"attr1", "attr2"};
+    EXPECT_EQ(get_schema, true_schema);
+
+    initialize(data_id);
+}

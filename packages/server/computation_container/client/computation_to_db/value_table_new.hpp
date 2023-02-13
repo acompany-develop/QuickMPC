@@ -31,8 +31,11 @@ class ValueTable
 
 public:
     ValueTable(const std::string &);
-    TableIterator begin();
-    TableIterator end();
+    TableIterator begin() const;
+    TableIterator end() const;
+
+    TableType getTable() const;
+    std::vector<std::string> getSchemas() const;
 };
 
 }  // namespace qmpc::ComputationToDb

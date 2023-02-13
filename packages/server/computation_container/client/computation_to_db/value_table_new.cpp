@@ -54,7 +54,20 @@ TableIterator &TableIterator::operator++()
 bool TableIterator::operator!=(const TableIterator &tgt) { return itr != tgt.itr; }
 
 ValueTable::ValueTable(const std::string &data_id) : data_id(data_id) {}
-TableIterator ValueTable::begin() { return TableIterator(data_id); }
-TableIterator ValueTable::end() { return TableIterator(std::nullopt); }
+TableIterator ValueTable::begin() const { return TableIterator(data_id); }
+TableIterator ValueTable::end() const { return TableIterator(std::nullopt); }
 
+TableType ValueTable::getTable() const
+{
+    TableType table;
+    for (const auto &row : *this)
+    {
+        table.emplace_back(row);
+    }
+    return table;
+}
+std::vector<std::string> ValueTable::getSchemas() const
+{
+    return Client::getInstance()->readSchema(data_id);
+}
 }  // namespace qmpc::ComputationToDb
