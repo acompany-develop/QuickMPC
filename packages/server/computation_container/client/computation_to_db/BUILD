@@ -36,3 +36,18 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "valuetable_new",
+    srcs = [
+        "value_table_new.cpp"
+    ],
+    hdrs = [
+        "value_table_new.hpp",
+    ],
+    deps = [
+        "//logging:log",
+        "//client/computation_to_db:client",
+    ],
+    visibility = ["//visibility:public"],
+)

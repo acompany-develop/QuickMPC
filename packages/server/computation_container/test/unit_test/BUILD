@@ -131,3 +131,19 @@ cc_test(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_test(
+    name = "value_table_test",
+    srcs = [
+        "value_table_test.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    deps = [
+        "@gtest//:main",
+        "//client/computation_to_db:valuetable_new",
+    ],
+    linkopts = [
+        "-lstdc++fs"
+    ],
+    visibility = ["//visibility:public"],
+)
