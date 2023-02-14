@@ -66,8 +66,19 @@ TableType ValueTable::getTable() const
     }
     return table;
 }
+std::vector<std::string> ValueTable::getColumn(int column_number) const
+{
+    std::vector<std::string> ret;
+    for (const auto &row : *this)
+    {
+        ret.emplace_back(row[0]);
+    }
+    return ret;
+}
 std::vector<std::string> ValueTable::getSchemas() const
 {
     return Client::getInstance()->readSchema(data_id);
 }
+
 }  // namespace qmpc::ComputationToDb
+
