@@ -28,6 +28,20 @@ RUN apt-get update && \
     dnsutils \
     gdb
 
+# Install boost
+ARG boost_version=1.79.0
+ARG boost_file=boost_1_79_0
+RUN cd /tmp \
+    && wget https://boostorg.jfrog.io/artifactory/main/release/${boost_version}/source/${boost_file}.tar.gz --no-check-certificate \
+    && tar xfz ${boost_file}.tar.gz \
+    && rm ${boost_file}.tar.gz \
+    && cd ${boost_file} \
+    && ./bootstrap.sh \
+    && ./b2 --without-python --prefix=/usr -j 4 link=shared runtime-link=shared install \
+    && cd .. \
+    && rm -rf ${boost_file} \
+    && ldconfig
+
 # Install cmake
 RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.sh && \
     mkdir -p $CMAKE_INSTALL_DIR && \

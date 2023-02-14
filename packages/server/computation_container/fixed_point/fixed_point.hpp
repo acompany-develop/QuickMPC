@@ -50,11 +50,12 @@ public:
     FixedPointImpl() : value(0) {}
     FixedPointImpl(const FixedPointImpl &v) : value(v.value) {}
     FixedPointImpl(FixedPointImpl &&v) : value(std::move(v.value)) {}
+    FixedPointImpl(const D &float_value) { value = T(D(floor(float_value * shift)).str()); }
     template <
         typename U,
         std::enable_if_t<
-            std::is_arithmetic_v<
-                std::remove_reference_t<U>> or std::is_convertible_v<T, std::remove_reference_t<U>>,
+            std::is_arithmetic_v<std::remove_reference_t<U>>
+                or std::is_convertible_v<T, std::remove_reference_t<U>>,
             std::nullptr_t> = nullptr>
     FixedPointImpl(const U &v)
     {
@@ -176,13 +177,13 @@ public:
     */
     FixedPointImpl &operator*=(const FixedPointImpl &obj)
     {
-        //直接変換でオーバーフローする場合は以下のように文字列に変換する
-        // D tmp{D(value.template str()) * D(obj.value.template str())};
-        // std::string str = tmp.template str();
-        // value = T(str);
-        // value /= shift;
+        // 直接変換でオーバーフローする場合は以下のように文字列に変換する
+        //  D tmp{D(value.template str()) * D(obj.value.template str())};
+        //  std::string str = tmp.template str();
+        //  value = T(str);
+        //  value /= shift;
         value *= obj.value;
-        value /= shift;  //整数で保持するため余分なshiftを除算する
+        value /= shift;  // 整数で保持するため余分なshiftを除算する
         return *this;
     }
     FixedPointImpl &operator/=(const FixedPointImpl &obj)
