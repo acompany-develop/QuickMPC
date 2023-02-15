@@ -58,8 +58,11 @@ void send(const T &shares, const int &pt_id)
     }
     else if constexpr (is_share<T>::value)
     {
+        using SV = typename T::value_type;
         // pt_idで指定されたパーティにシェアの値を送信する
-        client->exchangeShare(shares.getVal(), shares.getId(), conf->party_id);
+        std::vector<SV> str_value = {shares.getVal()};
+        std::vector<qmpc::Share::AddressId> share_id = {shares.getId()};
+        client->exchangeShares(str_value, share_id, 1, conf->party_id);
     }
 }
 template <class SV>

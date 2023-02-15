@@ -378,7 +378,7 @@ TEST(ShareBenchmark, BulkComparisonOperation)
     }
 }
 
-//一括open,reconsテスト
+// 一括open,reconsテスト
 TEST(ShareBenchmark, ReconsBulk)
 {
     constexpr int SIZE = 10000;
@@ -408,7 +408,7 @@ TEST(ShareBenchmark, ReconsBulk)
     measureExecTime(test_name_recons, 1, [&]() { auto u = recons(s); });
 }
 
-//一括加算のテスト
+// 一括加算のテスト
 TEST(ShareBenchmark, AddBulk)
 {
     constexpr int SIZE = 10000;
@@ -424,7 +424,7 @@ TEST(ShareBenchmark, AddBulk)
     measureExecTime(test_name, N, [&]() { auto ret = a + b; });
 }
 
-//一括減算のテスト
+// 一括減算のテスト
 TEST(ShareBenchmark, SubBulk)
 {
     constexpr int SIZE = 10000;
@@ -440,7 +440,7 @@ TEST(ShareBenchmark, SubBulk)
     measureExecTime(test_name, N, [&]() { auto ret = a - b; });
 }
 
-//一括乗算のテスト
+// 一括乗算のテスト
 TEST(ShareBenchmark, MulBulk)
 {
     constexpr int SIZE = 10000;
@@ -492,4 +492,27 @@ TEST(ShareBenchmark, Sqrt)
     b += FixedPoint(121);
 
     measureExecTime("Sqrt", 5, [&]() { auto b_sqrt = qmpc::Share::sqrt(b); });
+}
+
+TEST(ShareBench, unarySend)
+{
+    for (int i = 0; i < 1000; ++i)
+    {
+        Share a = Share(FixedPoint("2.0"));
+        open(a);
+        auto rec = recons(a);
+    }
+    measureExecTime(
+        "unaryMulti",
+        4,
+        [&]()
+        {
+            for (int i = 0; i < 1000; ++i)
+            {
+                Share a = Share(FixedPoint("2.0"));
+                open(a);
+                auto rec = recons(a);
+            }
+        }
+    );
 }
