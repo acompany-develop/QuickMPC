@@ -14,7 +14,13 @@ std::optional<TableType::iterator> begin(std::optional<TableType> &row)
     {
         return std::nullopt;
     }
-    return row.value().begin();
+    auto &val = row.value();
+    // Tableが空の場合もnulloptとして扱う
+    if (val.empty())
+    {
+        return std::nullopt;
+    }
+    return val.begin();
 }
 
 TableIterator::TableIterator(const std::string &data_id)

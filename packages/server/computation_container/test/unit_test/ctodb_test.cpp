@@ -72,6 +72,26 @@ TEST(ComputationToDbTest, SuccessReadTablePieceTest)
 
     initialize(data_id);
 }
+TEST(ComputationToDbTest, SuccessReadEmptyTableTest)
+{
+    const std::string data_id = "SuccessReadEmptyTableTest";
+    initialize(data_id);
+
+    const std::string data = R"({"value":[])"
+                             R"(,"meta":{"piece_id":0,"schema":[]}})";
+    fs::create_directories("/db/share/" + data_id);
+    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto read_data = cc_to_db->readTable(data_id, 0).value();
+
+    std::vector<std::vector<std::string>> true_table = {};
+    EXPECT_EQ(read_data, true_table);
+
+    initialize(data_id);
+}
 TEST(ComputationToDbTest, SuccessReadTableLargeTest)
 {
     std::string data_id = "SuccessReadTableLargeTest";
