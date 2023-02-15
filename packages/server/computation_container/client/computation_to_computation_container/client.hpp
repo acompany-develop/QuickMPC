@@ -168,15 +168,14 @@ public:
         google::protobuf::Empty response;
         shares = makeShares(values, share_ids, length, party_id);
         grpc::Status status;
-
         // リトライポリシーに従ってリクエストを送る
         auto retry_manager = RetryManager("CC", "exchangeShares");
+        grpc::ClientContext context;
+        std::shared_ptr<grpc::ClientWriter<computationtocomputation::Shares>> stream(
+            stub_->ExchangeShares(&context, &response)
+        );
         do
         {
-            grpc::ClientContext context;
-            std::shared_ptr<grpc::ClientWriter<computationtocomputation::Shares>> stream(
-                stub_->ExchangeShares(&context, &response)
-            );
             for (size_t i = 0; i < shares.size(); i++)
             {
                 if (!stream->Write(shares[i]))
