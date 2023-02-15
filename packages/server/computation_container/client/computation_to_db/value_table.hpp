@@ -35,5 +35,5 @@ ValueTable vjoin(const ValueTable &, const ValueTable &, int, int);
 ValueTable hjoin(const ValueTable &, const ValueTable &, int, int);
 ValueTable hjoinShare(const ValueTable &, const ValueTable &, int, int);
 
-TableJoiner readTable(const managetocomputation::JoinOrder &);
+ValueTable readTable(const managetocomputation::JoinOrder &);
 }  // namespace qmpc::ComputationToDb

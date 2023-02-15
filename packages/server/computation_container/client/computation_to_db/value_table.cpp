@@ -812,13 +812,13 @@ ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2, int id
     return ValueTable(new_data_id);
 }
 
-TableJoiner parseRead(
-    const std::vector<TableJoiner> &values,
+auto parseRead(
+    const std::vector<ValueTable> &values,
     const std::vector<int> &join,
     const std::vector<int> &index
 )
 {
-    auto joinFunc = [&](auto &&f, const qmpc::ComputationToDb::TableJoiner &t, unsigned int it = 0)
+    auto joinFunc = [&](auto &&f, const ValueTable &t, unsigned int it = 0)
     {
         if (it == join.size())
         {
@@ -826,19 +826,19 @@ TableJoiner parseRead(
         }
         if (join[it] == 0)
         {
-            return f(f, t.hjoin(values[it + 1], index[0], index[it + 1]), it + 1);
+            return f(f, hjoin(t, values[it + 1], index[0], index[it + 1]), it + 1);
         }
         if (join[it] == 1)
         {
-            return f(f, t.vjoin(values[it + 1], index[0], index[it + 1]), it + 1);
+            return f(f, vjoin(t, values[it + 1], index[0], index[it + 1]), it + 1);
         }
-        return f(f, t.hjoinShare(values[it + 1], index[0], index[it + 1]), it + 1);
+        return f(f, hjoinShare(t, values[it + 1], index[0], index[it + 1]), it + 1);
     };
     return joinFunc(joinFunc, values[0]);
 }
 
 // tableデータを結合して取り出す
-TableJoiner readTable(const managetocomputation::JoinOrder &table)
+ValueTable readTable(const managetocomputation::JoinOrder &table)
 {
     // requestからデータ読み取り
     auto size = table.join().size();
@@ -854,7 +854,7 @@ TableJoiner readTable(const managetocomputation::JoinOrder &table)
     {
         index.emplace_back(j);
     }
-    std::vector<TableJoiner> tables;
+    std::vector<ValueTable> tables;
     tables.reserve(size + 1);
     for (const auto &data_id : table.dataids())
     {
