@@ -79,6 +79,7 @@ TEST_F(ValueTableTest, vjoinTest)
         const std::vector<std::string> expect_schema{"id", "attr1"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
     {
         auto vt1 = genValueTable(2);
@@ -90,6 +91,7 @@ TEST_F(ValueTableTest, vjoinTest)
         const std::vector<std::string> expect_schema{"id", "attr3", "attr4"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
 }
 
@@ -104,6 +106,7 @@ TEST_F(ValueTableTest, hjoinTest)
         const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "attr1", "attr3"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
     {
         auto vt1 = genValueTable(2);
@@ -116,6 +119,7 @@ TEST_F(ValueTableTest, hjoinTest)
             "id", "attr1", "attr3", "attr4", "attr3", "attr4", "attr5"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
 }
 
@@ -131,6 +135,7 @@ TEST_F(ValueTableTest, vhjoinTest)
     const std::vector<std::string> expect_schema{"id", "attr1", "attr1", "attr3", "attr4"};
     EXPECT_EQ(join_table.getTable(), expect_table);
     EXPECT_EQ(join_table.getSchemas(), expect_schema);
+    initialize(join_table.getDataId());
 }
 
 TEST_F(ValueTableTest, hvjoinTest)
@@ -145,6 +150,7 @@ TEST_F(ValueTableTest, hvjoinTest)
     const std::vector<std::string> expect_schema{"id", "attr1", "attr1", "attr3"};
     EXPECT_EQ(join_table.getTable(), expect_table);
     EXPECT_EQ(join_table.getSchemas(), expect_schema);
+    initialize(join_table.getDataId());
 }
 
 TEST_F(ValueTableTest, vjoinColumnTest)
@@ -159,6 +165,7 @@ TEST_F(ValueTableTest, vjoinColumnTest)
         const std::vector<std::string> expect_schema{"id", "attr1", "attr2"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
     {
         auto join_table = vt1.vjoin(vt2, 3, 3);
@@ -168,6 +175,7 @@ TEST_F(ValueTableTest, vjoinColumnTest)
         const std::vector<std::string> expect_schema{"id", "attr1", "attr2"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
 }
 
@@ -182,6 +190,7 @@ TEST_F(ValueTableTest, hjoinColumnTest)
         const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "id", "attr2"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
     {
         auto join_table = vt1.hjoin(vt2, 3, 3);
@@ -190,6 +199,7 @@ TEST_F(ValueTableTest, hjoinColumnTest)
         const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "id", "attr1"};
         EXPECT_EQ(join_table.getTable(), expect_table);
         EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
     }
 }
 
@@ -203,6 +213,7 @@ TEST_F(ValueTableTest, hjoinShareTest)
         auto expect = vt1.hjoin(vt2, 1, 1);
         EXPECT_EQ(join_table.getTable(), expect.getTable());
         EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
     }
     {
         auto vt1 = genValueTable(2);
@@ -212,6 +223,7 @@ TEST_F(ValueTableTest, hjoinShareTest)
         auto expect = vt1.hjoin(vt2, 1, 1);
         EXPECT_EQ(join_table.getTable(), expect.getTable());
         EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
     }
 }
 
@@ -225,6 +237,7 @@ TEST_F(ValueTableTest, hjoinShareColumnTest)
         auto expect = vt1.hjoin(vt2, 1, 1);
         EXPECT_EQ(join_table.getTable(), expect.getTable());
         EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
     }
     {
         auto vt1 = genValueTable(0);
@@ -234,5 +247,6 @@ TEST_F(ValueTableTest, hjoinShareColumnTest)
         auto expect = vt1.hjoin(vt2, 1, 1);
         EXPECT_EQ(join_table.getTable(), expect.getTable());
         EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
     }
 }

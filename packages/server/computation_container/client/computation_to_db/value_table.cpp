@@ -1,11 +1,11 @@
 #include "value_table.hpp"
 
+#include <openssl/sha.h>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <unordered_map>
 #include <unordered_set>
-
 #include "client/computation_to_db/client.hpp"
 #include "job/progress_manager.hpp"
 #include "logging/logger.hpp"
@@ -87,12 +87,25 @@ std::vector<std::string> ValueTable::getColumn(int column_number) const
     }
     return ret;
 }
-std::string ValueTable::joinDataId(const ValueTable &vt) const
+std::string ValueTable::joinDataId(const ValueTable &vt, int type) const
 {
-    // TODO: sha256にする
-    return data_id + vt.data_id;
+    // 結合テーブルIDと結合方式から一意に定まるIDを生成する
+    auto text = data_id + vt.data_id + std::to_string(type);
+
+    unsigned char hs[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, text.c_str(), text.size());
+    SHA256_Final(hs, &sha256);
+    std::stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hs[i]);
+    }
+    return ss.str();
 }
 
+std::string ValueTable::getDataId() const { return data_id; }
 std::vector<std::vector<std::string>> ValueTable::getTable() const
 {
     auto db = Client::getInstance();
@@ -417,7 +430,7 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
         }
         new_table.emplace_back(new_row);
     }
-    const std::string new_data_id = joinDataId(join_table);
+    const std::string new_data_id = joinDataId(join_table, 0);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
     return ValueTable(new_data_id);
@@ -482,7 +495,7 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
         ++it_h;
         ++it_join_h;
     }
-    const std::string new_data_id = joinDataId(join_table);
+    const std::string new_data_id = joinDataId(join_table, 1);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
     return ValueTable(new_data_id);
@@ -539,7 +552,7 @@ ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx
         }
         new_table.emplace_back(new_row);
     }
-    const std::string new_data_id = joinDataId(join_table);
+    const std::string new_data_id = joinDataId(join_table, 1);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
     return ValueTable(new_data_id);

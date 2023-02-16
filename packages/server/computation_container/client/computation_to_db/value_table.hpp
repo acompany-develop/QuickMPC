@@ -16,11 +16,12 @@ class ValueTable
     getSubTable(const std::optional<std::vector<int>> &, const std::optional<std::vector<int>> &)
         const;
     std::vector<std::string> getColumn(int) const;
-    std::string joinDataId(const ValueTable &vt) const;
+    std::string joinDataId(const ValueTable &, int) const;
 
 public:
     ValueTable(const std::string &);
 
+    std::string getDataId() const;
     std::vector<std::vector<std::string>> getTable() const;
     std::vector<std::string> getSchemas() const;
     ValueTable vjoin(const ValueTable &, int, int) const;
