@@ -182,7 +182,7 @@ func TestInitTripleStore(t *testing.T) {
 	partyId := uint32(1)
 	amount := uint32(10)
 	triple_type := pb.Type_TYPE_FLOAT
-	_, err := tg.GetTriples(ctx, jobId, partyId, amount, triple_type)
+	_, err = tg.GetTriples(ctx, jobId, partyId, amount, triple_type)
 	if err != nil {
 		t.Fatal(err)
 	}

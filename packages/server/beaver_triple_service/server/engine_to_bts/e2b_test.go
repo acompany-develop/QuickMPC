@@ -178,7 +178,7 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1})
+	_, err = client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1})
 
 	if err == nil {
 		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
@@ -195,7 +195,7 @@ func TestInitTripleStore(t * testing.T) {
 		t.Fatal(err)
 	}
 
-	_,err := client.InitTripleStore(ctx, &emptypb.Empty{})
+	_,err = client.InitTripleStore(ctx, &emptypb.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -211,7 +211,7 @@ func TestDeleteJobIdTriple(t * testing.T) {
 		t.Fatal(err)
 	}
 
-	_,err := client.DeleteJobIdTriple(ctx, &pb.DeleteJobIdTripleRequest{JobId: 0})
+	_,err = client.DeleteJobIdTriple(ctx, &pb.DeleteJobIdTripleRequest{JobId: 0})
 	if err != nil {
 		t.Fatal(err)
 	}
