@@ -1,10 +1,13 @@
 package triplegenerator_test
 
 import (
+	"context"
+	"os"
 	"fmt"
 	"testing"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
@@ -18,11 +21,27 @@ func init() {
 	DbTest = &ts.SafeTripleStore{Triples: make(map[uint32](map[uint32]([]*ts.Triple)))}
 }
 
+func getContext() (context.Context, error){
+	token, ok := os.LookupEnv("BTS_TOKEN")
+	if ok {
+		claims,err := utils.AuthJWT(token)
+		if err != nil {
+			return nil,err
+		}
+		ctx := context.Background()
+		ctx = context.WithValue(ctx, "claims", claims)
+		return ctx,nil
+	}
+
+	return nil,fmt.Errorf("BTS TOKEN is not valified")
+}
+
 func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum uint32, triple_type pb.Type) {
+	ctx,_ := getContext()
 	t.Helper()
 	for jobId := uint32(0); jobId < jobNum; jobId++ {
 		t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
-			triples, err := tg.GetTriples(jobId, partyId, amount, triple_type)
+			triples, err := tg.GetTriples(ctx, jobId, partyId, amount, triple_type)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -73,7 +92,10 @@ func testTripleGenerator(t *testing.T, amount uint32, jobNum uint32, triple_type
 	t.Helper()
 
 	t.Run("TestTripleGenerator", func(t *testing.T) {
-		for partyId := uint32(1); partyId <= cs.Conf.PartyNum; partyId++ {
+		ctx,_ := getContext()
+		claims, _ := ctx.Value("claims").(*jwt_types.Claim)
+
+		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
 			// NOTE: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
 			partyId := partyId
 			t.Run(fmt.Sprintf("TestTripleGenerator_Party%d", partyId), func(t *testing.T) {
@@ -143,11 +165,12 @@ func TestTripleGenerator_Float_1000000_1(t *testing.T) {
 }
 
 func TestInitTripleStore(t *testing.T) {
+	ctx,_ := getContext()
 	jobId := uint32(1)
 	partyId := uint32(1)
 	amount := uint32(10)
 	triple_type := pb.Type_TYPE_FLOAT
-	_, err := tg.GetTriples(jobId, partyId, amount, triple_type)
+	_, err := tg.GetTriples(ctx, jobId, partyId, amount, triple_type)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,12 +184,13 @@ func TestInitTripleStore(t *testing.T) {
 }
 
 func TestDeleteJobIdTriple(t *testing.T) {
+	ctx,_ := getContext()
 	jobNum := uint32(10)
 	partyId := uint32(1)
 	amount := uint32(10)
 	triple_type := pb.Type_TYPE_FLOAT
 	for jobId := uint32(0); jobId < jobNum; jobId++ {
-		_, err := tg.GetTriples(jobId, partyId, amount, triple_type)
+		_, err := tg.GetTriples(ctx, jobId, partyId, amount, triple_type)
 		if err != nil {
 			t.Fatal(err)
 		}
