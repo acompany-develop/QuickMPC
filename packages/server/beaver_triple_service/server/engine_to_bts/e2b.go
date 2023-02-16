@@ -87,7 +87,12 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	}
 	logger.Infof("Ip %s, jobId: %d, partyId: %d Type: %v\n", reqIpAddrAndPort, in.GetJobId(), partyId, in.GetTripleType())
 
-	triples, err := tg.GetTriples(ctx, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if !ok {
+		return nil, status.Error(codes.Internal, "failed claims type assertions")
+	}
+
+	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
 	if err != nil {
 		return nil, err
 	}
