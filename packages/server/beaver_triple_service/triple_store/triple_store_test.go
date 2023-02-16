@@ -1,8 +1,10 @@
 package triplestore_test
 
 import (
+	"os"
 	"fmt"
-	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	"testing"
 )
@@ -11,6 +13,20 @@ var Db *ts.SafeTripleStore
 
 func init() {
 	Db = ts.GetInstance()
+}
+
+func getClaims() (*jwt_types.Claim, error) {
+	token, ok := os.LookupEnv("BTS_TOKEN")
+	if ok {
+		claims,err := utils.AuthJWT(token)
+		if err != nil {
+			return nil,err
+		}
+
+		return claims,nil
+	}
+
+	return nil,fmt.Errorf("BTS TOKEN is not valified")
 }
 
 func generateTriples(amount uint32) map[uint32]([]*ts.Triple) {
@@ -84,7 +100,12 @@ func testTripleStore(t *testing.T, amount uint32, jobNum uint32) {
 	t.Helper()
 
 	t.Run("TestTripleStore", func(t *testing.T) {
-		for partyId := uint32(1); partyId <= cs.Conf.PartyNum; partyId++ {
+		claims, err := getClaims()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
 			// NOTE: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
 			partyId := partyId
 			t.Run(fmt.Sprintf("TestTripleStore_Party%d", partyId), func(t *testing.T) { t.Parallel(); getTriplesForParallel(t, partyId, amount, jobNum) })
