@@ -250,3 +250,21 @@ TEST_F(ValueTableTest, hjoinShareColumnTest)
         initialize(join_table.getDataId());
     }
 }
+
+TEST_F(ValueTableTest, hjoinMultiple)
+{
+    auto vt1 = genValueTable(0);
+    auto vt2 = genValueTable(1);
+    auto join_table = vt1.hjoin(vt2, 1, 1);
+    const std::vector<std::vector<std::string>> expect_table{{"101", "1", "2", "5", "6"}};
+    const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "attr1", "attr3"};
+
+    // 同じ結合を何回も行う
+    for (int i = 0; i < 10; ++i)
+    {
+        auto join_table = vt1.hjoin(vt2, 1, 1);
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+    }
+    initialize(join_table.getDataId());
+}
