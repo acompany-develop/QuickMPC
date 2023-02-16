@@ -79,7 +79,7 @@ func TestAuthToken(t *testing.T) {
 		tokenString, _ := token.SignedString([]byte(testcase.encodeKey))
 		os.Setenv("JWT_SECRET_KEY", base64.StdEncoding.EncodeToString([]byte(testcase.decodeKey)))
 
-		_, actual := authJWT(tokenString)
+		_, actual := AuthJWT(tokenString)
 
 		if actual != nil || testcase.expected != nil {
 			if actual == nil {

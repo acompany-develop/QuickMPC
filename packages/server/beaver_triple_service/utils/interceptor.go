@@ -26,7 +26,7 @@ func BtsAuthFunc(ctx context.Context) (context.Context, error) {
 		)
 	}
 
-	claims, err := authJWT(tokenString)
+	claims, err := AuthJWT(tokenString)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func getSecret() ([]byte, error) {
 	return secret, nil
 }
 
-func authJWT(tokenString string) (*jwt_types.Claim, error) {
+func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	jwtSecret, err := getSecret()
 	if err != nil {
 		return nil, err
