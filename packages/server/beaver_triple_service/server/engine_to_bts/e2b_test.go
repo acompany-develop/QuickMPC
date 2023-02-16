@@ -63,7 +63,6 @@ func getClaims() (*jwt_types.Claim, error) {
 	}
 
 	return nil,fmt.Errorf("BTS TOKEN is not valified")
-
 }
 
 func getContext() (context.Context, error){
