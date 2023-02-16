@@ -2,21 +2,18 @@ package e2bserver
 
 import (
 	"context"
-	"encoding/base64"
-	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"testing"
-	"time"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	"github.com/golang-jwt/jwt/v4"
+
+	"google.golang.org/grpc/metadata"
 )
 
 type partyIdConuter struct {
@@ -32,11 +29,12 @@ var s *utils.TestServer
 
 func init() {
 	// モック用GetPartyIdFromIp
-	GetPartyIdFromIp = func(reqIpAddrAndPort string) (uint32, error) {
+	GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint32, error) {
 		if reqIpAddrAndPort == "bufconn" {
 			Pic.mux.Lock()
 			defer Pic.mux.Unlock()
-			if Pic.partyId++; Pic.partyId > cs.Conf.PartyNum {
+			claims, _ := ctx.Value("claims").(*jwt_types.Claim)
+			if Pic.partyId++; Pic.partyId > claims.PartyNum {
 				Pic.partyId = 1
 			}
 		} else {
@@ -51,6 +49,21 @@ func init() {
 	s = &utils.TestServer{}
 	pb.RegisterEngineToBtsServer(s.GetServer(), &server{})
 	s.Serve()
+}
+
+func getClaims() (*jwt_types.Claim, error) {
+	token, ok := os.LookupEnv("BTS_TOKEN")
+	if ok {
+		claims,err := utils.AuthJWT(token)
+		if err != nil {
+			return nil,err
+		}
+
+		return claims,nil
+	}
+
+	return nil,fmt.Errorf("BTS TOKEN is not valified")
+
 }
 
 func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32, partyId uint32) {
@@ -77,9 +90,10 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 }
 
 func testGetTriplesByJobId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32) {
+	claims, _ := getClaims()
 	t.Run(fmt.Sprintf("testGetTriples_Job%d", jobId), func(t *testing.T) {
 		t.Helper()
-		for partyId := uint32(1); partyId <= cs.Conf.PartyNum; partyId++ {
+		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
 			partyId := partyId
 			testGetTriplesByJobIdAndPartyId(t, client, amount, jobId, partyId)
 		}
