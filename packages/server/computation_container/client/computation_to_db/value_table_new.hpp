@@ -23,6 +23,7 @@ public:
     RowType operator*();
     TableIterator &operator++();
     bool operator!=(const TableIterator &tgt);
+    bool operator==(const TableIterator &tgt);
 };
 
 class ValueTable
@@ -34,6 +35,7 @@ public:
     TableIterator begin() const;
     TableIterator end() const;
 
+    std::string getDataId() const;
     TableType getTable() const;
     std::vector<std::string> getColumn(int) const;
     std::vector<std::string> getSchemas() const;

@@ -35,10 +35,10 @@ auto toShare(const std::vector<std::vector<std::string>> &table)
     return share_table;
 }
 
-ValueTable::ValueTable(const std::string &data_id) : data_id(data_id) {}
+TableJoiner::TableJoiner(const std::string &data_id) : data_id(data_id) {}
 
 // tableから行，列の指定したindexだけ取り出す，nulloptの場合は全ての行，列を取り出す
-std::vector<std::vector<std::string>> ValueTable::getSubTable(
+std::vector<std::vector<std::string>> TableJoiner::getSubTable(
     const std::optional<std::vector<int>> &row_index,
     const std::optional<std::vector<int>> &column_index
 ) const
@@ -77,7 +77,7 @@ std::vector<std::vector<std::string>> ValueTable::getSubTable(
     return read_table;
 }
 
-std::vector<std::string> ValueTable::getColumn(int column_number) const
+std::vector<std::string> TableJoiner::getColumn(int column_number) const
 {
     auto table = getSubTable(std::nullopt, std::vector<int>{column_number});
     std::vector<std::string> ret;
@@ -87,7 +87,7 @@ std::vector<std::string> ValueTable::getColumn(int column_number) const
     }
     return ret;
 }
-std::string ValueTable::joinDataId(const ValueTable &vt, int type) const
+std::string TableJoiner::joinDataId(const TableJoiner &vt, int type) const
 {
     // 結合テーブルIDと結合方式から一意に定まるIDを生成する
     auto text = data_id + vt.data_id + std::to_string(type);
@@ -105,8 +105,8 @@ std::string ValueTable::joinDataId(const ValueTable &vt, int type) const
     return ss.str();
 }
 
-std::string ValueTable::getDataId() const { return data_id; }
-std::vector<std::vector<std::string>> ValueTable::getTable() const
+std::string TableJoiner::getDataId() const { return data_id; }
+std::vector<std::vector<std::string>> TableJoiner::getTable() const
 {
     auto db = Client::getInstance();
     int piece_id = 0;
@@ -127,7 +127,7 @@ std::vector<std::vector<std::string>> ValueTable::getTable() const
     return read_table;
 }
 
-std::vector<std::string> ValueTable::getSchemas() const
+std::vector<std::string> TableJoiner::getSchemas() const
 {
     auto db = Client::getInstance();
     return db->readSchema(data_id);
@@ -381,7 +381,7 @@ std::pair<std::vector<int>, std::vector<int>> unionValueIndex(
     return {v1_it, v2_it};
 }
 
-ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt) const
+TableJoiner TableJoiner::vjoin(const TableJoiner &join_table, int idx, int idx_tgt) const
 {
     // TODO: 必要な列だけ取り出して結合するようにする
     auto table = this->getTable();
@@ -433,10 +433,10 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
     const std::string new_data_id = joinDataId(join_table, 0);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
-    return ValueTable(new_data_id);
+    return TableJoiner(new_data_id);
 }
 
-ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt) const
+TableJoiner TableJoiner::hjoin(const TableJoiner &join_table, int idx, int idx_tgt) const
 {
     // TODO: 必要な列だけ取り出して結合するようにする
     auto table = this->getTable();
@@ -498,10 +498,10 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
     const std::string new_data_id = joinDataId(join_table, 1);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
-    return ValueTable(new_data_id);
+    return TableJoiner(new_data_id);
 }
 
-ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx_tgt) const
+TableJoiner TableJoiner::hjoinShare(const TableJoiner &join_table, int idx, int idx_tgt) const
 {
     // TODO: indexだけで処理できるように修正する
     auto table = this->getTable();
@@ -555,16 +555,270 @@ ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx
     const std::string new_data_id = joinDataId(join_table, 1);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
+    return TableJoiner(new_data_id);
+}
+
+std::string writeVJoinTable(
+    const ValueTable &table1,
+    const ValueTable &table2,
+    const std::vector<int> &col1,
+    const std::vector<int> &col2,
+    const std::vector<int> &row1,
+    const std::vector<int> &row2
+)
+{
+    // schemasを構築
+    auto new_schemas = std::vector<std::string>();
+    auto schemas1 = table1.getSchemas();
+    for (const auto &it : col1)
+    {
+        new_schemas.emplace_back(schemas1[it]);
+    }
+
+    // tableを構築
+    auto new_table = std::vector<std::vector<std::string>>();
+    new_table.reserve(row1.size());
+    auto row_dq1 = std::deque<int>(row1.begin(), row1.end());
+    auto row_dq2 = std::deque<int>(row2.begin(), row2.end());
+    auto itr1 = table1.begin();
+    auto itr2 = table2.begin();
+    auto table_idx1 = 0;
+    auto table_idx2 = 0;
+    while (!row_dq1.empty())
+    {
+        // 使用される行になるまでincrement
+        while (table_idx1 < row_dq1.front())
+        {
+            ++table_idx1;
+            ++itr1;
+        }
+        if (itr1 == table1.end())
+        {
+            // TODO: 適切なエラーを返す
+            throw std::runtime_error("");
+        }
+
+        // 行を構築
+        auto new_row = std::vector<std::string>();
+        new_row.reserve(new_schemas.size());
+        auto r1 = *itr1;
+        for (const auto &it : col1)
+        {
+            new_row.emplace_back(r1[it]);
+        }
+        new_table.emplace_back(new_row);
+        ++itr1;
+        ++table_idx1;
+        row_dq1.pop_front();
+    }
+    while (!row_dq2.empty())
+    {
+        // 使用される行になるまでincrement
+        while (table_idx2 < row_dq2.front())
+        {
+            ++table_idx2;
+            ++itr2;
+        }
+        if (itr2 == table2.end())
+        {
+            // TODO: 適切なエラーを返す
+            throw std::runtime_error("");
+        }
+
+        // 行を構築
+        auto new_row = std::vector<std::string>();
+        new_row.reserve(new_schemas.size());
+        auto r2 = *itr2;
+        for (const auto &it : col2)
+        {
+            new_row.emplace_back(r2[it]);
+        }
+
+        new_table.emplace_back(new_row);
+        ++itr2;
+        ++table_idx2;
+        row_dq2.pop_front();
+    }
+
+    // 保存
+    const std::string new_data_id = "tmp";
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
+    return new_data_id;
+}
+std::string writeHJoinTable(
+    const ValueTable &table1,
+    const ValueTable &table2,
+    const std::vector<int> &col1,
+    const std::vector<int> &col2,
+    const std::vector<int> &row1,
+    const std::vector<int> &row2
+)
+{
+    // schemasを構築
+    auto new_schemas = std::vector<std::string>();
+    auto schemas1 = table1.getSchemas();
+    auto schemas2 = table2.getSchemas();
+    for (const auto &it : col1)
+    {
+        new_schemas.emplace_back(schemas1[it]);
+    }
+    for (const auto &it : col2)
+    {
+        new_schemas.emplace_back(schemas2[it]);
+    }
+
+    // tableを構築
+    auto new_table = std::vector<std::vector<std::string>>();
+    new_table.reserve(row1.size());
+    auto row_dq1 = std::deque<int>(row1.begin(), row1.end());
+    auto row_dq2 = std::deque<int>(row2.begin(), row2.end());
+    auto itr1 = table1.begin();
+    auto itr2 = table2.begin();
+    auto table_idx1 = 0;
+    auto table_idx2 = 0;
+    while (!row_dq1.empty() && !row_dq2.empty())
+    {
+        // 使用される行になるまでincrement
+        while (table_idx1 < row_dq1.front())
+        {
+            ++table_idx1;
+            ++itr1;
+        }
+        while (table_idx2 < row_dq2.front())
+        {
+            ++table_idx2;
+            ++itr2;
+        }
+        if (itr1 == table1.end() || itr2 == table2.end())
+        {
+            // TODO: 適切なエラーを返す
+            throw std::runtime_error("");
+        }
+
+        // 行を構築
+        auto new_row = std::vector<std::string>();
+        new_row.reserve(new_schemas.size());
+        auto r1 = *itr1;
+        auto r2 = *itr2;
+        for (const auto &it : col1)
+        {
+            new_row.emplace_back(r1[it]);
+        }
+        for (const auto &it : col2)
+        {
+            new_row.emplace_back(r2[it]);
+        }
+
+        new_table.emplace_back(new_row);
+        ++itr1;
+        ++itr2;
+        ++table_idx1;
+        ++table_idx2;
+        row_dq1.pop_front();
+        row_dq2.pop_front();
+    }
+
+    // 保存
+    const std::string new_data_id = "tmp";
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
+    return new_data_id;
+}
+
+ValueTable vjoin(const ValueTable &table1, const ValueTable &table2, int idx1, int idx2)
+{
+    // joinしたschemasのindexリストを構築
+    auto [schemas_it1, schemas_it2] =
+        intersectionValueIndex(table1.getSchemas(), table2.getSchemas());
+
+    // joinしたidsのindexリストを構築
+    auto ids_share1 = toShare(table1.getColumn(idx1 - 1));
+    open(ids_share1);
+    auto ids1 = recons(ids_share1);
+    auto ids_share2 = toShare(table2.getColumn(idx2 - 1));
+    open(ids_share2);
+    auto ids2 = recons(ids_share2);
+    auto [ids_it1, ids_it2] = unionValueIndex(ids1, ids2);
+
+    // tableをjoinして保存
+    auto new_data_id = writeVJoinTable(table1, table2, schemas_it1, schemas_it2, ids_it1, ids_it2);
     return ValueTable(new_data_id);
 }
 
-ValueTable parseRead(
-    const std::vector<ValueTable> &values,
+ValueTable hjoin(const ValueTable &table1, const ValueTable &table2, int idx1, int idx2)
+{
+    // joinしたschemasのindexリストを構築
+    auto schemas_it1 = std::vector<int>(table1.getSchemas().size());
+    auto schemas_it2 = std::vector<int>();
+    std::iota(schemas_it1.begin(), schemas_it1.end(), 0);
+    auto size2 = table2.getSchemas().size();
+    for (size_t i = 0; i < size2; ++i)
+    {
+        if (static_cast<int>(i) == idx2 - 1)
+        {
+            continue;
+        }
+        schemas_it2.emplace_back(i);
+    }
+
+    // joinしたidsのindexリストを構築
+    auto ids_share1 = toShare(table1.getColumn(idx1 - 1));
+    open(ids_share1);
+    auto ids1 = recons(ids_share1);
+    auto ids_share2 = toShare(table2.getColumn(idx2 - 1));
+    open(ids_share2);
+    auto ids2 = recons(ids_share2);
+    auto [ids_it1, ids_it2] = intersectionValueIndex(ids1, ids2);
+
+    // tableをjoinして保存
+    auto new_data_id = writeHJoinTable(table1, table2, schemas_it1, schemas_it2, ids_it1, ids_it2);
+    return ValueTable(new_data_id);
+}
+
+ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2, int idx1, int idx2)
+{
+    // joinしたschemasのindexリストを構築
+    auto schemas_it1 = std::vector<int>(table1.getSchemas().size());
+    auto schemas_it2 = std::vector<int>();
+    std::iota(schemas_it1.begin(), schemas_it1.end(), 0);
+    auto size2 = table2.getSchemas().size();
+    for (size_t i = 0; i < size2; ++i)
+    {
+        if (static_cast<int>(i) == idx2 - 1)
+        {
+            continue;
+        }
+        schemas_it2.emplace_back(i);
+    }
+
+    // joinしたidsのindexリストを構築
+    auto ids_share1 = toShare(table1.getColumn(idx1 - 1));
+    auto ids_share2 = toShare(table2.getColumn(idx2 - 1));
+    // NOTE: 返り値をpairにしたい
+    auto ids_it_list = intersectionSortedValueIndex(ids_share1, ids_share2);
+    std::vector<int> ids_it1;
+    std::vector<int> ids_it2;
+    ids_it1.reserve(ids_it_list.size());
+    ids_it2.reserve(ids_it_list.size());
+    for (const auto &[it1, it2] : ids_it_list)
+    {
+        ids_it1.emplace_back(it1);
+        ids_it2.emplace_back(it2);
+    }
+
+    // tableをjoinして保存
+    auto new_data_id = writeHJoinTable(table1, table2, schemas_it1, schemas_it2, ids_it1, ids_it2);
+    return ValueTable(new_data_id);
+}
+
+TableJoiner parseRead(
+    const std::vector<TableJoiner> &values,
     const std::vector<int> &join,
     const std::vector<int> &index
 )
 {
-    auto joinFunc = [&](auto &&f, const qmpc::ComputationToDb::ValueTable &t, unsigned int it = 0)
+    auto joinFunc = [&](auto &&f, const qmpc::ComputationToDb::TableJoiner &t, unsigned int it = 0)
     {
         if (it == join.size())
         {
@@ -584,7 +838,7 @@ ValueTable parseRead(
 }
 
 // tableデータを結合して取り出す
-ValueTable readTable(const managetocomputation::JoinOrder &table)
+TableJoiner readTable(const managetocomputation::JoinOrder &table)
 {
     // requestからデータ読み取り
     auto size = table.join().size();
@@ -600,7 +854,7 @@ ValueTable readTable(const managetocomputation::JoinOrder &table)
     {
         index.emplace_back(j);
     }
-    std::vector<ValueTable> tables;
+    std::vector<TableJoiner> tables;
     tables.reserve(size + 1);
     for (const auto &data_id : table.dataids())
     {

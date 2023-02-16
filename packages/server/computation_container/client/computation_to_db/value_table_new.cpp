@@ -52,11 +52,13 @@ TableIterator &TableIterator::operator++()
     return *this;
 }
 bool TableIterator::operator!=(const TableIterator &tgt) { return itr != tgt.itr; }
+bool TableIterator::operator==(const TableIterator &tgt) { return !operator!=(tgt); }
 
 ValueTable::ValueTable(const std::string &data_id) : data_id(data_id) {}
 TableIterator ValueTable::begin() const { return TableIterator(data_id); }
 TableIterator ValueTable::end() const { return TableIterator(std::nullopt); }
 
+std::string ValueTable::getDataId() const { return data_id; }
 TableType ValueTable::getTable() const
 {
     TableType table;
@@ -71,7 +73,7 @@ std::vector<std::string> ValueTable::getColumn(int column_number) const
     std::vector<std::string> ret;
     for (const auto &row : *this)
     {
-        ret.emplace_back(row[0]);
+        ret.emplace_back(row[column_number]);
     }
     return ret;
 }

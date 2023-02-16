@@ -33,6 +33,7 @@ cc_library(
         "//job:progressManager",
         "//logging:log",
         "//client/computation_to_db:client",
+        "//client/computation_to_db:valuetable_new",
     ],
     visibility = ["//visibility:public"],
 )
