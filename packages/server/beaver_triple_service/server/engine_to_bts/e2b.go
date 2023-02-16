@@ -63,7 +63,10 @@ var GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint3
 // ClientのIPアドレスを取得する関数
 func GetReqIpAddrAndPort(ctx context.Context) string {
 	var reqIpAddrAndPort string
-	claims, _ := ctx.Value("claims").(*jwt_types.Claim)
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if !ok {
+		return 0, status.Error(codes.Internal, "failed claims type assertions")
+	}
 
 	if claims.WithEnvoy {
 		md, _ := metadata.FromIncomingContext(ctx)
