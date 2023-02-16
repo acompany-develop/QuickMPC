@@ -105,7 +105,7 @@ func testTripleStore(t *testing.T, amount uint32, jobNum uint32) {
 			t.Fatal(err)
 		}
 
-		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
+		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
 			// NOTE: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
 			partyId := partyId
 			t.Run(fmt.Sprintf("TestTripleStore_Party%d", partyId), func(t *testing.T) { t.Parallel(); getTriplesForParallel(t, partyId, amount, jobNum) })

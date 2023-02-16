@@ -34,7 +34,7 @@ func init() {
 			Pic.mux.Lock()
 			defer Pic.mux.Unlock()
 			claims, _ := ctx.Value("claims").(*jwt_types.Claim)
-			if Pic.partyId++; Pic.partyId > claims.PartyNum {
+			if Pic.partyId++; Pic.partyId > uint32(len(claims.PartyInfo)) {
 				Pic.partyId = 1
 			}
 		} else {
@@ -114,7 +114,7 @@ func testGetTriplesByJobId(t *testing.T, client pb.EngineToBtsClient, amount uin
 
 	t.Run(fmt.Sprintf("testGetTriples_Job%d", jobId), func(t *testing.T) {
 		t.Helper()
-		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
+		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
 			partyId := partyId
 			testGetTriplesByJobIdAndPartyId(t, client, amount, jobId, partyId)
 		}
