@@ -71,21 +71,22 @@ func GenerateTriples(ctx context.Context, amount uint32, triple_type pb.Type) (m
 		b := randInt64Slice[1]
 		c := a * b
 
-		aShares, err := sharize(a, claims.PartyNum, triple_type)
+		party_num := uint32(len(claims.PartyInfo))
+		aShares, err := sharize(a, party_num, triple_type)
 		if err != nil {
 			return nil, err
 		}
-		bShares, err := sharize(b, claims.PartyNum, triple_type)
+		bShares, err := sharize(b, party_num, triple_type)
 		if err != nil {
 			return nil, err
 		}
-		cShares, err := sharize(c, claims.PartyNum, triple_type)
+		cShares, err := sharize(c, party_num, triple_type)
 		if err != nil {
 			return nil, err
 		}
 
 		// partyIdは1-index
-		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
+		for partyId := uint32(1); partyId <= party_num; partyId++ {
 			t := ts.Triple{
 				A: aShares[partyId-1],
 				B: bShares[partyId-1],
@@ -124,7 +125,7 @@ func GetTriples(ctx context.Context, jobId uint32, partyId uint32, amount uint32
 		}
 
 		// partyIdは1-index
-		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
+		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
 			_, ok := Db.Triples[jobId][partyId]
 			if ok {
 				Db.Triples[jobId][partyId] = append(Db.Triples[jobId][partyId], newTriples[partyId]...)
