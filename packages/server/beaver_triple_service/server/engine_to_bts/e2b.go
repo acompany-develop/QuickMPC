@@ -44,7 +44,10 @@ var GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint3
 	reqIpAddr, _ := arr[0], arr[1]
 
 	var partyId uint32
-	claims, _ := ctx.Value("claims").(*jwt_types.Claim)
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if !ok {
+		return 0, status.Error(codes.Internal, "failed claims type assertions")
+	}
 	for _, party := range claims.PartyInfo {
 		if reqIpAddr == party.Address {
 			partyId = party.Id
