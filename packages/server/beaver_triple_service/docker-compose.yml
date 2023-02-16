@@ -18,6 +18,7 @@ services:
         source: ../../../proto
         target: /proto
     env_file:
+      - ../../../config/beaver_triple_service/.env
       - ./cmd/jwt_generator/sample/server.sample.env
     ports:
       - "127.0.0.1:64101:54100"
