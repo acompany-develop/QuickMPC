@@ -207,10 +207,6 @@ services:
       target: dev
       cache_from:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
-    volumes:
-      - type: bind
-        source: ../config/beaver_triple_service
-        target: /QuickMPC/config
     env_file:
       - ../config/beaver_triple_service/.env
       - ../config/beaver_triple_service/server.sample.env
