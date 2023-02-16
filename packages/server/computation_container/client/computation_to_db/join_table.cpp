@@ -72,7 +72,7 @@ std::pair<std::vector<int>, std::vector<int>> intersectionValueIndex(
 }
 
 template <class T>
-std::vector<std::pair<int, int>> intersectionSortedValueIndex(
+std::pair<std::vector<int>, std::vector<int>> intersectionSortedValueIndex(
     const std::vector<T> &sorted_v1, const std::vector<T> &sorted_v2
 )
 {
@@ -166,9 +166,11 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
     auto now_its = begin_its;
     core_progress->update(3);
 
-    // intersection_it_list:= v1とv2の積集合のindex
-    std::vector<std::pair<int, int>> intersection_it_list;
-    intersection_it_list.reserve(size);
+    // intersection_v1_its, intersection_v2_its:= v1とv2の積集合のindex
+    std::vector<int> intersection_v1_its;
+    std::vector<int> intersection_v2_its;
+    intersection_v1_its.reserve(size);
+    intersection_v2_its.reserve(size);
     // 並列比較するブロックの数
     int parallel_nums = now_its.size();
     std::vector<bool> fin(block_nums, false);
@@ -224,7 +226,8 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
                 // "==" <=> "not < && not >"
                 if (!comp[comp_it] && !comp[comp_it + 1])
                 {
-                    intersection_it_list.emplace_back(now_its[i]);
+                    intersection_v1_its.emplace_back(now_its[i].first);
+                    intersection_v2_its.emplace_back(now_its[i].second);
                     ++now_its[i].first;
                     ++now_its[i].second;
                 }
@@ -253,7 +256,7 @@ std::vector<std::pair<int, int>> intersectionSortedValueIndex(
         }
     }
 
-    return intersection_it_list;
+    return {intersection_v1_its, intersection_v2_its};
 }
 
 template <class T>
@@ -519,17 +522,7 @@ ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2, int id
     // joinしたidsのindexリストを構築
     auto ids_share1 = toShare(table1.getColumn(idx1 - 1));
     auto ids_share2 = toShare(table2.getColumn(idx2 - 1));
-    // NOTE: 返り値をpairにしたい
-    auto ids_it_list = intersectionSortedValueIndex(ids_share1, ids_share2);
-    std::vector<int> ids_it1;
-    std::vector<int> ids_it2;
-    ids_it1.reserve(ids_it_list.size());
-    ids_it2.reserve(ids_it_list.size());
-    for (const auto &[it1, it2] : ids_it_list)
-    {
-        ids_it1.emplace_back(it1);
-        ids_it2.emplace_back(it2);
-    }
+    auto [ids_it1, ids_it2] = intersectionSortedValueIndex(ids_share1, ids_share2);
 
     // tableをjoinして保存
     auto new_data_id = writeHJoinTable(table1, table2, schemas_it1, schemas_it2, ids_it1, ids_it2);
