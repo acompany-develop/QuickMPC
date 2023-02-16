@@ -66,11 +66,25 @@ func getClaims() (*jwt_types.Claim, error) {
 
 }
 
+func getContext() (context.Context, error){
+	token, ok := os.LookupEnv("BTS_TOKEN")
+	if ok {
+		ctx := context.Background()
+		md := metadata.New(map[string]string{"authorization": "bearer "+token})
+		ctx = metadata.NewOutgoingContext(ctx, md)
+		return ctx,nil
+	}
+
+	return nil,fmt.Errorf("BTS TOKEN is not valified")
+}
+
 func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32, partyId uint32) {
 	t.Run(fmt.Sprintf("testGetTriples_Party%d", partyId), func(t *testing.T) {
 		t.Helper()
 		t.Parallel()
-		result, err := client.GetTriples(context.Background(), &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT})
+
+		ctx,_ := getContext()
+		result, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -152,7 +166,8 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	_, err := client.GetTriples(context.Background(), &pb.GetTriplesRequest{JobId: 0, Amount: 1})
+	ctx,_ := getContext()
+	_, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1})
 
 	if err == nil {
 		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
@@ -164,7 +179,8 @@ func TestInitTripleStore(t * testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	_,err := client.InitTripleStore(context.Background(), &emptypb.Empty{})
+	ctx,_ := getContext()
+	_,err := client.InitTripleStore(ctx, &emptypb.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -175,7 +191,8 @@ func TestDeleteJobIdTriple(t * testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	_,err := client.DeleteJobIdTriple(context.Background(), &pb.DeleteJobIdTripleRequest{JobId: 0})
+	ctx,_ := getContext()
+	_,err := client.DeleteJobIdTriple(ctx, &pb.DeleteJobIdTripleRequest{JobId: 0})
 	if err != nil {
 		t.Fatal(err)
 	}
