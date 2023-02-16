@@ -37,7 +37,11 @@ func getContext() (context.Context, error){
 }
 
 func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum uint32, triple_type pb.Type) {
-	ctx,_ := getContext()
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	t.Helper()
 	for jobId := uint32(0); jobId < jobNum; jobId++ {
 		t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
@@ -92,7 +96,11 @@ func testTripleGenerator(t *testing.T, amount uint32, jobNum uint32, triple_type
 	t.Helper()
 
 	t.Run("TestTripleGenerator", func(t *testing.T) {
-		ctx,_ := getContext()
+		ctx, err := getContext()
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		claims, _ := ctx.Value("claims").(*jwt_types.Claim)
 
 		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
@@ -165,7 +173,11 @@ func TestTripleGenerator_Float_1000000_1(t *testing.T) {
 }
 
 func TestInitTripleStore(t *testing.T) {
-	ctx,_ := getContext()
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	jobId := uint32(1)
 	partyId := uint32(1)
 	amount := uint32(10)
@@ -184,7 +196,11 @@ func TestInitTripleStore(t *testing.T) {
 }
 
 func TestDeleteJobIdTriple(t *testing.T) {
-	ctx,_ := getContext()
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	jobNum := uint32(10)
 	partyId := uint32(1)
 	amount := uint32(10)

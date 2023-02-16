@@ -83,7 +83,11 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 		t.Helper()
 		t.Parallel()
 
-		ctx,_ := getContext()
+		ctx, err := getContext()
+		if err != nil {
+			t.Fatal(err)
+		}
+
 		result, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT})
 		if err != nil {
 			t.Fatal(err)
@@ -104,7 +108,11 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 }
 
 func testGetTriplesByJobId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32) {
-	claims, _ := getClaims()
+	claims, err := getClaims()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	t.Run(fmt.Sprintf("testGetTriples_Job%d", jobId), func(t *testing.T) {
 		t.Helper()
 		for partyId := uint32(1); partyId <= claims.PartyNum; partyId++ {
@@ -166,7 +174,11 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	ctx,_ := getContext()
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	_, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1})
 
 	if err == nil {
@@ -179,7 +191,11 @@ func TestInitTripleStore(t * testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	ctx,_ := getContext()
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	_,err := client.InitTripleStore(ctx, &emptypb.Empty{})
 	if err != nil {
 		t.Fatal(err)
@@ -191,7 +207,11 @@ func TestDeleteJobIdTriple(t * testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	ctx,_ := getContext()
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	_,err := client.DeleteJobIdTriple(ctx, &pb.DeleteJobIdTripleRequest{JobId: 0})
 	if err != nil {
 		t.Fatal(err)
