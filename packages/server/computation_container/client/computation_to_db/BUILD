@@ -18,12 +18,12 @@ cc_library(
 )
 
 cc_library(
-    name = "valuetable",
+    name = "jointable",
     srcs = [
-        "value_table.cpp"
+        "join_table.cpp"
     ],
     hdrs = [
-        "value_table.hpp",
+        "join_table.hpp",
     ],
     deps = [
         "@nlohmann_json//:json",
@@ -33,18 +33,18 @@ cc_library(
         "//job:progressManager",
         "//logging:log",
         "//client/computation_to_db:client",
-        "//client/computation_to_db:valuetable_new",
+        "//client/computation_to_db:valuetable",
     ],
     visibility = ["//visibility:public"],
 )
 
 cc_library(
-    name = "valuetable_new",
+    name = "valuetable",
     srcs = [
-        "value_table_new.cpp"
+        "value_table.cpp"
     ],
     hdrs = [
-        "value_table_new.hpp",
+        "value_table.hpp",
     ],
     deps = [
         "//logging:log",

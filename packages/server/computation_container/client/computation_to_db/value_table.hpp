@@ -4,15 +4,41 @@
 #include <string>
 #include <vector>
 
-#include "client/computation_to_db/client.hpp"
-#include "client/computation_to_db/value_table_new.hpp"
-#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
-
 namespace qmpc::ComputationToDb
 {
-ValueTable vjoin(const ValueTable &, const ValueTable &, int, int);
-ValueTable hjoin(const ValueTable &, const ValueTable &, int, int);
-ValueTable hjoinShare(const ValueTable &, const ValueTable &, int, int);
+using RowType = std::vector<std::string>;
+using TableType = std::vector<RowType>;
 
-ValueTable readTable(const managetocomputation::JoinOrder &);
+class TableIterator
+{
+    const std::string data_id;
+    int piece_id;
+    std::optional<TableType> piece_table;
+    std::optional<TableType::iterator> itr;
+
+public:
+    TableIterator(const std::string &data_id);
+    TableIterator(const std::optional<TableType::iterator> &itr) : itr(itr) {}
+
+    RowType operator*();
+    TableIterator &operator++();
+    bool operator!=(const TableIterator &tgt);
+    bool operator==(const TableIterator &tgt);
+};
+
+class ValueTable
+{
+    const std::string data_id;
+
+public:
+    ValueTable(const std::string &);
+    TableIterator begin() const;
+    TableIterator end() const;
+
+    std::string getDataId() const;
+    TableType getTable() const;
+    std::vector<std::string> getColumn(int) const;
+    std::vector<std::string> getSchemas() const;
+};
+
 }  // namespace qmpc::ComputationToDb

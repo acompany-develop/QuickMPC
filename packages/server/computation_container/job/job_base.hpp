@@ -13,7 +13,7 @@
 #include <boost/range/adaptor/transformed.hpp>
 
 #include "client/computation_to_db/client.hpp"
-#include "client/computation_to_db/value_table.hpp"
+#include "client/computation_to_db/join_table.hpp"
 #include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "job_parameter.hpp"
 #include "job_status.hpp"

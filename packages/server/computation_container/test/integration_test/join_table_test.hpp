@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "client/computation_to_db/client.hpp"
-#include "client/computation_to_db/value_table.hpp"
+#include "client/computation_to_db/join_table.hpp"
 #include "gtest/gtest.h"
 namespace fs = std::experimental::filesystem;
 
