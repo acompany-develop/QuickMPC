@@ -33,6 +33,14 @@ type server struct {
 	pb.UnimplementedEngineToBtsServer
 }
 
+func getListenPort() (string, error) {
+	port, ok := os.LookupEnv("PORT")
+	if !ok {
+		return "", status.Error(codes.Internal, "port is not provided")
+	}
+	return port, nil
+}
+
 func getWithEnvoy() (bool, error) {
 	with_envoy, ok := os.LookupEnv("WITH_ENVOY")
 	if !ok {
@@ -163,14 +171,6 @@ func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTriple
 	}
 
 	return &emptypb.Empty{},err
-}
-
-func getListenPort() (string, error) {
-	port, ok := os.LookupEnv("PORT")
-	if !ok {
-		return "", status.Error(codes.Internal, "port is not provided")
-	}
-	return port, nil
 }
 
 func RunServer() {
