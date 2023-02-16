@@ -1,5 +1,6 @@
 #include "join_table.hpp"
 
+#include <openssl/sha.h>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -33,6 +34,24 @@ auto toShare(const std::vector<std::vector<std::string>> &table)
         share_table.emplace_back(toShare<SV>(row));
     }
     return share_table;
+}
+
+std::string joinDataId(const ValueTable &vt1, const ValueTable &vt2, int type)
+{
+    // 結合テーブルIDと結合方式から一意に定まるIDを生成する
+    auto text = vt1.getDataId() + vt2.getDataId() + std::to_string(type);
+
+    unsigned char hs[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, text.c_str(), text.size());
+    SHA256_Final(hs, &sha256);
+    std::stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hs[i]);
+    }
+    return ss.str();
 }
 
 struct LessFloat
@@ -368,7 +387,7 @@ std::string writeVJoinTable(
     }
 
     // 保存
-    const std::string new_data_id = "tmp";
+    const std::string new_data_id = joinDataId(table1, table2, 0);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
     return new_data_id;
@@ -447,7 +466,7 @@ std::string writeHJoinTable(
     }
 
     // 保存
-    const std::string new_data_id = "tmp";
+    const std::string new_data_id = joinDataId(table1, table2, 1);
     auto db = Client::getInstance();
     db->writeTable(new_data_id, new_table, new_schemas);
     return new_data_id;
