@@ -1,7 +1,6 @@
 package triplegenerator
 
 import (
-	"context"
 	"errors"
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
@@ -54,10 +53,8 @@ func sharize(data int64, size uint32, triple_type pb.Type) ([]int64, error) {
 	return shares, nil
 }
 
-func GenerateTriples(ctx context.Context, amount uint32, triple_type pb.Type) (map[uint32]([]*ts.Triple), error) {
+func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type) (map[uint32]([]*ts.Triple), error) {
 	ret := make(map[uint32]([]*ts.Triple))
-
-	claims, _ := ctx.Value("claims").(*jwt_types.Claim)
 
 	for i := uint32(0); i < amount; i++ {
 		randInt64Slice, err := utils.GetRandInt64Slice(2, tripleRandMin, tripleRandMax)
@@ -99,12 +96,12 @@ func GenerateTriples(ctx context.Context, amount uint32, triple_type pb.Type) (m
 	return ret, nil
 }
 
-func GetTriples(ctx context.Context, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type) ([]*ts.Triple, error) {
+func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type) ([]*ts.Triple, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
 	if len(Db.Triples[jobId]) == 0 {
-		newTriples, err := GenerateTriples(ctx, amount, triple_type)
+		newTriples, err := GenerateTriples(claims, amount, triple_type)
 		if err != nil {
 			return nil, err
 		}
@@ -115,11 +112,9 @@ func GetTriples(ctx context.Context, jobId uint32, partyId uint32, amount uint32
 	var triples []*ts.Triple
 	_, ok := Db.Triples[jobId][partyId]
 
-	claims, _ := ctx.Value("claims").(*jwt_types.Claim)
-
 	// とあるパーティの複数回目のリクエストが、他パーティより先行されても対応できるように全パーティに triple をappendする
 	if !ok {
-		newTriples, err := GenerateTriples(ctx, amount, triple_type)
+		newTriples, err := GenerateTriples(claims, amount, triple_type)
 		if err != nil {
 			return nil, err
 		}
