@@ -33,6 +33,14 @@ type server struct {
 	pb.UnimplementedEngineToBtsServer
 }
 
+func getWithEnvoy() (bool, error) {
+	with_envoy, ok := os.LookupEnv("WITH_ENVOY")
+	if !ok {
+		return false, status.Error(codes.Internal, "with envoy is not provided")
+	}
+	return strconv.ParseBool(with_envoy)
+}
+
 // モック時に置き換わる関数
 var GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint32, error) {
 	arr := strings.Split(reqIpAddrAndPort, ":")
@@ -64,28 +72,35 @@ var GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint3
 }
 
 // ClientのIPアドレスを取得する関数
-func GetReqIpAddrAndPort(ctx context.Context) string {
+func GetReqIpAddrAndPort(ctx context.Context) (string, error) {
 	var reqIpAddrAndPort string
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if !ok {
-		return 0, status.Error(codes.Internal, "failed claims type assertions")
+	with_envoy,err := getWithEnvoy()
+	if err != nil {
+		return "",err
 	}
 
-	if claims.WithEnvoy {
+	if with_envoy {
 		md, _ := metadata.FromIncomingContext(ctx)
-		port := strconv.FormatUint(uint64(claims.Port), 10)
+		port,err := getListenPort()
+		if err != nil {
+			return "",err
+		}
+
 		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
 	} else {
 		p, _ := peer.FromContext(ctx)
 		reqIpAddrAndPort = p.Addr.String()
 	}
 
-	return reqIpAddrAndPort
+	return reqIpAddrAndPort,nil
 }
 
 func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
 	// ClientのIPアドレスを取得
-	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
+	reqIpAddrAndPort, err := GetReqIpAddrAndPort(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
 	if err != nil {
@@ -110,7 +125,10 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 
 func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
 	// ClientのIPアドレスを取得
-	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
+	reqIpAddrAndPort, err := GetReqIpAddrAndPort(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
 	if err != nil {
@@ -128,7 +146,10 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 
 func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
 	// ClientのIPアドレスを取得
-	reqIpAddrAndPort := GetReqIpAddrAndPort(ctx)
+	reqIpAddrAndPort, err := GetReqIpAddrAndPort(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
 	if err != nil {
