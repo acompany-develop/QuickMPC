@@ -21,12 +21,12 @@ import (
 )
 
 type Options struct {
-    file_path  string
-    output_dir string
+	file_path  string
+	output_dir string
 }
 
 var (
-    options = &Options{}
+	options = &Options{}
 )
 
 func store_client_env(path string, token string) error {
