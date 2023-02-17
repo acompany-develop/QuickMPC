@@ -29,7 +29,7 @@ var (
 	options = &Options{}
 )
 
-func store_client_env(path string, token string) error {
+func storeClientEnv(path string, token string) error {
 	fp, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	defer fp.Close()
 	if err != nil {
@@ -44,7 +44,7 @@ func store_client_env(path string, token string) error {
 	return nil
 }
 
-func store_server_env(path string, secrets string, claim jwt_types.Claim) error {
+func storeServerEnv(path string, secrets string, claim jwt_types.Claim) error {
 	fp, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
 	defer fp.Close()
 	if err != nil {
@@ -143,7 +143,7 @@ var generateJwtCmd = &cobra.Command{
 		ext := path.Ext(base)
 		filename := base[:len(base)-len(ext)]
 
-		err = store_client_env(
+		err = storeClientEnv(
 			path.Join(
 				options.output_dir,
 				strings.Join([]string{"client", filename, "env"}, ".")),
@@ -152,7 +152,7 @@ var generateJwtCmd = &cobra.Command{
 			log.Fatalln(err)
 		}
 
-		err = store_server_env(
+		err = storeServerEnv(
 			path.Join(
 				options.output_dir,
 				strings.Join([]string{"server", filename, "env"}, ".")),
