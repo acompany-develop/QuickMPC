@@ -9,6 +9,9 @@ import (
 	"net"
 
 	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
+
+	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
+	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/test/bufconn"
 )
@@ -21,7 +24,13 @@ type TestServer struct {
 }
 
 func (s *TestServer) GetServer() *grpc.Server {
-	s.server = grpc.NewServer()
+	s.server = grpc.NewServer(
+		grpc.UnaryInterceptor(
+			grpc_middleware.ChainUnaryServer(
+				grpc_auth.UnaryServerInterceptor(BtsAuthFunc),
+			),
+		),
+	)
 	return s.server
 }
 

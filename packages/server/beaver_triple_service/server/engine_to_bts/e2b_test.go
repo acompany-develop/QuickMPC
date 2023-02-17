@@ -2,21 +2,18 @@ package e2bserver
 
 import (
 	"context"
-	"encoding/base64"
-	"errors"
 	"fmt"
 	"os"
-	"strings"
 	"sync"
 	"testing"
-	"time"
 
-	cs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/config_store"
+	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	"github.com/golang-jwt/jwt/v4"
+
+	"google.golang.org/grpc/metadata"
 )
 
 type partyIdConuter struct {
@@ -32,11 +29,12 @@ var s *utils.TestServer
 
 func init() {
 	// モック用GetPartyIdFromIp
-	GetPartyIdFromIp = func(reqIpAddrAndPort string) (uint32, error) {
+	GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (uint32, error) {
 		if reqIpAddrAndPort == "bufconn" {
 			Pic.mux.Lock()
 			defer Pic.mux.Unlock()
-			if Pic.partyId++; Pic.partyId > cs.Conf.PartyNum {
+
+			if Pic.partyId++; Pic.partyId > uint32(len(claims.PartyInfo)) {
 				Pic.partyId = 1
 			}
 		} else {
@@ -53,11 +51,43 @@ func init() {
 	s.Serve()
 }
 
+func getClaims() (*jwt_types.Claim, error) {
+	token, ok := os.LookupEnv("BTS_TOKEN")
+	if ok {
+		claims,err := utils.AuthJWT(token)
+		if err != nil {
+			return nil,err
+		}
+
+		return claims,nil
+	}
+
+	return nil,fmt.Errorf("BTS TOKEN is not valified")
+}
+
+func getContext() (context.Context, error){
+	token, ok := os.LookupEnv("BTS_TOKEN")
+	if ok {
+		ctx := context.Background()
+		md := metadata.New(map[string]string{"authorization": "bearer "+token})
+		ctx = metadata.NewOutgoingContext(ctx, md)
+		return ctx,nil
+	}
+
+	return nil,fmt.Errorf("BTS TOKEN is not valified")
+}
+
 func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32, partyId uint32) {
 	t.Run(fmt.Sprintf("testGetTriples_Party%d", partyId), func(t *testing.T) {
 		t.Helper()
 		t.Parallel()
-		result, err := client.GetTriples(context.Background(), &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT})
+
+		ctx, err := getContext()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		result, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -77,9 +107,14 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 }
 
 func testGetTriplesByJobId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32) {
+	claims, err := getClaims()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	t.Run(fmt.Sprintf("testGetTriples_Job%d", jobId), func(t *testing.T) {
 		t.Helper()
-		for partyId := uint32(1); partyId <= cs.Conf.PartyNum; partyId++ {
+		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
 			partyId := partyId
 			testGetTriplesByJobIdAndPartyId(t, client, amount, jobId, partyId)
 		}
@@ -138,7 +173,12 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	_, err := client.GetTriples(context.Background(), &pb.GetTriplesRequest{JobId: 0, Amount: 1})
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1})
 
 	if err == nil {
 		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
@@ -150,7 +190,12 @@ func TestInitTripleStore(t * testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	_,err := client.InitTripleStore(context.Background(), &emptypb.Empty{})
+	ctx, err := getContext()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_,err = client.InitTripleStore(ctx, &emptypb.Empty{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,93 +206,13 @@ func TestDeleteJobIdTriple(t * testing.T) {
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
 
-	_,err := client.DeleteJobIdTriple(context.Background(), &pb.DeleteJobIdTripleRequest{JobId: 0})
+	ctx, err := getContext()
 	if err != nil {
 		t.Fatal(err)
 	}
-}
 
-func TestAuthToken(t *testing.T) {
-	type testCase struct {
-		description string
-		alg         jwt.SigningMethod
-		claims      jwt.MapClaims
-		expected    error
-		encodeKey   string
-		decodeKey   string
-	}
-
-	tommorow := time.Now().Add(time.Hour * 24).Unix()
-
-	validClaim := jwt.MapClaims{
-		"exp": tommorow,
-	}
-
-	merge := func(left, right jwt.MapClaims) jwt.MapClaims {
-		// Go だと shallow copy になるので非破壊的なmergeをしたい場合は新しいmapを用意する
-		m := jwt.MapClaims{}
-		for key, value := range left {
-			m[key] = value
-		}
-		for key, value := range right {
-			m[key] = value
-		}
-		return m
-	}
-
-	testcases := []testCase{
-		{
-			description: "validなJWTにはerrorを返さない",
-			alg:         jwt.SigningMethodHS256,
-			claims:      validClaim,
-			expected:    nil,
-			encodeKey:   "the-secret-key",
-			decodeKey:   "the-secret-key",
-		},
-		{
-			description: "algがHS256じゃないとerror",
-			alg:         jwt.SigningMethodHS512,
-			claims:      validClaim,
-			expected:    fmt.Errorf("unexpected signing method: HS512"),
-			encodeKey:   "the-secret-key",
-			decodeKey:   "the-secret-key",
-		},
-		{
-			description: "expが過ぎるとerror",
-			alg:         jwt.SigningMethodHS256,
-			claims:      merge(validClaim, jwt.MapClaims{"exp": time.Unix(1, 0).Unix()}),
-			expected:    fmt.Errorf("token is expired"),
-			encodeKey:   "the-secret-key",
-			decodeKey:   "the-secret-key",
-		},
-		{
-			description: "HMACの鍵が違うとエラー",
-			alg:         jwt.SigningMethodHS256,
-			expected:    fmt.Errorf("signature is invalid"),
-			encodeKey:   "the-secret-key",
-			decodeKey:   "is-not-same-key",
-		},
-	}
-
-	for _, testcase := range testcases {
-		token := jwt.NewWithClaims(testcase.alg, testcase.claims)
-		tokenString, _ := token.SignedString([]byte(testcase.encodeKey))
-		os.Setenv("JWT_SECRET_KEY", base64.StdEncoding.EncodeToString([]byte(testcase.decodeKey)))
-
-		_, actual := authJWT(tokenString)
-
-		if actual != nil || testcase.expected != nil {
-			if actual == nil {
-				actual = errors.New("nil guard for actual")
-			}
-			if testcase.expected == nil {
-				testcase.expected = errors.New("nil guard for testcase.expected")
-			}
-			if !strings.Contains(actual.Error(), testcase.expected.Error()) {
-				t.Fatalf("%s: expected result is %v, but got %v", testcase.description, testcase.expected, actual)
-			}
-		}
-
-		os.Unsetenv("JWT_SECRET_KEY")
+	_,err = client.DeleteJobIdTriple(ctx, &pb.DeleteJobIdTripleRequest{JobId: 0})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
