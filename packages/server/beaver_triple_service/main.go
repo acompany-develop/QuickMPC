@@ -1,9 +1,7 @@
 package main
 
-import (
-	e2bserver "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/server/engine_to_bts"
-)
+import "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/cmd"
 
 func main() {
-	e2bserver.RunServer()
+	cmd.Execute()
 }

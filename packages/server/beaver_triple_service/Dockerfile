@@ -57,6 +57,9 @@ RUN wget https://github.com/fullstorydev/grpcurl/releases/download/v1.8.5/grpcur
     tar -C /usr/local/bin -xzf grpcurl_1.8.5_linux_x86_64.tar.gz && \
     rm -f grpcurl_1.8.5_linux_x86_64.tar.gz
 
+# Install cobra-cli
+RUN go install github.com/spf13/cobra-cli@latest
+
 ENV PATH $PATH:/usr/local
 ENV PATH $PATH:/root/.local/bin
 
