@@ -171,5 +171,5 @@ func init() {
 	}
 	default_inout_root := path.Join(work_dir, "cmd", "jwt_generator", "sample")
 	generateJwtCmd.Flags().StringVarP(&o.file_path, "file", "f", path.Join(default_inout_root, "sample.yml"), "configuration file path")
-    generateJwtCmd.Flags().StringVarP(&o.output_dir, "output", "o", default_inout_root, "directory which stores output files")
+	generateJwtCmd.Flags().StringVarP(&o.output_dir, "output", "o", default_inout_root, "directory which stores output files")
 }
