@@ -91,15 +91,24 @@ grpc_health_probe -addr=localhost:54100
 ```
 
 ## JWT token の生成
-
 YAML ファイルを入力に JWT token を生成します
 
-```console
-root@container:/QuickMPC/packages/server/beaver_triple_service# go run main.go generateJwt     # generate from sample.yml
-root@container:/QuickMPC# go run main.go generateJwt \
->                                 --file /path/to/config.yml   \
->                                 --output ./output/envs                # use own configuration
-root@container:/QuickMPC/packages/server/beaver_triple_service# go run main.go generateJwt -h  # show help
-```
+### 手順
+btsのイメージを取得します
+
+  ※ tagはこちらの[ページ](https://github.com/acompany-develop/QuickMPC/pkgs/container/quickmpc-bts)は参照のうえ、latestのtagに変更してください
+  ```
+  docker pull ghcr.io/acompany-develop/quickmpc-bts:<tag>
+  ```
+
+JWT tokenの生成
+
+  ```console
+  docker run --rm \
+    -v ./path/to/directory_with_config.yml:<mount_path> \
+    ghcr.io/acompany-develop/quickmpc-bts:<tag> ./beaver_triple_service generateJwt \
+    --file /path/to/config.yml \
+    --output <mount_path>                                           # use own configuration
+  ```
 
 クライアントとサーバ向けにそれぞれ `.env` ファイル形式の設定ファイルが書き込まれます
