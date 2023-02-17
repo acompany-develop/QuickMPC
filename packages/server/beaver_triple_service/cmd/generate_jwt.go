@@ -26,7 +26,7 @@ type Options struct {
 }
 
 var (
-    o = &Options{}
+    options = &Options{}
 )
 
 func store_client_env(path string, token string) error {
@@ -63,7 +63,7 @@ var generateJwtCmd = &cobra.Command{
 	Use:   "generateJwt",
 	Short: "Generate jwt token",
 	Run: func(cmd *cobra.Command, args []string) {
-		raw, err := os.ReadFile(o.file_path)
+		raw, err := os.ReadFile(options.file_path)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -134,18 +134,18 @@ var generateJwtCmd = &cobra.Command{
 
 		// save part of `.env` files for client and server
 		err = os.MkdirAll(
-			o.output_dir, 0700)
+			options.output_dir, 0700)
 		if err != nil {
 			log.Fatalln(err)
 		}
 
-		base := path.Base(o.file_path)
+		base := path.Base(options.file_path)
 		ext := path.Ext(base)
 		filename := base[:len(base)-len(ext)]
 
 		err = store_client_env(
 			path.Join(
-				o.output_dir,
+				options.output_dir,
 				strings.Join([]string{"client", filename, "env"}, ".")),
 			signed_token_str)
 		if err != nil {
@@ -154,7 +154,7 @@ var generateJwtCmd = &cobra.Command{
 
 		err = store_server_env(
 			path.Join(
-				o.output_dir,
+				options.output_dir,
 				strings.Join([]string{"server", filename, "env"}, ".")),
 			encoded_secrets, claim)
 		if err != nil {
@@ -170,6 +170,6 @@ func init() {
 		log.Printf("WARN: os.Getwd() is failed, err = %s\n", err)
 	}
 	default_inout_root := path.Join(work_dir, "cmd", "jwt_generator", "sample")
-	generateJwtCmd.Flags().StringVarP(&o.file_path, "file", "f", path.Join(default_inout_root, "sample.yml"), "configuration file path")
-	generateJwtCmd.Flags().StringVarP(&o.output_dir, "output", "o", default_inout_root, "directory which stores output files")
+	generateJwtCmd.Flags().StringVarP(&options.file_path, "file", "f", path.Join(default_inout_root, "sample.yml"), "configuration file path")
+	generateJwtCmd.Flags().StringVarP(&options.output_dir, "output", "o", default_inout_root, "directory which stores output files")
 }
