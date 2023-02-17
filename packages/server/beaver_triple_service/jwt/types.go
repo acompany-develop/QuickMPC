@@ -3,7 +3,7 @@ package jwt
 import "github.com/golang-jwt/jwt/v4"
 
 type Party struct {
-	Id      uint32    `json:"id"`
+	Id      uint32 `json:"id"`
 	Address string `json:"address"`
 }
 
