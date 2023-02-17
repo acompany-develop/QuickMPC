@@ -95,11 +95,11 @@ grpc_health_probe -addr=localhost:54100
 YAML ファイルを入力に JWT token を生成します
 
 ```console
-root@container:/QuickMPC/packages/server/beaver_triple_service# go run cmd/jwt_generator/main.go     # generate from sample.yml
-root@container:/QuickMPC# go run cmd/jwt_generator/main.go \
->                                 -file /path/to/config.yml   \
->                                 -o ./output/envs                # use own configuration
-root@container:/QuickMPC/packages/server/beaver_triple_service# go run cmd/jwt_generator/main.go -h  # show help
+root@container:/QuickMPC/packages/server/beaver_triple_service# go run main.go generateJwt     # generate from sample.yml
+root@container:/QuickMPC# go run main.go generateJwt \
+>                                 --file /path/to/config.yml   \
+>                                 --output ./output/envs                # use own configuration
+root@container:/QuickMPC/packages/server/beaver_triple_service# go run main.go generateJwt -h  # show help
 ```
 
 クライアントとサーバ向けにそれぞれ `.env` ファイル形式の設定ファイルが書き込まれます
