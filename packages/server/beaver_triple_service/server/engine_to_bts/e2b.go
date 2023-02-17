@@ -50,7 +50,7 @@ func getWithEnvoy() (bool, error) {
 }
 
 // モック時に置き換わる関数
-var GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint32, error) {
+var GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (uint32, error) {
 	arr := strings.Split(reqIpAddrAndPort, ":")
 	if len(arr) != 2 {
 		errText := fmt.Sprintf("requestのIpAddessの形式が異常: %s", reqIpAddrAndPort)
@@ -60,10 +60,6 @@ var GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint3
 	reqIpAddr, _ := arr[0], arr[1]
 
 	var partyId uint32
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if !ok {
-		return 0, status.Error(codes.Internal, "failed claims type assertions")
-	}
 	for _, party := range claims.PartyInfo {
 		if reqIpAddr == party.Address {
 			partyId = party.Id
@@ -110,16 +106,16 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 		return nil, err
 	}
 
-	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
-	if err != nil {
-		return nil, err
-	}
-	logger.Infof("Ip %s, jobId: %d, partyId: %d Type: %v\n", reqIpAddrAndPort, in.GetJobId(), partyId, in.GetTripleType())
-
 	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
 	}
+
+	partyId, err := GetPartyIdFromIp(claims, reqIpAddrAndPort)
+	if err != nil {
+		return nil, err
+	}
+	logger.Infof("Ip %s, jobId: %d, partyId: %d Type: %v\n", reqIpAddrAndPort, in.GetJobId(), partyId, in.GetTripleType())
 
 	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
 	if err != nil {
@@ -138,7 +134,12 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 		return nil, err
 	}
 
-	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if !ok {
+		return nil, status.Error(codes.Internal, "failed claims type assertions")
+	}
+
+	partyId, err := GetPartyIdFromIp(claims, reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}
@@ -159,7 +160,12 @@ func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTriple
 		return nil, err
 	}
 
-	partyId, err := GetPartyIdFromIp(ctx, reqIpAddrAndPort)
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if !ok {
+		return nil, status.Error(codes.Internal, "failed claims type assertions")
+	}
+
+	partyId, err := GetPartyIdFromIp(claims, reqIpAddrAndPort)
 	if err != nil {
 		return nil, err
 	}

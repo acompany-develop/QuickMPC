@@ -14,8 +14,6 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type partyIdConuter struct {
@@ -31,14 +29,10 @@ var s *utils.TestServer
 
 func init() {
 	// モック用GetPartyIdFromIp
-	GetPartyIdFromIp = func(ctx context.Context, reqIpAddrAndPort string) (uint32, error) {
+	GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (uint32, error) {
 		if reqIpAddrAndPort == "bufconn" {
 			Pic.mux.Lock()
 			defer Pic.mux.Unlock()
-			claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-			if !ok {
-				return 0, status.Error(codes.Internal, "failed claims type assertions")
-			}
 
 			if Pic.partyId++; Pic.partyId > uint32(len(claims.PartyInfo)) {
 				Pic.partyId = 1
