@@ -16,6 +16,7 @@ QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Sec
 - `make`
 - `docker`
 - `docker-compose`
+- [`vscode-yaml-sort`](https://marketplace.visualstudio.com/items?itemName=PascalReitermann93.vscode-yaml-sort)
 
 ## Getting Started
 [QuickMPC-libClient-pyのデモ](packages/client/libclient-py/demo/README-ja.md)

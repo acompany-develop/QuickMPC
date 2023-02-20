@@ -16,6 +16,7 @@ This will enable businesses and engineers worldwide to use Python and JavaScript
 - `make`
 - `docker`
 - `docker-compose`
+- [`vscode-yaml-sort`](https://marketplace.visualstudio.com/items?itemName=PascalReitermann93.vscode-yaml-sort)
 
 ## Getting Started
 [The demonstration with libClient-py](packages/client/libclient-py/demo/README.md)
