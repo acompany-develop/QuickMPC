@@ -1,3 +1,4 @@
+# require {docker-compose.core.yml}
 version: '3.3'
 services:
   dev_bts:
