@@ -1,0 +1,60 @@
+# require {docker-compose.core.yml}
+version: '3.3'
+services:
+  small_bts:
+    container_name: beaver_triple_service
+    image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
+    build:
+      context: ../
+      dockerfile: packages/server/beaver_triple_service/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
+      target: small
+    volumes:
+      - target: /QuickMPC/config
+        source: ../config/beaver_triple_service
+        type: bind
+    env_file:
+      - ../config/beaver_triple_service/.env
+      - ../config/beaver_triple_service/server.sample.env
+    expose:
+      - 50020
+    tty: true
+  # temporarily change build stage from `small` to `small_tmp` because it takes long time.
+  # TODO(#36): improve performance
+  small_cc:
+    container_name: computation_container1
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
+    build:
+      context: ../
+      dockerfile: packages/server/computation_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
+      target: small_tmp
+    volumes:
+      - target: /db/share
+        source: sharedb1
+        type: volume
+      - target: /db/result
+        source: resultdb1
+        type: volume
+    tty: true
+  small_mc:
+    container_name: manage_container1
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
+    build:
+      context: ../
+      dockerfile: packages/server/manage_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
+      target: small
+    volumes:
+      - target: /db/share
+        source: sharedb1
+        type: volume
+      - target: /db/result
+        source: resultdb1
+        type: volume
+    env_file:
+      - ../config/manage_container/manage1/.env
+    tty: true

@@ -1,0 +1,11 @@
+version: '3.3'
+volumes:
+  resultdb1: {}
+  resultdb2: {}
+  resultdb3: {}
+  sharedb1: {}
+  sharedb2: {}
+  sharedb3: {}
+networks:
+  shared-network:
+    external: true

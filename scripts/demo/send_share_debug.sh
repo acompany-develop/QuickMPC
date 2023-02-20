@@ -1,12 +1,12 @@
 
 build() {
-    docker buildx bake -f docker-compose.yml send_share_mc1 send_share_mc2 send_share_mc3 --load
+    docker buildx bake $COMPOSE_FILES_OPT send_share_mc1 send_share_mc2 send_share_mc3 --load
 }
 
 setup() {
-    docker-compose -f docker-compose.yml down -v
+    docker-compose $COMPOSE_FILES_OPT down -v
 }
 
 run() {
-    docker-compose -f docker-compose.yml up send_share_mc1 send_share_mc2 send_share_mc3
+    docker-compose $COMPOSE_FILES_OPT up send_share_mc1 send_share_mc2 send_share_mc3
 }
