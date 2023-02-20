@@ -62,7 +62,7 @@ if [ $# -eq 1 ]; then
         run
         status=$(($status + $?))
         # NOTE: `docker-compose up`はCMDやENTRYPOINTで異常終了してもexitステータスが`0`になってしまうので別途exitステータスを集積する
-        run_status=echo "$(docker-compose $COMPOSE_FILES_OPT ps -aq | tr -d '[ ]' | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d '[ ]')"
+        run_status=$(docker-compose $COMPOSE_FILES_OPT ps -aq | tr -d '[ ]' | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d '[ ]')
         status=$(($status + $run_status))
         teardown
         status=$(($status + $?))
