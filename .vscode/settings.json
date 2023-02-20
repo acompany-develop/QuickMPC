@@ -178,8 +178,8 @@
   "vscode-yaml-sort.useLeadingDashes": false, // これがないとファイルの先頭に謎の---を入れてしまうので必須
   "vscode-yaml-sort.useArrayProcessor": false, // これがないと$$を$に変換してしまうので必須
   "vscode-yaml-sort.useCustomSortRecursively": true,
-  "vscode-yaml-sort.customSortKeywords_1": ["apiVersion", "kind", "metadata", "spec", "data"], // k8s manifest用
-  "vscode-yaml-sort.customSortKeywords_2": [ // docker-compose.yml用
+  "vscode-yaml-sort.customSortKeywords_1": ["apiVersion", "kind", "metadata", "spec", "data"], // sort順の定義 for k8s manifest
+  "vscode-yaml-sort.customSortKeywords_2": [ // sort順の定義 for docker-compose.yml
     "version",
     "services",
     "container_name",
