@@ -31,6 +31,24 @@ services:
         ipv4_address: 10.0.1.40
     ports:
       - 0.0.0.0:60020:50020
+  dev_bts_envoy:
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/beaver_triple_service/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.21
+    expose:
+      - 9901
+    ports:
+      - 0.0.0.0:51020:51020
+    tty: true
   dev_cc_envoy1:
     container_name: compute_envoy_container1
     image: envoyproxy/envoy:v1.17.1
