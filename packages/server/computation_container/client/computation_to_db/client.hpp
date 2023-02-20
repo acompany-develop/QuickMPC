@@ -18,6 +18,25 @@ class Client final
     static inline const std::string shareDbPath = "/db/share/";
     static inline const std::string resultDbPath = "/db/result/";
 
+    class ComputationResultWriter
+    {
+        int current_size;
+        int piece_id;
+        std::vector<std::string> piece_data;
+
+        const std::string job_uuid;
+        const std::string data_name;
+        const int column_number;
+        const int piece_size;
+
+    public:
+        ComputationResultWriter(const std::string &, int, int, int);
+        void write();
+
+        void emplace(const std::string &);
+        void emplace(const std::vector<std::string> &);
+    };
+
 public:
     Client();
     static std::shared_ptr<Client> getInstance();
@@ -40,6 +59,26 @@ public:
     // Job 実行中に発生したエラーに関する情報を保存する
     void saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
         const;
+
+    // resultの保存
+    // NOTE: result_listにbegin()とend()が実装されている必要がある
+    template <class T>
+    void writeComputationResult2(
+        const std::string &job_uuid,
+        const T &result_list,
+        int data_type,  // 0:dim1, 1:dim2, 2:schema
+        int column_number,
+        int piece_size = 1000000
+    ) const
+    {
+        auto writer = ComputationResultWriter(job_uuid, data_type, column_number, piece_size);
+        for (const auto &x : result_list)
+        {
+            writer.emplace(x);
+        }
+        writer.write();
+        std::ofstream(resultDbPath + job_uuid + "/completed");
+    }
 
     // resultの保存
     template <class T>
