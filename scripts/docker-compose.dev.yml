@@ -135,7 +135,9 @@ services:
       - ../config/computation_container/compute1/.env
       - ../config/computation_container/jwt/client.sample.env
     healthcheck:
-      test: vscode-yaml-sort.array.1
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=computation_container1:50010 && /bin/grpc_health_probe -addr=computation_container1:51020
       interval: 3s
       start_period: 5s
       timeout: 5s
