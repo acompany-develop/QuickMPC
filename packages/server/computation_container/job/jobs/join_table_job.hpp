@@ -2,6 +2,7 @@
 #include <functional>
 #include <unordered_set>
 
+#include "client/computation_to_db/client.hpp"
 #include "job/job_base.hpp"
 #include "math/math.hpp"
 #include "share/share.hpp"
@@ -51,7 +52,8 @@ class JoinTableJob : public JobBase<JoinTableJob>
 
 public:
     JoinTableJob(const JobParameter &request) : JobBase<JoinTableJob>(request) {}
-    nlohmann::json compute(
+    auto compute(
+        const std::string job_uuid,
         const std::vector<std::vector<Share>> &table,
         const std::vector<std::string> &schemas,
         const std::vector<std::list<int>> &arg
@@ -75,7 +77,9 @@ public:
         nlohmann::json ret;
         ret["table"] = remove_id_table;
         ret["schema"] = remove_id_schema;
-        return ret;
+
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
+        db_client->writeComputationResult(job_uuid, ret);
     }
 };
 }  // namespace qmpc::Job

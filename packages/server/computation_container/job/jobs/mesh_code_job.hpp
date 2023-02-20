@@ -2,6 +2,7 @@
 
 #include <list>
 
+#include "client/computation_to_db/client.hpp"
 #include "job/job_base.hpp"
 #include "share/share.hpp"
 
@@ -65,9 +66,27 @@ public:
 
 class MeshCodeJob : public JobBase<MeshCodeJob>
 {
+    static auto toString(const std::vector<std::vector<Share>> &values)
+    {
+        std::vector<std::vector<std::string>> results;
+        results.reserve(values.size());
+        for (const auto &value : values)
+        {
+            std::vector<std::string> row;
+            row.reserve(values.size());
+            for (const auto &x : value)
+            {
+                row.emplace_back(x.getVal().getStrVal());
+            }
+            results.emplace_back(row);
+        }
+        return results;
+    }
+
 public:
     using JobBase<MeshCodeJob>::JobBase;
-    std::vector<std::vector<Share>> compute(
+    auto compute(
+        const std::string job_uuid,
         const std::vector<std::vector<Share>> &table,
         const std::vector<std::string> &schemas,
         const std::vector<std::list<int>> &arg
@@ -84,7 +103,9 @@ public:
         auto f = MeshCodeFunction(latitudes, longitudes);
         std::vector<std::vector<Share>> meshcode_list = f.meshcode_transform();
 
-        return meshcode_list;
+        auto results = toString(meshcode_list);
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
+        db_client->writeComputationResult(job_uuid, results);
     }
 };
 }  // namespace qmpc::Job

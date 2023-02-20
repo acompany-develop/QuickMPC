@@ -69,32 +69,6 @@ class JobBase : public Interface
         );
     }
 
-    static auto toString(const std::vector<::Share> &values)
-    {
-        std::vector<std::string> results;
-        results.reserve(values.size());
-        for (const auto &value : values)
-        {
-            results.emplace_back(value.getVal().getStrVal());
-        }
-        return results;
-    }
-    static auto toString(const std::vector<std::vector<::Share>> &values)
-    {
-        std::vector<std::vector<std::string>> results;
-        results.reserve(values.size());
-        for (const auto &value : values)
-        {
-            results.emplace_back(toString(value));
-        }
-        return results;
-    }
-    static auto toString(const nlohmann::json &values)
-    {
-        // 既にjsonならば文字列化しなくてもJsonに乗せられるためそのまま返す
-        return values;
-    }
-
     static void validate_cols(
         const std::vector<std::string> &schemas, const std::vector<std::list<int>> &arg
     )
@@ -129,15 +103,6 @@ class JobBase : public Interface
         }
     }
 
-    template <typename U>
-    void writeDb(U &&values)
-    {
-        statusManager.nextStatus();
-        auto results = toString(values);
-        db_client->writeComputationResult(request.job_uuid(), results);
-        statusManager.nextStatus();
-    }
-
 public:
     using Share = qmpc::Share::Share<FixedPoint>;
     JobBase(const JobParameter &request)
@@ -164,8 +129,8 @@ public:
 
         auto [share_table, schemas] = readDb();
         validate_cols(schemas, arg);
-        auto result = static_cast<T *>(this)->compute(share_table, schemas, arg);
-        writeDb(result);
+        static_cast<T *>(this)->compute(request.job_uuid(), share_table, schemas, arg);
+        statusManager.nextStatus();
 
         return static_cast<int>(statusManager.getStatus());
     }
