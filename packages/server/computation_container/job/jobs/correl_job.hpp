@@ -32,8 +32,7 @@ public:
     using JobBase<CorrelJob>::JobBase;
     auto compute(
         const std::string job_uuid,
-        const std::vector<std::vector<Share>> &table,
-        const std::vector<std::string> &schemas,
+        const qmpc::ComputationToDb::ValueTable &table,
         const std::vector<std::list<int>> &arg
     )
     {
@@ -41,7 +40,6 @@ public:
         for (const auto &w : arg[0])
         {
             std::vector<Share> tmp;
-            tmp.reserve(table.size());
             for (const auto &row : table)
             {
                 tmp.emplace_back(row[w - 1]);
@@ -52,7 +50,6 @@ public:
         for (const auto &w : arg[1])
         {
             std::vector<Share> tmp;
-            tmp.reserve(table.size());
             for (const auto &row : table)
             {
                 tmp.emplace_back(row[w - 1]);

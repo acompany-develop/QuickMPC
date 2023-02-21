@@ -54,25 +54,12 @@ public:
     JoinTableJob(const JobParameter &request) : JobBase<JoinTableJob>(request) {}
     auto compute(
         const std::string job_uuid,
-        const std::vector<std::vector<Share>> &table,
-        const std::vector<std::string> &schemas,
+        const qmpc::ComputationToDb::ValueTable &table,
         const std::vector<std::list<int>> &arg
     )
     {
-        std::vector<std::vector<std::string>> table_string;
-        table_string.reserve(table.size());
-        for (const auto &row : table)
-        {
-            std::vector<std::string> row_string;
-            row_string.reserve(row.size());
-            for (const auto &s : row)
-            {
-                row_string.emplace_back(s.getVal().getStrVal());
-            }
-            table_string.emplace_back(row_string);
-        }
-
-        auto [remove_id_table, remove_id_schema] = removeIdColumn(table_string, schemas, arg[0]);
+        auto [remove_id_table, remove_id_schema] =
+            removeIdColumn(table.getTable(), table.getSchemas(), arg[0]);
 
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto column_number = remove_id_schema.size();

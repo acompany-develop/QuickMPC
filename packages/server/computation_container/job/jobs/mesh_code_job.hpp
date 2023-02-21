@@ -87,18 +87,18 @@ public:
     using JobBase<MeshCodeJob>::JobBase;
     auto compute(
         const std::string job_uuid,
-        const std::vector<std::vector<Share>> &table,
-        const std::vector<std::string> &schemas,
+        const qmpc::ComputationToDb::ValueTable &table,
         const std::vector<std::list<int>> &arg
     )
     {
         std::vector<Share> latitudes;
         std::vector<Share> longitudes;
 
+        auto table_str = table.getTable();
         for (const auto &index : arg[0])
         {
-            latitudes.emplace_back(table[0][index - 1]);
-            longitudes.emplace_back(table[1][index - 1]);
+            latitudes.emplace_back(table_str[0][index - 1]);
+            longitudes.emplace_back(table_str[1][index - 1]);
         }
         auto f = MeshCodeFunction(latitudes, longitudes);
         std::vector<std::vector<Share>> meshcode_list = f.meshcode_transform();
