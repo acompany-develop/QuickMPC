@@ -11,45 +11,6 @@ namespace qmpc::Job
 {
 class JoinTableJob : public JobBase<JoinTableJob>
 {
-    static auto removeIdColumn(
-        const std::vector<std::vector<std::string>> &table,
-        const std::vector<std::string> &schema,
-        const std::list<int> &id_column
-    )
-    {
-        // 突合に使用した列をテーブルから削除する
-        const size_t match_row = id_column.front() - 1;
-
-        std::vector<std::vector<std::string>> remove_table;
-        remove_table.reserve(table.size());
-        for (const auto &row : table)
-        {
-            std::vector<std::string> remove_row;
-            remove_row.reserve(row.size());
-            for (size_t i = 0; i < row.size(); ++i)
-            {
-                if (i != match_row)
-                {
-                    remove_row.emplace_back(row[i]);
-                }
-            }
-            remove_table.emplace_back(remove_row);
-        }
-
-        std::vector<std::string> remove_schema;
-        remove_schema.reserve(schema.size());
-        for (size_t i = 0; i < schema.size(); ++i)
-        {
-            if (i != match_row)
-            {
-                remove_schema.emplace_back(schema[i]);
-            }
-        }
-
-        return std::pair<std::vector<std::vector<std::string>>, std::vector<std::string>>{
-            remove_table, remove_schema};
-    }
-
 public:
     JoinTableJob(const JobParameter &request) : JobBase<JoinTableJob>(request) {}
     auto compute(
@@ -58,13 +19,30 @@ public:
         const std::vector<std::list<int>> &arg
     )
     {
-        auto [remove_id_table, remove_id_schema] =
-            removeIdColumn(table.getTable(), table.getSchemas(), arg[0]);
+        // 突合に使用した列をテーブルから削除する関数
+        auto removeIdColumn = [&arg](const std::vector<std::string> &v)
+        {
+            const size_t match_row = arg[0].front() - 1;
+
+            std::vector<std::string> new_vec;
+            new_vec.reserve(v.size());
+            for (size_t i = 0; i < v.size(); ++i)
+            {
+                if (i != match_row)
+                {
+                    new_vec.emplace_back(v[i]);
+                }
+            }
+            return new_vec;
+        };
 
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
-        auto column_number = remove_id_schema.size();
-        db_client->writeComputationResult(job_uuid, remove_id_schema, 2, column_number);
-        db_client->writeComputationResult(job_uuid, remove_id_table, 1, column_number);
+        auto schemas = table.getSchemas();
+        auto column_number = schemas.size();
+        // tableの保存
+        db_client->writeComputationResult(job_uuid, table, 1, column_number, removeIdColumn);
+        // schemaの保存
+        db_client->writeComputationResult(job_uuid, removeIdColumn(schemas), 2, column_number);
     }
 };
 }  // namespace qmpc::Job
