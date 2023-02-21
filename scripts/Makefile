@@ -12,6 +12,12 @@ m =
 # ex. make test p=unit -> unit*test.shが実行される
 p =
 
+# docker-composeの読み込み先を指定
+## ファイル名のパターンを指定
+pattern="docker-compose*.yml"
+## ファイル名の一覧を取得し、-fオプションを付けて連結する
+COMPOSE_FILES_OPT=$(shell find . -name $(pattern) -exec printf -- '-f %s ' {} +)
+
 # docker-composeを束ねるネットワークの作成
 upnet:
 	@if [ -z "`docker network ls | grep $(NETWORK_NAME)`" ]; then docker network create --gateway $(NETWORK_GATEWAY) --subnet $(NETWORK_SUBNET) $(NETWORK_NAME); fi
@@ -37,8 +43,8 @@ debug: upnet
 	find $(t) -type f -name "${p}*debug.sh" | xargs -t -I{} bash debugger.sh {} $m
 
 rm:
-	docker-compose rm -fs
+	docker-compose $(COMPOSE_FILES_OPT) rm -fs
 
 # Dbのデータを削除
 rm-db:
-	docker-compose down -v
+	docker-compose $(COMPOSE_FILES_OPT) down -v
