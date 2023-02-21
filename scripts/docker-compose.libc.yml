@@ -141,34 +141,6 @@ services:
       - '-c'
       - pip list && pytest src/benchmark -s -v -log-cli-level=DEBUG
     network_mode: host
-  medium-libc:
-    container_name: libclient
-    depends_on:
-      dev_mc1:
-        condition: service_healthy
-      dev_mc2:
-        condition: service_healthy
-      dev_mc3:
-        condition: service_healthy
-    image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
-    build:
-      context: ../
-      dockerfile: scripts/libclient/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
-      target: medium
-    volumes:
-      - target: /libclient/data
-        source: ./libclient/data
-        type: bind
-      - target: /libclient/src
-        source: ./libclient/src
-        type: bind
-    command:
-      - /bin/bash
-      - '-c'
-      - pip list && pytest src/tests -s -v -log-cli-level=DEBUG
-    network_mode: host
   send_share_mc1:
     container_name: manage_container1
     depends_on:
