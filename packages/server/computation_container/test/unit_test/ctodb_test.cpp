@@ -212,7 +212,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArrayTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult2(job_uuid, data, 0, 3);
+    cc_to_db->writeComputationResult(job_uuid, data, 0, 3);
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/dim1_0");
     std::string read_data;
@@ -233,7 +233,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArray2dimTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult2(job_uuid, data, 1, 2);
+    cc_to_db->writeComputationResult(job_uuid, data, 1, 2);
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/dim2_0");
     std::string read_data;
@@ -255,7 +255,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultSchemaTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult2(job_uuid, schema, 2, 3);
+    cc_to_db->writeComputationResult(job_uuid, schema, 2, 3);
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/schema_0");
     std::string read_data;
@@ -277,7 +277,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArrayPieceTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult2(job_uuid, data, 1, 3, 4);
+    cc_to_db->writeComputationResult(job_uuid, data, 1, 3, 4);
 
     std::vector<std::string> true_result = {R"(["12"])", R"(["15"])", R"(["21"])"};
     for (size_t piece_id = 0; piece_id < true_result.size(); ++piece_id)
@@ -304,7 +304,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultCompletedTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult2(job_uuid, data, 1, 3);
+    cc_to_db->writeComputationResult(job_uuid, data, 1, 3);
 
     auto exist = fs::exists("/db/result/" + job_uuid + "/completed");
     EXPECT_TRUE(exist);

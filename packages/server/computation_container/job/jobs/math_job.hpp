@@ -55,7 +55,7 @@ public:
 
         auto results = toString(ret);
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
-        db_client->writeComputationResult(job_uuid, results);
+        db_client->writeComputationResult(job_uuid, results, 0, results.size());
     }
 };
 }  // namespace qmpc::Job

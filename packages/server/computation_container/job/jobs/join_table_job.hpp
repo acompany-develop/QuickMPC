@@ -74,12 +74,10 @@ public:
 
         auto [remove_id_table, remove_id_schema] = removeIdColumn(table_string, schemas, arg[0]);
 
-        nlohmann::json ret;
-        ret["table"] = remove_id_table;
-        ret["schema"] = remove_id_schema;
-
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
-        db_client->writeComputationResult(job_uuid, ret);
+        auto column_number = remove_id_schema.size();
+        db_client->writeComputationResult(job_uuid, remove_id_schema, 2, column_number);
+        db_client->writeComputationResult(job_uuid, remove_id_table, 1, column_number);
     }
 };
 }  // namespace qmpc::Job

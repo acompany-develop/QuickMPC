@@ -104,8 +104,9 @@ public:
         std::vector<std::vector<Share>> meshcode_list = f.meshcode_transform();
 
         auto results = toString(meshcode_list);
+        auto column_number = (results.empty() ? -1 : results[0].size());
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
-        db_client->writeComputationResult(job_uuid, results);
+        db_client->writeComputationResult(job_uuid, results, 1, column_number);
     }
 };
 }  // namespace qmpc::Job
