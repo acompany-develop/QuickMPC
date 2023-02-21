@@ -38,25 +38,32 @@ void runServer(std::string endpoint)
 TEST(CtoC_Test, EXCHANGESHARE)
 {
     Config *conf = Config::getInstance();
-    qmpc::Share::AddressId share_id;
-    computationtocomputation::Share share;
+    std::vector<qmpc::Share::AddressId> share_id(1);
+    computationtocomputation::Shares share;
+    std::cout << "exchangeshare id " << share_id[0] << std::endl;
     std::string value = "10";
     auto a = share.mutable_address_id();
-    a->set_share_id(share_id.getShareId());
-    a->set_job_id(share_id.getJobId());
-    share.set_byte(value);
-    share.set_party_id(conf->party_id);
+    a->set_share_id(share_id[0].getShareId());
+    a->set_job_id(share_id[0].getJobId());
+    a->set_party_id(conf->party_id);
+    computationtocomputation::Shares_Share *multiple_shares = share.add_share_list();
+    multiple_shares->set_byte(value);
 
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")
     );
     grpc::ClientContext context;
     google::protobuf::Empty response;
-    grpc::Status status = stub_->ExchangeShare(&context, share, &response);
+    std::shared_ptr<grpc::ClientWriter<computationtocomputation::Shares>> stream(
+        stub_->ExchangeShares(&context, &response)
+    );
+    stream->Write(share);
+    stream->WritesDone();
+    grpc::Status status = stream->Finish();
     EXPECT_TRUE(status.ok());
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    auto data = server->getShare(conf->party_id, share_id);
+    auto data = server->getShare(conf->party_id, share_id[0]);
     EXPECT_EQ(value, data);
 }
 TEST(CtoC_Test, EXCHANGESHARES)
@@ -66,18 +73,18 @@ TEST(CtoC_Test, EXCHANGESHARES)
     std::vector<qmpc::Share::AddressId> share_ids(length);
     std::vector<std::string> values = {"10", "11"};
     computationtocomputation::Shares shares;
+    auto a = shares.mutable_address_id();
+    a->set_share_id(share_ids[0].getShareId());
+    a->set_job_id(share_ids[0].getJobId());
+    a->set_party_id(conf->party_id);
     for (unsigned int i = 0; i < length; i++)
     {
         computationtocomputation::Shares_Share *multiple_shares = shares.add_share_list();
-        auto a = multiple_shares->mutable_address_id();
-        a->set_share_id(share_ids[i].getShareId());
-        a->set_job_id(share_ids[i].getJobId());
         multiple_shares->set_byte(values[i]);
     }
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")
     );
-    shares.set_party_id(conf->party_id);
     grpc::ClientContext context;
     google::protobuf::Empty response;
     std::shared_ptr<grpc::ClientWriter<computationtocomputation::Shares>> stream(
