@@ -23,6 +23,7 @@ downnet:
 test: upnet
 	# tで指定されたパス以下のtest.shを全て探してきて実行する
 	echo -n "" > result
+	find $(t) -type f -name "$(p)*test.sh"
 	find $(t) -type f -name "$(p)*test.sh" | xargs -t -I{} bash tester.sh {} $m &&\
 	test ! -s result && exit 1;\
 	EXIT_CODE=$$(awk '{s+=$$1} END {print s}' result) &&\
@@ -31,8 +32,9 @@ test: upnet
 debug: upnet
 	# tで指定されたパス以下のdebug.shを全て探してきて実行する
 	echo -n "" > result
+	find $(t) -type f -name "${p}*debug.sh"
 	if [ "$(t)" = "." ] && [ "$(p)" = "" ]; then p=full; fi; \
-	find $(t) -type f -name "$${p}*debug.sh" | xargs -t -I{} bash debugger.sh {} $m
+	find $(t) -type f -name "${p}*debug.sh" | xargs -t -I{} bash debugger.sh {} $m
 
 rm:
 	docker-compose rm -fs
