@@ -516,3 +516,42 @@ TEST(ShareBench, unarySend)
         }
     );
 }
+
+TEST(ShareBench, vecOpne)
+{
+    int N = 20000;
+    {
+        std::vector<Share> a;
+
+        for (int i = 0; i < N; ++i)
+        {
+            a.emplace_back(FixedPoint("3"));
+        }
+        open(a);
+        auto a_rec = recons(a);
+    }
+
+    measureExecTime(
+        "vectorMul",
+        4,
+        [&]()
+        {
+            std::vector<FixedPoint> expect(N, FixedPoint(108));
+            std::vector<Share> a;
+
+            std::vector<Share> b;
+            for (int i = 0; i < N; ++i)
+            {
+                a.emplace_back(FixedPoint("3"));  // 9
+                b.emplace_back(FixedPoint("4"));  // 12
+            }
+            auto c = a * b;  // 108
+            open(c);
+            auto c_rec = recons(c);
+            for (int i = 0; i < N; ++i)
+            {
+                EXPECT_EQ(expect[i], c_rec[i]);
+            }
+        }
+    );
+}

@@ -78,27 +78,28 @@ private:
     {
         std::vector<computationtocomputation::Shares> share_vec;
         share_vec.reserve(length);
-        size_t addressId_size = sizeof(qmpc::Share::AddressId);
         size_t size = 0;
         computationtocomputation::Shares s;
+        auto a = s.mutable_address_id();
+        a->set_share_id(share_ids[0].getShareId());
+        a->set_job_id(share_ids[0].getJobId());
+        a->set_party_id(party_id);
+        // std::cout << "Client party , job, share" << party_id << " " << share_ids[0].getJobId()
+        //           << " " << share_ids[0].getShareId() << std::endl;
         for (unsigned int i = 0; i < length; i++)
         {
             // string型のバイト数の取得
             size_t value_size = sizeof(values[i]);
             // ShareId,JobId,ThreadId,PartyIdの16byte
-            if (size + value_size + addressId_size + sizeof(s.party_id()) > 1000000)
+            if (size + value_size > 1000000)
             {
                 size = 0;
-                s.set_party_id(party_id);
                 share_vec.push_back(s);
                 s = computationtocomputation::Shares{};
             }
             // 一つのsharesにつきPartyIdは一つだけなので分割しない際はShareId,JobId,ThreadIdの12byte
-            size = size + value_size + addressId_size;
+            size = size + value_size;
             computationtocomputation::Shares_Share *multiple_shares = s.add_share_list();
-            auto a = multiple_shares->mutable_address_id();
-            a->set_share_id(share_ids[i].getShareId());
-            a->set_job_id(share_ids[i].getJobId());
             if constexpr (std::is_same_v<std::decay_t<T>, bool>)
             {
                 multiple_shares->set_flag(values[i]);
@@ -124,7 +125,6 @@ private:
                 multiple_shares->set_byte(to_string(values[i]));
             }
         }
-        s.set_party_id(party_id);
         share_vec.push_back(s);
         return share_vec;
     }
@@ -136,22 +136,12 @@ public:
     template <typename T>
     bool exchangeShare(T &&value, qmpc::Share::AddressId share_id, int party_id) const
     {
-        // リクエスト設定
-        computationtocomputation::Share share;
-        google::protobuf::Empty response;
-        share = makeShare(value, share_id, party_id);
-        grpc::Status status;
+        std::vector<std::decay_t<T>> values;
+        values.emplace_back(value);
+        std::vector<qmpc::Share::AddressId> share_ids;
+        share_ids.emplace_back(share_id);
 
-        // リトライポリシーに従ってリクエストを送る
-        auto retry_manager = RetryManager("CC", "exchangeShare");
-        do
-        {
-            grpc::ClientContext context;
-            status = stub_->ExchangeShare(&context, share, &response);
-        } while (retry_manager.retry(status));
-
-        // 送信に成功
-        return true;
+        return exchangeShares(values, share_ids, 1, party_id);
     }
 
     // 複数シェアを一括exchangeする場合

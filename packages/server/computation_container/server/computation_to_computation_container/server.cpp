@@ -72,6 +72,26 @@ grpc::Status Server::ExchangeShare(
     return grpc::Status::OK;
 }
 
+static std::string share_to_str(const computationtocomputation::Shares_Share &share)
+{
+    using cs = computationtocomputation::Shares_Share;
+    switch (share.value_case())
+    {
+        case (cs::ValueCase::kFlag):
+            return std::to_string(share.flag());
+        case (cs::ValueCase::kNum):
+            return std::to_string(share.num());
+        case (cs::ValueCase::kNum64):
+            return std::to_string(share.num64());
+        case (cs::ValueCase::kF):
+            return std::to_string(share.f());
+        case (cs::ValueCase::kD):
+            return std::to_string(share.d());
+        case (cs::ValueCase::kByte):
+        case (cs::ValueCase::VALUE_NOT_SET):
+            return share.byte();
+    }
+}
 // 複数シェアをexchangeする場合
 grpc::Status Server::ExchangeShares(
     grpc::ServerContext *context,
@@ -79,58 +99,41 @@ grpc::Status Server::ExchangeShares(
     google::protobuf::Empty *response
 )
 {
-    std::lock_guard<std::mutex> lock(mtx);  // mutex発動
-
-    using cs = computationtocomputation::Shares_Share;
     computationtocomputation::Shares multiple_shares;
+    bool first = true;
+    int party_id, share_id, job_id, thread_id;
+    std::vector<std::string> share_str_vec;
+
     while (stream->Read(&multiple_shares))
     {
-        int party_id = multiple_shares.party_id();
+        if (first)
+        {
+            auto address = multiple_shares.address_id();
+            party_id = address.party_id();
+            share_id = address.share_id();
+            job_id = address.job_id();
+            thread_id = address.thread_id();
+        }
+        // std::cout << "party_id is " << party_id << std::endl;
+        // std::cout << "share_id is " << share_id << std::endl;
+        // std::cout << "job_id is " << job_id << std::endl;
+        // std::cout << "thread_id is " << thread_id << std::endl;
         for (int i = 0; i < multiple_shares.share_list_size(); i++)
         {
             auto share = multiple_shares.share_list(i);
-            auto address = share.address_id();
-            switch (share.value_case())
-            {
-                case (cs::ValueCase::kFlag):
-                    shares[std::make_tuple(
-                        party_id, address.share_id(), address.job_id(), address.thread_id()
-                    )] = std::to_string(share.flag());
-                    break;
-                case (cs::ValueCase::kNum):
-                    shares[std::make_tuple(
-                        party_id, address.share_id(), address.job_id(), address.thread_id()
-                    )] = std::to_string(share.num());
-                    break;
-                case (cs::ValueCase::kNum64):
-                    shares[std::make_tuple(
-                        party_id, address.share_id(), address.job_id(), address.thread_id()
-                    )] = std::to_string(share.num64());
-                    break;
-                case (cs::ValueCase::kF):
-                    shares[std::make_tuple(
-                        party_id, address.share_id(), address.job_id(), address.thread_id()
-                    )] = std::to_string(share.f());
-                    break;
-                case (cs::ValueCase::kD):
-                    shares[std::make_tuple(
-                        party_id, address.share_id(), address.job_id(), address.thread_id()
-                    )] = std::to_string(share.d());
-                    break;
-                case (cs::ValueCase::kByte):
-                case (cs::ValueCase::VALUE_NOT_SET):
-                    shares[std::make_tuple(
-                        party_id, address.share_id(), address.job_id(), address.thread_id()
-                    )] = share.byte();
-                    break;
-            }
+
+            auto share_str = share_to_str(share);
+            share_str_vec.emplace_back(share_str);
         }
+        first = false;
     }
+
+    std::lock_guard<std::mutex> lock(mtx);  // mutex発動
+    shares_vec[std::make_tuple(party_id, share_id, job_id, thread_id)] = share_str_vec;
 
     cond.notify_all();  // 通知
     return grpc::Status::OK;
 }
-
 // 単一シェアget用
 std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
 {
@@ -142,14 +145,14 @@ std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
     if (!cond.wait_for(
             lock,
             std::chrono::seconds(conf->getshare_time_limit),
-            [&] { return shares.count(key) == 1; }
+            [&] { return shares_vec.count(key) == 1; }
         ))  // 待機
     {
         qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
     }
-    std::string share = shares[key];
+    auto share = shares_vec[key];
     shares.erase(key);
-    return share;
+    return share[0];
 }
 
 // 複数シェアget用
@@ -158,27 +161,27 @@ std::vector<std::string> Server::getShares(
 )
 {
     Config *conf = Config::getInstance();
+    // std::cout << "party share job thread"
+    //           << " " << party_id << " " << share_ids[0].getShareId() << " "
+    //           << share_ids[0].getJobId() << " " << share_ids[0].getThreadId() << std::endl;
     std::vector<std::string> str_values;
     str_values.reserve(length);
-    for (unsigned int i = 0; i < length; i++)
+    auto key = std::make_tuple(
+        party_id, share_ids[0].getShareId(), share_ids[0].getJobId(), share_ids[0].getThreadId()
+    );
+    std::unique_lock<std::mutex> lock(mtx);  // mutex発動
+
+    if (!cond.wait_for(
+            lock,
+            std::chrono::seconds(conf->getshare_time_limit),
+            [&] { return shares_vec.count(key) == 1; }
+        ))  // 待機
     {
-        std::unique_lock<std::mutex> lock(mtx);  // mutex発動
-        auto key = std::make_tuple(
-            party_id, share_ids[i].getShareId(), share_ids[i].getJobId(), share_ids[i].getThreadId()
-        );
-        if (!cond.wait_for(
-                lock,
-                std::chrono::seconds(conf->getshare_time_limit),
-                [&] { return shares.count(key) == 1; }
-            ))  // 待機
-        {
-            qmpc::Log::throw_with_trace(std::runtime_error("getShares is timeout"));
-        }
-        std::string share = shares[key];
-        str_values.emplace_back(share);
-        shares.erase(key);
+        qmpc::Log::throw_with_trace(std::runtime_error("getShares is timeout"));
     }
-    return str_values;
+    auto local_str_shares = shares_vec[key];
+    shares_vec.erase(key);
+    return local_str_shares;
 }
 
 void Server::runServer(std::string endpoint)
