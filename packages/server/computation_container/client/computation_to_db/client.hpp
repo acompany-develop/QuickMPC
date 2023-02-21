@@ -60,21 +60,25 @@ public:
     void saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
         const;
 
+    // 保存時にデフォルトで呼ばれる恒等関数
+    static inline auto identity = [](const auto &t) { return t; };
+
     // resultの保存
     // NOTE: result_listにbegin()とend()が実装されている必要がある
-    template <class T>
+    template <class T, class F = decltype(identity)>
     void writeComputationResult(
         const std::string &job_uuid,
         const T &result_list,
         int data_type,  // 0:dim1, 1:dim2, 2:schema
         int column_number,
+        const F &f = identity,  // 保存時にitrごとに加工したい場合に指定する
         int piece_size = 1000000
     ) const
     {
         auto writer = ComputationResultWriter(job_uuid, data_type, column_number, piece_size);
         for (const auto &x : result_list)
         {
-            writer.emplace(x);
+            writer.emplace(f(x));
         }
         writer.write();
         std::ofstream(resultDbPath + job_uuid + "/completed");
