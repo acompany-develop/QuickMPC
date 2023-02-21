@@ -89,4 +89,3 @@ std::vector<std::string> ValueTable::getSchemas() const
 }
 
 }  // namespace qmpc::ComputationToDb
-
