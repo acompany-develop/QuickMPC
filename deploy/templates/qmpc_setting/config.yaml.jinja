@@ -1,0 +1,8 @@
+party_list:
+  {%- for party in party_list %}
+  - party_id: {{ loop.index }}
+    host: {{ party }}
+  {%- endfor %}
+bts:
+  host: {{ bts_host }}
+  tag: {{ bts_tag }}

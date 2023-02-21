@@ -1,0 +1,114 @@
+version: "3.3"
+services:
+{%- if is_party %}
+  computation_container{{ party_id }}:
+    tty: true
+    container_name: computation_container{{ party_id }}
+    expose:
+      - "51020"
+      - "50010"
+    image: ghcr.io/acompany-develop/quickmpc-cc{{ ':' if docker_image_tag}}{{ docker_image_tag }}
+    build:
+      context: {{ docker_context }}
+      dockerfile: packages/server/computation_container/Dockerfile
+      target: dep-runner
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:{{ docker_image_tag }}
+    volumes:
+      - type: bind
+        source: ../config/computation_container/compute1
+        target: /QuickMPC/config
+      - type: volume
+        source: sharedb{{ party_id }}
+        target: /db/share
+      - type: volume
+        source: resultdb{{ party_id }}
+        target: /db/result
+    env_file:
+      - {{ envs[(party_id)|string].party.computation_container['.env'].__path__ }}
+      - {{ envs.others.jwt_envs['client.jwt.env'].__path__ }}
+    networks:
+      shared-network:
+        ipv4_address: 10.0.{{ party_id }}.20
+    depends_on:
+      dev_cc_envoy1:
+        condition: service_started
+    command: ["/bin/bash", "-c", "printenv && ./computation_container"]
+    healthcheck:
+      test:
+        - CMD
+        - /bin/sh
+        - -c
+        - |-
+          /bin/grpc_health_probe -addr=:50010 &&
+          /bin/grpc_health_probe -addr=:50020 &&
+          /bin/grpc_health_probe -addr=:51020
+      interval: 3s
+      timeout: 5s
+      start_period: 5s
+    labels:
+      kompose.image-pull-secret: registry-credential
+
+  dev_cc_envoy{{ party_id }}:
+    container_name: compute_envoy_container{{ party_id }}
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: {{ envs[(party_id)|string].party.computation_container['envoy.yaml'].__path__ }}
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "50020"
+      - "51020"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.{{ party_id }}.21
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
+
+volumes:
+  sharedb{{ party_id }}:
+  resultdb{{ party_id }}:
+{%- else %} {# if is_party #}
+  beaver_triple_service:
+    container_name: beaver_triple_service
+    {%- set bts_image = "ghcr.io/acompany-develop/quickmpc-bts" %}
+    {%- if qmpc_setting['bts']['tag'] %}
+      {%- set bts_image = bts_image ~ ':' ~ qmpc_setting['bts']['tag'] %}
+    {%- endif %}
+    image: {{ bts_image }}
+    build:
+      context: {{ docker_context }}
+      dockerfile: packages/server/beaver_triple_service/Dockerfile
+      target: dep-runner
+      cache_from:
+        - type=registry,ref={{ bts_image }}
+    env_file:
+      - {{ envs.others.beaver_triple_service['.env'].__path__ }}
+      - {{ envs.others.jwt_envs['client.jwt.env'].__path__ }}
+      - {{ envs.others.jwt_envs['server.jwt.env'].__path__ }}
+    ports:
+      - "0.0.0.0:60020:50020"
+    networks:
+      shared-network:
+        aliases:
+          - beaver_triple_service
+        ipv4_address: 10.0.1.40
+    command: ["/bin/bash", "-c", "./beaver_triple_service"]
+    healthcheck:
+      test:
+        - CMD
+        - /bin/sh
+        - -c
+        - |-
+          /bin/grpc_health_probe
+            -addr=:50020
+            -rpc-header=authorization:"bearer $$BTS_TOKEN"
+      interval: 3s
+      timeout: 5s
+      start_period: 5s
+
+{%- endif %}
+
+networks:
+  shared-network:
+    external: true

@@ -1,0 +1,12 @@
+# registered claims is following
+iss: 'QuickMPC'
+sub: '' # "Subject", this field is filled by generator
+aud: ~ # unused
+exp: {{ exp }}
+# user defined claims is folloing
+room_uuid: '' # this field is filled by generator
+party_info:
+  {%- for party in setting['party_list'] %}
+  - id: {{ party['party_id'] }}
+    address: {{ party['host'] }}
+  {%- endfor %}
