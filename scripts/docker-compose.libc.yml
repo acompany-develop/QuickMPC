@@ -224,8 +224,7 @@ services:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
       cache_from:
-                # 開発環境のフォーマッタを統一
-      - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
       target: dev
     volumes:
       - target: /QuickMPC/config
