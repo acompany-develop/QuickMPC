@@ -277,7 +277,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultArrayPieceTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult(job_uuid, data, 1, 3, 4);
+    cc_to_db->writeComputationResult(job_uuid, data, 1, 3, cc_to_db->identity, 4);
 
     std::vector<std::string> true_result = {R"(["12"])", R"(["15"])", R"(["21"])"};
     for (size_t piece_id = 0; piece_id < true_result.size(); ++piece_id)
