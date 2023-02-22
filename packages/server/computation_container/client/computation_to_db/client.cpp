@@ -24,7 +24,8 @@ Client::ComputationResultWriter::ComputationResultWriter(
           : (key == 1) ? "dim2"
                        : "schema"
       )
-    , column_number(column_number)
+    // NOTE: Client側で復元する際に0以下だと不都合が生じるため
+    , column_number(std::max(1, column_number))
     , piece_size(piece_size)
 {
 }
