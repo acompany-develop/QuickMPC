@@ -30,6 +30,9 @@
   "[sql]": {
     "editor.defaultFormatter": "ms-mssql.mssql"
   },
+  "[yaml]": {
+    "editor.formatOnSave": false,
+  },
   "cmake.configureOnOpen": true,
   "editor.formatOnSave": true,
   "editor.formatOnType": true,
@@ -174,13 +177,17 @@
   "python.linting.pylintEnabled": false,
   "editor.guides.highlightActiveIndentation": true,
   "vscode-yaml-sort.emptyLinesUntilLevel": 0,
-  "vscode-yaml-sort.sortOnSave": 2, // customSortKeywords_2をデフォルトで使用
+  "vscode-yaml-sort.sortOnSave": 1, // customSortKeywords_2をデフォルトで使用
   "vscode-yaml-sort.useLeadingDashes": false, // これがないとファイルの先頭に謎の---を入れてしまうので必須
   "vscode-yaml-sort.useArrayProcessor": false, // これがないと$$を$に変換してしまうので必須
   "vscode-yaml-sort.useCustomSortRecursively": true,
-  "vscode-yaml-sort.customSortKeywords_1": ["apiVersion", "kind", "metadata", "spec", "data"], // sort順の定義 for k8s manifest
-  "vscode-yaml-sort.customSortKeywords_2": [ // sort順の定義 for docker-compose.yml
-    "version",
+  "vscode-yaml-sort.customSortKeywords_1": [ // sort順の定義
+    "apiVersion", // sort順の定義 for k8s manifest
+    "kind",
+    "metadata",
+    "spec",
+    "data",
+    "version", // sort順の定義 for docker-compose.yml
     "services",
     "container_name",
     "depends_on",
@@ -194,6 +201,8 @@
     "shm_size",
     "target",
     "volumes",
+    "target",
+    "source",
     "cap_add",
     "cap_drop",
     "cgroup_parent",
@@ -253,5 +262,49 @@
     "tty",
     "user",
     "working_dir",
-    "labels"],
+    "labels",
+    "static_resources", // 以降はenvoy.yaml
+    "listeners",
+    "name",
+    "address",
+    "socket_address",
+    "filter_chains",
+    "filters",
+    "typed_config",
+    "generate_request_id",
+    "tracing",
+    "provider",
+    "collector_cluster",
+    "service_name",
+    "access_log",
+    "path",
+    "log_format",
+    "text_format_source",
+    "inline_string",
+    "codec_type",
+    "stat_prefix",
+    "route_config",
+    "virtual_hosts",
+    "domains",
+    "routes",
+    "prefix",
+    "cluster",
+    "http_filters",
+    "pass_through_mode",
+    "headers",
+    "exact_match",
+    "use_remote_address",
+    "connect_timeout",
+    "type",
+    "lb_policy",
+    "load_assignment",
+    "cluster_name",
+    "endpoints",
+    "lb_endpoints",
+    "endpoint",
+    "socket_address",
+    "port_value",
+    "admin",
+    "access_log_path",
+  ]
 }
