@@ -38,7 +38,8 @@ public:
 
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto schemas = table.getSchemas();
-        auto column_number = schemas.size();
+        // NOTE: 突合列が削除されるので-1
+        auto column_number = schemas.size() - 1;
         // tableの保存
         db_client->writeComputationResult(job_uuid, table, 1, column_number, removeIdColumn);
         // schemaの保存
