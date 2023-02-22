@@ -177,7 +177,7 @@
   "python.linting.pylintEnabled": false,
   "editor.guides.highlightActiveIndentation": true,
   "vscode-yaml-sort.emptyLinesUntilLevel": 0,
-  "vscode-yaml-sort.sortOnSave": 1, // customSortKeywords_2をデフォルトで使用
+  "vscode-yaml-sort.sortOnSave": 1, // customSortKeywords_1をデフォルトで使用
   "vscode-yaml-sort.useLeadingDashes": false, // これがないとファイルの先頭に謎の---を入れてしまうので必須
   "vscode-yaml-sort.useArrayProcessor": false, // これがないと$$を$に変換してしまうので必須
   "vscode-yaml-sort.useCustomSortRecursively": true,
