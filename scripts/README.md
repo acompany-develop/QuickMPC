@@ -2,6 +2,29 @@
 ====
 The directory containing the test code for all services and docker-compose.yml to run them.
 
+## Preparation
+
+In this script, you can enable a monitoring tool as an option.
+The currently supported services are as follows:
+
+- [Datadog](https://www.datadoghq.com)
+
+### Enabling Datadog
+
+If you want to enable Datadog, create an `.env` file in `scripts/datadog/` directory and set the environment variables provided by Datadog in the following format.
+`DD_SITE` and `DD_API_KEY` are mandatory, so please set appropriate values based on your Datadog account.
+Refer to [here](https://docs.datadoghq.com/agent/troubleshooting/site/) for DD_SITE and [here](https://docs.datadoghq.com/account_management/api-app-keys/) for DD_API_KEY.
+
+```
+# Example of scripts/datadog/.env
+DD_SITE=<Set the Datadog region here:us5.datadoghq.com>
+DD_API_KEY=<Set the Datadog API key here>
+DD_APM_ENABLED=true
+DD_LOGS_ENABLED=true
+DD_LOGS_CONFIG_CONTAINER_COLLECT_ALL=true
+DD_AC_EXCLUDE="name:datadog"
+```
+
 ## How to develop docker-compose.yml
 The following stage name is used for Docker's Image.
 | stage name | purpose                                                                                                          |
@@ -42,6 +65,7 @@ t = hoge	# Run test under hoge<br>
 p = huga	# Run huga*test.sh<br>
 m = build	# Run only build() of test.sh<br>
 m = run		# Run only run() of test.sh<br>
+dd = 1		# Enable flag for [Datadog](https://www.datadoghq.com) for monitoring SaaS ([Preparation](#Preparation) is required)
 
 ```sh
 make test t=./computation_container/ #  Run the test directly under scripts/computation_container/
@@ -108,6 +132,7 @@ t = hoge	# Run test under hoge<br>
 p = huga	# Run huga*debug.sh<br>
 m = build	# Run only build() of debug.sh<br>
 m = run		# Run only run() of debug.sh<br>
+dd = 1		# Enable flag for [Datadog](https://www.datadoghq.com) for monitoring SaaS ([Preparation](#Preparation) is required)
 
 ```sh
 make debug t=./computation_container/ # Run the debugging directly under scripts/
