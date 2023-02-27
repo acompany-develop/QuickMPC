@@ -5,13 +5,9 @@
 export DOCKER_BUILDKIT=1
 export COMPOSE_DOCKER_CLI_BUILD=1
 
-# docker-composeの読み込み先を指定
-## ファイル名のパターンを指定
-pattern="docker-compose*.yml"
-## ファイル名の一覧を取得し、-fオプションを付けて連結する
-export COMPOSE_FILES_OPT=$(find . -name "$pattern" -exec printf -- '-f %s ' {} +)
-## 結果を表示する
+## Makefileでexportした環境変数を表示する
 echo "COMPOSE_FILES_OPT = $COMPOSE_FILES_OPT"
+echo "IS_ENABLE_DATADOG = $IS_ENABLE_DATADOG"
 
 
 # 引数が正しくない時に発火する関数
@@ -39,7 +35,13 @@ setup() {
 
 
 if [ $# -eq 1 ]; then
-    source $1 && setup && build && run
+    source $1
+    setup
+    build
+    if [ "$IS_ENABLE_DATADOG" = "1" ]; then
+        docker-compose $COMPOSE_FILES_OPT up -d datadog
+    fi
+    run
 else
     source $1
     case $2 in
@@ -47,7 +49,11 @@ else
         build
         ;;
     run)
-        setup && run
+        setup
+        run
+        if [ "$IS_ENABLE_DATADOG" = "1" ]; then
+            docker-compose $COMPOSE_FILES_OPT up -d datadog
+        fi
         ;;
     *)
         usage_exit
