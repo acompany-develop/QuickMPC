@@ -8,12 +8,12 @@ Test
 - [Datadog](https://www.datadoghq.com)
 
 ### Datadogを有効化する場合
-`scripts/datadog/`に`.env`ファイルを作成し、以下の形式でDatadogが用意した環境変数を設定できる。
+`scripts/`に`.env`ファイルを作成し、以下の形式でDatadogが用意した環境変数を設定できる。
 `DD_SITE`と`DD_API_KEY`は必須なので、ご利用のDatadogアカウントを参照して適切な値を設定する。
 DD_SIREは[こちら](https://docs.datadoghq.com/ja/agent/troubleshooting/site/)、DD_API_KEYは[こちら](https://docs.datadoghq.com/ja/account_management/api-app-keys/)を参照。
 
 ```
-# scripts/datadog/.envの例
+# scripts/.envの例
 DD_SITE=<ここDatadogのリージョンを設定する:us5.datadoghq.com>
 DD_API_KEY=<ここDatadogのAPI_KEYを設定する>
 DD_APM_ENABLED=true

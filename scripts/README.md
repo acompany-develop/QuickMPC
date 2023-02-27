@@ -11,12 +11,12 @@ The currently supported services are as follows:
 
 ### Enabling Datadog
 
-If you want to enable Datadog, create an `.env` file in `scripts/datadog/` directory and set the environment variables provided by Datadog in the following format.
+If you want to enable Datadog, create an `.env` file in `scripts/` directory and set the environment variables provided by Datadog in the following format.
 `DD_SITE` and `DD_API_KEY` are mandatory, so please set appropriate values based on your Datadog account.
 Refer to [here](https://docs.datadoghq.com/agent/troubleshooting/site/) for DD_SITE and [here](https://docs.datadoghq.com/account_management/api-app-keys/) for DD_API_KEY.
 
 ```
-# Example of scripts/datadog/.env
+# Example of scripts/.env
 DD_SITE=<Set the Datadog region here:us5.datadoghq.com>
 DD_API_KEY=<Set the Datadog API key here>
 DD_APM_ENABLED=true

@@ -1,5 +1,8 @@
 #!make
 SHELL:=/bin/bash
+# scripts/.envがあれば読み込んで環境変数を設定する
+-include .env
+export $(-shell sed 's/=.*//' .env)
 NETWORK_NAME = shared-network
 NETWORK_GATEWAY = 10.0.0.1
 NETWORK_SUBNET = 10.0.0.0/16
@@ -17,7 +20,6 @@ p =
 dd = 0
 # tester.sh, debugger.shで利用できるようにexportする
 export IS_ENABLE_DATADOG=$(dd)
-
 # docker-composeの読み込み先を指定
 ## ファイル名のパターンを指定
 pattern="docker-compose*.yml"
