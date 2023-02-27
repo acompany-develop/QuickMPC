@@ -41,7 +41,7 @@ def execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 1, 2]],
 
         # large table case
         (execute_computation_param(dataIds=[data_id([[id, 1] for id in range(1000)], ["id", "s1"]),
-                                            data_id([[id, 2] for id in range(1000)], ["id", "s2"])], join=[2]),
+                                            data_id([[id, 2] for id in range(1000)], ["id", "s2"])], join=[0]),
          [[1, 2]for _ in range(1000)]),
     ]
 )
