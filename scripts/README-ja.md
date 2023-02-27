@@ -63,7 +63,7 @@ t = hoge	# hoge配下のtestを実行<br>
 p = huga	# huga*test.shを実行する <br>
 m = build	# test.shのbuild()のみ実行<br>
 m = run		# test.shのrun()のみ実行 <br>
-dd = 1		# 監視SaaSの[Datadog](https://us5.datadoghq.com)の有効化フラグ([事前準備](#事前準備)が必須)
+dd = 1		# 監視SaaSの[Datadog](https://www.datadoghq.com)の有効化フラグ([事前準備](#事前準備)が必須)
 
 ```sh
 make test t=./computation_container/ # scripts/computation_container/ 直下のみのテストを実行したい場合
@@ -132,7 +132,7 @@ t = hoge	# hoge配下のtestを実行<br>
 p = huga	# huga*debug.shを実行する <br>
 m = build	# debug.shのbuild()のみ実行<br>
 m = run		# debug.shのrun()のみ実行 <br>
-dd = 1		# 監視SaaSの[datadog](https://us5.datadoghq.com)の有効化フラグ([事前準備](#事前準備)が必須)
+dd = 1		# 監視SaaSの[datadog](https://www.datadoghq.com)の有効化フラグ([事前準備](#事前準備)が必須)
 
 ```sh
 make debug t=./computation_container/ # scripts/computation_container/ 直下のみのデバッグを実行したい場合
