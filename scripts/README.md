@@ -73,6 +73,7 @@ make test p=small # Run `small*test.sh`
 make test m=build # Run only the build process of `*test.sh`
 make test m=run # Run only the run process of `*test.sh`
 make test t=./computation_container/ p=small m=run # Run only the `run` process in small*test.sh under scripts/computation_container/
+make test m=run dd=1 # If you want to run only the run process of `*test.sh` while enabling datadog-agent
 ```
 
 ## Adding Tests
@@ -140,6 +141,7 @@ make debug p=cc # Run `cc*debug.sh`
 make debug m=build # Run only the build process of `*debug.sh`
 make debug m=run # Run only the run processes of `*debug.sh`
 make debug t=./computation_container/ m=run # Run only the `run` process in debug.sh under scripts/computation_container/
+make debug m=run dd=1 # If you want to run only the run process of `*debug.sh` while enabling datadog-agent
 ```
 
 ## テストの追加
