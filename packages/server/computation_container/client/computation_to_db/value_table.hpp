@@ -4,32 +4,41 @@
 #include <string>
 #include <vector>
 
-#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
-
 namespace qmpc::ComputationToDb
 {
+using RowType = std::vector<std::string>;
+using TableType = std::vector<RowType>;
+
+class TableIterator
+{
+    const std::string data_id;
+    int piece_id;
+    std::optional<TableType> piece_table;
+    std::optional<TableType::iterator> itr;
+
+public:
+    TableIterator(const std::string &data_id);
+    TableIterator(const std::optional<TableType::iterator> &itr) : itr(itr) {}
+
+    RowType operator*();
+    TableIterator &operator++();
+    bool operator!=(const TableIterator &tgt);
+    bool operator==(const TableIterator &tgt);
+};
+
 class ValueTable
 {
     const std::string data_id;
 
-    std::vector<std::vector<std::string>>
-    getSubTable(const std::optional<std::vector<int>> &, const std::optional<std::vector<int>> &)
-        const;
-    std::vector<std::string> getColumn(int) const;
-    std::string joinDataId(const ValueTable &, int) const;
-
 public:
     ValueTable(const std::string &);
+    TableIterator begin() const;
+    TableIterator end() const;
 
     std::string getDataId() const;
-    std::vector<std::vector<std::string>> getTable() const;
+    TableType getTable() const;
+    std::vector<std::string> getColumn(int) const;
     std::vector<std::string> getSchemas() const;
-    ValueTable vjoin(const ValueTable &, int, int) const;
-    ValueTable hjoin(const ValueTable &, int, int) const;
-    ValueTable hjoinShare(const ValueTable &, int, int) const;
 };
 
-ValueTable
-parseRead(const std::vector<ValueTable> &, const std::vector<int> &, const std::vector<int> &);
-ValueTable readTable(const managetocomputation::JoinOrder &);
 }  // namespace qmpc::ComputationToDb

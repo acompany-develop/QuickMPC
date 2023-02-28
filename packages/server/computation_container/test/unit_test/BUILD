@@ -123,8 +123,23 @@ cc_test(
     deps = [
         "@gtest//:main",
         "//client/computation_to_db:client",
-        "//client/computation_to_db:valuetable",
         "@proto//common_types:common_types_cc_proto",
+    ],
+    linkopts = [
+        "-lstdc++fs"
+    ],
+    visibility = ["//visibility:public"],
+)
+
+cc_test(
+    name = "value_table_test",
+    srcs = [
+        "value_table_test.cpp",
+    ],
+    copts = ["-Iexternal/gtest/include"],
+    deps = [
+        "@gtest//:main",
+        "//client/computation_to_db:valuetable",
     ],
     linkopts = [
         "-lstdc++fs"

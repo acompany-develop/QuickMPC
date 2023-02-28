@@ -2,7 +2,6 @@
 #include <fstream>
 
 #include "client/computation_to_db/client.hpp"
-#include "client/computation_to_db/value_table.hpp"
 #include "external/proto/common_types/common_types.pb.h"
 #include "gtest/gtest.h"
 namespace fs = std::experimental::filesystem;
@@ -73,6 +72,26 @@ TEST(ComputationToDbTest, SuccessReadTablePieceTest)
 
     initialize(data_id);
 }
+TEST(ComputationToDbTest, SuccessReadEmptyTableTest)
+{
+    const std::string data_id = "SuccessReadEmptyTableTest";
+    initialize(data_id);
+
+    const std::string data = R"({"value":[])"
+                             R"(,"meta":{"piece_id":0,"schema":[]}})";
+    fs::create_directories("/db/share/" + data_id);
+    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto read_data = cc_to_db->readTable(data_id, 0).value();
+
+    std::vector<std::vector<std::string>> true_table = {};
+    EXPECT_EQ(read_data, true_table);
+
+    initialize(data_id);
+}
 TEST(ComputationToDbTest, SuccessReadTableLargeTest)
 {
     std::string data_id = "SuccessReadTableLargeTest";
@@ -118,7 +137,7 @@ TEST(ComputationToDbTest, SuccessReadTableLargeTest)
 }
 
 // schemaの取り出し
-// qmpc::ComputationToDb::ValueTable Client::readSchema(const std::string &data_id);
+// std::vector<std::string> Client::readSchema(const std::string &data_id);
 TEST(ComputationToDbTest, SuccessReadSchemaTest)
 {
     const std::string data_id = "SuccessReadSchemaTest";
@@ -322,48 +341,6 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultCompletedTest)
     EXPECT_TRUE(exist);
 
     initialize(job_uuid);
-}
-
-TEST(ComputationToDbTest, SuccessGetTableTest)
-{
-    const std::string data_id = "SuccessGetTableTest";
-    initialize(data_id);
-
-    const std::string data = R"({"value":[["1","2"],["3","4"]])"
-                             R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})";
-    fs::create_directories("/db/share/" + data_id);
-    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
-    ofs << data;
-    ofs.close();
-
-    qmpc::ComputationToDb::ValueTable vt(data_id);
-    auto table = vt.getTable();
-
-    std::vector<std::vector<std::string>> true_table = {{"1", "2"}, {"3", "4"}};
-    EXPECT_EQ(true_table, table);
-
-    initialize(data_id);
-}
-
-TEST(ComputationToDbTest, SuccessGetSchemasTest)
-{
-    const std::string data_id = "SuccessGetSchemasTest";
-    initialize(data_id);
-
-    const std::string data = R"({"value":[["1","2"],["3","4"]])"
-                             R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})";
-    fs::create_directories("/db/share/" + data_id);
-    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
-    ofs << data;
-    ofs.close();
-
-    qmpc::ComputationToDb::ValueTable vt(data_id);
-    auto schema = vt.getSchemas();
-
-    std::vector<std::string> true_schema = {"attr1", "attr2"};
-    EXPECT_EQ(true_schema, schema);
-
-    initialize(data_id);
 }
 
 TEST(ComputationToDbTest, SuccessWriteTableTest)

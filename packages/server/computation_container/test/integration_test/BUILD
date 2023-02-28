@@ -67,13 +67,13 @@ cc_library(
 )
 
 cc_library(
-    name = "value_table_test",
+    name = "join_table_test",
     hdrs = [
-        "value_table_test.hpp",
+        "join_table_test.hpp",
     ],
     deps = [
         "@gtest//:main",
-        "//client/computation_to_db:valuetable",
+        "//client/computation_to_db:jointable",
     ],
     visibility = ["//visibility:public"],
 )
