@@ -1,15 +1,15 @@
 #pragma once
 
+#include <fstream>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "external/proto/common_types/common_types.pb.h"
-#include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "logging/logger.hpp"
 #include "nlohmann/json.hpp"
-#include "value_table.hpp"
 
 namespace qmpc::ComputationToDb
 {
@@ -22,8 +22,14 @@ public:
     Client();
     static std::shared_ptr<Client> getInstance();
 
-    // shareの取り出し
-    ValueTable readShare(const std::string &) const;
+    // Tableの取り出し
+    std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
+    std::vector<std::string> readSchema(const std::string &) const;
+
+    // Tableの保存
+    std::string
+    writeTable(const std::string &, std::vector<std::vector<std::string>> &, const std::vector<std::string> &)
+        const;
 
     // Job を DB に新規登録する
     void registerJob(const std::string &job_uuid, const int &status) const;
@@ -34,9 +40,6 @@ public:
     // Job 実行中に発生したエラーに関する情報を保存する
     void saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
         const;
-
-    // tableデータを結合して取り出す
-    ValueTable readTable(const managetocomputation::JoinOrder &table);
 
     // resultの保存
     template <class T>

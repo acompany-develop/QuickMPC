@@ -20,45 +20,64 @@ std::shared_ptr<Client> Client::getInstance()
     return instance;
 }
 
-// shareの取り出し
-ValueTable Client::readShare(const std::string &data_id) const
+// Tableの取り出し
+std::optional<std::vector<std::vector<std::string>>> Client::readTable(
+    const std::string &data_id, int piece_id
+) const
+{
+    auto data_path = shareDbPath + data_id + "/" + std::to_string(piece_id);
+    if (!fs::exists(data_path))
+    {
+        return std::nullopt;
+    }
+
+    auto ifs = std::ifstream(data_path);
+    std::string data;
+    getline(ifs, data);
+    auto data_json = nlohmann::json::parse(data);
+
+    std::vector<std::vector<std::string>> table;
+    for (const auto &row : data_json["value"])
+    {
+        table.emplace_back(row);
+    }
+    return table;
+}
+
+// Schemaの取り出し
+std::vector<std::string> Client::readSchema(const std::string &data_id) const
 {
     // DBから値を取り出す
-    std::map<int, nlohmann::json> pieces;
-    int all_size = 0;
     std::vector<std::string> schemas;
-    for (const auto &entry : fs::directory_iterator(shareDbPath + data_id))
-    {
-        auto ifs = std::ifstream(entry.path());
-        std::string data;
-        getline(ifs, data);
-        auto json = nlohmann::json::parse(data);
-
-        all_size += json["value"].size();
-        auto piece_id = json["meta"]["piece_id"];
-        pieces.emplace(piece_id, json["value"]);
-
-        // schemaを1番目の要素だけから取り出す
-        if (piece_id == 0)
-        {
-            auto j = json["meta"]["schema"];
-            schemas = std::vector<std::string>(j.begin(), j.end());
-        }
-    }
-
-    // piece_id順にvalueを結合
-    std::vector<std::vector<std::string>> table;
-    table.reserve(all_size);
-    for (const auto &[_, piece] : pieces)
-    {
-        static_cast<void>(_);
-        for (const auto &row : piece)
-        {
-            table.emplace_back(row);
-        }
-    }
-    return ValueTable(table, schemas);
+    auto ifs = std::ifstream(shareDbPath + data_id + "/0");
+    std::string data;
+    getline(ifs, data);
+    auto json = nlohmann::json::parse(data);
+    auto j = json["meta"]["schema"];
+    schemas = std::vector<std::string>(j.begin(), j.end());
+    return schemas;
 }
+
+// Tableの保存
+std::string Client::writeTable(
+    const std::string &data_id,
+    std::vector<std::vector<std::string>> &table,
+    const std::vector<std::string> &schema
+) const
+{
+    // TODO: piece_idを引数に受け取ってpieceごとに保存できるようにする
+    const int piece_id = 0;
+    nlohmann::json data_json = {
+        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
+    const std::string data = data_json.dump();
+
+    auto data_path = shareDbPath + data_id;
+    fs::create_directories(data_path);
+    std::ofstream ofs(data_path + "/" + std::to_string(piece_id));
+    ofs << data;
+    ofs.close();
+    return data_id;
+};
 
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const
@@ -108,31 +127,4 @@ void Client::saveErrorInfo(const std::string &job_uuid, const pb_common_types::J
 
     ofs << dst;
 }
-
-// tableデータを結合して取り出す
-ValueTable Client::readTable(const managetocomputation::JoinOrder &table)
-{
-    // requestからデータ読み取り
-    auto size = table.join().size();
-    std::vector<int> join;
-    join.reserve(size);
-    for (const auto &j : table.join())
-    {
-        join.emplace_back(j);
-    }
-    std::vector<int> index;
-    index.reserve(size);
-    for (const auto &j : table.index())
-    {
-        index.emplace_back(j);
-    }
-    std::vector<ValueTable> tables;
-    tables.reserve(size + 1);
-    for (const auto &dataId : table.dataids())
-    {
-        tables.emplace_back(this->readShare(dataId));
-    }
-    return parseRead(tables, join, index);
-}
-
 }  // namespace qmpc::ComputationToDb

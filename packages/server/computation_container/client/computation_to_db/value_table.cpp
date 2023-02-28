@@ -1,41 +1,137 @@
 #include "value_table.hpp"
 
+#include <openssl/sha.h>
 #include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <unordered_map>
 #include <unordered_set>
-
+#include "client/computation_to_db/client.hpp"
 #include "job/progress_manager.hpp"
+#include "logging/logger.hpp"
 #include "share/compare.hpp"
+#include "share/share.hpp"
 
 namespace qmpc::ComputationToDb
 {
-ValueTable::ValueTable(
-    const std::vector<std::vector<std::string>> &table, const std::vector<std::string> &schemas
-)
-    : table(table), schemas(schemas)
-{
-}
-bool ValueTable::operator==(const ValueTable &that) const
-{
-    return (table == that.table) & (schemas == that.schemas);
-}
+using Share = ::Share;
 
-std::vector<::Share> ValueTable::getColumn(int idx) const
+template <class SV = FixedPoint>
+auto toShare(const std::vector<std::string> &vec)
 {
-    std::vector<Share> column;
-    column.reserve(table.size());
+    auto sv_vec = std::vector<SV>(vec.begin(), vec.end());
+    auto share_vec = std::vector<Share>(sv_vec.begin(), sv_vec.end());
+    return share_vec;
+}
+template <class SV = FixedPoint>
+auto toShare(const std::vector<std::vector<std::string>> &table)
+{
+    std::vector<std::vector<Share>> &share_table;
+    share_table.reserve(table.size());
     for (const auto &row : table)
     {
-        column.emplace_back(FixedPoint(row[idx]));
+        share_table.emplace_back(toShare<SV>(row));
     }
-    return column;
+    return share_table;
 }
 
-std::vector<std::vector<std::string>> ValueTable::getTable() const { return table; }
+ValueTable::ValueTable(const std::string &data_id) : data_id(data_id) {}
 
-std::vector<std::string> ValueTable::getSchemas() const { return schemas; }
+// tableから行，列の指定したindexだけ取り出す，nulloptの場合は全ての行，列を取り出す
+std::vector<std::vector<std::string>> ValueTable::getSubTable(
+    const std::optional<std::vector<int>> &row_index,
+    const std::optional<std::vector<int>> &column_index
+) const
+{
+    auto db = Client::getInstance();
+    int piece_id = 0;
+
+    // TODO: rowについての処理を書く
+    int row = 0;
+    std::vector<std::vector<std::string>> read_table;
+    while (true)
+    {
+        auto piece = db->readTable(data_id, piece_id);
+        if (!piece)
+        {
+            break;
+        }
+        for (const auto &row : piece.value())
+        {
+            if (!column_index)
+            {
+                read_table.emplace_back(row);
+            }
+            else
+            {
+                std::vector<std::string> row_c;
+                for (const auto &idx : column_index.value())
+                {
+                    row_c.emplace_back(row[idx]);
+                }
+                read_table.emplace_back(row_c);
+            }
+        }
+        ++piece_id;
+    }
+    return read_table;
+}
+
+std::vector<std::string> ValueTable::getColumn(int column_number) const
+{
+    auto table = getSubTable(std::nullopt, std::vector<int>{column_number});
+    std::vector<std::string> ret;
+    for (const auto &row : table)
+    {
+        ret.emplace_back(row[0]);
+    }
+    return ret;
+}
+std::string ValueTable::joinDataId(const ValueTable &vt, int type) const
+{
+    // 結合テーブルIDと結合方式から一意に定まるIDを生成する
+    auto text = data_id + vt.data_id + std::to_string(type);
+
+    unsigned char hs[SHA256_DIGEST_LENGTH];
+    SHA256_CTX sha256;
+    SHA256_Init(&sha256);
+    SHA256_Update(&sha256, text.c_str(), text.size());
+    SHA256_Final(hs, &sha256);
+    std::stringstream ss;
+    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++)
+    {
+        ss << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(hs[i]);
+    }
+    return ss.str();
+}
+
+std::string ValueTable::getDataId() const { return data_id; }
+std::vector<std::vector<std::string>> ValueTable::getTable() const
+{
+    auto db = Client::getInstance();
+    int piece_id = 0;
+    std::vector<std::vector<std::string>> read_table;
+    while (true)
+    {
+        auto piece = db->readTable(data_id, piece_id);
+        if (!piece)
+        {
+            break;
+        }
+        for (const auto &row : piece.value())
+        {
+            read_table.emplace_back(row);
+        }
+        ++piece_id;
+    }
+    return read_table;
+}
+
+std::vector<std::string> ValueTable::getSchemas() const
+{
+    auto db = Client::getInstance();
+    return db->readSchema(data_id);
+}
 
 struct LessFloat
 {
@@ -287,8 +383,12 @@ std::pair<std::vector<int>, std::vector<int>> unionValueIndex(
 
 ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt) const
 {
+    // TODO: 必要な列だけ取り出して結合するようにする
+    auto table = this->getTable();
+    auto schemas = this->getSchemas();
+
     // joinしたschemasを構築
-    auto [schemas_it, schemas_join_it] = intersectionValueIndex(schemas, join_table.schemas);
+    auto [schemas_it, schemas_join_it] = intersectionValueIndex(schemas, join_table.getSchemas());
     auto new_schemas_size = schemas_it.size();
     auto new_schemas = std::vector<std::string>();
     new_schemas.reserve(new_schemas_size);
@@ -298,10 +398,10 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
     }
 
     // joinしたidsを構築
-    auto ids_share = getColumn(idx - 1);
+    auto ids_share = toShare(getColumn(idx - 1));
     open(ids_share);
     auto ids = recons(ids_share);
-    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
+    auto ids_tgt_share = toShare(join_table.getColumn(idx_tgt - 1));
     open(ids_tgt_share);
     auto ids_tgt = recons(ids_tgt_share);
     auto [ids_it, ids_join_it] = unionValueIndex(ids, ids_tgt);
@@ -326,22 +426,28 @@ ValueTable ValueTable::vjoin(const ValueTable &join_table, int idx, int idx_tgt)
         new_row.reserve(new_schemas_size);
         for (const auto &it_w : schemas_join_it)
         {
-            new_row.emplace_back(join_table.table[it_h][it_w]);
+            new_row.emplace_back(join_table.getTable()[it_h][it_w]);
         }
         new_table.emplace_back(new_row);
     }
-
-    return ValueTable(new_table, new_schemas);
+    const std::string new_data_id = joinDataId(join_table, 0);
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
+    return ValueTable(new_data_id);
 }
 
 ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt) const
 {
+    // TODO: 必要な列だけ取り出して結合するようにする
+    auto table = this->getTable();
+    auto schemas = this->getSchemas();
+
     // joinしたschemasを構築
     auto schemas_it = std::vector<int>(schemas.size());
     std::iota(schemas_it.begin(), schemas_it.end(), 0);
     auto schemas_join_it = std::vector<int>();
-    schemas_join_it.reserve(join_table.schemas.size());
-    for (size_t i = 0; i < join_table.schemas.size(); ++i)
+    schemas_join_it.reserve(join_table.getSchemas().size());
+    for (size_t i = 0; i < join_table.getSchemas().size(); ++i)
     {
         if (static_cast<int>(i) == idx_tgt - 1)
         {
@@ -355,14 +461,14 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
     new_schemas.reserve(new_schemas_size);
     for (const auto &it : schemas_join_it)
     {
-        new_schemas.emplace_back(join_table.schemas[it]);
+        new_schemas.emplace_back(join_table.getSchemas()[it]);
     }
 
     // joinしたidsを構築
-    auto ids_share = getColumn(idx - 1);
+    auto ids_share = toShare(getColumn(idx - 1));
     open(ids_share);
     auto ids = recons(ids_share);
-    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
+    auto ids_tgt_share = toShare(join_table.getColumn(idx_tgt - 1));
     open(ids_tgt_share);
     auto ids_tgt = recons(ids_tgt_share);
     auto [ids_it, ids_join_it] = intersectionValueIndex(ids, ids_tgt);
@@ -383,14 +489,73 @@ ValueTable ValueTable::hjoin(const ValueTable &join_table, int idx, int idx_tgt)
         }
         for (const auto &it_w : schemas_join_it)
         {
-            new_row.emplace_back(join_table.table[*it_join_h][it_w]);
+            new_row.emplace_back(join_table.getTable()[*it_join_h][it_w]);
         }
         new_table.emplace_back(new_row);
         ++it_h;
         ++it_join_h;
     }
+    const std::string new_data_id = joinDataId(join_table, 1);
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
+    return ValueTable(new_data_id);
+}
 
-    return ValueTable(new_table, new_schemas);
+ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx_tgt) const
+{
+    // TODO: indexだけで処理できるように修正する
+    auto table = this->getTable();
+    auto schemas = this->getSchemas();
+
+    // joinしたschemasを構築
+    auto schemas_it = std::vector<int>(schemas.size());
+    std::iota(schemas_it.begin(), schemas_it.end(), 0);
+    auto schemas_join_it = std::vector<int>();
+    schemas_join_it.reserve(join_table.getSchemas().size());
+    for (size_t i = 0; i < join_table.getSchemas().size(); ++i)
+    {
+        if (static_cast<int>(i) == idx_tgt - 1)
+        {
+            continue;
+        }
+        schemas_join_it.emplace_back(i);
+    }
+
+    auto new_schemas_size = schemas_it.size() + schemas_join_it.size();
+    auto new_schemas = schemas;
+    new_schemas.reserve(new_schemas_size);
+    for (const auto &it : schemas_join_it)
+    {
+        new_schemas.emplace_back(join_table.getSchemas()[it]);
+    }
+
+    // joinしたidsを構築
+    auto ids_share = toShare(getColumn(idx - 1));
+    auto ids_tgt_share = toShare(join_table.getColumn(idx_tgt - 1));
+    auto ids_it_list = intersectionSortedValueIndex(ids_share, ids_tgt_share);
+    auto new_ids_size = ids_it_list.size();
+
+    // joinしたtableを構築
+    auto new_table = std::vector<std::vector<std::string>>();
+    new_table.reserve(new_ids_size);
+    for (const auto &[it_h, it_join_h] : ids_it_list)
+    {
+        auto new_row = std::vector<std::string>();
+        new_row.reserve(new_schemas_size);
+        for (const auto &it_w : schemas_it)
+        {
+            new_row.emplace_back(table[it_h][it_w]);
+        }
+        for (const auto &it_w : schemas_join_it)
+        {
+            new_row.emplace_back(join_table.getTable()[it_join_h][it_w]);
+        }
+        new_table.emplace_back(new_row);
+    }
+    const std::string new_data_id = joinDataId(join_table, 1);
+    auto db = Client::getInstance();
+    db->writeTable(new_data_id, new_table, new_schemas);
+    return ValueTable(new_data_id);
 }
 
 ValueTable parseRead(
@@ -418,54 +583,30 @@ ValueTable parseRead(
     return joinFunc(joinFunc, values[0]);
 }
 
-ValueTable ValueTable::hjoinShare(const ValueTable &join_table, int idx, int idx_tgt) const
+// tableデータを結合して取り出す
+ValueTable readTable(const managetocomputation::JoinOrder &table)
 {
-    // joinしたschemasを構築
-    auto schemas_it = std::vector<int>(schemas.size());
-    std::iota(schemas_it.begin(), schemas_it.end(), 0);
-    auto schemas_join_it = std::vector<int>();
-    schemas_join_it.reserve(join_table.schemas.size());
-    for (size_t i = 0; i < join_table.schemas.size(); ++i)
+    // requestからデータ読み取り
+    auto size = table.join().size();
+    std::vector<int> join;
+    join.reserve(size);
+    for (const auto &j : table.join())
     {
-        if (static_cast<int>(i) == idx_tgt - 1)
-        {
-            continue;
-        }
-        schemas_join_it.emplace_back(i);
+        join.emplace_back(j);
     }
-
-    auto new_schemas_size = schemas_it.size() + schemas_join_it.size();
-    auto new_schemas = schemas;
-    new_schemas.reserve(new_schemas_size);
-    for (const auto &it : schemas_join_it)
+    std::vector<int> index;
+    index.reserve(size);
+    for (const auto &j : table.index())
     {
-        new_schemas.emplace_back(join_table.schemas[it]);
+        index.emplace_back(j);
     }
-
-    // joinしたidsを構築
-    auto ids_share = getColumn(idx - 1);
-    auto ids_tgt_share = join_table.getColumn(idx_tgt - 1);
-    auto ids_it_list = intersectionSortedValueIndex(ids_share, ids_tgt_share);
-    auto new_ids_size = ids_it_list.size();
-
-    // joinしたtableを構築
-    auto new_table = std::vector<std::vector<std::string>>();
-    new_table.reserve(new_ids_size);
-    for (const auto &[it_h, it_join_h] : ids_it_list)
+    std::vector<ValueTable> tables;
+    tables.reserve(size + 1);
+    for (const auto &data_id : table.dataids())
     {
-        auto new_row = std::vector<std::string>();
-        new_row.reserve(new_schemas_size);
-        for (const auto &it_w : schemas_it)
-        {
-            new_row.emplace_back(table[it_h][it_w]);
-        }
-        for (const auto &it_w : schemas_join_it)
-        {
-            new_row.emplace_back(join_table.table[it_join_h][it_w]);
-        }
-        new_table.emplace_back(new_row);
+        tables.emplace_back(data_id);
     }
-
-    return ValueTable(new_table, new_schemas);
+    return parseRead(tables, join, index);
 }
+
 }  // namespace qmpc::ComputationToDb

@@ -1,167 +1,270 @@
+#include <experimental/filesystem>
 #include <string>
 #include <vector>
 
 #include "client/computation_to_db/value_table.hpp"
 #include "gtest/gtest.h"
+namespace fs = std::experimental::filesystem;
 
-/****************** Test用の各データ ******************/
-const std::vector<std::vector<std::string>> table_data1{{"101", "1", "2"}, {"102", "3", "4"}};
-const std::vector<std::string> schemas1{"id", "attr1", "attr2"};
+using Schema = std::vector<std::string>;
+using Table = std::vector<std::vector<std::string>>;
 
-const std::vector<std::vector<std::string>> table_data2{{"101", "5", "6"}, {"103", "7", "8"}};
-const std::vector<std::string> schemas2{"id", "attr1", "attr3"};
+/******************** 前処理，後処理 **********************/
+class ValueTableTest : public testing::Test
+{
+protected:
+    // Testに用いる{schema, table}のリスト
+    const std::vector<std::pair<Schema, Table>> test_tables{
+        {{"id", "attr1", "attr2"}, {{"101", "1", "2"}, {"102", "3", "4"}}},
+        {{"id", "attr1", "attr3"}, {{"101", "5", "6"}, {"103", "7", "8"}}},
+        {{"id", "attr1", "attr3", "attr4"}, {{"102", "9", "10", "11"}, {"103", "12", "13", "14"}}},
+        {{"id", "attr3", "attr4", "attr5"},
+         {{"103", "15", "16", "17"}, {"104", "18", "19", "20"}, {"105", "21", "22", "23"}}},
+        {{"id", "attr1", "attr2"}, {{"101", "1", "0"}, {"102", "0", "4"}}},
+        {{"id", "attr1", "attr2"}, {{"102", "0", "4"}, {"102", "1", "0"}}},
+    };
+    std::deque<std::string> data_ids;
 
-const std::vector<std::vector<std::string>> table_data3{
-    {"102", "9", "10", "11"}, {"103", "12", "13", "14"}};
-const std::vector<std::string> schemas3{"id", "attr1", "attr3", "attr4"};
+    static auto initialize(const std::string& id)
+    {
+        fs::remove_all("/db/share/" + id);
+        fs::remove_all("/db/result/" + id);
+    }
 
-const std::vector<std::vector<std::string>> table_data4{
-    {"103", "15", "16", "17"}, {"104", "18", "19", "20"}, {"105", "21", "22", "23"}};
-const std::vector<std::string> schemas4{"id", "attr3", "attr4", "attr5"};
+    auto genValueTable(int table_itr)
+    {
+        // 初期化してリストに登録する(テスト後に削除するため)
+        auto data_id = "ValueTableTest" + std::to_string(table_itr);
+        initialize(data_id);
+        data_ids.emplace_back(data_id);
 
-const std::vector<std::vector<std::string>> table_data5{{"101", "1", "0"}, {"102", "0", "4"}};
-const std::vector<std::string> schemas5{"id", "attr1", "attr2"};
+        //テストで使用するデータをDBに保存する
+        const int piece_id = 0;
+        auto [schema, table] = test_tables[table_itr];
+        nlohmann::json data_json = {
+            {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
+        const std::string data = data_json.dump();
 
-const auto table1 = qmpc::ComputationToDb::ValueTable(table_data1, schemas1);
-const auto table2 = qmpc::ComputationToDb::ValueTable(table_data2, schemas2);
-const auto table3 = qmpc::ComputationToDb::ValueTable(table_data3, schemas3);
-const auto table4 = qmpc::ComputationToDb::ValueTable(table_data4, schemas4);
-const auto table5 = qmpc::ComputationToDb::ValueTable(table_data5, schemas5);
+        auto data_path = "/db/share/" + data_id;
+        fs::create_directories(data_path);
+        std::ofstream ofs(data_path + "/" + std::to_string(piece_id));
+        ofs << data;
+        ofs.close();
 
+        return qmpc::ComputationToDb::ValueTable(data_id);
+    }
+
+    void TearDown() override
+    {
+        // テストで使用したデータを削除する
+        while (!data_ids.empty())
+        {
+            initialize(data_ids.front());
+            data_ids.pop_front();
+        }
+    }
+};
+
+// TODO: Parameterテストを導入してテストデータを各テストごとに設定する
 /********************** Test **********************/
-TEST(ValueTableTest, vjoinTest)
+TEST_F(ValueTableTest, vjoinTest)
 {
-    // table1 に table2 を縦結合した場合
-    const std::vector<std::vector<std::string>> table_data_1v2{
-        {"101", "1"}, {"102", "3"}, {"103", "7"}};
-    const std::vector<std::string> schemas_1v2{"id", "attr1"};
-    const auto table_1v2 = qmpc::ComputationToDb::ValueTable(table_data_1v2, schemas_1v2);
-    EXPECT_EQ(table_1v2, table1.vjoin(table2, 1, 1));
+    {
+        auto vt1 = genValueTable(0);
+        auto vt2 = genValueTable(1);
+        auto join_table = vt1.vjoin(vt2, 1, 1);
 
-    // table3 に table4 を縦結合した場合
-    const std::vector<std::vector<std::string>> table_data_3v4{
-        {"102", "10", "11"}, {"103", "13", "14"}, {"104", "18", "19"}, {"105", "21", "22"}};
-    const std::vector<std::string> schemas_3v4{"id", "attr3", "attr4"};
-    const auto table_3v4 = qmpc::ComputationToDb::ValueTable(table_data_3v4, schemas_3v4);
-    EXPECT_EQ(table_3v4, table3.vjoin(table4, 1, 1));
+        const std::vector<std::vector<std::string>> expect_table{
+            {"101", "1"}, {"102", "3"}, {"103", "7"}};
+        const std::vector<std::string> expect_schema{"id", "attr1"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
+    {
+        auto vt1 = genValueTable(2);
+        auto vt2 = genValueTable(3);
+        auto join_table = vt1.vjoin(vt2, 1, 1);
+
+        const std::vector<std::vector<std::string>> expect_table{
+            {"102", "10", "11"}, {"103", "13", "14"}, {"104", "18", "19"}, {"105", "21", "22"}};
+        const std::vector<std::string> expect_schema{"id", "attr3", "attr4"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
 }
 
-TEST(ValueTableTest, hjoinTest)
+TEST_F(ValueTableTest, hjoinTest)
 {
-    // table1 に table2 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h2{{"101", "1", "2", "5", "6"}};
-    const std::vector<std::string> schemas_1h2{"id", "attr1", "attr2", "attr1", "attr3"};
-    const auto table_1h2 = qmpc::ComputationToDb::ValueTable(table_data_1h2, schemas_1h2);
-    EXPECT_EQ(table_1h2, table1.hjoin(table2, 1, 1));
+    {
+        auto vt1 = genValueTable(0);
+        auto vt2 = genValueTable(1);
+        auto join_table = vt1.hjoin(vt2, 1, 1);
 
-    // table3 に table4 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_3h4{
-        {"103", "12", "13", "14", "15", "16", "17"}};
-    const std::vector<std::string> schemas_3h4{
-        "id", "attr1", "attr3", "attr4", "attr3", "attr4", "attr5"};
-    const auto table_3h4 = qmpc::ComputationToDb::ValueTable(table_data_3h4, schemas_3h4);
-    EXPECT_EQ(table_3h4, table3.hjoin(table4, 1, 1));
+        const std::vector<std::vector<std::string>> expect_table{{"101", "1", "2", "5", "6"}};
+        const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "attr1", "attr3"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
+    {
+        auto vt1 = genValueTable(2);
+        auto vt2 = genValueTable(3);
+        auto join_table = vt1.hjoin(vt2, 1, 1);
+
+        const std::vector<std::vector<std::string>> expect_table{
+            {"103", "12", "13", "14", "15", "16", "17"}};
+        const std::vector<std::string> expect_schema{
+            "id", "attr1", "attr3", "attr4", "attr3", "attr4", "attr5"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
 }
 
-TEST(ValueTableTest, vhjoinTest)
+TEST_F(ValueTableTest, vhjoinTest)
 {
-    // vjoin(table1,table2) と table3 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1v2h3{
+    auto vt1 = genValueTable(0);
+    auto vt2 = genValueTable(1);
+    auto vt3 = genValueTable(2);
+    auto join_table = vt1.vjoin(vt2, 1, 1).hjoin(vt3, 1, 1);
+
+    const std::vector<std::vector<std::string>> expect_table{
         {"102", "3", "9", "10", "11"}, {"103", "7", "12", "13", "14"}};
-    const std::vector<std::string> schemas_1v2h3{"id", "attr1", "attr1", "attr3", "attr4"};
-    const auto table_1v2h3 = qmpc::ComputationToDb::ValueTable(table_data_1v2h3, schemas_1v2h3);
-    EXPECT_EQ(table_1v2h3, table1.vjoin(table2, 1, 1).hjoin(table3, 1, 1));
+    const std::vector<std::string> expect_schema{"id", "attr1", "attr1", "attr3", "attr4"};
+    EXPECT_EQ(join_table.getTable(), expect_table);
+    EXPECT_EQ(join_table.getSchemas(), expect_schema);
+    initialize(join_table.getDataId());
 }
 
-TEST(ValueTableTest, hvjoinTest)
+TEST_F(ValueTableTest, hvjoinTest)
 {
-    // hjoin(table1,table2) と table3 を縦結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h2v3{
+    auto vt1 = genValueTable(0);
+    auto vt2 = genValueTable(1);
+    auto vt3 = genValueTable(2);
+    auto join_table = vt1.hjoin(vt2, 1, 1).vjoin(vt3, 1, 1);
+
+    const std::vector<std::vector<std::string>> expect_table{
         {"101", "1", "5", "6"}, {"102", "9", "9", "10"}, {"103", "12", "12", "13"}};
-    const std::vector<std::string> schemas_1h2v3{"id", "attr1", "attr1", "attr3"};
-    const auto table_1h2v3 = qmpc::ComputationToDb::ValueTable(table_data_1h2v3, schemas_1h2v3);
-    auto t = table1.hjoin(table2, 1, 1).vjoin(table3, 1, 1);
-    EXPECT_EQ(table_1h2v3, table1.hjoin(table2, 1, 1).vjoin(table3, 1, 1));
+    const std::vector<std::string> expect_schema{"id", "attr1", "attr1", "attr3"};
+    EXPECT_EQ(join_table.getTable(), expect_table);
+    EXPECT_EQ(join_table.getSchemas(), expect_schema);
+    initialize(join_table.getDataId());
 }
 
-TEST(ValueTableTest, vjoinColumnTest)
+TEST_F(ValueTableTest, vjoinColumnTest)
 {
-    // 2列目を指定して table1 に table5 を縦結合した場合
-    const std::vector<std::vector<std::string>> table_data_1v5_2{
-        {"101", "1", "2"}, {"102", "3", "4"}, {"102", "0", "4"}};
-    const std::vector<std::string> schemas_1v5_2{"id", "attr1", "attr2"};
-    const auto table_1v5_2 = qmpc::ComputationToDb::ValueTable(table_data_1v5_2, schemas_1v5_2);
-    EXPECT_EQ(table_1v5_2, table1.vjoin(table5, 2, 2));
+    auto vt1 = genValueTable(0);
+    auto vt2 = genValueTable(4);
+    {
+        auto join_table = vt1.vjoin(vt2, 2, 2);
 
-    // 3列目を指定して table1 に table5 を縦結合した場合
-    const std::vector<std::vector<std::string>> table_data_1v5_3{
-        {"101", "1", "2"}, {"102", "3", "4"}, {"101", "1", "0"}};
-    const std::vector<std::string> schemas_1v5_3{"id", "attr1", "attr2"};
-    const auto table_1v5_3 = qmpc::ComputationToDb::ValueTable(table_data_1v5_3, schemas_1v5_3);
-    EXPECT_EQ(table_1v5_3, table1.vjoin(table5, 3, 3));
+        const std::vector<std::vector<std::string>> expect_table{
+            {"101", "1", "2"}, {"102", "3", "4"}, {"102", "0", "4"}};
+        const std::vector<std::string> expect_schema{"id", "attr1", "attr2"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
+    {
+        auto join_table = vt1.vjoin(vt2, 3, 3);
+
+        const std::vector<std::vector<std::string>> expect_table{
+            {"101", "1", "2"}, {"102", "3", "4"}, {"101", "1", "0"}};
+        const std::vector<std::string> expect_schema{"id", "attr1", "attr2"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
 }
 
-TEST(ValueTableTest, hjoinColumnTest)
+TEST_F(ValueTableTest, hjoinColumnTest)
 {
-    // 2列目を指定して table1 に table5 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h5_2{{"101", "1", "2", "101", "0"}};
-    const std::vector<std::string> schemas_1h5_2{"id", "attr1", "attr2", "id", "attr2"};
-    const auto table_1h5_2 = qmpc::ComputationToDb::ValueTable(table_data_1h5_2, schemas_1h5_2);
-    EXPECT_EQ(table_1h5_2, table1.hjoin(table5, 2, 2));
+    auto vt1 = genValueTable(0);
+    auto vt2 = genValueTable(4);
+    {
+        auto join_table = vt1.hjoin(vt2, 2, 2);
 
-    // 3列目を指定して table1 に table5 を横結合した場合
-    const std::vector<std::vector<std::string>> table_data_1h5_3{{"102", "3", "4", "102", "0"}};
-    const std::vector<std::string> schemas_1h5_3{"id", "attr1", "attr2", "id", "attr1"};
-    const auto table_1h5_3 = qmpc::ComputationToDb::ValueTable(table_data_1h5_3, schemas_1h5_3);
-    EXPECT_EQ(table_1h5_3, table1.hjoin(table5, 3, 3));
+        const std::vector<std::vector<std::string>> expect_table{{"101", "1", "2", "101", "0"}};
+        const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "id", "attr2"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
+    {
+        auto join_table = vt1.hjoin(vt2, 3, 3);
+
+        const std::vector<std::vector<std::string>> expect_table{{"102", "3", "4", "102", "0"}};
+        const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "id", "attr1"};
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+        initialize(join_table.getDataId());
+    }
 }
 
-TEST(ValueTableTest, hjoinShareTest)
+TEST_F(ValueTableTest, hjoinShareTest)
 {
-    // table1 に table2 を横結合した場合
-    EXPECT_EQ(table1.hjoinShare(table2, 1, 1), table1.hjoin(table2, 1, 1));
+    {
+        auto vt1 = genValueTable(0);
+        auto vt2 = genValueTable(1);
+        auto join_table = vt1.hjoinShare(vt2, 1, 1);
 
-    // table3 に table4 を横結合した場合
-    EXPECT_EQ(table3.hjoinShare(table4, 1, 1), table3.hjoin(table4, 1, 1));
+        auto expect = vt1.hjoin(vt2, 1, 1);
+        EXPECT_EQ(join_table.getTable(), expect.getTable());
+        EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
+    }
+    {
+        auto vt1 = genValueTable(2);
+        auto vt2 = genValueTable(3);
+        auto join_table = vt1.hjoinShare(vt2, 1, 1);
+
+        auto expect = vt1.hjoin(vt2, 1, 1);
+        EXPECT_EQ(join_table.getTable(), expect.getTable());
+        EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
+    }
 }
 
-TEST(ValueTableTest, hjoinShareColumnTest)
+TEST_F(ValueTableTest, hjoinShareColumnTest)
 {
-    auto table_tmp1 = table_data1;
-    auto table_tmp5 = table_data5;
+    {
+        auto vt1 = genValueTable(0);
+        auto vt2 = genValueTable(5);
+        auto join_table = vt1.hjoinShare(vt2, 2, 2);
 
-    // 2列目を指定して table1 に table5 を横結合した場合
-    // IDがソートされてる必要があるのでソートしておく
-    std::sort(
-        table_tmp1.begin(),
-        table_tmp1.end(),
-        [](const auto& a, const auto& b) { return a[1] < b[1]; }
-    );
-    std::sort(
-        table_tmp5.begin(),
-        table_tmp5.end(),
-        [](const auto& a, const auto& b) { return a[1] < b[1]; }
-    );
-    const auto table1_sorted1 = qmpc::ComputationToDb::ValueTable(table_tmp1, schemas1);
-    const auto table5_sorted1 = qmpc::ComputationToDb::ValueTable(table_tmp5, schemas5);
-    EXPECT_EQ(
-        table1_sorted1.hjoinShare(table5_sorted1, 2, 2), table1_sorted1.hjoin(table5_sorted1, 2, 2)
-    );
+        auto expect = vt1.hjoin(vt2, 1, 1);
+        EXPECT_EQ(join_table.getTable(), expect.getTable());
+        EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
+    }
+    {
+        auto vt1 = genValueTable(0);
+        auto vt2 = genValueTable(4);
+        auto join_table = vt1.hjoinShare(vt2, 3, 3);
 
-    // 3列目を指定して table1 に table5 を横結合した場合
-    std::sort(
-        table_tmp1.begin(),
-        table_tmp1.end(),
-        [](const auto& a, const auto& b) { return a[2] < b[2]; }
-    );
-    std::sort(
-        table_tmp5.begin(),
-        table_tmp5.end(),
-        [](const auto& a, const auto& b) { return a[2] < b[2]; }
-    );
-    const auto table1_sorted2 = qmpc::ComputationToDb::ValueTable(table_tmp1, schemas1);
-    const auto table5_sorted2 = qmpc::ComputationToDb::ValueTable(table_tmp5, schemas5);
-    EXPECT_EQ(
-        table1_sorted2.hjoinShare(table5_sorted2, 3, 3), table1_sorted2.hjoin(table5_sorted2, 3, 3)
-    );
+        auto expect = vt1.hjoin(vt2, 1, 1);
+        EXPECT_EQ(join_table.getTable(), expect.getTable());
+        EXPECT_EQ(join_table.getSchemas(), expect.getSchemas());
+        initialize(join_table.getDataId());
+    }
+}
+
+TEST_F(ValueTableTest, hjoinMultiple)
+{
+    auto vt1 = genValueTable(0);
+    auto vt2 = genValueTable(1);
+    auto join_table = vt1.hjoin(vt2, 1, 1);
+    const std::vector<std::vector<std::string>> expect_table{{"101", "1", "2", "5", "6"}};
+    const std::vector<std::string> expect_schema{"id", "attr1", "attr2", "attr1", "attr3"};
+
+    // 同じ結合を何回も行う
+    for (int i = 0; i < 10; ++i)
+    {
+        auto join_table = vt1.hjoin(vt2, 1, 1);
+        EXPECT_EQ(join_table.getTable(), expect_table);
+        EXPECT_EQ(join_table.getSchemas(), expect_schema);
+    }
+    initialize(join_table.getDataId());
 }

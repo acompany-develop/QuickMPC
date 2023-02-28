@@ -8,9 +8,8 @@ cc_library(
     ],
     deps = [
         "@nlohmann_json//:json",
-        "//client/computation_to_db:valuetable",
-        "@proto//manage_to_computation_container:manage_to_computation_cc_grpc",
         "@proto//common_types:common_types_cc_proto",
+        "//logging:log",
     ],
     linkopts = [
         "-lstdc++fs"
@@ -28,10 +27,12 @@ cc_library(
     ],
     deps = [
         "@nlohmann_json//:json",
+        "@proto//manage_to_computation_container:manage_to_computation_cc_grpc",
         "//share:share",
         "//share:compare",
         "//job:progressManager",
-        "//logging:log"
+        "//logging:log",
+        "//client/computation_to_db:client",
     ],
     visibility = ["//visibility:public"],
 )

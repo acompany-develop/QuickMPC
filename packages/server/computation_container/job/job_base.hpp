@@ -46,7 +46,7 @@ class JobBase : public Interface
         statusManager.nextStatus();
 
         // table結合
-        auto joinTable = db_client->readTable(request.table());
+        auto joinTable = qmpc::ComputationToDb::readTable(request.table());
         auto values = joinTable.getTable();
         if (values.empty())
         {
