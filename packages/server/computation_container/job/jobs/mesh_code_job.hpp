@@ -2,6 +2,7 @@
 
 #include <list>
 
+#include "client/computation_to_db/client.hpp"
 #include "job/job_base.hpp"
 #include "share/share.hpp"
 
@@ -65,26 +66,47 @@ public:
 
 class MeshCodeJob : public JobBase<MeshCodeJob>
 {
+    static auto toString(const std::vector<std::vector<Share>> &values)
+    {
+        std::vector<std::vector<std::string>> results;
+        results.reserve(values.size());
+        for (const auto &value : values)
+        {
+            std::vector<std::string> row;
+            row.reserve(values.size());
+            for (const auto &x : value)
+            {
+                row.emplace_back(x.getVal().getStrVal());
+            }
+            results.emplace_back(row);
+        }
+        return results;
+    }
+
 public:
     using JobBase<MeshCodeJob>::JobBase;
-    std::vector<std::vector<Share>> compute(
-        const std::vector<std::vector<Share>> &table,
-        const std::vector<std::string> &schemas,
+    auto compute(
+        const std::string job_uuid,
+        const qmpc::ComputationToDb::ValueTable &table,
         const std::vector<std::list<int>> &arg
     )
     {
         std::vector<Share> latitudes;
         std::vector<Share> longitudes;
 
+        auto table_str = table.getTable();
         for (const auto &index : arg[0])
         {
-            latitudes.emplace_back(table[0][index - 1]);
-            longitudes.emplace_back(table[1][index - 1]);
+            latitudes.emplace_back(table_str[0][index - 1]);
+            longitudes.emplace_back(table_str[1][index - 1]);
         }
         auto f = MeshCodeFunction(latitudes, longitudes);
         std::vector<std::vector<Share>> meshcode_list = f.meshcode_transform();
 
-        return meshcode_list;
+        auto results = toString(meshcode_list);
+        auto column_number = (results.empty() ? -1 : results[0].size());
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
+        db_client->writeComputationResult(job_uuid, results, 1, column_number);
     }
 };
 }  // namespace qmpc::Job

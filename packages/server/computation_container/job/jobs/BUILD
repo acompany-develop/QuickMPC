@@ -6,6 +6,7 @@ cc_library(
     ],
     deps = [
         "//job:job",
+        "//client/computation_to_db:client",
     ],
     visibility = ["//visibility:public"],
 )
@@ -18,6 +19,7 @@ cc_library(
     ],
     deps = [
         "//job:job",
+        "//client/computation_to_db:client",
     ],
     visibility = ["//visibility:public"],
 )
@@ -28,7 +30,8 @@ cc_library(
         "mesh_code_job.hpp"
     ],
     deps = [
-        "//job:job"
+        "//job:job",
+        "//client/computation_to_db:client",
     ],
     visibility = ["//visibility:public"],
 )
@@ -40,6 +43,7 @@ cc_library(
     ],
     deps = [
         "//job:job",
+        "//client/computation_to_db:client",
     ],
     visibility = ["//visibility:public"],
 )

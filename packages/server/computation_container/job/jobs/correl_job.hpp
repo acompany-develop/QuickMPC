@@ -2,6 +2,7 @@
 
 #include <list>
 
+#include "client/computation_to_db/client.hpp"
 #include "job/job_base.hpp"
 #include "math/math.hpp"
 #include "share/share.hpp"
@@ -10,11 +11,28 @@ namespace qmpc::Job
 {
 class CorrelJob : public JobBase<CorrelJob>
 {
+    static auto toString(const std::vector<std::vector<Share>> &values)
+    {
+        std::vector<std::vector<std::string>> results;
+        results.reserve(values.size());
+        for (const auto &value : values)
+        {
+            std::vector<std::string> row;
+            row.reserve(values.size());
+            for (const auto &x : value)
+            {
+                row.emplace_back(x.getVal().getStrVal());
+            }
+            results.emplace_back(row);
+        }
+        return results;
+    }
+
 public:
     using JobBase<CorrelJob>::JobBase;
-    std::vector<std::vector<Share>> compute(
-        const std::vector<std::vector<Share>> &table,
-        const std::vector<std::string> &schemas,
+    auto compute(
+        const std::string job_uuid,
+        const qmpc::ComputationToDb::ValueTable &table,
         const std::vector<std::list<int>> &arg
     )
     {
@@ -22,7 +40,6 @@ public:
         for (const auto &w : arg[0])
         {
             std::vector<Share> tmp;
-            tmp.reserve(table.size());
             for (const auto &row : table)
             {
                 tmp.emplace_back(row[w - 1]);
@@ -33,7 +50,6 @@ public:
         for (const auto &w : arg[1])
         {
             std::vector<Share> tmp;
-            tmp.reserve(table.size());
             for (const auto &row : table)
             {
                 tmp.emplace_back(row[w - 1]);
@@ -53,7 +69,11 @@ public:
             }
             ret.emplace_back(ret_row);
         }
-        return ret;
+
+        auto results = toString(ret);
+        auto column_number = (results.empty() ? -1 : results[0].size());
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
+        db_client->writeComputationResult(job_uuid, results, 1, column_number);
     }
 };
 }  // namespace qmpc::Job

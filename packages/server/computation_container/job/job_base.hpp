@@ -12,7 +12,6 @@
 #include <boost/range/adaptor/indexed.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
-#include "client/computation_to_db/client.hpp"
 #include "client/computation_to_db/join_table.hpp"
 #include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "job_parameter.hpp"
@@ -36,64 +35,7 @@ class JobBase : public Interface
     const managetocomputation::ExecuteComputationRequest request;
     const unsigned int job_id;
 
-    std::shared_ptr<qmpc::ComputationToDb::Client> db_client =
-        qmpc::ComputationToDb::Client::getInstance();
-
     StatusManager statusManager;
-
-    auto readDb()
-    {
-        statusManager.nextStatus();
-
-        // table結合
-        auto joinTable = qmpc::ComputationToDb::readTable(request.table());
-        auto values = joinTable.getTable();
-        if (values.empty())
-        {
-            QMPC_LOG_WARN("Join table is empty. Check the table ID and the specified columns.");
-        }
-
-        // シェア型に変換
-        std::vector<std::vector<Share>> share_table;
-        share_table.reserve(values.size());
-        for (const auto &rows : values)
-        {
-            share_table.emplace_back(rows.begin(), rows.end());
-        }
-
-        statusManager.nextStatus();
-
-        auto schemas = joinTable.getSchemas();
-        return std::pair<std::vector<std::vector<Share>>, std::vector<std::string>>(
-            share_table, schemas
-        );
-    }
-
-    static auto toString(const std::vector<::Share> &values)
-    {
-        std::vector<std::string> results;
-        results.reserve(values.size());
-        for (const auto &value : values)
-        {
-            results.emplace_back(value.getVal().getStrVal());
-        }
-        return results;
-    }
-    static auto toString(const std::vector<std::vector<::Share>> &values)
-    {
-        std::vector<std::vector<std::string>> results;
-        results.reserve(values.size());
-        for (const auto &value : values)
-        {
-            results.emplace_back(toString(value));
-        }
-        return results;
-    }
-    static auto toString(const nlohmann::json &values)
-    {
-        // 既にjsonならば文字列化しなくてもJsonに乗せられるためそのまま返す
-        return values;
-    }
 
     static void validate_cols(
         const std::vector<std::string> &schemas, const std::vector<std::list<int>> &arg
@@ -129,15 +71,6 @@ class JobBase : public Interface
         }
     }
 
-    template <typename U>
-    void writeDb(U &&values)
-    {
-        statusManager.nextStatus();
-        auto results = toString(values);
-        db_client->writeComputationResult(request.job_uuid(), results);
-        statusManager.nextStatus();
-    }
-
 public:
     using Share = qmpc::Share::Share<FixedPoint>;
     JobBase(const JobParameter &request)
@@ -150,6 +83,7 @@ public:
     virtual ~JobBase() {}
     int run() override
     {
+        // prejob
         std::list<int> src;
         for (const auto &it : request.arg().src())
         {
@@ -162,10 +96,17 @@ public:
         }
         std::vector<std::list<int>> arg{src, target};
 
-        auto [share_table, schemas] = readDb();
-        validate_cols(schemas, arg);
-        auto result = static_cast<T *>(this)->compute(share_table, schemas, arg);
-        writeDb(result);
+        // readDB
+        statusManager.nextStatus();
+        auto table = qmpc::ComputationToDb::readTable(request.table());
+
+        // compute
+        statusManager.nextStatus();
+        validate_cols(table.getSchemas(), arg);
+        static_cast<T *>(this)->compute(request.job_uuid(), table, arg);
+
+        // completed
+        statusManager.nextStatus();
 
         return static_cast<int>(statusManager.getStatus());
     }

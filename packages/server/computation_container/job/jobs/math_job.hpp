@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "client/computation_to_db/client.hpp"
 #include "job/job_base.hpp"
 #include "math/math.hpp"
 #include "share/share.hpp"
@@ -14,11 +15,22 @@ class MathJob : public JobBase<MathJob>
     using Func = std::function<Share(std::vector<Share> &)>;
     Func f;
 
+    static auto toString(const std::vector<Share> &values)
+    {
+        std::vector<std::string> results;
+        results.reserve(values.size());
+        for (const auto &value : values)
+        {
+            results.emplace_back(value.getVal().getStrVal());
+        }
+        return results;
+    }
+
 public:
     MathJob(Func f, const JobParameter &request) : JobBase<MathJob>(request), f(f) {}
-    std::vector<Share> compute(
-        const std::vector<std::vector<Share>> &table,
-        const std::vector<std::string> &schemas,
+    auto compute(
+        const std::string job_uuid,
+        const qmpc::ComputationToDb::ValueTable &table,
         const std::vector<std::list<int>> &arg
     )
     {
@@ -26,7 +38,6 @@ public:
         for (const auto &w : arg[0])
         {
             std::vector<Share> tmp;
-            tmp.reserve(table.size());
             for (const auto &row : table)
             {
                 tmp.emplace_back(row[w - 1]);
@@ -39,7 +50,10 @@ public:
         {
             ret.emplace_back(f(col));
         }
-        return ret;
+
+        auto results = toString(ret);
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
+        db_client->writeComputationResult(job_uuid, results, 0, results.size());
     }
 };
 }  // namespace qmpc::Job

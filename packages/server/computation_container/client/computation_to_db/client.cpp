@@ -12,6 +12,62 @@ namespace qmpc::ComputationToDb
 
 namespace fs = std::experimental::filesystem;
 
+/************ Client::ComputationResultWriter ************/
+Client::ComputationResultWriter::ComputationResultWriter(
+    const std::string &job_uuid, int key, int column_number, int piece_size
+)
+    : current_size(0)
+    , piece_id(0)
+    , job_uuid(job_uuid)
+    , data_name(
+          (key == 0)   ? "dim1"
+          : (key == 1) ? "dim2"
+                       : "schema"
+      )
+    // NOTE: Client側で復元する際に0以下だと不都合が生じるため
+    , column_number(std::max(1, column_number))
+    , piece_size(piece_size)
+{
+}
+
+void Client::ComputationResultWriter::write()
+{
+    nlohmann::json piece_data_json = {
+        {"job_uuid", job_uuid},
+        {"result", piece_data},
+        {"meta", {{"piece_id", piece_id}, {"column_number", column_number}}}};
+    const std::string data = piece_data_json.dump();
+
+    auto ofs =
+        std::ofstream(resultDbPath + job_uuid + "/" + data_name + "_" + std::to_string(piece_id));
+    ofs << data;
+    ofs.close();
+
+    ++piece_id;
+    current_size = 0;
+    piece_data.clear();
+}
+
+void Client::ComputationResultWriter::emplace(const std::string &s)
+{
+    int size = s.size();
+    if (current_size + size >= piece_size)
+    {
+        write();
+    }
+    piece_data.emplace_back(s);
+    current_size += size;
+}
+void Client::ComputationResultWriter::emplace(const std::vector<std::string> &v)
+{
+    for (const auto &x : v)
+    {
+        emplace(x);
+    }
+}
+
+/************ Client ************/
+
 Client::Client() {}
 
 std::shared_ptr<Client> Client::getInstance()
