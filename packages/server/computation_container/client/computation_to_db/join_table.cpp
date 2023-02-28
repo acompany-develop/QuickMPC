@@ -275,6 +275,8 @@ std::pair<std::vector<int>, std::vector<int>> intersectionSortedValueIndex(
         }
     }
 
+    std::sort(intersection_v1_its.begin(), intersection_v1_its.end());
+    std::sort(intersection_v2_its.begin(), intersection_v2_its.end());
     return {intersection_v1_its, intersection_v2_its};
 }
 
@@ -392,6 +394,7 @@ std::string writeVJoinTable(
     db->writeTable(new_data_id, new_table, new_schemas);
     return new_data_id;
 }
+
 std::string writeHJoinTable(
     const ValueTable &table1,
     const ValueTable &table2,
