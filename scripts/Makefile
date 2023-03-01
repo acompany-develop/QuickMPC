@@ -57,16 +57,6 @@ rm:
 rm-db:
 	docker-compose $(COMPOSE_FILES_OPT) down -v
 
-create-aws-instance:
-	cd terraform/aws/ && \
-	terraform init && \
-	terraform plan && \
-	terraform apply
-
-delete-aws-instance:
-	cd terraform/aws/ && \
-	terraform destroy
-
 create-gcp-instance:
 	cd terraform/gcp/ && \
 	terraform init && \
