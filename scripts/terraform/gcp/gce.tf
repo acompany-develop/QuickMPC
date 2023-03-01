@@ -49,6 +49,7 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
 
   scheduling {
     provisioning_model = "STANDARD"
+    # provisioning_model = "SPOT"
     # preemptible        = true
     # automatic_restart  = false
   }
