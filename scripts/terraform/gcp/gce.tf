@@ -27,7 +27,8 @@ resource "local_file" "public_key_pem" {
 # Vm instance
 # ---------------------------
 resource "google_compute_instance" "qmpc_k8s_vm" {
-  name         = var.instance_name
+  count        = var.instance_count
+  name         = "${var.instance_name}-vm-${count.index}"
   machine_type = var.mechine_type
   zone         = var.zone
 
@@ -41,8 +42,8 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
   }
 
   network_interface {
-    network    = google_compute_network.qmpc_k8s_vpc.name
-    subnetwork = google_compute_subnetwork.qmpc_k8s_sn.name
+    network    = google_compute_network.qmpc_k8s_vpc.*.self_link[count.index]
+    subnetwork = google_compute_subnetwork.qmpc_k8s_sn.*.self_link[count.index]
     access_config {}
   }
 

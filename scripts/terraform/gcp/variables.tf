@@ -1,8 +1,13 @@
 # ---------------------------
 # Environment variables
 # ---------------------------
+variable "instance_count" {
+  # この数値の数パーティ分だけ環境が立ち上がる
+  default = 1
+}
+
 variable "service_account_json" {
-  default = "/root/QuickMPC/scripts/terraform/gcp/noted-gizmo-337508-7d9dfbf4fe18.json"
+  default = "/root/QuickMPC/scripts/terraform/gcp/json/noted-gizmo-337508-7d9dfbf4fe18.json"
 }
 
 variable "instance_name" {
