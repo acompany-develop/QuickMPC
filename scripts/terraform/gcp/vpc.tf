@@ -58,10 +58,4 @@ resource "google_compute_firewall" "qmpc_allow_tcp_from_parties_fw" {
   target_tags = [var.instance_name]
   source_ranges = concat(["${local.myip}/32"], google_compute_instance.qmpc_k8s_vm.*.network_interface.0.access_config.0.nat_ip)
   # source_ranges = concat(["${local.myip}/32"], google_compute_instance.qmpc_k8s_vm.*.network_interface.0.access_config.0.nat_ip, ["{ここにP1のGIPを設定}", "{ここにP2のGIPを設定}", ...]) # NOTE: 他のPartyのIPを設定してterraform applyしてください
-
-  # 対象のNetworkInterfaceにNatIPがあるかどうかを判定するために、
-  # google_compute_instanceから参照できるように `depends_on` を指定
-  # depends_on = [
-  #   google_compute_instance.qmpc_k8s_vm
-  # ]
 }
