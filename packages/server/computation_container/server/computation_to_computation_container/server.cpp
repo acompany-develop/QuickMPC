@@ -151,7 +151,7 @@ std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
         qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
     }
     auto share = shares_vec[key];
-    shares.erase(key);
+    shares_vec.erase(key);
     return share[0];
 }
 
