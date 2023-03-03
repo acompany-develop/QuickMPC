@@ -27,44 +27,6 @@ private:
     Client(const Url &endpoint) noexcept;
     Client &operator=(Client &&) noexcept = default;
     static std::shared_ptr<Client> getPtr(const Url &);
-    // 単一シェアを生成する場合
-    template <typename T>
-    computationtocomputation::Share makeShare(
-        T &&value, qmpc::Share::AddressId share_id, int party_id
-    ) const
-    {
-        computationtocomputation::Share s;
-        auto a = s.mutable_address_id();
-        a->set_share_id(share_id.getShareId());
-        a->set_job_id(share_id.getJobId());
-
-        if constexpr (std::is_same_v<std::decay_t<T>, bool>)
-        {
-            s.set_flag(value);
-        }
-        else if constexpr (std::is_same_v<std::decay_t<T>, int>)
-        {
-            s.set_num(value);
-        }
-        else if constexpr (std::is_same_v<std::decay_t<T>, long>)
-        {
-            s.set_num64(value);
-        }
-        else if constexpr (std::is_same_v<std::decay_t<T>, float>)
-        {
-            s.set_f(value);
-        }
-        else if constexpr (std::is_same_v<std::decay_t<T>, double>)
-        {
-            s.set_d(value);
-        }
-        else
-        {
-            s.set_byte(to_string(value));
-        }
-        s.set_party_id(party_id);
-        return s;
-    }
 
     // 複数シェアを生成する場合
     // 約1mbごとに分割して生成する
