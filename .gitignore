@@ -6,7 +6,7 @@ bazel-testlogs
 bazel-tools
 .bazel
 result
-
+proto/bazel-proto
 **/vendor
 
 **/db/**/data/*

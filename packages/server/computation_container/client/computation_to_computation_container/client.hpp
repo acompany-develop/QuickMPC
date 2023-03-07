@@ -52,14 +52,12 @@ private:
         {
             // string型のバイト数の取得
             size_t value_size = sizeof(values[i]);
-            // ShareId,JobId,ThreadId,PartyIdの16byte
             if (size + value_size > 1000000)
             {
                 size = 0;
                 share_vec.push_back(s);
                 s = computationtocomputation::Shares{};
             }
-            // 一つのsharesにつきPartyIdは一つだけなので分割しない際はShareId,JobId,ThreadIdの12byte
             size = size + value_size;
             computationtocomputation::Shares_Share *multiple_shares = s.add_share_list();
             if constexpr (std::is_same_v<std::decay_t<T>, bool>)
