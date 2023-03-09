@@ -119,7 +119,7 @@ def generate_jwt_tokens(context: Context, exp=9223371974719179007, qmpc_config_p
         f.write(result)
 
     # jwt token を生成する
-    jwt_envs_dir = pathlib.Path('./.output/config/others') / 'jwt_envs'
+    jwt_envs_dir = pathlib.Path('./.output/config/others') / 'jwt-envs'
     context.run(f"mkdir -p {jwt_envs_dir}")
 
     uid_cmd: Result = context.run('id -u')
@@ -231,11 +231,11 @@ def generate_config(context: Context, qmpc_config_path='./.output/qmpc_setting/c
             f.write(result)
 
     # add jwt envs
-    jwt_envs_dir = pathlib.Path('./.output/config') / 'others' / 'jwt_envs'
+    jwt_envs_dir = pathlib.Path('./.output/config') / 'others' / 'jwt-envs'
     for item in jwt_envs_dir.glob("**/*.env"):
         relpath = item.relative_to(jwt_envs_dir)
         print(f"INFO: env file is {(jwt_envs_dir / relpath).resolve()}")
-        update_path_info(output, ('others', 'jwt_envs',) + relpath.parts, str(item.resolve()))
+        update_path_info(output, ('others', 'jwt-envs',) + relpath.parts, str(item.resolve()))
 
     context.run('mkdir -p ./.output')
     with open('./.output/env-locations.json', mode='w') as f:
@@ -333,8 +333,7 @@ def generate_docker_compose(context: Context,
 
 
 @task
-def filter_for_kompose(c, compose_path='./docker-compose/docker-compose.yml'):
-    # type: (Context, str) -> None
+def filter_for_kompose(c, _compose_root_dir='./.output/docker-compose'):
     '''kompose が入力として受け付ける docker-compose.yml ファイルを生成する
 
     `docker-compose.yml` ファイルへのパス ``compose_path`` を元に
@@ -350,45 +349,54 @@ def filter_for_kompose(c, compose_path='./docker-compose/docker-compose.yml'):
         入力となる `docker-compose.yml` ファイルへのパス
     '''
 
-    yaml = YAML()
-    yaml.preserve_quotes = True
-    target = None
-    with open(compose_path) as f:
-        target = yaml.load(f)
+    compose_root_dir = pathlib.Path(_compose_root_dir)
+    output_root_dir = pathlib.Path('./.output/kompose')
 
-    services = target['services']
-    for svc in services.values():
-        def del_key_if_exists(src: Dict, path: Iterable[str]):
-            if len(path) == 0:
-                return
+    for item in compose_root_dir.glob('**/docker-compose.yml'):
+        if item.is_dir():
+            continue
 
-            if path[0] not in src:
-                return
-            if len(path) == 1:
-                del src[path[0]]
-                return
+        yaml = YAML()
+        yaml.preserve_quotes = True
+        target = None
+        with open(item) as f:
+            target = yaml.load(f)
 
-            del_key_if_exists(src[path[0]], path[1:])
+        services = target['services']
+        for svc in services.values():
+            def del_key_if_exists(src: Dict, path: Iterable[str]):
+                if len(path) == 0:
+                    return
 
-        del_key_if_exists(svc, ['build'])
-        del_key_if_exists(svc, ['depends_on'])
-        del_key_if_exists(svc, ['healthcheck', 'start_period'])
+                if path[0] not in src:
+                    return
+                if len(path) == 1:
+                    del src[path[0]]
+                    return
 
-        # 異なるネットワークからのトラフィックを弾くような
-        # NetworkPolicy が生成され、Client -> envoy まで届かなくなるため
-        # `networks` key を削除する
-        del_key_if_exists(svc, ['networks'])
+                del_key_if_exists(src[path[0]], path[1:])
 
-    # 同様に NetworkPolicy が生成されないように削除
-    del_key_if_exists(target, ['networks'])
+            del_key_if_exists(svc, ['build'])
+            del_key_if_exists(svc, ['depends_on'])
+            del_key_if_exists(svc, ['healthcheck', 'start_period'])
 
-    c.run('mkdir -p ./kompose')
-    with open('./kompose/docker-compose.yml', mode='w') as f:
-        yaml.dump(target, f)
+            # 異なるネットワークからのトラフィックを弾くような
+            # NetworkPolicy が生成され、Client -> envoy まで届かなくなるため
+            # `networks` key を削除する
+            del_key_if_exists(svc, ['networks'])
+
+        # 同様に NetworkPolicy が生成されないように削除
+        del_key_if_exists(target, ['networks'])
+
+        output_path = output_root_dir / item.relative_to(compose_root_dir)
+
+        c.run(f"mkdir -p {output_path.parent}")
+        with open(output_path, mode='w') as f:
+            yaml.dump(target, f)
 
 
 @task
-def generate_k8s_manifests(c, compose_path='./kompose/docker-compose.yml'):
+def generate_k8s_manifests(c, _compose_root_dir='./.output/kompose'):
     # type: (Context, str) -> None
     '''kompose を用いて k8s マニフェストを生成する
 
@@ -400,14 +408,25 @@ def generate_k8s_manifests(c, compose_path='./kompose/docker-compose.yml'):
         入力となる `docker-compose.yml` ファイルへのパス
     '''
 
-    c.run('mkdir -p ./manifests')
-    c.run(f"kompose convert -v -f {compose_path}"
-          + ' --volumes hostPath'
-          + ' -o ./manifests')
+    compose_root_dir = pathlib.Path(_compose_root_dir)
+    output_root_dir = pathlib.Path('./.output/manifests')
+
+    for item in compose_root_dir.glob('**/docker-compose.yml'):
+        if item.is_dir():
+            continue
+
+        output_path = output_root_dir / item.relative_to(compose_root_dir)
+
+        c.run(f"mkdir -p {output_path.parent}")
+
+        c.run(rf"""kompose convert -v -f {item.resolve()} \
+                    --volumes hostPath \
+                    -o {output_path.parent}
+                """)
 
 
 @task
-def replace_k8s_host_path(c, manifests_dir='./manifests'):
+def replace_k8s_host_path(c, manifests_dir='./.output/manifests'):
     # type: (Context, str) -> None
     '''k8s マニフェストの hostPath を変更する
 
@@ -440,7 +459,7 @@ def replace_k8s_host_path(c, manifests_dir='./manifests'):
         manifest = replace(
             manifest,
             ('hostPath', 'path'),
-            lambda src: src.replace(config_info['__path__'], '/opt/QuickMPC/Config')
+            lambda src: src.replace(config_info['__path__'], '/opt/QuickMPC/config')
         )
 
         with open(manifest_path, mode='w') as f:

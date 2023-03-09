@@ -1,9 +1,9 @@
 version: "3.3"
 services:
 {%- if is_party %}
-  computation_container{{ party_id }}:
+  computation-container{{ party_id }}:
     tty: true
-    container_name: computation_container{{ party_id }}
+    container_name: computation-container{{ party_id }}
     expose:
       - "51020"
       - "50010"
@@ -16,7 +16,7 @@ services:
         - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:{{ docker_image_tag }}
     volumes:
       - type: bind
-        source: ../config/computation_container/compute1
+        source: ../config/computation-container/compute{{ party_id }}
         target: /QuickMPC/config
       - type: volume
         source: sharedb{{ party_id }}
@@ -25,15 +25,15 @@ services:
         source: resultdb{{ party_id }}
         target: /db/result
     env_file:
-      - {{ envs[(party_id)|string].party.computation_container['.env'].__path__ }}
-      - {{ envs.others.jwt_envs['client.jwt.env'].__path__ }}
+      - {{ envs[(party_id)|string].party['computation-container']['.env'].__path__ }}
+      - {{ envs.others['jwt-envs']['client.jwt.env'].__path__ }}
     networks:
       shared-network:
         ipv4_address: 10.0.{{ party_id }}.20
     depends_on:
-      dev_cc_envoy1:
+      compute-envoy-container{{ party_id }}:
         condition: service_started
-    command: ["/bin/bash", "-c", "printenv && ./computation_container"]
+    command: ["/bin/bash", "-c", "printenv && ./bazel-bin/computation_container"]
     healthcheck:
       test:
         - CMD
@@ -48,14 +48,15 @@ services:
       start_period: 5s
     labels:
       kompose.image-pull-secret: registry-credential
+      kompose.volume.type: persistentVolumeClaim
 
-  dev_cc_envoy{{ party_id }}:
-    container_name: compute_envoy_container{{ party_id }}
+  compute-envoy-container{{ party_id }}:
+    container_name: compute-envoy-container{{ party_id }}
     tty: true # 起動しっぱなし
     image: envoyproxy/envoy:v1.17.1
     volumes:
       - type: bind
-        source: {{ envs[(party_id)|string].party.computation_container['envoy.yaml'].__path__ }}
+        source: {{ envs[(party_id)|string].party['computation-container']['envoy.yaml'].__path__ }}
         target: /etc/envoy/envoy.yaml
     expose:
       - "50020"
@@ -64,13 +65,85 @@ services:
       shared-network:
         ipv4_address: 10.0.{{ party_id }}.21
     command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
+    labels:
+      kompose.service.type: "nodeport"
+
+  manage-container{{ party_id }}:
+    tty: true
+    container_name: manage-container{{ party_id }}
+    image: ghcr.io/acompany-develop/quickmpc-mc{{ ':' if docker_image_tag}}{{ docker_image_tag }}
+    build:
+      context: {{ docker_context }}
+      dockerfile: packages/server/manage_container/Dockerfile
+      target: dep-runner
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:{{ docker_image_tag }}
+    volumes:
+      - type: bind
+        source: ../config/manage-container/manage{{ party_id }}
+        target: /QuickMPC/config
+      - type: volume
+        source: sharedb{{ party_id }}
+        target: /db/share
+      - type: volume
+        source: resultdb{{ party_id }}
+        target: /db/result
+    env_file:
+      - {{ envs[(party_id)|string].party['manage-container']['.env'].__path__ }}
+      - {{ envs.others['jwt-envs']['client.jwt.env'].__path__ }}
+    expose:
+      - "50011"
+      - "51011"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.{{ party_id }}.10
+    depends_on:
+      manage-envoy-container{{ party_id }}:
+        condition: service_started
+      computation_container{{ party_id }}:
+        condition: service_started
+    command: ["/bin/bash", "-c", "printenv && ./manage_container"]
+    healthcheck:
+      test:
+        - CMD
+        - /bin/sh
+        - -c
+        - |-
+          /bin/grpc_health_probe -addr=:50011 &&
+          /bin/grpc_health_probe -addr=:51011
+      interval: 3s
+      timeout: 5s
+      start_period: 5s
+    labels:
+      kompose.image-pull-secret: registry-credential
+      kompose.volume.type: persistentVolumeClaim
+
+  manage-envoy-container{{ party_id }}:
+    container_name: manage-envoy-container{{ party_id }}
+    tty: true # 起動しっぱなし
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - type: bind
+        source: {{ envs[(party_id)|string].party['manage-container']['envoy.yaml'].__path__ }}
+        target: /etc/envoy/envoy.yaml
+    expose:
+      - "15000"
+      - "50010"
+    ports:
+      - "0.0.0.0:{{ 50000 + party_id }}:50000"
+    networks:
+      shared-network:
+        ipv4_address: 10.0.{{ party_id }}.11
+    command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
+    labels:
+      kompose.service.type: "nodeport"
 
 volumes:
   sharedb{{ party_id }}:
   resultdb{{ party_id }}:
 {%- else %} {# if is_party #}
-  beaver_triple_service:
-    container_name: beaver_triple_service
+  beaver-triple-service:
+    container_name: beaver-triple-service
     {%- set bts_image = "ghcr.io/acompany-develop/quickmpc-bts" %}
     {%- if qmpc_setting['bts']['tag'] %}
       {%- set bts_image = bts_image ~ ':' ~ qmpc_setting['bts']['tag'] %}
@@ -83,15 +156,15 @@ volumes:
       cache_from:
         - type=registry,ref={{ bts_image }}
     env_file:
-      - {{ envs.others.beaver_triple_service['.env'].__path__ }}
-      - {{ envs.others.jwt_envs['client.jwt.env'].__path__ }}
-      - {{ envs.others.jwt_envs['server.jwt.env'].__path__ }}
+      - {{ envs.others['beaver-triple-service']['.env'].__path__ }}
+      - {{ envs.others['jwt-envs']['client.jwt.env'].__path__ }}
+      - {{ envs.others['jwt-envs']['server.jwt.env'].__path__ }}
     ports:
       - "0.0.0.0:60020:50020"
     networks:
       shared-network:
         aliases:
-          - beaver_triple_service
+          - beaver-triple-service
         ipv4_address: 10.0.1.40
     command: ["/bin/bash", "-c", "./beaver_triple_service"]
     healthcheck:

@@ -7,7 +7,7 @@ static_resources:
   listeners:
   - name: listener_0
     address:
-      socket_address: { address: 0.0.0.0, port_value: 50020 }  # 50020番ポートでlisten
+      socket_address: { address: 0.0.0.0, port_value: 50000 }  # 50000番ポートでlisten
     filter_chains:  # リクエストのフィルタリングの設定
     - filters:
       - name: envoy.filters.network.http_connection_manager  # HTTP接続用に設計された組み込みフィルター
@@ -28,13 +28,22 @@ static_resources:
               routes:
               - match: { prefix: "/" }  # "/"がリクエストのルートと一致
                 route:
-                  cluster: cc_to_cc_service
+                  cluster: libc_to_manage_service
                   max_grpc_timeout: 120s  # 最大許容タイムアウト, 0sは無限大
+              cors:
+                allow_origin_string_match:  # 許可されたorigin
+                  - prefix: "*"
+                allow_methods: GET, PUT, DELETE, POST, OPTIONS
+                allow_headers: keep-alive,user-agent,cache-control,content-type,content-transfer-encoding,custom-header-1,x-accept-content-transfer-encoding,x-accept-response-streaming,x-user-agent,x-grpc-web,grpc-timeout
+                max_age: "1728000"  # access-control-max-age headerを指定
+                expose_headers: custom-header-1,grpc-status,grpc-message # access-control-expose-headers headerを指定
           http_filters:
+          - name: envoy.filters.http.grpc_web  # gRPC-Webクライアントを準拠したgRPCサーバーにブリッジできるようにするフィルター
+          - name: envoy.filters.http.cors
           - name: envoy.filters.http.router
   - name: listener_1
     address:
-      socket_address: { address: 0.0.0.0, port_value: 51020 }  # 51020番ポートでlisten
+      socket_address: { address: 0.0.0.0, port_value:  50010}  # 50010番ポートでlisten
     filter_chains:  # リクエストのフィルタリングの設定
     - filters:
       - name: envoy.filters.network.http_connection_manager  # HTTP接続用に設計された組み込みフィルター
@@ -55,12 +64,12 @@ static_resources:
               routes:
               - match: { prefix: "/" }  # "/"がリクエストのルートと一致
                 route:
-                  cluster: cc_to_cc_for_job_service
+                  cluster: manage_to_manage_service
                   max_grpc_timeout: 120s  # 最大許容タイムアウト, 0sは無限大
           http_filters:
           - name: envoy.filters.http.router
   clusters:  # リクエストがフィルタに一致するとclusterに渡される
-  - name: cc_to_cc_service
+  - name: libc_to_manage_service
     connect_timeout: 1000s  # クラスター内のホストへのネットワーク接続のタイムアウト
     type: logical_dns
     http2_protocol_options: {}
@@ -76,9 +85,9 @@ static_resources:
             - endpoint:
                 address:
                   socket_address:
-                    address: computation_container{{ party_id }}
-                    port_value: 50020
-  - name: cc_to_cc_for_job_service
+                    address: manage-container{{ party_id }}
+                    port_value: 50011
+  - name: manage_to_manage_service
     connect_timeout: 1000s  # クラスター内のホストへのネットワーク接続のタイムアウト
     type: logical_dns
     http2_protocol_options: {}
@@ -88,11 +97,11 @@ static_resources:
       tcp_keepalive:
         keepalive_time: 300
     load_assignment:
-      cluster_name: cluster_1
+      cluster_name: cluster_0
       endpoints:  # 中継先のエンドポイントの設定
         - lb_endpoints:
             - endpoint:
                 address:
                   socket_address:
-                    address: computation_container{{ party_id }}
-                    port_value: 51020
+                    address: manage-container{{ party_id }}
+                    port_value: 51011
