@@ -202,7 +202,11 @@ TEST(ComputationToDbTest, SuccessGetSchema)
     initialize(data_id);
 
     const std::string data = R"({"value":[["1","2"],["3","4"]])"
-                             R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"]}})";
+                             R"(,"meta":{"piece_id":0,"schema":[)"
+                             R"({"name": "attr1", "type": 0},)"
+                             R"({"name": "attr2", "type": 0})"
+                             R"(]}})";
+    ;
     fs::create_directories("/db/share/" + data_id);
     auto ofs = std::ofstream("/db/share/" + data_id + "/0");
     ofs << data;
@@ -211,7 +215,11 @@ TEST(ComputationToDbTest, SuccessGetSchema)
     auto table = qmpc::ComputationToDb::ValueTable(data_id);
     auto get_schema = table.getSchemas();
 
-    std::vector<std::string> true_schema = {"attr1", "attr2"};
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
+    std::vector<SchemaType> true_schema = {
+        SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED),
+        SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED)};
+
     EXPECT_EQ(get_schema, true_schema);
 
     initialize(data_id);

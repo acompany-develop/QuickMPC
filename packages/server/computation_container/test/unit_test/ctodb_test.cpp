@@ -97,34 +97,25 @@ TEST(ComputationToDbTest, SuccessReadShareWithSchemaTest)
     const std::string data_id = "SuccessReadShareWithSchemaTest";
     initialize(data_id);
 
-    const std::string data = R"(
-{
-    "value": [["1", "2"], ["3", "4"]],
-    "meta": {
-        "piece_id": 0,
-        "schema": [
-            {"name": "attr1", "type": 0},
-            {"name": "attr2", "type": 0}
-        ]
-    }
-}
-)";
+    const std::string data = R"({"value": [["1", "2"], ["3", "4"]],)"
+                             R"("meta": {"piece_id": 0,"schema": [)"
+                             R"({"name": "attr1", "type": 0},)"
+                             R"({"name": "attr2", "type": 0}]}})";
 
     fs::create_directories("/db/share/" + data_id);
     auto ofs = std::ofstream("/db/share/" + data_id + "/0");
     ofs << data;
     ofs.close();
 
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    auto read_data = cc_to_db->readShare(data_id);
-
     std::vector<std::vector<std::string>> true_table = {{"1", "2"}, {"3", "4"}};
-    using SchemaType = qmpc::ComputationToDb::ValueTable::SchemaType;
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
     std::vector<SchemaType> true_schema = {
         SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED),
         SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED)};
-    EXPECT_EQ(true_table, read_data.getTable());
-    EXPECT_EQ(true_schema, read_data.getSchemas());
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    EXPECT_EQ(true_table, cc_to_db->readTable(data_id, 0));
+    EXPECT_EQ(true_schema, cc_to_db->readSchema(data_id));
 
     initialize(data_id);
 }
@@ -136,7 +127,7 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
 
     constexpr int H = 500;
     constexpr int W = 500;
-    using SchemaType = qmpc::ComputationToDb::ValueTable::SchemaType;
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
     std::vector<SchemaType> schema;
     for (int i = 0; i < W; i++)
         schema.emplace_back(SchemaType(
@@ -147,7 +138,7 @@ TEST(ComputationToDbTest, SuccessReadShareLargeTest)
     for (int i = 0; i < W; ++i) data.emplace_back(std::to_string(i + 1));
 
     std::vector<std::string> schema_str;
-    for (const SchemaType &s : schema) schema_str.emplace_back(std::get<0>(s));
+    for (const SchemaType& s : schema) schema_str.emplace_back(std::get<0>(s));
 
     fs::create_directories("/db/share/" + data_id);
     for (int piece_id = 0; piece_id < H; ++piece_id)
@@ -189,10 +180,10 @@ TEST(ComputationToDbTest, SuccessReadSchemaTest)
     initialize(data_id);
 
     const std::string data = R"({"value":[["1","2"],["3","4"]])"
-                             R"(,"meta":{"piece_id":0,"schema":[
-                                {"name": "attr1", "type": 0},
-                                {"name": "attr2", "type": 0}
-                                ]}})";
+                             R"(,"meta":{"piece_id":0,"schema":[)"
+                             R"({"name": "attr1", "type": 0},)"
+                             R"({"name": "attr2", "type": 0})"
+                             R"(]}})";
     fs::create_directories("/db/share/" + data_id);
     auto ofs = std::ofstream("/db/share/" + data_id + "/0");
     ofs << data;
@@ -302,23 +293,26 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultSchemaTest)
     const std::string job_uuid = "SuccessWriteComputationResultSchemaTest";
     initialize(job_uuid);
 
-    using SchemaType = qmpc::ComputationToDb::ValueTable::SchemaType;
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
     std::vector<SchemaType> schema = {
-        SchemaType("s1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED),
-        SchemaType("s2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED),
-        SchemaType("s3", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED)};
+        SchemaType("s1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
+        SchemaType("s2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
+        SchemaType("s3", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT)};
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult(job_uuid, schema, 2, 3);
+    cc_to_db->writeComputationResult(
+        job_uuid, qmpc::ComputationToDb::convertSchemasToJson(schema), 2, 3
+    );
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/schema_0");
     std::string read_data;
     getline(ifs, read_data);
-    const auto true_data = R"({"job_uuid":"SuccessWriteComputationResultSchemaTest")"
-                           R"(,"meta":{"column_number":3,"piece_id":0})"
-                           R"(,"result":[{"name":"s1","type":0},"
-                           R"{"name":"s2","type":0},{"name":"s3","type":0}]})";
+    const auto true_data =
+        R"({"job_uuid":"SuccessWriteComputationResultSchemaTest")"
+        R"(,"meta":{"column_number":3,"piece_id":0})"
+        R"(,"result":["{\"name\":\"s1\",\"type\":\"SHARE_VALUE_TYPE_FIXED_POINT\"}",)"
+        R"("{\"name\":\"s2\",\"type\":\"SHARE_VALUE_TYPE_FIXED_POINT\"}","{\"name\":\"s3\",\"type\":\"SHARE_VALUE_TYPE_FIXED_POINT\"}"]})";
     EXPECT_EQ(read_data, true_data);
 
     initialize(job_uuid);
@@ -374,10 +368,10 @@ TEST(ComputationToDbTest, SuccessWriteTableTest)
     initialize(data_id);
 
     std::vector<std::vector<std::string>> table = {{"1", "2"}, {"3", "4"}};
-    using SchemaType = qmpc::ComputationToDb::ValueTable::SchemaType;
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
     std::vector<SchemaType> schema = {
-        SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED),
-        SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_UNSPECIFIED)};
+        SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
+        SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT)};
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
     cc_to_db->writeTable(data_id, table, schema);
@@ -385,8 +379,8 @@ TEST(ComputationToDbTest, SuccessWriteTableTest)
     auto ifs = std::ifstream("/db/share/" + data_id + "/0");
     std::string data;
     getline(ifs, data);
-    {"name":"attr1","type":0},
-    std::string true_data = R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":0},"
-                            R{"name":"attr2","type":0}]}),"value":[["1","2"],["3","4"]]})";
+    std::string true_data =
+        R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
+        R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})";
     EXPECT_EQ(true_data, data);
 }
