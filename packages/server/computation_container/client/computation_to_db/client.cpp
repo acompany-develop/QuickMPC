@@ -91,6 +91,7 @@ void Client::ComputationResultWriter::emplace(const std::vector<std::string> &v)
         emplace(x);
     }
 }
+void Client::ComputationResultWriter::emplace(const nlohmann::json &v) { emplace(v.dump()); }
 
 /************ Client ************/
 
