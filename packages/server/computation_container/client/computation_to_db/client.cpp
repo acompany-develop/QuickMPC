@@ -14,6 +14,30 @@ namespace qmpc::ComputationToDb
 
 namespace fs = std::experimental::filesystem;
 
+std::vector<nlohmann::json> convertSchemasToJson(
+    const std::vector<qmpc::ComputationToDb::SchemaType> &src
+)
+{
+    std::vector<nlohmann::json> dst;
+    for (const qmpc::ComputationToDb::SchemaType &col : src)
+    {
+        pb_common_types::Schema col_pb;
+        col_pb.set_name(std::get<0>(col));
+        col_pb.set_type(std::get<1>(col));
+        std::string json_str;
+        const google::protobuf::util::Status status =
+            google::protobuf::util::MessageToJsonString(col_pb, &json_str);
+        if (!status.ok())
+        {
+            qmpc::Log::throw_with_trace(
+                std::invalid_argument((boost::format("%s") % status.message()).str())
+            );
+        }
+        dst.emplace_back(nlohmann::json::parse(json_str));
+    }
+    return dst;
+}
+
 /************ Client::ComputationResultWriter ************/
 Client::ComputationResultWriter::ComputationResultWriter(
     const std::string &job_uuid, int key, int column_number, int piece_size
@@ -165,8 +189,10 @@ std::string Client::writeTable(
 {
     // TODO: piece_idを引数に受け取ってpieceごとに保存できるようにする
     const int piece_id = 0;
+
+    auto json_schema = convertSchemasToJson(schema);
     nlohmann::json data_json = {
-        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
+        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", json_schema}}}};
     const std::string data = data_json.dump();
 
     auto data_path = shareDbPath + data_id;
