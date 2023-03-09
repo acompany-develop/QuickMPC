@@ -22,6 +22,7 @@ message Address{
     int32 share_id = 1;
     uint32 job_id = 2;
     int32 thread_id = 3;
+    int32 party_id = 4; // the id of party(0, 1, 2)
 }
 /**
  * the message of share
@@ -52,8 +53,7 @@ message Shares {
             double d = 8;
             bool flag = 9;
         }
-        Address address_id = 2;
     }
     repeated Share share_list = 1;
-    int32 party_id = 2;
+    Address address_id = 2;
 }

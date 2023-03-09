@@ -378,7 +378,7 @@ TEST(ShareBenchmark, BulkComparisonOperation)
     }
 }
 
-//一括open,reconsテスト
+// 一括open,reconsテスト
 TEST(ShareBenchmark, ReconsBulk)
 {
     constexpr int SIZE = 10000;
@@ -408,7 +408,7 @@ TEST(ShareBenchmark, ReconsBulk)
     measureExecTime(test_name_recons, 1, [&]() { auto u = recons(s); });
 }
 
-//一括加算のテスト
+// 一括加算のテスト
 TEST(ShareBenchmark, AddBulk)
 {
     constexpr int SIZE = 10000;
@@ -424,7 +424,7 @@ TEST(ShareBenchmark, AddBulk)
     measureExecTime(test_name, N, [&]() { auto ret = a + b; });
 }
 
-//一括減算のテスト
+// 一括減算のテスト
 TEST(ShareBenchmark, SubBulk)
 {
     constexpr int SIZE = 10000;
@@ -440,7 +440,7 @@ TEST(ShareBenchmark, SubBulk)
     measureExecTime(test_name, N, [&]() { auto ret = a - b; });
 }
 
-//一括乗算のテスト
+// 一括乗算のテスト
 TEST(ShareBenchmark, MulBulk)
 {
     constexpr int SIZE = 10000;
@@ -492,4 +492,66 @@ TEST(ShareBenchmark, Sqrt)
     b += FixedPoint(121);
 
     measureExecTime("Sqrt", 5, [&]() { auto b_sqrt = qmpc::Share::sqrt(b); });
+}
+
+TEST(ShareBench, unarySend)
+{
+    for (int i = 0; i < 1000; ++i)
+    {
+        Share a = Share(FixedPoint("2.0"));
+        open(a);
+        auto rec = recons(a);
+    }
+    measureExecTime(
+        "unaryMulti",
+        4,
+        [&]()
+        {
+            for (int i = 0; i < 1000; ++i)
+            {
+                Share a = Share(FixedPoint("2.0"));
+                open(a);
+                auto rec = recons(a);
+            }
+        }
+    );
+}
+
+TEST(ShareBench, vecOpne)
+{
+    int N = 20000;
+    {
+        std::vector<Share> a;
+
+        for (int i = 0; i < N; ++i)
+        {
+            a.emplace_back(FixedPoint("3"));
+        }
+        open(a);
+        auto a_rec = recons(a);
+    }
+
+    measureExecTime(
+        "vectorMul",
+        4,
+        [&]()
+        {
+            std::vector<FixedPoint> expect(N, FixedPoint(108));
+            std::vector<Share> a;
+
+            std::vector<Share> b;
+            for (int i = 0; i < N; ++i)
+            {
+                a.emplace_back(FixedPoint("3"));  // 9
+                b.emplace_back(FixedPoint("4"));  // 12
+            }
+            auto c = a * b;  // 108
+            open(c);
+            auto c_rec = recons(c);
+            for (int i = 0; i < N; ++i)
+            {
+                EXPECT_EQ(expect[i], c_rec[i]);
+            }
+        }
+    );
 }
