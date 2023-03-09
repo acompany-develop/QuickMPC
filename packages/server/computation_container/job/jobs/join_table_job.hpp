@@ -36,14 +36,29 @@ public:
             return new_vec;
         };
 
-        auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto schemas = table.getSchemas();
-        // NOTE: 突合列が削除されるので-1
-        auto column_number = schemas.size() - 1;
+        auto new_schemas = [&arg](const std::vector<qmpc::ComputationToDb::SchemaType> &v)
+        {
+            const size_t match_row = arg[0].front() - 1;
+
+            std::vector<qmpc::ComputationToDb::SchemaType> new_vec;
+            new_vec.reserve(v.size());
+            for (size_t i = 0; i < v.size(); ++i)
+            {
+                if (i != match_row)
+                {
+                    new_vec.emplace_back(v[i]);
+                }
+            }
+            return new_vec;
+        }(schemas);
+
+        auto db_client = qmpc::ComputationToDb::Client::getInstance();
+        auto column_number = new_schemas.size();
         // tableの保存
         db_client->writeComputationResult(job_uuid, table, 1, column_number, removeIdColumn);
         // schemaの保存
-        db_client->writeComputationResult(job_uuid, removeIdColumn(schemas), 2, column_number);
+        db_client->writeComputationResult(job_uuid, new_schemas, 2, column_number);
     }
 };
 }  // namespace qmpc::Job
