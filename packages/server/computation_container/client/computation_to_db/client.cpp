@@ -154,7 +154,7 @@ std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
     getline(ifs, data);
     auto json = nlohmann::json::parse(data);
     auto j = json["meta"]["schema"];
-    std::vector<std::string> schemas = load_schema(j);
+    std::vector<SchemaType> schemas = load_schema(j);
     return schemas;
 }
 

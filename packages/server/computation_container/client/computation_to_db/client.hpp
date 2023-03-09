@@ -44,11 +44,11 @@ public:
 
     // Tableの取り出し
     std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
-    std::vector<std::string> readSchema(const std::string &) const;
+    std::vector<SchemaType> readSchema(const std::string &) const;
 
     // Tableの保存
     std::string
-    writeTable(const std::string &, std::vector<std::vector<std::string>> &, const std::vector<std::string> &)
+    writeTable(const std::string &, std::vector<std::vector<std::string>> &, const std::vector<SchemaType> &)
         const;
 
     // Job を DB に新規登録する
