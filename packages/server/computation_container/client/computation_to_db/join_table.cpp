@@ -316,7 +316,7 @@ std::string writeVJoinTable(
 )
 {
     // schemasを構築
-    auto new_schemas = std::vector<std::string>();
+    auto new_schemas = std::vector<SchemaType>();
     auto schemas1 = table1.getSchemas();
     for (const auto &it : col1)
     {
@@ -405,7 +405,7 @@ std::string writeHJoinTable(
 )
 {
     // schemasを構築
-    auto new_schemas = std::vector<std::string>();
+    auto new_schemas = std::vector<SchemaType>();
     auto schemas1 = table1.getSchemas();
     auto schemas2 = table2.getSchemas();
     for (const auto &it : col1)
