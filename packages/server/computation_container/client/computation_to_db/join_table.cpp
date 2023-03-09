@@ -63,6 +63,7 @@ struct LessFloat
         return x < y - T(eps);
     }
     bool operator()(const std::string &x, const std::string &y) const { return x < y; }
+    bool operator()(const SchemaType &x, const SchemaType &y) const { return x < y; }
 };
 template <class T>
 std::pair<std::vector<int>, std::vector<int>> intersectionValueIndex(
