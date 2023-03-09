@@ -39,6 +39,7 @@ class Client final
 
         void emplace(const std::string &);
         void emplace(const std::vector<std::string> &);
+        void emplace(const nlohmann::json &);
     };
 
 public:
