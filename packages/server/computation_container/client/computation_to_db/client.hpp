@@ -16,7 +16,7 @@ namespace qmpc::ComputationToDb
 using SchemaType = std::tuple<std::string, pb_common_types::ShareValueTypeEnum>;
 
 std::vector<nlohmann::json>
-convertSchemasToJson(const std::vector<qmpc::ComputationToDb::SchemaType> &);
+convertSchemaVectorToJsonVector(const std::vector<qmpc::ComputationToDb::SchemaType> &);
 
 class Client final
 {

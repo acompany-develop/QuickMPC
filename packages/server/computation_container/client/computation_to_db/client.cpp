@@ -31,7 +31,7 @@ nlohmann::json convertSchemaToJson(const qmpc::ComputationToDb::SchemaType &src)
     return nlohmann::json::parse(json_str);
 }
 
-std::vector<nlohmann::json> convertSchemasToJson(
+std::vector<nlohmann::json> convertSchemaVectorToJsonVector(
     const std::vector<qmpc::ComputationToDb::SchemaType> &src
 )
 {
@@ -197,7 +197,7 @@ std::string Client::writeTable(
     // TODO: piece_idを引数に受け取ってpieceごとに保存できるようにする
     const int piece_id = 0;
 
-    auto json_schema = convertSchemasToJson(schema);
+    auto json_schema = convertSchemaVectorToJsonVector(schema);
     nlohmann::json data_json = {
         {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", json_schema}}}};
     const std::string data = data_json.dump();
