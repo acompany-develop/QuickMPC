@@ -97,7 +97,11 @@ void Client::ComputationResultWriter::emplace(const std::vector<std::string> &v)
         emplace(x);
     }
 }
-void Client::ComputationResultWriter::emplace(const nlohmann::json &v) { emplace(v.dump()); }
+void Client::ComputationResultWriter::emplace(const SchemaType &s)
+{
+    auto json = convertSchemaToJson(s);
+    emplace(json.dump());
+}
 
 /************ Client ************/
 
