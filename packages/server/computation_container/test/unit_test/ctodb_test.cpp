@@ -302,7 +302,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultSchemaTest)
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
     cc_to_db->writeComputationResult(
-        job_uuid, qmpc::ComputationToDb::convertSchemasToJson(schema), 2, 3
+        job_uuid, schema, 2, 3
     );
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/schema_0");
