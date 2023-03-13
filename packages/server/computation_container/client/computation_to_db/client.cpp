@@ -14,6 +14,23 @@ namespace qmpc::ComputationToDb
 
 namespace fs = std::experimental::filesystem;
 
+nlohmann::json convertSchemaToJson(const qmpc::ComputationToDb::SchemaType &src)
+{
+    pb_common_types::Schema col_pb;
+    col_pb.set_name(std::get<0>(src));
+    col_pb.set_type(std::get<1>(src));
+    std::string json_str;
+    const google::protobuf::util::Status status =
+        google::protobuf::util::MessageToJsonString(col_pb, &json_str);
+    if (!status.ok())
+    {
+        qmpc::Log::throw_with_trace(
+            std::invalid_argument((boost::format("%s") % status.message()).str())
+        );
+    }
+    return nlohmann::json::parse(json_str);
+}
+
 std::vector<nlohmann::json> convertSchemasToJson(
     const std::vector<qmpc::ComputationToDb::SchemaType> &src
 )
@@ -21,19 +38,8 @@ std::vector<nlohmann::json> convertSchemasToJson(
     std::vector<nlohmann::json> dst;
     for (const qmpc::ComputationToDb::SchemaType &col : src)
     {
-        pb_common_types::Schema col_pb;
-        col_pb.set_name(std::get<0>(col));
-        col_pb.set_type(std::get<1>(col));
-        std::string json_str;
-        const google::protobuf::util::Status status =
-            google::protobuf::util::MessageToJsonString(col_pb, &json_str);
-        if (!status.ok())
-        {
-            qmpc::Log::throw_with_trace(
-                std::invalid_argument((boost::format("%s") % status.message()).str())
-            );
-        }
-        dst.emplace_back(nlohmann::json::parse(json_str));
+        auto json = convertSchemaToJson(src);
+        dst.emplace_back(json);
     }
     return dst;
 }
