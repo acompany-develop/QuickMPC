@@ -301,9 +301,7 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultSchemaTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeComputationResult(
-        job_uuid, schema, 2, 3
-    );
+    cc_to_db->writeComputationResult(job_uuid, schema, 2, 3);
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/schema_0");
     std::string read_data;

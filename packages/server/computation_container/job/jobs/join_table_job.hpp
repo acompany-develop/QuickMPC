@@ -48,9 +48,7 @@ public:
         // tableの保存
         db_client->writeComputationResult(job_uuid, table, 1, column_number, f);
         // schemaの保存
-        db_client->writeComputationResult(
-            job_uuid, new_schemas, 2, column_number
-        );
+        db_client->writeComputationResult(job_uuid, new_schemas, 2, column_number);
     }
 };
 }  // namespace qmpc::Job
