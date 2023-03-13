@@ -55,7 +55,7 @@ protected:
         //テストで使用するデータをDBに保存する
         const int piece_id = 0;
         auto [schema, table] = test_tables[table_itr];
-        auto json_schema = qmpc::ComputationToDb::convertSchemasToJson(schema);
+        auto json_schema = qmpc::ComputationToDb::convertSchemaVectorToJsonVector(schema);
         nlohmann::json data_json = {
             {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", json_schema}}}};
         const std::string data = data_json.dump();
