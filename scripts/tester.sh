@@ -55,17 +55,23 @@ if [ $# -eq 1 ]; then
         status=$(($status + $?))
         build
         status=$(($status + $?))
-        if [ "$IS_ENABLE_DATADOG" = "1" ]; then
-            docker-compose $COMPOSE_FILES_OPT up -d datadog
+        if [ $status -gt 0 ]; then
+            echo $status >>result
+            echo "buildで失敗しました"
         fi
-        run
-        status=$(($status + $?))
-        # NOTE: `docker-compose up`はCMDやENTRYPOINTで異常終了してもexitステータスが`0`になってしまうので別途exitステータスを集積する
-        run_status=$(docker-compose $COMPOSE_FILES_OPT ps -aq | tr -d '[ ]' | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d '[ ]')
-        status=$(($status + $run_status))
-        teardown
-        status=$(($status + $?))
-        echo $status >>result
+        else
+            if [ "$IS_ENABLE_DATADOG" = "1" ]; then
+                docker-compose $COMPOSE_FILES_OPT up -d datadog
+            fi
+            run
+            status=$(($status + $?))
+            # NOTE: `docker-compose up`はCMDやENTRYPOINTで異常終了してもexitステータスが`0`になってしまうので別途exitステータスを集積する
+            run_status=$(docker-compose $COMPOSE_FILES_OPT ps -aq | tr -d '[ ]' | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d '[ ]')
+            status=$(($status + $run_status))
+            teardown
+            status=$(($status + $?))
+            echo $status >>result
+        fi
     fi
 else
     source $1
