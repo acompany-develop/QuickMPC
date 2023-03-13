@@ -38,7 +38,7 @@ std::vector<nlohmann::json> convertSchemaVectorToJsonVector(
     std::vector<nlohmann::json> dst;
     for (const qmpc::ComputationToDb::SchemaType &col : src)
     {
-        auto json = convertSchemaToJson(src);
+        auto json = convertSchemaToJson(col);
         dst.emplace_back(json);
     }
     return dst;
