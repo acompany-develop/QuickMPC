@@ -54,19 +54,17 @@ main() {
     fi
     case $2 in
     all)
-        local ret
-        ret=$tmp
         main $1 build
-        ret=$?
-        if [ $ret -gt 0 ]; then
-            return $ret
+        tmp=$?
+        if [ $tmp -gt 0 ]; then
+            return $tmp
         fi
         main $1 run
-        ret=$(($ret + $?))
-        if [ $ret -gt 0 ]; then
-            return $ret
+        tmp=$?
+        if [ $tmp -gt 0 ]; then
+            return $tmp
         fi
-        return $ret
+        return $tmp
         ;;
     build)
         build
