@@ -16,7 +16,7 @@ status=0
 
 # 引数が正しくない時に発火する関数
 usage_exit() {
-    echo "Usage: $1 'build' or 'run' or ''" 1>&2
+    echo "Usage: $1 'build' or 'run' or 'all' or ''" 1>&2
     exit 1
 }
 
@@ -44,68 +44,85 @@ teardown() {
     status=$(($status + 1))
 }
 
-
-if [ $# -eq 1 ]; then
+# 関数化
+main() {
     source $1
-    status=$(($status + $?))
-    if [ $status -gt 0 ]; then
-        echo $status >>result
-    else
-        setup
-        status=$(($status + $?))
+    local tmp=$?
+    if [ $tmp -gt 0 ]; then
+        echo "$1の読み込みに失敗"
+        return $tmp
+    fi
+    case $2 in
+    all)
+        local ret
+        ret=$tmp
+        main $1 build
+        ret=$?
+        if [ $ret -gt 0 ]; then
+            return $ret
+        fi
+        main $1 run
+        ret=$(($ret + $?))
+        if [ $ret -gt 0 ]; then
+            return $ret
+        fi
+        return $ret
+        ;;
+    build)
         build
-        status=$(($status + $?))
-        if [ $status -gt 0 ]; then
-            echo $status >>result
-            echo "buildで失敗しました"
+        tmp=$?
+        if [ $tmp -gt 0 ]; then
+            echo "buildで失敗"
+            return $tmp
         fi
-        else
-            if [ "$IS_ENABLE_DATADOG" = "1" ]; then
-                docker-compose $COMPOSE_FILES_OPT up -d datadog
-            fi
-            run
-            status=$(($status + $?))
-            # NOTE: `docker-compose up`はCMDやENTRYPOINTで異常終了してもexitステータスが`0`になってしまうので別途exitステータスを集積する
-            run_status=$(docker-compose $COMPOSE_FILES_OPT ps -aq | tr -d '[ ]' | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d '[ ]')
-            status=$(($status + $run_status))
-            teardown
-            status=$(($status + $?))
-            echo $status >>result
+        return $tmp
+        ;;
+    run)
+        setup
+        tmp=$?
+        if [ $tmp -gt 0 ]; then
+            echo "setupで失敗"
+            return $tmp
         fi
-    fi
-else
-    source $1
-    status=$(($status + $?))
-    if [ $status -gt 0 ]; then
-        echo $status >>result
-    else
-        case $2 in
-        build)
-            build
-            status=$(($status + $?))
-            echo $status >>result
-            ;;
-        run)
-            setup
-            status=$(($status + $?))
-            if [ "$IS_ENABLE_DATADOG" = "1" ]; then
-                docker-compose $COMPOSE_FILES_OPT up -d datadog
+        if [ "$IS_ENABLE_DATADOG" = "1" ]; then
+            docker-compose $COMPOSE_FILES_OPT up -d datadog
+            tmp=$?
+            if [ $tmp -gt 0 ]; then
+                echo "datadogで失敗"
+                return $tmp
             fi
-            run
-            status=$(($status + $?))
-            # NOTE: `docker-compose up`はCMDやENTRYPOINTで異常終了してもexitステータスが`0`になってしまうので別途exitステータスを集積する
-            run_status=$(docker-compose $COMPOSE_FILES_OPT ps -aq | tr -d '[ ]' | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d '[ ]')
-            status=$(($status + $run_status))
-            teardown
-            status=$(($status + $?))
-            echo $status >>result
-            ;;
-        *)
-            usage_exit
-            ;;
-        esac
-    fi
+        fi
+        run
+        tmp=$?
+        if [ $tmp -gt 0 ]; then
+            echo "runで失敗"
+            return $tmp
+        fi
+        # NOTE: `docker-compose up`はCMDやENTRYPOINTで異常終了してもexitステータスが`0`になってしまうので別途exitステータスを集積する
+        run_status=$(docker-compose $COMPOSE_FILES_OPT ps -aq | tr -d '[ ]' | xargs docker inspect -f '{{ .State.ExitCode }}' | grep -v 0 | wc -l | tr -d '[ ]')
+        status=$(($status + $run_status))
+        teardown
+        tmp=$?
+        if [ $tmp -gt 0 ]; then
+            echo "teardownで失敗"
+            return $tmp
+        fi
+        return $tmp
+        ;;
+    *)
+        usage_exit
+        ;;
+    esac
+}
+
+mode=$2
+if [ $# -eq 1 ]; then
+    mode='all'
 fi
+main $1 $mode
+ret=$?
+status=$(($status + $ret))
+echo $status >>result
 
 # DEBUG: 最後にstatusを表示
 echo "["$1"] status:" $status
