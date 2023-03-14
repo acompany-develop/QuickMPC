@@ -1,9 +1,11 @@
 #include "client.hpp"
 
+#include <boost/format/format_fwd.hpp>
 #include <chrono>
 #include <experimental/filesystem>
 #include <fstream>
 #include <regex>
+#include <stdexcept>
 
 #include <google/protobuf/util/json_util.h>
 
@@ -11,6 +13,36 @@ namespace qmpc::ComputationToDb
 {
 
 namespace fs = std::experimental::filesystem;
+
+nlohmann::json convertSchemaToJson(const qmpc::ComputationToDb::SchemaType &src)
+{
+    pb_common_types::Schema col_pb;
+    col_pb.set_name(std::get<0>(src));
+    col_pb.set_type(std::get<1>(src));
+    std::string json_str;
+    const google::protobuf::util::Status status =
+        google::protobuf::util::MessageToJsonString(col_pb, &json_str);
+    if (!status.ok())
+    {
+        qmpc::Log::throw_with_trace(
+            std::invalid_argument((boost::format("%s") % status.message()).str())
+        );
+    }
+    return nlohmann::json::parse(json_str);
+}
+
+std::vector<nlohmann::json> convertSchemaVectorToJsonVector(
+    const std::vector<qmpc::ComputationToDb::SchemaType> &src
+)
+{
+    std::vector<nlohmann::json> dst;
+    for (const qmpc::ComputationToDb::SchemaType &col : src)
+    {
+        auto json = convertSchemaToJson(col);
+        dst.emplace_back(json);
+    }
+    return dst;
+}
 
 /************ Client::ComputationResultWriter ************/
 Client::ComputationResultWriter::ComputationResultWriter(
@@ -65,8 +97,54 @@ void Client::ComputationResultWriter::emplace(const std::vector<std::string> &v)
         emplace(x);
     }
 }
+void Client::ComputationResultWriter::emplace(const SchemaType &s)
+{
+    auto json = convertSchemaToJson(s);
+    emplace(json.dump());
+}
 
 /************ Client ************/
+
+static std::vector<SchemaType> load_schema(const nlohmann::json &json)
+{
+    if (!json.is_array())
+    {
+        qmpc::Log::throw_with_trace(std::invalid_argument("schema is not array"));
+    }
+    std::vector<SchemaType> schema;
+    for (const auto &elem : json)
+    {
+        if (elem.is_object())
+        {
+            pb_common_types::Schema column;
+            const google::protobuf::util::Status status =
+                google::protobuf::util::JsonStringToMessage(elem.dump(), &column);
+            if (!status.ok())
+            {
+                qmpc::Log::throw_with_trace(
+                    std::invalid_argument((boost::format("object is not represented by %s: %s")
+                                           % column.GetDescriptor()->full_name() % status.message())
+                                              .str())
+                );
+            }
+            schema.emplace_back(column.name(), column.type());
+        }
+        else if (elem.is_string())
+        {
+            schema.emplace_back(
+                elem.get<std::string>(),
+                pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT
+            );
+        }
+        else
+        {
+            qmpc::Log::throw_with_trace(std::invalid_argument(
+                (boost::format("schema type: %s is not supported") % elem.type_name()).str()
+            ));
+        }
+    }
+    return schema;
+}
 
 Client::Client() {}
 
@@ -101,16 +179,15 @@ std::optional<std::vector<std::vector<std::string>>> Client::readTable(
 }
 
 // Schemaの取り出し
-std::vector<std::string> Client::readSchema(const std::string &data_id) const
+std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
 {
     // DBから値を取り出す
-    std::vector<std::string> schemas;
     auto ifs = std::ifstream(shareDbPath + data_id + "/0");
     std::string data;
     getline(ifs, data);
     auto json = nlohmann::json::parse(data);
     auto j = json["meta"]["schema"];
-    schemas = std::vector<std::string>(j.begin(), j.end());
+    std::vector<SchemaType> schemas = load_schema(j);
     return schemas;
 }
 
@@ -118,13 +195,15 @@ std::vector<std::string> Client::readSchema(const std::string &data_id) const
 std::string Client::writeTable(
     const std::string &data_id,
     std::vector<std::vector<std::string>> &table,
-    const std::vector<std::string> &schema
+    const std::vector<SchemaType> &schema
 ) const
 {
     // TODO: piece_idを引数に受け取ってpieceごとに保存できるようにする
     const int piece_id = 0;
+
+    auto json_schema = convertSchemaVectorToJsonVector(schema);
     nlohmann::json data_json = {
-        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", schema}}}};
+        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", json_schema}}}};
     const std::string data = data_json.dump();
 
     auto data_path = shareDbPath + data_id;

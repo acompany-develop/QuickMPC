@@ -6,21 +6,21 @@ import (
 
 	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_db"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container"
 	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
+	pb "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container"
 )
 
 // Test用のDbGとCCのmock
 type localDb struct{}
 
-func (localDb) InsertShares(string, []string, int32, string, string, int32) error {
+func (localDb) InsertShares(string, []*pb_types.Schema, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
 	return nil
 }
-func (localDb) GetSchema(string) ([]string, error) {
-	return []string{""}, nil
+func (localDb) GetSchema(string) ([]*pb_types.Schema, error) {
+	return []*pb_types.Schema{{Name: ""}}, nil
 }
 func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
 	return &pb_types.JobErrorInfo{}, nil

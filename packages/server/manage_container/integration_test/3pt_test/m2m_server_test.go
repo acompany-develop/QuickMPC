@@ -8,6 +8,7 @@ import (
 
 	m2m "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_manage_container"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
 	"google.golang.org/grpc"
 )
@@ -38,7 +39,7 @@ func TestSendShare(t *testing.T) {
 	req := &pb.SendSharesRequest{
 		DataId:  dataID,
 		Shares:  "[]",
-		Schema:  []string{},
+		Schema:  []*pb_types.Schema{},
 		PieceId: 0,
 		SentAt:  "",
 		Token:   "token_demo",

@@ -13,6 +13,11 @@
 
 namespace qmpc::ComputationToDb
 {
+using SchemaType = std::tuple<std::string, pb_common_types::ShareValueTypeEnum>;
+
+std::vector<nlohmann::json>
+convertSchemaVectorToJsonVector(const std::vector<qmpc::ComputationToDb::SchemaType> &);
+
 class Client final
 {
     static inline const std::string shareDbPath = "/db/share/";
@@ -35,6 +40,7 @@ class Client final
 
         void emplace(const std::string &);
         void emplace(const std::vector<std::string> &);
+        void emplace(const SchemaType &);
     };
 
 public:
@@ -43,11 +49,11 @@ public:
 
     // Tableの取り出し
     std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
-    std::vector<std::string> readSchema(const std::string &) const;
+    std::vector<SchemaType> readSchema(const std::string &) const;
 
     // Tableの保存
     std::string
-    writeTable(const std::string &, std::vector<std::vector<std::string>> &, const std::vector<std::string> &)
+    writeTable(const std::string &, std::vector<std::vector<std::string>> &, const std::vector<SchemaType> &)
         const;
 
     // Job を DB に新規登録する

@@ -1,12 +1,16 @@
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import ClassVar, List, Tuple, Callable, Any
+from typing import (ClassVar, List, Tuple,
+                    Callable, Any, Union,
+                    Optional, Sequence)
 
 import numpy as np
 
 from .utils.overload_tools import (DictList, DictList2,
                                    Dim1, Dim2, Dim3, methoddispatch)
+from .proto.common_types.common_types_pb2 import (ShareValueTypeEnum,
+                                                  Schema)
 from .utils.random import ChaCha20, RandomInterface
 from .exception import ArgmentError
 
@@ -18,10 +22,22 @@ class Share:
     __share_random_range: ClassVar[Tuple[Decimal, Decimal]] =\
         (Decimal(-(1 << 64)), Decimal(1 << 64))
 
+    @methoddispatch(is_static_method=True)
     @staticmethod
-    def __to_str(val: Decimal) -> str:
+    def __to_str(_):
+        logger.error("Invalid argument on stringfy.")
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @__to_str.register(Decimal)
+    @staticmethod
+    def __decimal_to_str(val: Decimal) -> str:
         # InfinityをCCで読み込めるinfに変換
         return 'inf' if Decimal.is_infinite(val) else str(val)
+
+    @__to_str.register(int)
+    @staticmethod
+    def __int_to_str(val: int) -> str:
+        return str(val)
 
     @methoddispatch(is_static_method=True)
     @staticmethod
@@ -33,6 +49,12 @@ class Share:
     @staticmethod
     def recons(_):
         logger.error("Invalid argument on recons.")
+        raise ArgmentError("不正な引数が与えられています．")
+
+    @methoddispatch(is_static_method=True)
+    @staticmethod
+    def convert_type(_, __):
+        logger.error("Invalid argument on convert_type.")
         raise ArgmentError("不正な引数が与えられています．")
 
     @sharize.register(int)
@@ -47,9 +69,10 @@ class Share:
         shares_str: List[str] = [str(n) for n in shares]
         return shares_str
 
-    @sharize.register(Dim1)
+    @sharize.register((Dim1, float))
     @staticmethod
-    def __sharize_1dimension(secrets: List[float], party_size: int = 3) \
+    def __sharize_1dimension_float(secrets: List[Union[float, Decimal]],
+                                   party_size: int = 3) \
             -> List[List[str]]:
         """ 1次元リストのシェア化 """
         rnd: RandomInterface = ChaCha20()
@@ -63,25 +86,43 @@ class Share:
             np.vectorize(Share.__to_str)([s1, *shares]).tolist()
         return shares_str
 
-    @sharize.register(Dim2)
+    @sharize.register((Dim1, Decimal))
     @staticmethod
-    def __sharize_2dimension(secrets: List[List[float]],
-                             party_size: int = 3) -> List[List[List[str]]]:
-        """ 2次元リストのシェア化 """
+    def __sharize_1dimension_decimal(secrets: List[Decimal],
+                                     party_size: int = 3) \
+            -> List[List[str]]:
+        return Share.__sharize_1dimension_float(secrets, party_size)
+
+    @sharize.register((Dim1, int))
+    @staticmethod
+    def __sharize_1dimension_int(secrets: List[int], party_size: int = 3) \
+            -> List[List[str]]:
+        """ 1次元リストのシェア化 """
         rnd: RandomInterface = ChaCha20()
         secrets_size: int = len(secrets)
-        secrets_size2: int = len(secrets[0])
+        max_val = max(secrets) * 2
         shares: np.ndarray = np.array([
-            [rnd.get_list(*Share.__share_random_range, secrets_size2)
-             for __ in range(secrets_size)]
-            for ___ in range(party_size - 1)
-        ])
-        s1: np.ndarray = np.subtract(
-            np.frompyfunc(Decimal, 1, 1)(np.array(secrets, dtype=Decimal)),
-            np.sum(shares, axis=0))
-        shares_str: List[List[List[str]]] = \
-            np.vectorize(Share.__to_str)([s1, *shares]).tolist()
+            rnd.get_list(-max_val, max_val, secrets_size)
+            for __ in range(party_size - 1)])
+        s1: np.ndarray = np.subtract(np.frompyfunc(int, 1, 1)(secrets),
+                                     np.sum(shares, axis=0))
+        shares_str: List[List[str]] = np.vectorize(
+            Share.__to_str)([s1, *shares]).tolist()
         return shares_str
+
+    @sharize.register(Dim2)
+    @staticmethod
+    def __sharize_2dimension(secrets: List[List[Union[float, int]]],
+                             party_size: int = 3) -> List[List[List[str]]]:
+        """ 2次元リストのシェア化 """
+        transposed: List[Union[List[int], List[float]]] \
+            = np.array(secrets, dtype=object).transpose().tolist()
+        dst: List[List[List[str]]] = [
+            Share.sharize(col, party_size) for col in transposed
+        ]
+        dst = np.array(dst, dtype=object).transpose(1, 2, 0).tolist()
+
+        return dst
 
     @sharize.register(dict)
     @staticmethod
@@ -114,7 +155,7 @@ class Share:
             [float(x) for x in shares]
         except ValueError:
             return shares[0]
-        return f(sum([Decimal(x) for x in shares]))
+        return sum(shares)
 
     @recons.register(Dim2)
     @recons.register(Dim3)
@@ -153,3 +194,76 @@ class Share:
                 val.append(s[i])
             secrets.append(Share.recons(val, f))
         return secrets
+
+    @staticmethod
+    def get_pre_convert_func(
+            schema: Optional[Schema]) -> Callable[[str], Any]:
+        """ スキーマに合った変換関数を返す  """
+        if schema is None:
+            return Decimal
+        type = schema.type
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_UNSPECIFIED'):
+            return Decimal
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'):
+            return Decimal
+        if type == ShareValueTypeEnum.Value(
+                'SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION'):
+            # TODO: Decimal の経由を不要にする
+            return lambda x: int(Decimal(x))
+        return float
+
+    @staticmethod
+    def convert_int_to_str(x: int):
+        bytes_repr: bytes = x.to_bytes((x.bit_length() + 7) //
+                                       8, byteorder='big')
+        str_repr: str = bytes_repr.decode('utf-8')
+        return str_repr
+
+    @staticmethod
+    def get_convert_func(
+            schema: Optional[Schema]) -> Callable[[Any], Any]:
+        """ スキーマに合った変換関数を返す  """
+        if schema is None:
+            return float
+        type = schema.type
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_UNSPECIFIED'):
+            return float
+        if type == ShareValueTypeEnum.Value('SHARE_VALUE_TYPE_FIXED_POINT'):
+            return float
+        if type == ShareValueTypeEnum.Value(
+                'SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION'):
+            return Share.convert_int_to_str
+        return float
+
+    @convert_type.register(str)
+    @staticmethod
+    def __pre_convert_type_str(
+            value: str, schema: Optional[Schema] = None) -> list:
+        func = Share.get_pre_convert_func(schema)
+        return func(value)
+
+    @convert_type.register(Dim1)
+    @staticmethod
+    def __convert_type_list(
+            values: List[Any],
+            schema: Optional[Sequence[Optional[Schema]]] = None) -> list:
+        if schema is None:
+            schema = [None] * len(values)
+        return [Share.convert_type(x, sch)
+                for x, sch in zip(values, schema)]
+
+    @convert_type.register(Decimal)
+    @convert_type.register(int)
+    @staticmethod
+    def __convert_type_elem(
+            value: Union[Decimal, int],
+            schema: Optional[Schema] = None) -> Union[float, str]:
+        func = Share.get_convert_func(schema)
+        return func(value)
+
+    @convert_type.register(Dim2)
+    @staticmethod
+    def __convert_type_table(
+            table: List[List],
+            schema: Optional[List[Schema]] = None) -> list:
+        return [Share.convert_type(row, schema) for row in table]

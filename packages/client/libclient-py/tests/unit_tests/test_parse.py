@@ -6,6 +6,7 @@ import pytest
 
 from quickmpc.utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
                                       parse_to_bitvector)
+from quickmpc import Schema, ShareValueTypeEnum
 
 # 元データ
 data1: List[List[str]] = [s.split(",") for s in [
@@ -23,10 +24,22 @@ data2: List[List[str]] = [s.split(",") for s in [
     "moge,1,0,4",
     "moga,0,1,2",
 ]]
+data3: List[List[str]] = [s.split(",") for s in [
+    "id,id:id",
+    "hoge,hoge",
+    "huga,huga",
+    "moge,moge",
+    "moga,moga",
+]]
 
 # 正しくparseされたデータ
-d1_schema: List[str] = ['id', 'attr1', 'attr2',
-                        'attr3', 'attr4', 'attr5', 'attr6']
+d1_schema_str: List[str] = ['id', 'attr1', 'attr2',
+                            'attr3', 'attr4', 'attr5', 'attr6']
+d1_schema: List[Schema] = [
+    Schema(
+        name=name,
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
+    for name in d1_schema_str]
 d1_secrets: List[List[float]] = [
     [230379555.4797964, 0, 0.77, 0.63, 0.35, 0.39, 0.35],
     [10723675.973257065, 0, 0.37, 0.36, 0.43, 0.41, 0.39],
@@ -35,9 +48,14 @@ d1_secrets: List[List[float]] = [
     [13292676.303739548, 0, 0.67, 0.41, 0.25, 0.49, 0.25]
 ]
 
-d2_schema: List[str] = ['id#0', 'attr1#0', 'attr1#1',
-                        'attr2#0', 'attr2#1', 'attr2#2',
-                        'attr3#0', 'attr3#1', 'attr3#2', 'attr3#3']
+d2_schema_str: List[str] = ['id#0', 'attr1#0', 'attr1#1',
+                            'attr2#0', 'attr2#1', 'attr2#2',
+                            'attr3#0', 'attr3#1', 'attr3#2', 'attr3#3']
+d2_schema: List[Schema] = [
+    Schema(
+        name=name,
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)
+    for name in d2_schema_str]
 d2_secrets: List[List[float]] = [
     [230379555.4797964, 1, 0, 1, 0, 0, 1, 0, 0, 0],
     [10723675.973257065, 1, 0, 0, 1, 0, 0, 1, 0, 0],
@@ -45,19 +63,40 @@ d2_secrets: List[List[float]] = [
     [13292676.303739548, 1, 0, 1, 0, 0, 0, 0, 0, 1]
 ]
 
+d3_schema: List[Schema] = [
+    Schema(
+        name='id',
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION),
+    Schema(
+        name='id:id',
+        type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT),
+]
+d3_secrets: List[List[float]] = [
+    [1752131429, 230379555.4797964],
+    [1752524641, 10723675.973257065],
+    [1836017509, 211114761.8482437],
+    [1836017505, 13292676.303739548]
+]
+
 
 def test_parse():
     """ 正しくパースできるかTest """
-    secrets, schema = parse(data1)
+    secrets, schema = parse(data1, matching_column=1)
     assert (np.allclose(secrets, d1_secrets))
     assert (schema == d1_schema)
 
 
 def test_parse_to_bitvector():
     """ 正しくパースできるかTest """
-    secrets, schema = parse_to_bitvector(data2, [0])
+    secrets, schema = parse_to_bitvector(data2, [0], matching_column=1)
     assert (np.allclose(secrets, d2_secrets))
     assert (schema == d2_schema)
+
+
+def test_parse_str():
+    secrets, schema = parse(data3)
+    assert (np.allclose(secrets, d3_secrets))
+    assert (schema == d3_schema)
 
 
 def test_parse_errorhandring():
@@ -83,7 +122,7 @@ def test_parse_errorhandring():
 def test_parse_csv():
     """ csvを正しくパースできるかTest """
     secrets, schema = parse_csv(
-        f"{os.path.dirname(__file__)}/test_files/data1.csv")
+        f"{os.path.dirname(__file__)}/test_files/data1.csv", matching_column=1)
     assert (np.allclose(secrets, d1_secrets))
     assert (schema == d1_schema)
 
@@ -91,7 +130,9 @@ def test_parse_csv():
 def test_parse_csv_to_bitvector():
     """ csvを正しくパースできるかTest """
     secrets, schema = parse_csv_to_bitvector(
-        f"{os.path.dirname(__file__)}/test_files/data3.csv", [0])
+        f"{os.path.dirname(__file__)}/test_files/data3.csv",
+        [0],
+        matching_column=1)
     assert (np.allclose(secrets, d2_secrets))
     assert (schema == d2_schema)
 

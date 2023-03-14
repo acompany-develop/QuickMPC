@@ -63,6 +63,7 @@ struct LessFloat
         return x < y - T(eps);
     }
     bool operator()(const std::string &x, const std::string &y) const { return x < y; }
+    bool operator()(const SchemaType &x, const SchemaType &y) const { return x < y; }
 };
 template <class T>
 std::pair<std::vector<int>, std::vector<int>> intersectionValueIndex(
@@ -316,7 +317,7 @@ std::string writeVJoinTable(
 )
 {
     // schemasを構築
-    auto new_schemas = std::vector<std::string>();
+    auto new_schemas = std::vector<SchemaType>();
     auto schemas1 = table1.getSchemas();
     for (const auto &it : col1)
     {
@@ -405,7 +406,7 @@ std::string writeHJoinTable(
 )
 {
     // schemasを構築
-    auto new_schemas = std::vector<std::string>();
+    auto new_schemas = std::vector<SchemaType>();
     auto schemas1 = table1.getSchemas();
     auto schemas2 = table2.getSchemas();
     for (const auto &it : col1)

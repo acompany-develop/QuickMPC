@@ -2,22 +2,22 @@ import logging
 from dataclasses import dataclass, field, InitVar
 from typing import Dict, List, Optional, Tuple
 
-from google.protobuf.internal import enum_type_wrapper
-
 from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
 from .utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
-                              parse_to_bitvector)
+                              parse_to_bitvector, ShareValueType)
 from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
 # qmpc.JobStatus でアクセスできるようにエイリアスを設定する
-JobStatus: enum_type_wrapper.EnumTypeWrapper \
+JobStatus \
     = common_types_pb2.JobStatus
-ComputationMethod: enum_type_wrapper.EnumTypeWrapper \
+ComputationMethod \
     = common_types_pb2.ComputationMethod
 JobErrorInfo = common_types_pb2.JobErrorInfo
+Schema = common_types_pb2.Schema
+ShareValueTypeEnum = common_types_pb2.ShareValueTypeEnum
 
 
 @dataclass(frozen=True)
@@ -36,35 +36,41 @@ class QMPC:
             endpoints, token))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
-    def parse_csv_file(self, filename: str) \
-            -> Tuple[List[List[float]], List[str]]:
+    def parse_csv_file(self,
+                       filename: str,
+                       matching_column: Optional[int] = 1) \
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_file. "
                     f"[filename]='{filename}'")
-        return parse_csv(filename)
+        return parse_csv(filename, matching_column)
 
     def parse_csv_file_to_bitvector(self, filename: str,
-                                    exclude: List[int] = []) \
-            -> Tuple[List[List[float]], List[str]]:
+                                    exclude: List[int] = [],
+                                    matching_column: Optional[int] = 1) \
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_file_to_bitvector. "
                     f"[filename]='{filename}' "
                     f"[not bitvector columns]={exclude}")
-        return parse_csv_to_bitvector(filename, exclude)
+        return parse_csv_to_bitvector(filename, exclude, matching_column)
 
-    def parse_csv_data(self, data: List[List[str]]) \
-            -> Tuple[List[List[float]], List[str]]:
+    def parse_csv_data(self,
+                       data: List[List[str]],
+                       matching_column: Optional[int] = 1) \
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_data. "
                     f"[data size]={len(data)}x{len(data[0])}")
-        return parse(data)
+        return parse(data, matching_column)
 
     def parse_csv_data_to_bitvector(self, data: List[List[str]],
-                                    exclude: List[int] = []) \
-            -> Tuple[List[List[float]], List[str]]:
+                                    exclude: List[int] = [],
+                                    matching_column: Optional[int] = 1) \
+            -> Tuple[List[List[ShareValueType]], List[Schema]]:
         logger.info("parse_csv_file_to_bitvector. "
                     f"[data size]={len(data)}x{len(data[0])} "
                     f"[not bitvector columns]={exclude}")
-        return parse_to_bitvector(data, exclude)
+        return parse_to_bitvector(data, exclude, matching_column)
 
-    def send_share(self, secrets: List, schema: List[str],
+    def send_share(self, secrets: List, schema: List[Schema],
                    matching_column: int = 1,
                    piece_size: int = 1_000_000) -> Dict:
         logger.info("send_share request. "
