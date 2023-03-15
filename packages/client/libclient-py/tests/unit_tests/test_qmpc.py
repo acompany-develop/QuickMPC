@@ -1,4 +1,3 @@
-import decimal
 from typing import Any, Dict
 
 import pytest
@@ -115,8 +114,11 @@ class TestQMPC:
              QMPCServerError),
         ]
     )
-    def test_execute_computation_errorhandring(self, params, expected_exception,
-                                               run_server1, run_server2, run_server3):
+    def test_execute_computation_errorhandring(self, params,
+                                               expected_exception,
+                                               run_server1,
+                                               run_server2,
+                                               run_server3):
         with pytest.raises(expected_exception):
             self.qmpc.execute_computation(*params)
 
