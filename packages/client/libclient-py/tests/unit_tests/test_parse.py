@@ -4,9 +4,9 @@ from typing import List
 import numpy as np
 import pytest
 
+from quickmpc import Schema, ShareValueTypeEnum
 from quickmpc.utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
                                       parse_to_bitvector)
-from quickmpc import Schema, ShareValueTypeEnum
 
 # 元データ
 data1: List[List[str]] = [s.split(",") for s in [
@@ -119,12 +119,32 @@ def test_parse_errorhandring():
                ["id2"]])
 
 
-def test_parse_csv():
+@pytest.mark.parametrize(
+    ("csv_file", "expected_secrets", "expected_schema"),
+    [
+        # 動作確認
+        ("data1.csv", d1_secrets, d1_schema),
+
+        # エッジケース
+        ("edge_data.csv",
+         [[0.0, 0.0, 10000000000.0, -10000000000.0, 1e-11, -1e-11, 105986143.49951458]],
+            ['id', 'zero', 'int_max', 'int_min',
+             'float_min_plus', 'float_min_minus', 'string_max']),
+
+        # 文字列
+        ("string_data.csv",
+         [[0.0, 193657886.48166275, 4437706.556798935,
+             251080968.68907547, 142726105.66143322, 1234567890.0]],
+            ['id', 'alphabet', 'hiragana', 'katakana',
+             'chinese_characters', 'large_number']),
+    ]
+)
+def test_parse_csv(csv_file, expected_secrets, expected_schema):
     """ csvを正しくパースできるかTest """
     secrets, schema = parse_csv(
-        f"{os.path.dirname(__file__)}/test_files/data1.csv", matching_column=1)
-    assert (np.allclose(secrets, d1_secrets))
-    assert (schema == d1_schema)
+        f"{os.path.dirname(__file__)}/test_files/{csv_file}", matching_column=1)
+    assert (np.allclose(secrets, expected_secrets))
+    assert (schema == expected_schema)
 
 
 def test_parse_csv_to_bitvector():
@@ -137,11 +157,26 @@ def test_parse_csv_to_bitvector():
     assert (schema == d2_schema)
 
 
-def test_parse_csv_errorhandring():
+@pytest.mark.parametrize(
+    ("csv_file", "expected_exception"),
+    [
+        # ファイルが存在しない
+        ("hoge", Exception),
+
+        # 動作確認
+        ("data2.csv", Exception),
+
+        # テーブルが空
+        ("empty.csv", Exception),
+
+        # 空のデータが存在する
+        ("none.csv", Exception),
+
+        # csv形式じゃない
+        ("not_csv.csv", Exception),
+    ]
+)
+def test_parse_csv_errorhandring(csv_file, expected_exception):
     """ 異常値を与えてエラーが出るかTest """
-    with pytest.raises(Exception):
-        # fileが存在しない
-        parse_csv("hoge")
-    with pytest.raises(Exception):
-        # formatがおかしい
-        parse_csv(f"{os.path.dirname(__file__)}/test_files/data2.csv")
+    with pytest.raises(expected_exception):
+        parse_csv(f"{os.path.dirname(__file__)}/test_files/{csv_file}")
