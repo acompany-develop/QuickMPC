@@ -1,9 +1,17 @@
+import decimal
 from typing import Any, Dict
 
 import pytest
 
 from quickmpc.exception import ArgumentError, QMPCJobError, QMPCServerError
 from quickmpc.qmpc_server import QMPCServer
+
+
+def send_share_param(secrets=[[1, 2, 3]],
+                     schema=["attr1", "attr2", "attr3"],
+                     matching_column=1,
+                     piece_size=1_000_000):
+    return (secrets, schema, matching_column, piece_size)
 
 
 class TestQMPC:
@@ -15,48 +23,47 @@ class TestQMPC:
     )
 
     @pytest.mark.parametrize(
-        ("secrets", "schema"), [
-            ([[1, 2, 3]], ["attr1", "attr2", "attr3"]),
-            ([[1], [2], [3]], ["attr1"]), ]
+        ("params"), [
+            (send_share_param()),
+            (send_share_param(secrets=[[1], [2], [3]], schema=["a1"])),
+            (send_share_param(secrets=[[0, 0, 0]])),
+            (send_share_param(secrets=[[1e10, 1e10, 1e10]])),
+            (send_share_param(secrets=[[-1e10, -1e10, -1e10]])),
+            (send_share_param(secrets=[[1e-10, 1e-10, 1e-10]])),
+            (send_share_param(secrets=[[-1e-10, -1e-10, -1e-10]])),
+        ]
     )
-    def test_send_shares(self, secrets, schema,
+    def test_send_shares(self, params,
                          run_server1, run_server2, run_server3):
         """ serverにシェアを送れるかのTest"""
-        response: Dict[str, Any] = self.qmpc.send_share(
-            secrets, schema, 1, 1000)
+        response: Dict[str, Any] = self.qmpc.send_share(*params)
         assert (response["is_ok"])
 
-    def test_send_shares_errorhandring(self,
-                                       run_server1, run_server2, run_server3):
-        with pytest.raises(RuntimeError):
-            # piece_sizeが1000より小さい
-            self.qmpc.send_share(
-                [[1, 2, 3]], ["attr1", "attr2", "attr3"], 1, 500)
-        with pytest.raises(RuntimeError):
-            # piece_sizeが1000000より大きい
-            self.qmpc.send_share(
-                [[1, 2, 3]], ["attr1", "attr2", "attr3"], 1, 10000000)
-        with pytest.raises(RuntimeError):
+    @pytest.mark.parametrize(
+        ("params", "expected_exception"), [
+            # piece_sizeが範囲外
+            (send_share_param(piece_size=500), RuntimeError),
+            (send_share_param(piece_size=10000000), RuntimeError),
             # matching_columnが範囲外
-            self.qmpc.send_share(
-                [[1, 2, 3]], ["attr1", "attr2", "attr3"], -1, 1000)
-        with pytest.raises(RuntimeError):
-            # matching_columnが範囲外
-            self.qmpc.send_share(
-                [[1, 2, 3]], ["attr1", "attr2", "attr3"], 4, 1000)
-        with pytest.raises(TypeError):
-            # シェアがない
-            self.qmpc.send_share(
-                [], ["attr1", "attr2", "attr3"], 1, 1000)
-        with pytest.raises(RuntimeError):
+            (send_share_param(matching_column=-1), RuntimeError),
+            (send_share_param(matching_column=4), RuntimeError),
+            # empty
+            (send_share_param(secrets=[]), TypeError),
             # schemaに同じものが含まれる
-            self.qmpc.send_share(
-                [[1, 1, 2], [2, 3, 4]], ["attr1", "attr2", "attr2"], 1, 1000)
-        with pytest.raises(RuntimeError):
-            # 行によって列数が異なる
-            self.qmpc.send_share(
-                [[1, 1, 2], [2, 3, 4, 5]],
-                ["attr1", "attr2", "attr3"], 1, 1000)
+            (send_share_param(schema=["a1", "a1", "a2"]), RuntimeError),
+            # 列数が異なる
+            (send_share_param(secrets=[[1, 1, 2], [2, 3]]), RuntimeError),
+            # 文字列が含まれる
+            (send_share_param(secrets=[["a", 2, 3]]),
+             decimal.InvalidOperation),
+            # Noneが含まれる
+            (send_share_param(secrets=[[None, 2, 3]]), TypeError),
+        ]
+    )
+    def test_send_shares_errorhandring(self, params, expected_exception,
+                                       run_server1, run_server2, run_server3):
+        with pytest.raises(expected_exception):
+            self.qmpc.send_share(*params)
 
     def test_delete_shares(self, run_server1, run_server2, run_server3):
         """ serverにシェア削除要求を送れるかのTest"""
