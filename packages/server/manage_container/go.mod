@@ -3,17 +3,17 @@ module github.com/acompany-develop/QuickMPC/packages/server/manage_container
 go 1.18
 
 replace (
+	github.com/acompany-develop/QuickMPC/proto/common_types => ./../proto/common_types
 	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container => ./../proto/libc_to_manage_container
 	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container => ./../proto/manage_to_computation_container
 	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container => ./../proto/manage_to_manage_container
-	github.com/acompany-develop/QuickMPC/proto/common_types => ./../proto/common_types
 )
 
 require (
+	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container v0.0.0-00010101000000-000000000000
-	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.5.0
 	github.com/google/uuid v1.1.2
 	go.uber.org/zap v1.21.0
@@ -27,8 +27,8 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/net v0.7.0 // indirect; NOTE: CVE-2022-41717, CVE-2022-41721の回避 indirectだとCVE-2022-41717に引っかかるので決めうち
-	golang.org/x/sys v0.3.0 // indirect
-	golang.org/x/text v0.5.0 // indirect
+	golang.org/x/sys v0.5.0 // indirect
+	golang.org/x/text v0.7.0 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 )
 
