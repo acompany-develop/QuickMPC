@@ -28,6 +28,13 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 7, 10], [2, 9, 3]
                                    target=[2]),
             [[1, 1]]),
 
+        # small data case
+        (execute_computation_param(dataIds=[data_id([[10**-9, 10**-9+5],
+                                                     [10**-9+10, 10**-9+10]])],
+                                   src=[1],
+                                   target=[2]),
+            [[1, 1]]),
+
         # duplicated src, target case
         (execute_computation_param(src=[2, 3, 3],
                                    target=[1, 1, 3]),

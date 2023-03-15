@@ -213,6 +213,7 @@ services:
       - 50011
       - 51011
   medium-libc:
+    tty: true
     container_name: libclient
     depends_on:
       dev_mc1:
@@ -235,8 +236,4 @@ services:
       - target: /libclient/src
         source: ./libclient/src
         type: bind
-    command:
-      - /bin/bash
-      - '-c'
-      - pip list && pytest src/tests -s -v -log-cli-level=DEBUG
     network_mode: host
