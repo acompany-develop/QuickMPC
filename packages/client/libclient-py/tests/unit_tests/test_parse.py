@@ -9,7 +9,7 @@ from quickmpc.utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
                                       parse_to_bitvector)
 
 # 元データ
-data1: List[List[str]] = [s.split(",") for s in [
+normal_data: List[List[str]] = [s.split(",") for s in [
     "id,attr1,attr2,attr3,attr4,attr5,attr6",
     "hoge,0,0.77,0.63,0.35,0.39,0.35",
     "huga,0,0.37,0.36,0.43,0.41,0.39",
@@ -17,7 +17,7 @@ data1: List[List[str]] = [s.split(",") for s in [
     "moge,1,0.47,0.43,0.34,0.29,0.34",
     "moga,0,0.67,0.41,0.25,0.49,0.25",
 ]]
-data2: List[List[str]] = [s.split(",") for s in [
+bitvector_data: List[List[str]] = [s.split(",") for s in [
     "id,attr1,attr2,attr3",
     "hoge,0,1,3",
     "huga,0,2,1",
@@ -81,14 +81,15 @@ d3_secrets: List[List[float]] = [
 
 def test_parse():
     """ 正しくパースできるかTest """
-    secrets, schema = parse(data1, matching_column=1)
+    secrets, schema = parse(normal_data, matching_column=1)
     assert (np.allclose(secrets, d1_secrets))
     assert (schema == d1_schema)
 
 
 def test_parse_to_bitvector():
     """ 正しくパースできるかTest """
-    secrets, schema = parse_to_bitvector(data2, [0], matching_column=1)
+    secrets, schema = parse_to_bitvector(
+        bitvector_data, [0], matching_column=1)
     assert (np.allclose(secrets, d2_secrets))
     assert (schema == d2_schema)
 
@@ -123,7 +124,7 @@ def test_parse_errorhandring():
     ("csv_file", "expected_secrets", "expected_schema"),
     [
         # 動作確認
-        ("data1.csv", d1_secrets, d1_schema),
+        ("normal.csv", d1_secrets, d1_schema),
 
         # エッジケース
         ("edge_data.csv",
@@ -142,7 +143,8 @@ def test_parse_errorhandring():
 def test_parse_csv(csv_file, expected_secrets, expected_schema):
     """ csvを正しくパースできるかTest """
     secrets, schema = parse_csv(
-        f"{os.path.dirname(__file__)}/test_files/{csv_file}", matching_column=1)
+        f"{os.path.dirname(__file__)}/test_files/{csv_file}",
+        matching_column=1)
     assert (np.allclose(secrets, expected_secrets))
     assert (schema == expected_schema)
 
@@ -150,9 +152,8 @@ def test_parse_csv(csv_file, expected_secrets, expected_schema):
 def test_parse_csv_to_bitvector():
     """ csvを正しくパースできるかTest """
     secrets, schema = parse_csv_to_bitvector(
-        f"{os.path.dirname(__file__)}/test_files/data3.csv",
-        [0],
-        matching_column=1)
+        f"{os.path.dirname(__file__)}/test_files/bitvector.csv",
+        [0], matching_column=1)
     assert (np.allclose(secrets, d2_secrets))
     assert (schema == d2_schema)
 
@@ -163,8 +164,8 @@ def test_parse_csv_to_bitvector():
         # ファイルが存在しない
         ("hoge", Exception),
 
-        # 動作確認
-        ("data2.csv", Exception),
+        # 列数が異なる
+        ("diff_col.csv", Exception),
 
         # テーブルが空
         ("empty.csv", Exception),
