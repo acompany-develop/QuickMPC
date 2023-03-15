@@ -104,6 +104,32 @@ class TestQMPC:
 
             assert (is_inf(shares[0]))
 
+    @pytest.mark.parametrize(
+        ("secrets"),
+        [
+            # zero
+            (0),
+            # int_max
+            (10000000000),
+            # int_min
+            (10000000000),
+            # float_min_plus
+            (0.00000000001),
+            # float_min_minus
+            (-0.00000000001),
+            # string_max
+            # ("漢漢漢漢漢漢漢漢漢漢０漢漢００漢００漢アアアアアアアアアア漢漢漢漢・漢漢・漢漢漢漢漢漢アアアア＆アアアアアア漢漢漢漢漢漢漢漢漢漢漢（漢漢漢漢漢漢漢）漢")
+        ]
+    )
+    def test_sharize_edge(self, secrets: list):
+        """ nパーティのシェア化が正しくできているかのTest """
+        for party_size in range(2, 10):
+            shares: np.ndarray = np.vectorize(Decimal)(
+                Share.sharize(secrets, party_size=party_size))
+            assert (len(shares) == party_size)
+            assert (np.allclose(secrets,
+                                np.vectorize(float)(np.sum(shares, axis=0))))
+
     def test_sharize_errorhandring(self):
         """ 異常値を与えてエラーが出るかTest """
         with pytest.raises(Exception):
