@@ -92,9 +92,10 @@ func TestFailedIllegalToken(t *testing.T) {
 		"形式おかしい2":      {"bokuha_jwt_janaiyo", defaultClientToken},
 		"正常だけど対応してない":  {defaultServerToken, correctServerToken},
 		"正常だけど対応してない2": {correctServerToken, defaultClientToken},
+		"有効期限切れ":       {exp0ServerToken, exp0ClientToken},
+		"HS256じゃない":    {notHS256ServerToken, notHS256ServerToken},
+		// NOTE: bufconnではIPチェックできないため．bufconnでないテストを追加する場合に移植する
 		// "IPが違う": {noneIPServerToken, noneIPClientToken},
-		"有効期限切れ":    {exp0ServerToken, exp0ClientToken},
-		"HS256じゃない": {notHS256ServerToken, notHS256ServerToken},
 	}
 
 	for name, tt := range testcases {
