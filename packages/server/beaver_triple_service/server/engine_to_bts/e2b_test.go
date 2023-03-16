@@ -73,7 +73,6 @@ func getContext(opts ...ctxOptFunc) (context.Context, error) {
 
 	// default値の設定
 	token, ok := os.LookupEnv("BTS_TOKEN")
-	fmt.Println(token)
 	if !ok {
 		return nil, fmt.Errorf("BTS TOKEN is not valified")
 	}

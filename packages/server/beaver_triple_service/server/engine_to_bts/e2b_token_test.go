@@ -123,7 +123,6 @@ func TestFailedIllegalToken(t *testing.T) {
 			if err == nil {
 				t.Fatal("request with illegal toke must be error")
 			}
-			fmt.Println(err)
 		})
 	}
 }
