@@ -53,7 +53,7 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
     tar -zxvf v1.9.2.tar.gz && rm v1.9.2.tar.gz && cd spdlog-1.9.2 && cp -r include/spdlog /usr/local/lib/spdlog
 
 # grpcサーバのhealthcheckをするためのツールをインストール
-RUN GRPC_HEALTH_PROBE_VERSION=v0.4.15 && \
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.16 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
 
@@ -113,7 +113,7 @@ COPY --from=builder /lib/x86_64-linux-gnu /lib/x86_64-linux-gnu
 RUN true
 COPY --from=builder /lib64 /lib64
 RUN true
-COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.15 /ko-app/grpc-health-probe /bin/grpc_health_probe
+COPY --from=ghcr.io/grpc-ecosystem/grpc-health-probe:v0.4.16 /ko-app/grpc-health-probe /bin/grpc_health_probe
 # Create directory to save core dump file
 RUN mkdir -p /tmp/cores
 WORKDIR /QuickMPC
