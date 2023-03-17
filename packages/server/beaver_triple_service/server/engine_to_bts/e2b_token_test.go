@@ -55,7 +55,7 @@ func TestSuccessToken(t *testing.T) {
 	for name, tt := range testcases {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
-			// TODO: できればDIでやりたい
+			// サーバのtokenを書き換え(できればDIでやりたい)
 			serverToken := os.Getenv("JWT_SECRET_KEY")
 			os.Setenv("JWT_SECRET_KEY", tt.serverToken)
 			defer os.Setenv("JWT_SECRET_KEY", serverToken)
@@ -88,14 +88,14 @@ func TestFailedIllegalToken(t *testing.T) {
 		serverToken string
 		clientToken string
 	}{
-		"形式おかしい":       {defaultServerToken, "bokuha_jwt_janaiyo"},
-		"形式おかしい2":      {"bokuha_jwt_janaiyo", defaultClientToken},
-		"正常だけど対応してない":  {defaultServerToken, correctServerToken},
-		"正常だけど対応してない2": {correctServerToken, defaultClientToken},
-		"有効期限切れ":       {exp0ServerToken, exp0ClientToken},
-		"HS256じゃない":    {notHS256ServerToken, notHS256ServerToken},
+		"not_jwt_client": {defaultServerToken, "bokuha_jwt_janaiyo"},
+		"not_jwt_server": {"bokuha_jwt_janaiyo", defaultClientToken},
+		"not_pair_1":     {defaultServerToken, correctServerToken},
+		"not_pair_2":     {correctServerToken, defaultClientToken},
+		"expired":        {exp0ServerToken, exp0ClientToken},
+		"not_HS256":      {notHS256ServerToken, notHS256ServerToken},
 		// NOTE: bufconnではIPチェックできないため．bufconnでないテストを追加する場合に移植する
-		// "IPが違う": {noneIPServerToken, noneIPClientToken},
+		// "different_ip": {noneIPServerToken, noneIPClientToken},
 	}
 
 	for name, tt := range testcases {
