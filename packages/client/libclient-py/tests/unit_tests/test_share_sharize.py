@@ -5,7 +5,12 @@ from typing import List
 import numpy as np
 import pytest
 
+from quickmpc.exception import ArgmentError
 from quickmpc.share import Share
+
+
+def sharize_params(secrets=[1], party_size=3):
+    return (secrets, party_size)
 
 
 class TestQMPC:
@@ -129,21 +134,23 @@ class TestQMPC:
             assert math.isclose(secrets, sum(shares), abs_tol=1e-5)
 
     @pytest.mark.parametrize(
-        ("secrets", "expected_exception"),
+        ("args", "expected_exception"),
         [
             # string
-            ("str", Exception),
+            (sharize_params(secrets="str"), ArgmentError),
             # array string
-            ("[str]", Exception),
+            (sharize_params(secrets="[str]"), ArgmentError),
             # 列が異なる
-            ([[1, 2], [1]], Exception),
+            (sharize_params(secrets=[[1, 2], [1]]), ValueError),
             # 3-dim
-            ([[[1]]], Exception),
+            (sharize_params(secrets=[[[1]]]), ArgmentError),
             # empty
-            ([[], []], Exception),
+            (sharize_params(secrets=[[], []]), ValueError),
+            # party_sizeが1
+            (sharize_params(party_size=1), ArgmentError),
         ]
     )
-    def test_sharize_errorhandring(self, secrets, expected_exception):
+    def test_sharize_errorhandring(self, args, expected_exception):
         """ 異常値を与えてエラーが出るかTest """
         with pytest.raises(expected_exception):
-            Share.sharize(secrets)
+            Share.sharize(*args)
