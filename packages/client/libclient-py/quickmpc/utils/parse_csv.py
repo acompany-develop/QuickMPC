@@ -1,16 +1,14 @@
 import csv
 import logging
-from hashlib import sha512
 from dataclasses import dataclass
-from typing import List, Tuple, Dict, Union, Sequence, Optional
-
-from .overload_tools import (Dim1, methoddispatch)
-from ..exception import ArgmentError
-
-from ..proto.common_types.common_types_pb2 import (ShareValueTypeEnum,
-                                                   Schema)
+from hashlib import sha512
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
+
+from ..exception import ArgumentError
+from ..proto.common_types.common_types_pb2 import Schema, ShareValueTypeEnum
+from .overload_tools import Dim1, methoddispatch
 
 logger = logging.getLogger(__name__)
 
@@ -26,12 +24,12 @@ class FormatChecker:
     @methoddispatch(is_static_method=True)
     @staticmethod
     def check_duplicate(_):
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @check_duplicate.register(Dim1)
     @staticmethod
     def check_duplicate_dummy(schema: List[str]):
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @check_duplicate.register((Dim1, str))
     @staticmethod

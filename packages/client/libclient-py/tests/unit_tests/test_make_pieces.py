@@ -2,7 +2,7 @@ from typing import List
 
 import pytest
 
-from quickmpc.exception import ArgmentError
+from quickmpc.exception import ArgumentError
 from quickmpc.utils.make_pieces import MakePiece
 
 
@@ -63,8 +63,8 @@ class TestQMPC:
         [
             ([MATRIX, 0], RuntimeError),          # サイズが小さい場合
             ([MATRIX, 1_000_001], RuntimeError),  # サイズが大きい場合
-            ([0, 0], ArgmentError),               # 引数タイプが無効な場合: 0 次元
-            ([[MATRIX], 0], ArgmentError),        # 引数タイプが無効な場合: 3 次元
+            ([0, 0], ArgumentError),               # 引数タイプが無効な場合: 0 次元
+            ([[MATRIX], 0], ArgumentError),        # 引数タイプが無効な場合: 3 次元
         ]
     )
     def test_make_pieces_errorhandring(self, args, error):
