@@ -170,6 +170,6 @@ func init() {
 		log.Printf("WARN: os.Getwd() is failed, err = %s\n", err)
 	}
 	default_inout_root := path.Join(work_dir, "cmd", "jwt_generator", "sample")
-	generateJwtCmd.Flags().StringVarP(&options.file_path, "file", "f", path.Join(default_inout_root, "sample.yml"), "configuration file path")
+	generateJwtCmd.Flags().StringVarP(&options.file_path, "file", "f", path.Join(default_inout_root, "sample.yaml"), "configuration file path")
 	generateJwtCmd.Flags().StringVarP(&options.output_dir, "output", "o", default_inout_root, "directory which stores output files")
 }
