@@ -6,9 +6,9 @@
 
 [Japanese version](./README-ja.md)
 
-A practical engine for Secure Multiparty Computation (SMPC) that is part of privacy-enhancing computation (PEC). QuickMPC can perform computations on personal data used in fundamental static calculations and light machine learning while keeping confidentiality.
+A practical engine for Secure Multiparty Computation (SMPC) that is part of privacy-enhancing computation (PEC). QuickMPC can perform computations on personal data used in fundamental static calculations while keeping confidentiality.
 
-This will enable businesses and engineers worldwide to use Python and JavaScript (TypeScript) client libraries to easily develop SaaS products that utilize SMPC functions without the need for expert SMPC knowledge.
+This will enable businesses and engineers worldwide to use Python client libraries to easily develop SaaS products that utilize SMPC functions without the need for expert SMPC knowledge.
 
 ![oss_eg](https://user-images.githubusercontent.com/1694907/182254973-ee3092a6-ee28-49bb-aaf6-637225271a0b.png)
 
