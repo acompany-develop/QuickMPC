@@ -4,39 +4,71 @@ from decimal import Decimal
 import numpy as np
 import pytest
 
+from quickmpc.exception import ArgmentError
 from quickmpc.share import Share
 
 
 class TestQMPC:
 
-    @pytest.mark.parametrize(
-        ("shares"),
-        [
-            # 1次元配列のシェア
-            (["1", "2", "3"]),
-            (["2.4", "4.2", "4.1"]),
-            # 2次元配列のシェア
-            ([["1"], ["2"], ["3"]]),
-            ([["3000", "500"], ["2500", "1100"], ["100", "200"]]),
-            ([["2.4", "9.1"], ["4.2", "6.7"], ["4.1", "1.5"]]),
-            # 3次元配列のシェア
-            ([[["1"]], [["2"]], [["3"]]]),
-            ([[["30.0", "5.22"], ["4.89", "1.001"]], [["25.1", "11.901"],
-             ["1200", "400"]], [["100", "200"], ["300", "800"]]])
-        ]
-    )
-    def test_recons_list(self, shares: list):
-        """ 3パーティの復元が正しくできるかTest """
-        conved: list = [Share.convert_type(s) for s in shares]
-        secrets: list = Share.recons(conved)
-        secrets = Share.convert_type(secrets)
-        shares_float: np.ndarray = \
-            np.vectorize(Decimal)(Share.sharize(secrets))
-        assert (np.allclose(secrets,
-                            np.vectorize(float)(np.sum(shares_float, axis=0))))
+    @staticmethod
+    def isclose(val, true_val):
+        ok: bool = True
+        if isinstance(val, list):
+            for v, t in zip(val, true_val):
+                ok &= TestQMPC.isclose(v, t)
+        elif isinstance(val, dict):
+            for v, t in zip(val.values(), true_val.values()):
+                ok &= TestQMPC.isclose(v, t)
+        else:
+            ok &= math.isclose(val, true_val)
+        return ok
 
     @pytest.mark.parametrize(
-        ("shares", "secrets_true"),
+        ("shares", "expected"),
+        [
+            # 1次元配列のシェア
+            # int
+            ([1, 2, 3], 6),
+            # float
+            ([2.4, 4.2, 4.1], 10.7),
+            # Decimal
+            ([Decimal(2.4), Decimal(4.2), Decimal(4.1)], Decimal(10.7)),
+
+            # 2次元配列のシェア
+            # int
+            ([[1, 4], [2, 5], [3, 6]], [6, 15]),
+            # float
+            ([[1.1, 4.2], [2.3, 5.4], [3.5, 6.6]], [6.9, 16.2]),
+            # Decimal
+            ([[Decimal(1.1), Decimal(4.2)], [Decimal(2.3), Decimal(5.4)],
+              [Decimal(3.5), Decimal(6.6)]], [Decimal(6.9), Decimal(16.2)]),
+
+            # 3次元配列のシェア
+            # int
+            ([[[1, 4], [7, 8]],
+              [[2, 5], [9, 10]],
+              [[3, 6], [11, 12]]],
+                [[6, 15], [27, 30]]),
+            # float
+            ([[[1.1, 4.2], [7.1, 8.2]],
+              [[2.3, 5.4], [9.1, 10.2]],
+              [[3.5, 6.6], [11.1, 12.2]]],
+             [[6.9, 16.2], [27.3, 30.6]]),
+            # Decimal
+            ([[[Decimal(1.1), Decimal(4.2)], [Decimal(7.1), (8.2)]],
+              [[Decimal(2.3), Decimal(5.4)], [Decimal(9.1), (10.2)]],
+              [[Decimal(3.5), Decimal(6.6)], [Decimal(11.1), (12.2)]]],
+             [[Decimal(6.9), Decimal(16.2)], [Decimal(27.3), (30.6)]]),
+
+        ]
+    )
+    def test_recons_list(self, shares: list, expected):
+        """ 3パーティの復元が正しくできるかTest """
+        secrets: list = Share.recons(shares)
+        assert TestQMPC.isclose(secrets, expected)
+
+    @pytest.mark.parametrize(
+        ("shares", "expected"),
         [
             # 辞書型配列のシェア
             ([{"a": 1}, {"a": 2}, {"a": 3}],
@@ -60,56 +92,47 @@ class TestQMPC:
                 [{"a": 8.3}, {"child": {"b": 9, "c": [4, 12]}}]),
         ]
     )
-    def test_recons_dict(self, shares: list, secrets_true: list):
+    def test_recons_dict(self, shares: dict, expected: dict):
         """ 3パーティの辞書型の復元が正しくできるかTest """
         secrets: list = Share.recons(shares)
-
-        def isclose(val, true_val):
-            ok: bool = True
-            if isinstance(val, list):
-                for v, t in zip(val, true_val):
-                    ok &= isclose(v, t)
-            elif isinstance(val, dict):
-                for v, t in zip(val.values(), true_val.values()):
-                    ok &= isclose(v, t)
-            else:
-                ok &= math.isclose(val, true_val)
-            return ok
-
-        assert (isclose(secrets, secrets_true))
+        assert TestQMPC.isclose(secrets, expected)
 
     @pytest.mark.parametrize(
-        ("shares"),
+        ("shares", "expected"),
         [
             # 2パーティのシェア
-            ([["1", "5"], ["2", "9"]]),
-            ([[["1", "2"], ["3", "4"]], [["5", "6"], ["7", "8"]]]),
-            ([["2.4", "9.1"], ["4.2", "6.7"], ["4.1", "1.5"]]),
-            # 3次元配列のシェア
+            ([[1, 5], [2, 9]], [3, 14]),
+            ([[[1, 2], [3, 4]], [[5, 6], [7, 8]]], [[6, 8], [10, 12]]),
+            ([[2.4, 9.1], [4.2, 6.7], [4.1, 1.5]], [10.7, 17.3]),
             # 4パーティのシェア
-            ([["3000"], ["2500"], ["200"], ["400"]]),
-            ([[["3000"]], [["2500"]], [["200"]], [["400"]]]),
+            ([[3000], [2500], [200], [400]], [6100]),
+            ([[[3000]], [[2500]], [[200]], [[400]]], [[6100]]),
             # 5パーティのシェア
-            ([["3000"], ["2500"], ["200"], ["400"], ["11235"]]),
-            ([[["3000"]], [["2500"]], [["200"]], [["400"]], [["11235"]]]),
+            ([[3000], [2500], [200], [400], [11235]], [17335]),
+            ([[[3000]], [[2500]], [[200]], [[400]], [[11235]]], [[17335]]),
         ]
     )
-    def test_recons_multi(self, shares: list):
+    def test_recons_multi(self, shares: list, expected: list):
         """ nパーティのシェアの復元が正しくできるかTest """
-        conved: list = [Share.convert_type(s) for s in shares]
-        secrets: list = Share.recons(conved)
-        secrets = Share.convert_type(secrets)
-        shares_float: np.ndarray = \
-            np.vectorize(Decimal)(Share.sharize(secrets))
-        assert (np.allclose(secrets,
-                            np.vectorize(float)(np.sum(shares_float, axis=0))))
+        secrets: list = Share.recons(shares)
+        assert TestQMPC.isclose(secrets, expected)
 
-    def test_recons_errorhandring(self):
+    @pytest.mark.parametrize(
+        ("shares", "expected"),
+        [
+            # scalar value is not allowed
+            (1, ArgmentError),
+
+            # string value is not allowed
+            ("hey", ArgmentError),
+            (["hey"], TypeError),  # TODO: quickmpcのArgmentErrorが出るようにしたい
+            ([["hey"]], TypeError),
+        ]
+    )
+    def test_recons_errorhandring(self, shares, expected):
         """ 異常値を与えてエラーが出るかTest """
-        with pytest.raises(Exception):
-            Share.recons(1)
-        with pytest.raises(Exception):
-            Share.recons("hey")
+        with pytest.raises(expected):
+            Share.recons(shares)
 
     @pytest.mark.parametrize(
         ("secrets"),
@@ -133,16 +156,3 @@ class TestQMPC:
             secrets_2: list = Share.recons(conved)
             secrets_2 = Share.convert_type(secrets_2)
             assert (np.allclose(secrets, secrets_2))
-
-    @pytest.mark.parametrize(
-        ("shares"),
-        [
-            # str
-            ([["a", "b"], ["a", "b"]]),
-            ([["a", "b", "c"], ["a", "b", "c"], ["a", "b", "c"]])
-        ]
-    )
-    def test_sharize_recons_not_share(self, shares: list):
-        """ 数値でない(Shareでない)値を復元せず返却できるかTest """
-        secrets: list = Share.recons(shares)
-        assert (shares[0] == secrets)
