@@ -1,18 +1,16 @@
 import logging
 from dataclasses import dataclass
 from decimal import Decimal
-from typing import (ClassVar, List, Tuple,
-                    Callable, Any, Union,
-                    Optional, Sequence)
+from typing import (Any, Callable, ClassVar, List,
+                    Optional, Sequence, Tuple, Union)
 
 import numpy as np
 
-from .utils.overload_tools import (DictList, DictList2,
-                                   Dim1, Dim2, Dim3, methoddispatch)
-from .proto.common_types.common_types_pb2 import (ShareValueTypeEnum,
-                                                  Schema)
-from .utils.random import ChaCha20, RandomInterface
 from .exception import ArgmentError
+from .proto.common_types.common_types_pb2 import Schema, ShareValueTypeEnum
+from .utils.overload_tools import (DictList, DictList2, Dim1,
+                                   Dim2, Dim3, methoddispatch)
+from .utils.random import ChaCha20, RandomInterface
 
 logger = logging.getLogger(__name__)
 
@@ -148,51 +146,43 @@ class Share:
 
     @recons.register(Dim1)
     @staticmethod
-    def __recons_list1(shares: List, f: Callable[[Any], Any] = float):
+    def __recons_list1(shares: List[Union[int, Decimal]]):
         """ 1次元リストのシェアを復元 """
-        try:
-            # 文字列がfloatかどうかcheck
-            [float(x) for x in shares]
-        except ValueError:
-            return shares[0]
         return sum(shares)
 
     @recons.register(Dim2)
     @recons.register(Dim3)
     @staticmethod
-    def __recons_list(shares: List[List],
-                      f: Callable[[Any], Any] = float) -> List:
+    def __recons_list(shares: List[List[Union[int, Decimal]]]) -> List:
         """ リストのシェアを復元 """
         secrets: List = [
-            Share.recons([shares_pi[i] for shares_pi in shares], f)
+            Share.recons([shares_pi[i] for shares_pi in shares])
             for i in range(len(shares[0]))
         ]
         return secrets
 
     @recons.register(DictList)
     @staticmethod
-    def __recons_dictlist(shares: List[dict],
-                          f: Callable[[Any], Any] = float) -> dict:
+    def __recons_dictlist(shares: List[dict]) -> dict:
         """ 辞書型を復元 """
         secrets: dict = dict()
         for key in shares[0].keys():
             val = []
             for s in shares:
                 val.append(s[key])
-            secrets[key] = Share.recons(val, f)
+            secrets[key] = Share.recons(val)
         return secrets
 
     @recons.register(DictList2)
     @staticmethod
-    def __recons_dictlist2(shares: List[List[dict]],
-                           f: Callable[[Any], Any] = float) -> list:
+    def __recons_dictlist2(shares: List[List[dict]]) -> list:
         """ 辞書型配列を復元 """
         secrets: list = list()
         for i in range(len(shares[0])):
             val = []
             for s in shares:
                 val.append(s[i])
-            secrets.append(Share.recons(val, f))
+            secrets.append(Share.recons(val))
         return secrets
 
     @staticmethod

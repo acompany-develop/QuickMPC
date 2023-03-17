@@ -133,16 +133,3 @@ class TestQMPC:
             secrets_2: list = Share.recons(conved)
             secrets_2 = Share.convert_type(secrets_2)
             assert (np.allclose(secrets, secrets_2))
-
-    @pytest.mark.parametrize(
-        ("shares"),
-        [
-            # str
-            ([["a", "b"], ["a", "b"]]),
-            ([["a", "b", "c"], ["a", "b", "c"], ["a", "b", "c"]])
-        ]
-    )
-    def test_sharize_recons_not_share(self, shares: list):
-        """ 数値でない(Shareでない)値を復元せず返却できるかTest """
-        secrets: list = Share.recons(shares)
-        assert (shares[0] == secrets)
