@@ -1,5 +1,5 @@
-from random import Random
 import string
+from random import Random
 
 import pytest
 from utils import get_result, qmpc
@@ -17,9 +17,7 @@ def generate_random_string(seed: int, length: int) -> str:
     ("secret"),
     [
         'secret',
-        *[generate_random_string(seed=seed,
-                                 length=20)
-          for seed in range(5)],
+        *[generate_random_string(seed=seed, length=512) for seed in range(5)],
     ]
 )
 def test_string(secret: str):
