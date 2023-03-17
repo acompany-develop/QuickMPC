@@ -29,18 +29,13 @@ var s *utils.TestServer
 
 func init() {
 	// モック用GetPartyIdFromIp
-	GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (uint32, error) {
-		if reqIpAddrAndPort == "bufconn" {
-			Pic.mux.Lock()
-			defer Pic.mux.Unlock()
+	GetPartyIdFromClaims = func(claims *jwt_types.Claim) (uint32, error) {
+		Pic.mux.Lock()
+		defer Pic.mux.Unlock()
 
-			if Pic.partyId++; Pic.partyId > uint32(len(claims.PartyInfo)) {
-				Pic.partyId = 1
-			}
-		} else {
-			return 0, fmt.Errorf("reqIpAddrAndPortがbufconnではない(%s)", reqIpAddrAndPort)
+		if Pic.partyId++; Pic.partyId > uint32(len(claims.PartyInfo)) {
+			Pic.partyId = 1
 		}
-
 		return Pic.partyId, nil
 	}
 

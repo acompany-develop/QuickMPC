@@ -58,9 +58,10 @@ rm-db:
 	docker-compose $(COMPOSE_FILES_OPT) down -v
 
 gen-jwt: upnet
-	cp $t ../config/beaver_triple_service/
+	cp $t ../config/beaver_triple_service/sample.yaml
+	docker-compose $(COMPOSE_FILES_OPT) down -v
 	docker buildx bake $(COMPOSE_FILES_OPT) small_bts --load
-	docker-compose $(COMPOSE_FILES_OPT) run small_bts /bin/sh -c './beaver_triple_service generateJwt' --file $t --output /QuickMPC/config
+	docker-compose $(COMPOSE_FILES_OPT) run --rm small_bts /bin/sh -c './beaver_triple_service generateJwt --file /QuickMPC/config/sample.yaml --output /QuickMPC/config'
 
 create-gcp-instance:
 	cd terraform/gcp/ && \

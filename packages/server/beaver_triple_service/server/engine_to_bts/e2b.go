@@ -6,7 +6,6 @@ import (
 	"net"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -16,8 +15,6 @@ import (
 	"google.golang.org/grpc/health"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/keepalive"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
@@ -50,76 +47,21 @@ func getWithEnvoy() (bool, error) {
 }
 
 // モック時に置き換わる関数
-var GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (uint32, error) {
-	arr := strings.Split(reqIpAddrAndPort, ":")
-	if len(arr) != 2 {
-		errText := fmt.Sprintf("requestのIpAddessの形式が異常: %s", reqIpAddrAndPort)
-		logger.Error(errText)
-		return 0, fmt.Errorf(errText)
-	}
-	reqIpAddr, _ := arr[0], arr[1]
-
-	var partyId uint32
-	for _, party := range claims.PartyInfo {
-		if reqIpAddr == party.Address {
-			partyId = party.Id
-			break
-		}
-	}
-	if partyId == 0 {
-		var partyList []string = []string{}
-		for _, party := range claims.PartyInfo {
-			partyList = append(partyList, party.Address)
-		}
-		errText := fmt.Sprintf("PartyList[%s]に存在しないIPからのリクエスト: %s", strings.Join(partyList, ", "), reqIpAddr)
-		logger.Error(errText)
-		return 0, fmt.Errorf(errText)
-	}
-
-	return partyId, nil
-}
-
-// ClientのIPアドレスを取得する関数
-func GetReqIpAddrAndPort(ctx context.Context) (string, error) {
-	var reqIpAddrAndPort string
-	with_envoy, err := getWithEnvoy()
-	if err != nil {
-		return "", err
-	}
-
-	if with_envoy {
-		md, _ := metadata.FromIncomingContext(ctx)
-		port, err := getListenPort()
-		if err != nil {
-			return "", err
-		}
-
-		reqIpAddrAndPort = fmt.Sprintf("%s:%s", md["x-forwarded-for"][0], port)
-	} else {
-		p, _ := peer.FromContext(ctx)
-		reqIpAddrAndPort = p.Addr.String()
-	}
-
-	return reqIpAddrAndPort, nil
+var GetPartyIdFromClaims = func(claims *jwt_types.Claim) (uint32, error) {
+	return claims.PartyId, nil
 }
 
 func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
-	// ClientのIPアドレスを取得
-	reqIpAddrAndPort, err := GetReqIpAddrAndPort(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
 	}
 
-	partyId, err := GetPartyIdFromIp(claims, reqIpAddrAndPort)
+	partyId, err := GetPartyIdFromClaims(claims)
 	if err != nil {
 		return nil, err
 	}
-	logger.Infof("Ip %s, jobId: %d, partyId: %d Type: %v\n", reqIpAddrAndPort, in.GetJobId(), partyId, in.GetTripleType())
+	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetTripleType())
 
 	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
 	if err != nil {
@@ -132,22 +74,16 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 }
 
 func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
-	// ClientのIPアドレスを取得
-	reqIpAddrAndPort, err := GetReqIpAddrAndPort(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
 	}
 
-	partyId, err := GetPartyIdFromIp(claims, reqIpAddrAndPort)
+	partyId, err := GetPartyIdFromClaims(claims)
 	if err != nil {
 		return nil, err
 	}
-	logger.Infof("Ip %s, partyId: %d \n", reqIpAddrAndPort, partyId)
+	logger.Infof("partyId: %d \n", partyId)
 
 	err = tg.InitTripleStore()
 	if err != nil {
@@ -158,22 +94,16 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 }
 
 func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
-	// ClientのIPアドレスを取得
-	reqIpAddrAndPort, err := GetReqIpAddrAndPort(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
 	}
 
-	partyId, err := GetPartyIdFromIp(claims, reqIpAddrAndPort)
+	partyId, err := GetPartyIdFromClaims(claims)
 	if err != nil {
 		return nil, err
 	}
-	logger.Infof("Ip %s, jobId: %d, partyId: %d\n", reqIpAddrAndPort, in.GetJobId(), partyId)
+	logger.Infof("jobId: %d, partyId: %d\n", in.GetJobId(), partyId)
 
 	err = tg.DeleteJobIdTriple(in.GetJobId())
 	if err != nil {
