@@ -16,11 +16,33 @@ def generate_random_string(seed: int, length: int) -> str:
 @pytest.mark.parametrize(
     ("secret"),
     [
+        # normal case
         'secret',
+        # random case
         *[generate_random_string(seed=seed, length=512) for seed in range(5)],
+        # alphabet
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        # hiragana
+        "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞ"
+        "ただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽ"
+        "まみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ",
+        # katakana
+        "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾ"
+        "タダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポ"
+        "マミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶヷヸヹヺ",
+        # kanji
+        "春眠不覚暁処処聞啼鳥夜来風雨声花落知多少",
+        # large number
+        "１２３４５６７８９０"
+        # mix
+        "abcあいうアイウ你好世界１２３"
+        # 最長住所
+        "漢漢漢漢漢漢漢漢漢漢０漢漢００漢００漢アアアアアアアアアア"
+        "漢漢漢漢・漢漢・漢漢漢漢漢漢アアアア＆アアアアアア"
+        "漢漢漢漢漢漢漢漢漢漢漢（漢漢漢漢漢漢漢）漢",
     ]
 )
-def test_string(secret: str):
+def test_restor_string(secret: str):
     data = [
         ['id', 'str'],
         ['0', secret]

@@ -109,15 +109,15 @@ class TestQMPC:
         ("secrets"),
         [
             # zero
-            (1),
+            (0),
             # int_max
-            (1e10),
+            (1e1200),
             # int_min
-            (-1e10),
+            (-1e1200),
             # float_min_plus
-            (1e-10),
+            (1e-50),
             # float_min_minus
-            (-1e-10),
+            (-1e-50),
         ]
     )
     def test_sharize_edge(self, secrets: float):

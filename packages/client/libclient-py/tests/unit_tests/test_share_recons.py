@@ -120,6 +120,24 @@ class TestQMPC:
     @pytest.mark.parametrize(
         ("shares", "expected"),
         [
+            ([1e1200 for _ in range(3)], 3e1200),
+            ([Decimal(1e1200) for _ in range(3)], Decimal(3e1200)),
+            ([-1e1200 for _ in range(3)], -3e1200),
+            ([Decimal(-1e1200) for _ in range(3)], Decimal(-3e1200)),
+            ([1e-50 for _ in range(3)], 3e-50),
+            ([Decimal(1e-50) for _ in range(3)], Decimal(3e-50)),
+            ([-1e-50 for _ in range(3)], -3e-50),
+            ([Decimal(-1e-50) for _ in range(3)], Decimal(-3e-50)),
+        ]
+    )
+    def test_recons_edge(self, shares: list, expected):
+        """ 3パーティの復元が正しくできるかTest """
+        secrets = Share.recons(shares)
+        assert TestQMPC.isclose(secrets, expected)
+
+    @pytest.mark.parametrize(
+        ("shares", "expected"),
+        [
             # scalar value is not allowed
             (1, ArgumentError),
 
