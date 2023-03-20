@@ -5,8 +5,8 @@ from typing import ClassVar, List
 
 from nacl.utils import random, randombytes_deterministic
 
+from ..exception import ArgumentError
 from .overload_tools import methoddispatch
-from ..exception import ArgmentError
 
 
 # 乱数生成のインタフェース
@@ -29,7 +29,7 @@ class ChaCha20(RandomInterface):
 
     @methoddispatch()
     def get(self, a, b):
-        raise ArgmentError(
+        raise ArgumentError(
             "乱数の閾値はどちらもintもしくはdecimalでなければなりません．"
             f"a is {type(a)}, b is {type(b)}")
 
@@ -50,7 +50,7 @@ class ChaCha20(RandomInterface):
 
     @methoddispatch()
     def get_list(self, a, b, size: int):
-        raise ArgmentError(
+        raise ArgumentError(
             "乱数の閾値はどちらもintもしくはdecimalでなければなりません．"
             f"a is {type(a)}, b is {type(b)}")
 
@@ -79,10 +79,10 @@ class ChaCha20(RandomInterface):
 
     def __exception_check(self, a, b) -> None:
         if a >= b:
-            raise ArgmentError(
+            raise ArgumentError(
                 "乱数の下限は上限より小さい必要があります．"
                 f"{a} < {b}")
         if type(a) != type(b):
-            raise ArgmentError(
+            raise ArgumentError(
                 "乱数の下限と上限の型は一致させる必要があります．"
                 f"{type(a)} != {type(b)}")

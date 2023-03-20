@@ -8,7 +8,7 @@
 
 QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Secure Multiparty Computation）の実用的なエンジンです。
 
-基本的な統計量計算や軽量な機械学習に用いるプライバシーデータを、秘匿化しつつ計算することができます。これにより世界中の企業やエンジニアはSMPCの専門的な知識不要で、PythonとJavaScript(TypeScript)のクライアントライブラリを用いて、SMPC機能を利用したSaaSプロダクトを簡単に開発できるようになります。
+基本的な統計量計算に用いるプライバシーデータを、秘匿化しつつ計算することができます。これにより世界中の企業やエンジニアはSMPCの専門的な知識不要で、Pythonのクライアントライブラリを用いて、SMPC機能を利用したSaaSプロダクトを簡単に開発できるようになります。
 
 ![oss_eg](https://user-images.githubusercontent.com/1694907/182254973-ee3092a6-ee28-49bb-aaf6-637225271a0b.png)
 

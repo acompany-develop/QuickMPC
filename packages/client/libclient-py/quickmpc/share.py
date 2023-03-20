@@ -6,7 +6,7 @@ from typing import (Any, Callable, ClassVar, List,
 
 import numpy as np
 
-from .exception import ArgmentError
+from .exception import ArgumentError
 from .proto.common_types.common_types_pb2 import Schema, ShareValueTypeEnum
 from .utils.overload_tools import (DictList, DictList2, Dim1,
                                    Dim2, Dim3, methoddispatch)
@@ -24,7 +24,7 @@ class Share:
     @staticmethod
     def __to_str(_):
         logger.error("Invalid argument on stringfy.")
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @__to_str.register(Decimal)
     @staticmethod
@@ -41,19 +41,19 @@ class Share:
     @staticmethod
     def sharize(_, __):
         logger.error("Invalid argument on sharize.")
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @methoddispatch(is_static_method=True)
     @staticmethod
     def recons(_):
         logger.error("Invalid argument on recons.")
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @methoddispatch(is_static_method=True)
     @staticmethod
     def convert_type(_, __):
         logger.error("Invalid argument on convert_type.")
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @sharize.register(int)
     @sharize.register(float)

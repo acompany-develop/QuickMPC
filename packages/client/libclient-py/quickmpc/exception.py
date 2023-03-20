@@ -14,5 +14,5 @@ class QMPCServerError(Exception):
     err_info: Union[str, JobErrorInfo]
 
 
-class ArgmentError(Exception):
+class ArgumentError(Exception):
     pass

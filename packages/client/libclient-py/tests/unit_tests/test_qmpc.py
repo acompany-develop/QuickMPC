@@ -2,7 +2,7 @@ from typing import Any, Dict
 
 import pytest
 
-from quickmpc.exception import ArgmentError, QMPCJobError, QMPCServerError
+from quickmpc.exception import ArgumentError, QMPCJobError, QMPCServerError
 from quickmpc.qmpc_server import QMPCServer
 
 
@@ -73,22 +73,22 @@ class TestQMPC:
 
     def test_execute_computation_errorhandring(self, run_server1,
                                                run_server2, run_server3):
-        with pytest.raises(ArgmentError):
+        with pytest.raises(ArgumentError):
             # data_idsの要素数-1とjoinの要素数が一致していない
             self.qmpc.execute_computation(
                 1,
                 [["id1", "id2"], [], [1, 1]], [[0, 1], []])
-        with pytest.raises(ArgmentError):
+        with pytest.raises(ArgumentError):
             # data_idsの要素数とindexの要素数が一致していない
             self.qmpc.execute_computation(
                 1,
                 [["id1", "id2"], [0], [1]], [[0, 1], []])
-        with pytest.raises(ArgmentError):
+        with pytest.raises(ArgumentError):
             # joinの値が0より小さい
             self.qmpc.execute_computation(
                 1,
                 [["id1", "id2"], [-1], [1, 1]], [[0, 1], []])
-        with pytest.raises(ArgmentError):
+        with pytest.raises(ArgumentError):
             # joinの値が2より大きい
             self.qmpc.execute_computation(
                 1,

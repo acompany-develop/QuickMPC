@@ -3,7 +3,7 @@ import operator
 from dataclasses import dataclass
 from typing import List
 
-from ..exception import ArgmentError
+from ..exception import ArgumentError
 from .overload_tools import Dim1, Dim2, methoddispatch
 
 
@@ -29,7 +29,7 @@ class MakePiece:
     @methoddispatch(is_static_method=True)
     @staticmethod
     def make_pieces(_, __):
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @staticmethod
     def check_max_size(max_size: int):

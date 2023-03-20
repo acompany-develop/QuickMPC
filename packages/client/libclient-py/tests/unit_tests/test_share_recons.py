@@ -4,7 +4,7 @@ from decimal import Decimal
 import numpy as np
 import pytest
 
-from quickmpc.exception import ArgmentError
+from quickmpc.exception import ArgumentError
 from quickmpc.share import Share
 
 
@@ -121,11 +121,11 @@ class TestQMPC:
         ("shares", "expected"),
         [
             # scalar value is not allowed
-            (1, ArgmentError),
+            (1, ArgumentError),
 
             # string value is not allowed
-            ("hey", ArgmentError),
-            (["hey"], TypeError),  # TODO: quickmpcのArgmentErrorが出るようにしたい
+            ("hey", ArgumentError),
+            (["hey"], TypeError),  # TODO: quickmpcのArgumentErrorが出るようにしたい
             ([["hey"]], TypeError),
         ]
     )

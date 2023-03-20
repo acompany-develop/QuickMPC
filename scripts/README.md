@@ -95,29 +95,29 @@ build() {
 
 # Function to describe the build process
 build() {
-	# Describe build process here
-	docker-compose -f docker-compose.yml build small_cc
+    # Describe build process here
+    docker buildx bake $COMPOSE_FILES_OPT small_cc --load
 }
 
 # Function describing the setup process to be executed before run
 # INFO: Initialization is performed to enable the run to be executed idempotency
 setup() {
-	# Describe run preprocessing here
-	docker-compose -f docker-compose.yml down -v
+    # Describe run preprocessing here
+    docker-compose $COMPOSE_FILES_OPT down -v
 }
 
 # Function to describe the run process
 # NOTE: This function is an exception and does not have to be written in a one-liner
 run() {
-	# Describe the `test` execution process here
-	docker-compose -f docker-compose.yml run small_cc /bin/sh -c "cd /QuickMPC && bazel test //test/unit_test:all --test_env=IS_TEST=true --test_output=errors"
+    # Describe the `test` execution process here
+    docker-compose $COMPOSE_FILES_OPT run -T small_cc /bin/sh -c "cd /QuickMPC && bazel test //test/unit_test:all --config=debug --test_env=IS_TEST=true --test_output=all"
 }
 
 # Function describing the teardown process to be executed after run
 # INFO: Initialize without leaving side effects after run
 teardown() {
-	# Describe post-processing of run here
-	docker-compose -f docker-compose.yml down -v
+    # Describe post-processing of run here
+    docker-compose $COMPOSE_FILES_OPT down -v
 }
 ```
 
@@ -148,17 +148,17 @@ make debug m=run dd=1 # If you want to run only the run process of `*debug.sh` w
 Create debug.sh in the following format.
 ```sh
 build() {
-	# Describe build process here
-	docker-compose -f docker-compose.yml build dev_cc1 dev_cc2 dev_cc3
+    # Describe build process here
+    docker-compose $COMPOSE_FILES_OPT build dev_cc1 dev_cc2 dev_cc3
 }
 
 setup() {
-	# Describe run preprocessing here
-	docker-compose -f docker-compose.yml down -v
+    # Describe run preprocessing here
+    docker-compose $COMPOSE_FILES_OPT down -v
 }
 
 run() {
-	# Describe debug execution process here
-	docker-compose -f docker-compose.yml up dev_cc1 dev_cc2 dev_cc3
+    # Describe debug execution process here
+    docker-compose $COMPOSE_FILES_OPT up dev_cc1 dev_cc2 dev_cc3
 }
 ```

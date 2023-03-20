@@ -11,25 +11,22 @@ from dataclasses import dataclass, field, InitVar
 from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
+import google.protobuf.json_format
 import grpc
 import numpy as np
 import tqdm  # type: ignore
 from grpc_status import rpc_status  # type: ignore
-import google.protobuf.json_format
 
-from .exception import ArgmentError, QMPCJobError, QMPCServerError
-from .proto.common_types.common_types_pb2 import (JobErrorInfo,
-                                                  JobStatus,
-                                                  Schema,
-                                                  ShareValueTypeEnum)
+from .exception import ArgumentError, QMPCJobError, QMPCServerError
+from .proto.common_types.common_types_pb2 import (JobErrorInfo, JobStatus,
+                                                  Schema, ShareValueTypeEnum)
 from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        ExecuteComputationRequest,
                                        GetComputationResultRequest,
                                        GetComputationResultResponse,
                                        GetDataListRequest,
                                        GetElapsedTimeRequest,
-                                       GetJobErrorInfoRequest,
-                                       Input,
+                                       GetJobErrorInfoRequest, Input,
                                        JoinOrder, SendSharesRequest)
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
 from .share import Share
@@ -71,7 +68,7 @@ class QMPCServer:
             channel = grpc.secure_channel(o.netloc, credential)
         else:
             logger.error(f'仕様を満たさない形式のendpointが渡された: {endpoint}')
-            raise ArgmentError(
+            raise ArgumentError(
                 "endpointsにサポートされてないプロトコルが指定されています．http/httpsのいずれかを指定してください．")
 
         return channel
@@ -173,12 +170,12 @@ class QMPCServer:
     @methoddispatch(is_static_method=True)
     @staticmethod
     def __convert_schema(_):
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @__convert_schema.register(Dim1)
     @staticmethod
     def __convert_schema_dummy(schema: List):
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @__convert_schema.register((Dim1, str))
     @staticmethod
@@ -196,7 +193,7 @@ class QMPCServer:
 
     @methoddispatch()
     def send_share(self, _):
-        raise ArgmentError("不正な引数が与えられています．")
+        raise ArgumentError("不正な引数が与えられています．")
 
     @send_share.register(Dim2)
     @send_share.register(Dim3)
@@ -263,7 +260,7 @@ class QMPCServer:
                             join_order: Tuple[List, List, List],
                             inp: Tuple[List, List]) -> Dict:
         if not self._argument_check(join_order):
-            raise ArgmentError("引数が正しくありません．")
+            raise ArgumentError("引数が正しくありません．")
 
         """ 計算リクエストを送信 """
         join_order_req = JoinOrder(
