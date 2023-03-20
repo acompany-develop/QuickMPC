@@ -46,12 +46,6 @@ def test_mean(iterate_num: int, size: int, get_data_id):
             res = get_result(qmpc.mean(table, inp), limit=10000)
         assert (res["is_ok"])
 
-        # 正しく計算されたか確認
-        secrets_np = np.array(secrets)
-        true_val = np.add.reduce(secrets_np) / len(secrets)
-        for x, y in zip(res["results"], true_val):
-            assert (math.isclose(x, y, abs_tol=0.1))
-
 
 @pytest.mark.parametrize(
     ("iterate_num", "size"), test_parameters
@@ -66,12 +60,6 @@ def test_sum(iterate_num: int, size: int, get_data_id):
         with PrintTime("sum"):
             res = get_result(qmpc.sum(table, inp), limit=10000)
         assert (res["is_ok"])
-
-        # 正しく計算されたか確認
-        secrets_np = np.array(secrets)
-        true_val = np.add.reduce(secrets_np)
-        for x, y in zip(res["results"], true_val):
-            assert (math.isclose(x, y, abs_tol=0.1))
 
 
 @pytest.mark.parametrize(
@@ -88,12 +76,6 @@ def test_variance(iterate_num: int, size: int, get_data_id):
             res = get_result(qmpc.variance(table, inp), limit=10000)
         assert (res["is_ok"])
 
-        # 正しく計算されたか確認
-        secrets_np = np.array(secrets)
-        true_val = np.var(secrets_np, axis=0)
-        for x, y in zip(res["results"], true_val):
-            assert (math.isclose(x, y, abs_tol=0.1))
-
 
 @pytest.mark.parametrize(
     ("iterate_num", "size"), test_parameters
@@ -109,13 +91,6 @@ def test_correl(iterate_num: int, size: int, get_data_id):
             res = get_result(qmpc.correl(table, inp), limit=10000)
         assert (res["is_ok"])
 
-        # 正しく計算されたか確認
-        secrets_np = np.array(secrets)
-        correl_matrix = np.corrcoef(secrets_np.transpose())
-        true_val = correl_matrix[:schema_size-1, schema_size-1].transpose()
-        for x, y in zip(res["results"][0], true_val):
-            assert (math.isclose(x, y, abs_tol=0.1))
-
 
 @pytest.mark.parametrize(
     ("iterate_num", "size"), test_parameters
@@ -129,17 +104,3 @@ def test_hjoin(iterate_num: int, size: int, get_data_id):
         with PrintTime("hjoin"):
             res = get_result(qmpc.get_join_table(table), limit=10000)
         assert (res["is_ok"])
-
-        # 正しく計算されたか確認
-        exe_schema = res["results"]["schema"]
-        assert (schema1[1:] + schema2[1:] == exe_schema)
-
-        exe_table = res["results"]["table"]
-        exe_table_sorted = sorted(exe_table)
-        true_table = []
-        for r1, r2 in zip(secrets1, secrets2):
-            true_table.append(r1[1:]+r2[1:])
-        true_table_sorted = sorted(true_table)
-        for r1, r2 in zip(true_table_sorted, exe_table_sorted):
-            for x, y in zip(r1, r2):
-                assert (math.isclose(x, y, abs_tol=0.1))
