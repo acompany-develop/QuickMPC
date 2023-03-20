@@ -140,7 +140,7 @@ def test_parse_errorhandring():
                "596766486584746707218145923849790876466338")]],
          [schema_fp('id'), schema_fp('zero'), schema_fp('int_max'),
           schema_fp('int_min'), schema_fp('float_min_plus'),
-          schema_fp('float_min_minus'), schema_int('string_max'), ]),
+          schema_fp('float_max_minus'), schema_int('string_max'), ]),
 
         # 文字列
         ("string_data.csv",
