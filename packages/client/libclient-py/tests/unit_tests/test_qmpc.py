@@ -14,6 +14,15 @@ def send_share_param(secrets=[[1, 2, 3]],
     return (secrets, schema, matching_column, piece_size)
 
 
+def execute_computation_param(method_id=1,
+                              data_ids=["data_id1", "data_id2"],
+                              join=[1],
+                              index=[1, 1],
+                              src=[0],
+                              target=[1]):
+    return (method_id, (data_ids, join, index), (src, target))
+
+
 class TestQMPC:
     qmpc: QMPCServer = QMPCServer(
         ["http://localhost:50001",
@@ -70,36 +79,47 @@ class TestQMPC:
         response: Dict[str, Any] = self.qmpc.delete_share([])
         assert (response["is_ok"])
 
-    def test_execute_computation(self, run_server1, run_server2, run_server3):
+    @pytest.mark.parametrize(
+        ("params"), [
+            execute_computation_param(method_id=1, target=[]),
+            execute_computation_param(method_id=2, target=[]),
+            execute_computation_param(method_id=3, target=[]),
+            execute_computation_param(method_id=4),
+            execute_computation_param(method_id=5),
+            execute_computation_param(method_id=6),
+        ]
+    )
+    def test_execute_computation(self, params,
+                                 run_server1, run_server2, run_server3):
         """ serverに計算リクエストを送れるかのTest"""
-        for method_id in range(1, 3):
-            response: Dict[str, Any] = self.qmpc.execute_computation(
-                method_id,
-                [["id1", "id2"], [0], [1, 1]], [[0, 1], []])
-            assert (response["is_ok"])
+        response: Dict[str, Any] = self.qmpc.execute_computation(*params)
+        assert (response["is_ok"])
 
-    def test_execute_computation_errorhandring(self, run_server1,
-                                               run_server2, run_server3):
-        with pytest.raises(ArgumentError):
+    @pytest.mark.parametrize(
+        ("params", "expected_exception"), [
             # data_idsの要素数-1とjoinの要素数が一致していない
-            self.qmpc.execute_computation(
-                1,
-                [["id1", "id2"], [], [1, 1]], [[0, 1], []])
-        with pytest.raises(ArgumentError):
+            (execute_computation_param(data_ids=["id1", "id2"], join=[1, 1]),
+             ArgumentError),
             # data_idsの要素数とindexの要素数が一致していない
-            self.qmpc.execute_computation(
-                1,
-                [["id1", "id2"], [0], [1]], [[0, 1], []])
-        with pytest.raises(ArgumentError):
-            # joinの値が0より小さい
-            self.qmpc.execute_computation(
-                1,
-                [["id1", "id2"], [-1], [1, 1]], [[0, 1], []])
-        with pytest.raises(ArgumentError):
-            # joinの値が2より大きい
-            self.qmpc.execute_computation(
-                1,
-                [["id1", "id2"], [3], [1, 1]], [[0, 1], []])
+            (execute_computation_param(data_ids=["id1", "id2"], index=[1]),
+             ArgumentError),
+            # joinの値が範囲外
+            (execute_computation_param(join=[-1]),
+             ArgumentError),
+            (execute_computation_param(join=[3]),
+             ArgumentError),
+            # QMPCServerErrorとして例外がthrowされるか
+            (execute_computation_param(src=[1000000000]),
+             QMPCJobError),
+            # QMPCServerErrorとして例外がthrowされるか
+            (execute_computation_param(data_ids=["UnregisteredDataId", "id2"]),
+             QMPCServerError),
+        ]
+    )
+    def test_execute_computation_errorhandring(self, params, expected_exception,
+                                               run_server1, run_server2, run_server3):
+        with pytest.raises(expected_exception):
+            self.qmpc.execute_computation(*params)
 
     def test_get_computation_resultRequest(self, run_server1,
                                            run_server2, run_server3):
@@ -108,20 +128,6 @@ class TestQMPC:
         response: Dict[str, Any] = self.qmpc.get_computation_result(
             job_uuid, None)
         assert (response["is_ok"])
-
-    def test_exception_job_error(self):
-        # QMPCJobErrorとして例外がthrowされるかのテスト
-        with pytest.raises(QMPCJobError):
-            self.qmpc.execute_computation(
-                1,
-                [["id1"], [], [1]], [[1000000000], []])
-
-    def test_exception_server_error(self):
-        # QMPCServerErrorとして例外がthrowされるかのテスト
-        with pytest.raises(QMPCServerError):
-            self.qmpc.execute_computation(
-                1,
-                [["UnregisteredDataId"], [], [1]], [[], []])
 
     def test_get_data_list(self, run_server1, run_server2, run_server3):
         """ serverにシェアを送れるかのTest"""
