@@ -106,7 +106,7 @@ class TestQMPC:
              ArgumentError),
             (execute_computation_param(join=[3]),
              ArgumentError),
-            # QMPCServerErrorとして例外がthrowされるか
+            # QMPCJobErrorとして例外がthrowされるか
             (execute_computation_param(src=[1000000000]),
              QMPCJobError),
             # QMPCServerErrorとして例外がthrowされるか
