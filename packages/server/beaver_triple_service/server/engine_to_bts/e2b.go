@@ -67,7 +67,11 @@ var GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (u
 		}
 	}
 	if partyId == 0 {
-		errText := fmt.Sprintf("PartyList[%s, %s, %s]に存在しないIPからのリクエスト: %s", claims.PartyInfo[0].Address, claims.PartyInfo[1].Address, claims.PartyInfo[2].Address, reqIpAddr)
+		var partyList []string = []string{}
+		for _, party := range claims.PartyInfo {
+			partyList = append(partyList, party.Address)
+		}
+		errText := fmt.Sprintf("PartyList[%s]に存在しないIPからのリクエスト: %s", strings.Join(partyList, ", "), reqIpAddr)
 		logger.Error(errText)
 		return 0, fmt.Errorf(errText)
 	}
@@ -78,25 +82,25 @@ var GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (u
 // ClientのIPアドレスを取得する関数
 func GetReqIpAddrAndPort(ctx context.Context) (string, error) {
 	var reqIpAddrAndPort string
-	with_envoy,err := getWithEnvoy()
+	with_envoy, err := getWithEnvoy()
 	if err != nil {
-		return "",err
+		return "", err
 	}
 
 	if with_envoy {
 		md, _ := metadata.FromIncomingContext(ctx)
-		port,err := getListenPort()
+		port, err := getListenPort()
 		if err != nil {
-			return "",err
+			return "", err
 		}
 
-		reqIpAddrAndPort = fmt.Sprintf("%s:%s",md["x-forwarded-for"][0], port)
+		reqIpAddrAndPort = fmt.Sprintf("%s:%s", md["x-forwarded-for"][0], port)
 	} else {
 		p, _ := peer.FromContext(ctx)
 		reqIpAddrAndPort = p.Addr.String()
 	}
 
-	return reqIpAddrAndPort,nil
+	return reqIpAddrAndPort, nil
 }
 
 func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
@@ -150,7 +154,7 @@ func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*empty
 		return nil, err
 	}
 
-	return &emptypb.Empty{},err
+	return &emptypb.Empty{}, err
 }
 
 func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
@@ -176,12 +180,12 @@ func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTriple
 		return nil, err
 	}
 
-	return &emptypb.Empty{},err
+	return &emptypb.Empty{}, err
 }
 
 func RunServer() {
 	listenPort, err := getListenPort()
-	if err != nil{
+	if err != nil {
 		logger.Fatalf("failed to get listen port: %v", err)
 	}
 
