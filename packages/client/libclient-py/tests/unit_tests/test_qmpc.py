@@ -62,7 +62,7 @@ class TestQMPC:
             # 列数が異なる
             (send_share_param(secrets=[[1, 1, 2], [2, 3]]), RuntimeError),
             # 文字列が含まれる
-            (send_share_param(secrets=[["a", 2, 3]]), ArgmentError),
+            (send_share_param(secrets=[["a", 2, 3]]), ArgumentError),
             # Noneが含まれる
             (send_share_param(secrets=[[None, 2, 3]]), TypeError),
         ]

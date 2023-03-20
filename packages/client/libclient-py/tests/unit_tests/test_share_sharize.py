@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 import pytest
 
-from quickmpc.exception import ArgmentError
+from quickmpc.exception import ArgumentError
 from quickmpc.share import Share
 
 
@@ -137,17 +137,17 @@ class TestQMPC:
         ("args", "expected_exception"),
         [
             # string
-            (sharize_params(secrets="str"), ArgmentError),
+            (sharize_params(secrets="str"), ArgumentError),
             # array string
-            (sharize_params(secrets="[str]"), ArgmentError),
+            (sharize_params(secrets="[str]"), ArgumentError),
             # 列が異なる
             (sharize_params(secrets=[[1, 2], [1]]), ValueError),
             # 3-dim
-            (sharize_params(secrets=[[[1]]]), ArgmentError),
+            (sharize_params(secrets=[[[1]]]), ArgumentError),
             # empty
             (sharize_params(secrets=[[], []]), ValueError),
             # party_sizeが1
-            (sharize_params(party_size=1), ArgmentError),
+            (sharize_params(party_size=1), ArgumentError),
         ]
     )
     def test_sharize_errorhandring(self, args, expected_exception):
