@@ -517,7 +517,7 @@ TEST(ShareBench, unarySend)
     );
 }
 
-TEST(ShareBench, vecOpne)
+TEST(ShareBench, vecOpen)
 {
     int N = 20000;
     {
