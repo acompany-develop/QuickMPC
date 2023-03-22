@@ -2,7 +2,7 @@ package utils
 
 import (
 	"context"
-	"encoding/base64"
+	// "encoding/base64"
 	"fmt"
 	"os"
 	"time"
@@ -36,15 +36,14 @@ func BtsAuthFunc(ctx context.Context) (context.Context, error) {
 }
 
 func getSecret() ([]byte, error) {
-	raw, ok := os.LookupEnv("JWT_SECRET_KEY")
-	if !ok {
-		return nil, status.Error(codes.Internal, "jwt auth key is not provided")
+	var secrets []byte
+	if os.Getenv("JWT_SECRET_KEY") != "" {
+		secrets = []byte(os.Getenv("JWT_SECRET_KEY"))
+	} else {
+		secrets = []byte("hoge")
 	}
-	secret, err := base64.StdEncoding.DecodeString(raw)
-	if err != nil {
-		return nil, err
-	}
-	return secret, nil
+
+	return secrets, nil
 }
 
 func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
@@ -52,6 +51,7 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("%s", jwtSecret)
 
 	token, err := jwt.ParseWithClaims(tokenString, &jwt_types.Claim{}, func(token *jwt.Token) (interface{}, error) {
 		// alg を確認するのを忘れない
@@ -62,7 +62,7 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	})
 
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %v", err)
+		return nil, status.Errorf(codes.Unauthenticated, "failed to parse token: %v", err)
 	}
 
 	if !token.Valid {
