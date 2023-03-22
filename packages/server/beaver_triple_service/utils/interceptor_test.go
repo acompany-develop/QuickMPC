@@ -89,7 +89,7 @@ func TestAuthToken(t *testing.T) {
 				testcase.expected = errors.New("nil guard for testcase.expected")
 			}
 			if !strings.Contains(actual.Error(), testcase.expected.Error()) {
-				t.Fatalf("%s: expected result is %v, but got %v", testcase.description, testcase.expected, actual)
+				t.Fatalf("%s: expected result is \"%v\", but got \"%v\"", testcase.description, testcase.expected, actual)
 			}
 		}
 

@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -71,6 +72,14 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	claims, ok := token.Claims.(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
+	}
+
+	// expのバリデーション
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		exp := time.Unix(int64(claims["exp"].(float64)), 0)
+		if time.Now().After(exp) {
+			return nil, fmt.Errorf("token is expired")
+		}
 	}
 
 	return claims, nil
