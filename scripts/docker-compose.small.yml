@@ -16,6 +16,7 @@ services:
         type: bind
     env_file:
       - ../config/beaver_triple_service/.env
+      - ../config/beaver_triple_service/client.sample.env
       - ../config/beaver_triple_service/server.sample.env
     expose:
       - 50020
