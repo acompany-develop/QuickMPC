@@ -58,7 +58,7 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 		if signingMethod, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || signingMethod.Alg() != "HS256" {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(jwtSecret), nil
+		return jwtSecret, nil
 	})
 
 	if err != nil {

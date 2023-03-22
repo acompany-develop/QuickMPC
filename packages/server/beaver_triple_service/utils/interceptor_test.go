@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"encoding/base64"
+	// "encoding/base64"
 	"errors"
 	"fmt"
 	"os"
@@ -77,7 +77,7 @@ func TestAuthToken(t *testing.T) {
 	for _, testcase := range testcases {
 		token := jwt.NewWithClaims(testcase.alg, testcase.claims)
 		tokenString, _ := token.SignedString([]byte(testcase.encodeKey))
-		os.Setenv("JWT_SECRET_KEY", base64.StdEncoding.EncodeToString([]byte(testcase.decodeKey)))
+		os.Setenv("JWT_SECRET_KEY", testcase.decodeKey)
 
 		_, actual := AuthJWT(tokenString)
 
