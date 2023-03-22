@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"bytes"
-	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -40,21 +39,6 @@ func storeClientEnv(path string, token string) error {
 	defer writer.Flush()
 
 	fmt.Fprintf(writer, "BTS_TOKEN=%s\n", token)
-
-	return nil
-}
-
-func storeServerEnv(path string, secrets string, claim jwt_types.Claim) error {
-	fp, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
-	defer fp.Close()
-	if err != nil {
-		return err
-	}
-
-	writer := bufio.NewWriter(fp)
-	defer writer.Flush()
-
-	fmt.Fprintf(writer, "JWT_SECRET_KEY=%s\n", secrets)
 
 	return nil
 }
@@ -113,12 +97,11 @@ var generateJwtCmd = &cobra.Command{
 		log.Printf("json: %s\n", buf.String())
 
 		// build token
-		const RANDOM_BITS = 256
-		const RANDOM_BYTES = RANDOM_BITS / 8
-		secrets := make([]byte, RANDOM_BYTES)
-		_, err = rand.Read(secrets)
-		if err != nil {
-			log.Fatalln(err)
+		var secrets []byte
+		if os.Getenv("JWT_SECRET_KEY") != "" {
+			secrets = []byte(os.Getenv("JWT_SECRET_KEY"))
+		} else {
+			secrets = []byte("hoge")
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -148,15 +131,6 @@ var generateJwtCmd = &cobra.Command{
 				options.output_dir,
 				strings.Join([]string{"client", filename, "env"}, ".")),
 			signed_token_str)
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		err = storeServerEnv(
-			path.Join(
-				options.output_dir,
-				strings.Join([]string{"server", filename, "env"}, ".")),
-			encoded_secrets, claim)
 		if err != nil {
 			log.Fatalln(err)
 		}
