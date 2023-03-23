@@ -124,5 +124,5 @@ JWT_SECRET_KEY=...
 BTS_TOKEN=...
 ```
 
-これを`config/computation_container/jwt/`直下に `client.<ymlのファイル名>.env` という名前で配置し、
-docker-compose.ymlのenv_fileで上記のパスを指定することでJWTが利用可能になります。
+これを`config/computation_container/compute{1,2,3}/`直下に `.env` という名前で配置し、
+docker-compose.ymlのccコンテナのenv_fileで上記のパスを指定することでJWTが利用可能になります。
