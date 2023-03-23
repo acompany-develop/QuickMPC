@@ -2,9 +2,7 @@ gen_go(){
     find $@ -type f -name *proto | xargs -t -I{} bash generate_go.sh {}
 }
 gen_python(){
-    cd ../packages/client/libclient-py/
-    pip install .
-    cd quickmpc/proto
+    pip install ../packages/client/libclient-py/
     python generate_grpc.py
 }
 
