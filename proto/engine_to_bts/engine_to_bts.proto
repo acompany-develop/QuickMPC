@@ -8,7 +8,6 @@ import "google/protobuf/empty.proto";
 
 service EngineToBts {
     rpc GetTriples(GetTriplesRequest) returns (GetTriplesResponse) {}
-    rpc InitTripleStore(google.protobuf.Empty) returns (google.protobuf.Empty) {}
     rpc DeleteJobIdTriple(DeleteJobIdTripleRequest) returns (google.protobuf.Empty) {}
 }
 
