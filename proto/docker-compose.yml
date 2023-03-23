@@ -14,6 +14,3 @@ services:
       - target: /QuickMPC/packages/client/libclient-py
         source: ../packages/client/libclient-py
         type: bind
-      - target: /QuickMPC/.git
-        source: ../.git
-        type: bind
