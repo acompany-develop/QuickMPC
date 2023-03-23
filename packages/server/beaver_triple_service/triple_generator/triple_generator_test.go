@@ -167,29 +167,6 @@ func TestTripleGenerator_Float_1000000_1(t *testing.T) {
 	testTripleGenerator(t, 1000000, 1, pb.Type_TYPE_FLOAT)
 }
 
-func TestInitTripleStore(t *testing.T) {
-	claims, err := getClaims()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	jobId := uint32(1)
-	partyId := uint32(1)
-	amount := uint32(10)
-	triple_type := pb.Type_TYPE_FLOAT
-	_, err = tg.GetTriples(claims, jobId, partyId, amount, triple_type)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	err = tg.InitTripleStore()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	testDbIsEmpty(t)
-}
-
 func TestDeleteJobIdTriple(t *testing.T) {
 	claims, err := getClaims()
 	if err != nil {

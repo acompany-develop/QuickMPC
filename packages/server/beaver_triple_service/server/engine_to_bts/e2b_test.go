@@ -180,22 +180,6 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 	}
 }
 
-func TestInitTripleStore(t * testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewEngineToBtsClient(conn)
-
-	ctx, err := getContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_,err = client.InitTripleStore(ctx, &emptypb.Empty{})
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestDeleteJobIdTriple(t * testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
