@@ -167,3 +167,17 @@ module github.com/acompany-develop/QuickMPC/proto/manage_to_computation_containe
 
 go 1.18
 ```
+
+## ワンコマンドでの生成
+`proto/`で以下のコマンドを実行することでGoとPythonのコードの作成が可能
+```sh
+make generate
+```
+特定のディレクトリを指定して実行したい場合は以下のようにする <br>
+
+### オプション <br>
+t = hoge	# hoge配下のprotoのgRPCコードを生成<br>
+
+```sh
+make generate t=./lib_to_manage_container/ # proto/libc_to_manage_container/ 直下のprotoのgRPCコードを生成したい場合
+```
