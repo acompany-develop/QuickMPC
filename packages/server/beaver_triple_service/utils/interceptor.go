@@ -78,8 +78,13 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		exp := time.Unix(int64(claims["exp"].(float64)), 0)
 		if time.Now().After(exp) {
-			return nil, fmt.Errorf("token is expired")
+			return nil, status.Error(codes.Internal, "token is expired")
 		}
+	}
+
+	// party_idのバリデーション
+	if claims.PartyId < 1 || claims.PartyId > len(claims.PartyInfo) {
+		return nil, status.Error(codes.Internal, "party_id out of range")
 	}
 
 	return claims, nil

@@ -66,11 +66,27 @@ func TestAuthToken(t *testing.T) {
 			decodeKey:   "the-secret-key",
 		},
 		{
-			description: "HMACの鍵が違うとエラー",
+			description: "HMACの鍵が違うとerror",
 			alg:         jwt.SigningMethodHS256,
 			expected:    fmt.Errorf("signature is invalid"),
 			encodeKey:   "the-secret-key",
 			decodeKey:   "is-not-same-key",
+		},
+		{
+			description: "party_idが異常な値だとエラー(1未満)",
+			alg:         jwt.SigningMethodHS256,
+			claims: merge(validClaim, jwt.MapClaims{"party_id": 0}),
+			expected:    fmt.Errorf("party_id out of range"),
+			encodeKey:   "the-secret-key",
+			decodeKey:   "the-secret-key",
+		},
+		{
+			description: "party_idが異常な値だとエラー(len(PartyInfo)超過)",
+			alg:         jwt.SigningMethodHS256,
+			claims: merge(validClaim, jwt.MapClaims{"party_info": [{"id": 1, "address": "10.0.1.20"}, {"id": 2, "address": "10.0.2.20"}, {"id": 3, "address": "10.0.3.20"}], "party_id": 4}),
+			expected:    fmt.Errorf("party_id out of range"),
+			encodeKey:   "the-secret-key",
+			decodeKey:   "the-secret-key",
 		},
 	}
 
