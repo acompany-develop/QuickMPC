@@ -8,7 +8,8 @@ RUN apt-get update && \
 RUN pip install -U pip && \
     pip install \
     autopep8 \
-    mypy-protobuf
+    mypy-protobuf \
+    grpcio-tools==1.46.3
 
 ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin
