@@ -21,7 +21,6 @@ mypy = "*"
 types-protobuf = "*"
 types-tabulate = "*"
 types-tqdm = "*"
-mypy-protobuf = "*"
 
 [requires]
 python_version = "3.7"
