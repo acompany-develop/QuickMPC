@@ -24,7 +24,22 @@ func TestAuthToken(t *testing.T) {
 
 	tommorow := time.Now().Add(time.Hour * 24).Unix()
 
+	validPartyInfo := []map[string]interface{}{}
+	validPartyInfo = append(validPartyInfo, map[string]interface{}{
+		"id": 1,
+		"address":  "10.0.1.20",
+	})
+	validPartyInfo = append(validPartyInfo, map[string]interface{}{
+		"id": 2,
+		"address":  "10.0.2.20",
+	})
+	validPartyInfo = append(validPartyInfo, map[string]interface{}{
+		"id": 3,
+		"address":  "10.0.3.20",
+	})
 	validClaim := jwt.MapClaims{
+		"party_id": 1,
+		"party_info": validPartyInfo,
 		"exp": tommorow,
 	}
 
@@ -83,7 +98,7 @@ func TestAuthToken(t *testing.T) {
 		{
 			description: "party_idが異常な値だとエラー(len(PartyInfo)超過)",
 			alg:         jwt.SigningMethodHS256,
-			claims: merge(validClaim, jwt.MapClaims{"party_info": [{"id": 1, "address": "10.0.1.20"}, {"id": 2, "address": "10.0.2.20"}, {"id": 3, "address": "10.0.3.20"}], "party_id": 4}),
+			claims: merge(validClaim, jwt.MapClaims{"party_id": uint32(len(validPartyInfo)+1)}),
 			expected:    fmt.Errorf("party_id out of range"),
 			encodeKey:   "the-secret-key",
 			decodeKey:   "the-secret-key",

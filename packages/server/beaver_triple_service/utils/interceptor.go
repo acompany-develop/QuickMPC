@@ -83,7 +83,7 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	}
 
 	// party_idのバリデーション
-	if claims.PartyId < 1 || claims.PartyId > len(claims.PartyInfo) {
+	if claims.PartyId < 1 || claims.PartyId > uint32(len(claims.PartyInfo)) {
 		return nil, status.Error(codes.Internal, "party_id out of range")
 	}
 
