@@ -5,19 +5,10 @@ RUN apt-get update && \
     wget \
     make
 
-# setuptools_scmが_version.pyを作る時にgitのversionが必要なので.git/をcopy
-COPY .git/ /QuickMPC/.git/
-COPY packages/client/libclient-py /QuickMPC/packages/client/libclient-py
-
 RUN pip install -U pip && \
     pip install \
     autopep8 \
     mypy-protobuf
-
-# Install QuickMPC
-WORKDIR /QuickMPC/packages/client/libclient-py
-RUN pip install .
-
 
 ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin
