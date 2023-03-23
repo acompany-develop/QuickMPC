@@ -4,8 +4,8 @@ services:
     container_name: generate_proto
     tty: true
     build:
-      context: ../
-      dockerfile: ./proto/Dockerfile
+      context: ./
+      dockerfile: ./Dockerfile
       target: src
     volumes:
       - target: /QuickMPC/proto
@@ -13,4 +13,7 @@ services:
         type: bind
       - target: /QuickMPC/packages/client/libclient-py
         source: ../packages/client/libclient-py
+        type: bind
+      - target: /QuickMPC/.git
+        source: ../.git
         type: bind
