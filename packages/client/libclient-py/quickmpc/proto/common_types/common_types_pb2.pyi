@@ -22,7 +22,7 @@ class _JobStatus:
     ValueType = typing.NewType("ValueType", builtins.int)
     V: typing_extensions.TypeAlias = ValueType
 
-class _JobStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_JobStatus.ValueType], builtins.type):
+class _JobStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_JobStatus.ValueType], builtins.type):  # noqa: F821
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     UNKNOWN: _JobStatus.ValueType  # 0
     ERROR: _JobStatus.ValueType  # 1
@@ -45,7 +45,7 @@ class _ComputationMethod:
     ValueType = typing.NewType("ValueType", builtins.int)
     V: typing_extensions.TypeAlias = ValueType
 
-class _ComputationMethodEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_ComputationMethod.ValueType], builtins.type):
+class _ComputationMethodEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_ComputationMethod.ValueType], builtins.type):  # noqa: F821
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     COMPUTATION_METHOD_UNSPECIFIED: _ComputationMethod.ValueType  # 0
     COMPUTATION_METHOD_MEAN: _ComputationMethod.ValueType  # 1
@@ -70,7 +70,7 @@ class _ShareValueTypeEnum:
     ValueType = typing.NewType("ValueType", builtins.int)
     V: typing_extensions.TypeAlias = ValueType
 
-class _ShareValueTypeEnumEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_ShareValueTypeEnum.ValueType], builtins.type):
+class _ShareValueTypeEnumEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[_ShareValueTypeEnum.ValueType], builtins.type):  # noqa: F821
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     SHARE_VALUE_TYPE_UNSPECIFIED: _ShareValueTypeEnum.ValueType  # 0
     SHARE_VALUE_TYPE_FIXED_POINT: _ShareValueTypeEnum.ValueType  # 1
@@ -83,7 +83,6 @@ SHARE_VALUE_TYPE_FIXED_POINT: ShareValueTypeEnum.ValueType  # 1
 SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION: ShareValueTypeEnum.ValueType  # 2
 global___ShareValueTypeEnum = ShareValueTypeEnum
 
-@typing_extensions.final
 class ProcedureProgress(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -117,7 +116,6 @@ class ProcedureProgress(google.protobuf.message.Message):
 
 global___ProcedureProgress = ProcedureProgress
 
-@typing_extensions.final
 class JobProgress(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -139,11 +137,9 @@ class JobProgress(google.protobuf.message.Message):
 
 global___JobProgress = JobProgress
 
-@typing_extensions.final
 class Stacktrace(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    @typing_extensions.final
     class Frame(google.protobuf.message.Message):
         DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -174,7 +170,6 @@ class Stacktrace(google.protobuf.message.Message):
 
 global___Stacktrace = Stacktrace
 
-@typing_extensions.final
 class JobErrorInfo(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -201,7 +196,6 @@ class JobErrorInfo(google.protobuf.message.Message):
 
 global___JobErrorInfo = JobErrorInfo
 
-@typing_extensions.final
 class Schema(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 

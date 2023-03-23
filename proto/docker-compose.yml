@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  generate_proto:
+    container_name: generate_proto
+    tty: true
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+      target: src
+    volumes:
+      - target: /QuickMPC/proto
+        source: ./
+        type: bind
+      - target: /QuickMPC/packages/client/libclient-py
+        source: ../packages/client/libclient-py
+        type: bind
