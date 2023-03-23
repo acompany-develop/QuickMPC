@@ -1,7 +1,6 @@
 package utils
 
 import (
-	// "encoding/base64"
 	"errors"
 	"fmt"
 	"os"
