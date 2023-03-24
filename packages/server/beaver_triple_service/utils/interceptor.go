@@ -50,7 +50,6 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("%s", jwtSecret)
 
 	token, err := jwt.ParseWithClaims(tokenString, &jwt_types.Claim{}, func(token *jwt.Token) (interface{}, error) {
 		// alg を確認するのを忘れない
