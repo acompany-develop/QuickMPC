@@ -115,7 +115,7 @@ JWT tokenの生成
 
 ```
 // server.<ymlのファイル名>.env
-JWT_SECRET_KEY=...
+JWT_BASE64_SECRET_KEY=...
 ```
 
 ```

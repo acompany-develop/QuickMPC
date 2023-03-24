@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"encoding/base64"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -21,21 +22,13 @@ func TestAuthToken(t *testing.T) {
 		decodeKey   string
 	}
 
+	validPartyInfo := []map[string]interface{}{
+		{"id": 1, "address": "10.0.1.20"},
+        {"id": 2, "address": "10.0.2.20"},
+        {"id": 3, "address": "10.0.3.20"},
+    }
 	tommorow := time.Now().Add(time.Hour * 24).Unix()
 
-	validPartyInfo := []map[string]interface{}{}
-	validPartyInfo = append(validPartyInfo, map[string]interface{}{
-		"id": 1,
-		"address":  "10.0.1.20",
-	})
-	validPartyInfo = append(validPartyInfo, map[string]interface{}{
-		"id": 2,
-		"address":  "10.0.2.20",
-	})
-	validPartyInfo = append(validPartyInfo, map[string]interface{}{
-		"id": 3,
-		"address":  "10.0.3.20",
-	})
 	validClaim := jwt.MapClaims{
 		"party_id": 1,
 		"party_info": validPartyInfo,
@@ -107,7 +100,7 @@ func TestAuthToken(t *testing.T) {
 	for _, testcase := range testcases {
 		token := jwt.NewWithClaims(testcase.alg, testcase.claims)
 		tokenString, _ := token.SignedString([]byte(testcase.encodeKey))
-		os.Setenv("JWT_SECRET_KEY", testcase.decodeKey)
+		os.Setenv("JWT_BASE64_SECRET_KEY", base64.StdEncoding.EncodeToString([]byte(testcase.decodeKey)))
 
 		_, actual := AuthJWT(tokenString)
 
@@ -123,6 +116,6 @@ func TestAuthToken(t *testing.T) {
 			}
 		}
 
-		os.Unsetenv("JWT_SECRET_KEY")
+		os.Unsetenv("JWT_BASE64_SECRET_KEY")
 	}
 }

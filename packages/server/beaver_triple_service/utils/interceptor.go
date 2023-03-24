@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"encoding/base64"
 
 	"github.com/golang-jwt/jwt/v4"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -35,11 +36,13 @@ func BtsAuthFunc(ctx context.Context) (context.Context, error) {
 }
 
 func getSecret() ([]byte, error) {
-	var secrets []byte
-	if os.Getenv("JWT_SECRET_KEY") != "" {
-		secrets = []byte(os.Getenv("JWT_SECRET_KEY"))
-	} else {
-		secrets = []byte("hoge")
+	raw, ok := os.LookupEnv("JWT_BASE64_SECRET_KEY")
+	if !ok {
+		return nil, status.Error(codes.Internal, "jwt auth key is not provided")
+	}
+	secrets, err := base64.StdEncoding.DecodeString(raw)
+	if err != nil {
+		return nil, err
 	}
 
 	return secrets, nil
@@ -56,7 +59,7 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 		if signingMethod, ok := token.Method.(*jwt.SigningMethodHMAC); !ok || signingMethod.Alg() != "HS256" {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return jwtSecret, nil
+		return []byte(jwtSecret), nil
 	})
 
 	if err != nil {

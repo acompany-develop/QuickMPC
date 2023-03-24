@@ -97,11 +97,13 @@ var generateJwtCmd = &cobra.Command{
 		log.Printf("json: %s\n", buf.String())
 
 		// build token
-		var secrets []byte
-		if os.Getenv("JWT_SECRET_KEY") != "" {
-			secrets = []byte(os.Getenv("JWT_SECRET_KEY"))
-		} else {
-			secrets = []byte("hoge")
+		encoded_secrets, ok := os.LookupEnv("JWT_BASE64_SECRET_KEY")
+		if !ok {
+			log.Fatalln("jwt auth key is not provided")
+		}
+		secrets, err := base64.StdEncoding.DecodeString(encoded_secrets)
+		if err != nil {
+			log.Fatalln(err)
 		}
 
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -111,7 +113,6 @@ var generateJwtCmd = &cobra.Command{
 		}
 
 		// show token
-		encoded_secrets := base64.StdEncoding.EncodeToString(secrets)
 		log.Printf("token: %s\n", signed_token_str)
 		log.Printf("key base64 encoded: %s\n", encoded_secrets)
 
