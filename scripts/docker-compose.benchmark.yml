@@ -31,7 +31,6 @@ services:
       - printenv && ./computation_container_benchmark
     env_file:
       - ../config/computation_container/compute1/.env
-      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.20
@@ -68,7 +67,6 @@ services:
       - printenv && ./computation_container_benchmark
     env_file:
       - ../config/computation_container/compute2/.env
-      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.2.20
@@ -105,7 +103,6 @@ services:
       - printenv && ./computation_container_benchmark
     env_file:
       - ../config/computation_container/compute3/.env
-      - ../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.3.20

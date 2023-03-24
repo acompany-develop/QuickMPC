@@ -41,7 +41,6 @@ services:
         target: /db
     env_file:
       - ../../../config/computation_container/compute1/.src.env
-      - ../../../config/computation_container/jwt/client.sample.env
     networks:
       shared-network:
         ipv4_address: 10.0.1.120

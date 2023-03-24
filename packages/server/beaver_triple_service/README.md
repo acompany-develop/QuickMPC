@@ -111,4 +111,18 @@ JWT tokenの生成
     --output <mount_path>                                           # use own configuration
   ```
 
-クライアントとサーバ向けにそれぞれ `.env` ファイル形式の設定ファイルが書き込まれます
+--output で指定したPATH直下にクライアントとサーバ向けにそれぞれ `server.<ymlのファイル名>.env`, `client.<ymlのファイル名>.env` というファイル形式の設定ファイルが書き込まれます
+
+```
+// server.<ymlのファイル名>.env
+JWT_BASE64_SECRET_KEY=...
+```
+
+```
+// client.// client.<ymlのファイル名>.env
+.env
+BTS_TOKEN=...
+```
+
+これを`config/computation_container/compute{1,2,3}/`直下に `.env` という名前で配置し、
+docker-compose.ymlのccコンテナのenv_fileで上記のパスを指定することでJWTが利用可能になります。

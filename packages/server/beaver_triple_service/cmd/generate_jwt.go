@@ -3,7 +3,6 @@ package cmd
 import (
 	"bufio"
 	"bytes"
-	"crypto/rand"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -40,21 +39,6 @@ func storeClientEnv(path string, token string) error {
 	defer writer.Flush()
 
 	fmt.Fprintf(writer, "BTS_TOKEN=%s\n", token)
-
-	return nil
-}
-
-func storeServerEnv(path string, secrets string, claim jwt_types.Claim) error {
-	fp, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0600)
-	defer fp.Close()
-	if err != nil {
-		return err
-	}
-
-	writer := bufio.NewWriter(fp)
-	defer writer.Flush()
-
-	fmt.Fprintf(writer, "JWT_SECRET_KEY=%s\n", secrets)
 
 	return nil
 }
@@ -113,10 +97,11 @@ var generateJwtCmd = &cobra.Command{
 		log.Printf("json: %s\n", buf.String())
 
 		// build token
-		const RANDOM_BITS = 256
-		const RANDOM_BYTES = RANDOM_BITS / 8
-		secrets := make([]byte, RANDOM_BYTES)
-		_, err = rand.Read(secrets)
+		encoded_secrets, ok := os.LookupEnv("JWT_BASE64_SECRET_KEY")
+		if !ok {
+			log.Fatalln("jwt auth key is not provided")
+		}
+		secrets, err := base64.StdEncoding.DecodeString(encoded_secrets)
 		if err != nil {
 			log.Fatalln(err)
 		}
@@ -128,7 +113,6 @@ var generateJwtCmd = &cobra.Command{
 		}
 
 		// show token
-		encoded_secrets := base64.StdEncoding.EncodeToString(secrets)
 		log.Printf("token: %s\n", signed_token_str)
 		log.Printf("key base64 encoded: %s\n", encoded_secrets)
 
@@ -151,15 +135,6 @@ var generateJwtCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalln(err)
 		}
-
-		err = storeServerEnv(
-			path.Join(
-				options.output_dir,
-				strings.Join([]string{"server", filename, "env"}, ".")),
-			encoded_secrets, claim)
-		if err != nil {
-			log.Fatalln(err)
-		}
 	},
 }
 
@@ -170,6 +145,6 @@ func init() {
 		log.Printf("WARN: os.Getwd() is failed, err = %s\n", err)
 	}
 	default_inout_root := path.Join(work_dir, "cmd", "jwt_generator", "sample")
-	generateJwtCmd.Flags().StringVarP(&options.file_path, "file", "f", path.Join(default_inout_root, "sample.yml"), "configuration file path")
+	generateJwtCmd.Flags().StringVarP(&options.file_path, "file", "f", path.Join(default_inout_root, "sample.yaml"), "configuration file path")
 	generateJwtCmd.Flags().StringVarP(&options.output_dir, "output", "o", default_inout_root, "directory which stores output files")
 }

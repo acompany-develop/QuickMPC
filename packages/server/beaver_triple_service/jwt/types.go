@@ -9,6 +9,7 @@ type Party struct {
 
 type Claim struct {
 	RoomUUID  string  `json:"room_uuid"`
+	PartyId uint32 `json:"party_id"`
 	PartyInfo []Party `json:"party_info"`
 	jwt.RegisteredClaims
 }

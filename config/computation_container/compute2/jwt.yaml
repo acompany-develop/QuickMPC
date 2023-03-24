@@ -1,0 +1,16 @@
+# registered claims is following
+# "Expiration Time" represented by unix time
+# `github.com/golang-jwt/jwt/v4` v4.4.2 package will parse this as `float64`,
+# and `time.Now().Before(time.Unix(math.MaxInt64, 0))` returns `false`,
+# so max value of `int64` cannot be used at the time.
+exp: 9223371974719179007
+# user defined claims is folloing
+room_uuid: '' # this field is filled by generator
+party_id: 2
+party_info:
+  - id: 1
+    address: 10.0.1.20
+  - id: 2
+    address: 10.0.2.20
+  - id: 3
+    address: 10.0.3.20

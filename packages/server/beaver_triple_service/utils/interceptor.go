@@ -2,9 +2,10 @@ package utils
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"os"
+	"time"
+	"encoding/base64"
 
 	"github.com/golang-jwt/jwt/v4"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
@@ -35,15 +36,16 @@ func BtsAuthFunc(ctx context.Context) (context.Context, error) {
 }
 
 func getSecret() ([]byte, error) {
-	raw, ok := os.LookupEnv("JWT_SECRET_KEY")
+	raw, ok := os.LookupEnv("JWT_BASE64_SECRET_KEY")
 	if !ok {
 		return nil, status.Error(codes.Internal, "jwt auth key is not provided")
 	}
-	secret, err := base64.StdEncoding.DecodeString(raw)
+	secrets, err := base64.StdEncoding.DecodeString(raw)
 	if err != nil {
 		return nil, err
 	}
-	return secret, nil
+
+	return secrets, nil
 }
 
 func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
@@ -61,7 +63,7 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	})
 
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid auth token: %v", err)
+		return nil, status.Errorf(codes.Unauthenticated, "failed to parse token: %v", err)
 	}
 
 	if !token.Valid {
@@ -71,6 +73,19 @@ func AuthJWT(tokenString string) (*jwt_types.Claim, error) {
 	claims, ok := token.Claims.(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
+	}
+
+	// expのバリデーション
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		exp := time.Unix(int64(claims["exp"].(float64)), 0)
+		if time.Now().After(exp) {
+			return nil, status.Error(codes.Internal, "token is expired")
+		}
+	}
+
+	// party_idのバリデーション
+	if claims.PartyId < 1 || claims.PartyId > uint32(len(claims.PartyInfo)) {
+		return nil, status.Error(codes.Internal, "party_id out of range")
 	}
 
 	return claims, nil

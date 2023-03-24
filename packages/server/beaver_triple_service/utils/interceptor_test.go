@@ -1,13 +1,13 @@
 package utils
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"os"
 	"strings"
 	"testing"
 	"time"
+	"encoding/base64"
 
 	"github.com/golang-jwt/jwt/v4"
 )
@@ -22,9 +22,16 @@ func TestAuthToken(t *testing.T) {
 		decodeKey   string
 	}
 
+	validPartyInfo := []map[string]interface{}{
+		{"id": 1, "address": "10.0.1.20"},
+        {"id": 2, "address": "10.0.2.20"},
+        {"id": 3, "address": "10.0.3.20"},
+    }
 	tommorow := time.Now().Add(time.Hour * 24).Unix()
 
 	validClaim := jwt.MapClaims{
+		"party_id": 1,
+		"party_info": validPartyInfo,
 		"exp": tommorow,
 	}
 
@@ -66,18 +73,34 @@ func TestAuthToken(t *testing.T) {
 			decodeKey:   "the-secret-key",
 		},
 		{
-			description: "HMACの鍵が違うとエラー",
+			description: "HMACの鍵が違うとerror",
 			alg:         jwt.SigningMethodHS256,
 			expected:    fmt.Errorf("signature is invalid"),
 			encodeKey:   "the-secret-key",
 			decodeKey:   "is-not-same-key",
+		},
+		{
+			description: "party_idが異常な値だとエラー(1未満)",
+			alg:         jwt.SigningMethodHS256,
+			claims: merge(validClaim, jwt.MapClaims{"party_id": 0}),
+			expected:    fmt.Errorf("party_id out of range"),
+			encodeKey:   "the-secret-key",
+			decodeKey:   "the-secret-key",
+		},
+		{
+			description: "party_idが異常な値だとエラー(len(PartyInfo)超過)",
+			alg:         jwt.SigningMethodHS256,
+			claims: merge(validClaim, jwt.MapClaims{"party_id": uint32(len(validPartyInfo)+1)}),
+			expected:    fmt.Errorf("party_id out of range"),
+			encodeKey:   "the-secret-key",
+			decodeKey:   "the-secret-key",
 		},
 	}
 
 	for _, testcase := range testcases {
 		token := jwt.NewWithClaims(testcase.alg, testcase.claims)
 		tokenString, _ := token.SignedString([]byte(testcase.encodeKey))
-		os.Setenv("JWT_SECRET_KEY", base64.StdEncoding.EncodeToString([]byte(testcase.decodeKey)))
+		os.Setenv("JWT_BASE64_SECRET_KEY", base64.StdEncoding.EncodeToString([]byte(testcase.decodeKey)))
 
 		_, actual := AuthJWT(tokenString)
 
@@ -89,10 +112,10 @@ func TestAuthToken(t *testing.T) {
 				testcase.expected = errors.New("nil guard for testcase.expected")
 			}
 			if !strings.Contains(actual.Error(), testcase.expected.Error()) {
-				t.Fatalf("%s: expected result is %v, but got %v", testcase.description, testcase.expected, actual)
+				t.Fatalf("%s: expected result is \"%v\", but got \"%v\"", testcase.description, testcase.expected, actual)
 			}
 		}
 
-		os.Unsetenv("JWT_SECRET_KEY")
+		os.Unsetenv("JWT_BASE64_SECRET_KEY")
 	}
 }
