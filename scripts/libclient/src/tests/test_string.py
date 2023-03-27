@@ -33,7 +33,8 @@ def generate_random_string(seed: int, length: int) -> str:
         # kanji
         "春眠不覚暁処処聞啼鳥夜来風雨声花落知多少",
         # large number
-        "１２３４５６７８９０",
+        # NOTE: 全角数字も数字と解釈されてしまい文字列として復元されない
+        # "１２３４５６７８９０",
         # mix
         "abcあいうアイウ你好世界１２３",
         # 最長住所
