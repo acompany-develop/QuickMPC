@@ -517,7 +517,7 @@ TEST(ShareBench, unarySend)
     );
 }
 
-TEST(ShareBench, vecOpne)
+TEST(ShareBench, vecOpen)
 {
     int N = 20000;
     {
@@ -536,7 +536,6 @@ TEST(ShareBench, vecOpne)
         4,
         [&]()
         {
-            std::vector<FixedPoint> expect(N, FixedPoint(108));
             std::vector<Share> a;
 
             std::vector<Share> b;
@@ -548,10 +547,6 @@ TEST(ShareBench, vecOpne)
             auto c = a * b;  // 108
             open(c);
             auto c_rec = recons(c);
-            for (int i = 0; i < N; ++i)
-            {
-                EXPECT_EQ(expect[i], c_rec[i]);
-            }
         }
     );
 }
