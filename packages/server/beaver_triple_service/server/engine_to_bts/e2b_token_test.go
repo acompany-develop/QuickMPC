@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
@@ -23,24 +22,9 @@ const notHS256ServerToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29tX3V1aW
 const notHS256ClientToken = "frkdAtRJogsjDmIHwT4hCYFfJzoNAPUUsIQ8vv8wmJ8="
 
 func init() {
-	// モック用GetPartyIdFromIp
-	GetPartyIdFromIp = func(claims *jwt_types.Claim, reqIpAddrAndPort string) (uint32, error) {
-		if reqIpAddrAndPort == "bufconn" {
-			Pic.mux.Lock()
-			defer Pic.mux.Unlock()
-
-			if Pic.partyId++; Pic.partyId > uint32(len(claims.PartyInfo)) {
-				Pic.partyId = 1
-			}
-		} else {
-			return 0, fmt.Errorf("reqIpAddrAndPortがbufconnではない(%s)", reqIpAddrAndPort)
-		}
-
-		return Pic.partyId, nil
-	}
-
 	defaultClientToken = os.Getenv("BTS_TOKEN")
-	defaultServerToken = os.Getenv("JWT_SECRET_KEY")
+	defaultServerToken = os.Getenv("JWT_BASE64_SECRET_KEY")
+	fmt.Println("client: ", defaultClientToken, "\nserver: ", defaultServerToken)
 }
 
 func TestSuccessToken(t *testing.T) {
@@ -56,9 +40,9 @@ func TestSuccessToken(t *testing.T) {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			// サーバのtokenを書き換え(できればDIでやりたい)
-			serverToken := os.Getenv("JWT_SECRET_KEY")
-			os.Setenv("JWT_SECRET_KEY", tt.serverToken)
-			defer os.Setenv("JWT_SECRET_KEY", serverToken)
+			serverToken := os.Getenv("JWT_BASE64_SECRET_KEY")
+			os.Setenv("JWT_BASE64_SECRET_KEY", tt.serverToken)
+			defer os.Setenv("JWT_BASE64_SECRET_KEY", serverToken)
 
 			// サーバを立てる
 			s := &utils.TestServer{}
@@ -102,8 +86,8 @@ func TestFailedIllegalToken(t *testing.T) {
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			// サーバのtokenを書き換え(できればDIでやりたい)
-			os.Setenv("JWT_SECRET_KEY", tt.serverToken)
-			defer os.Setenv("JWT_SECRET_KEY", defaultServerToken)
+			os.Setenv("JWT_BASE64_SECRET_KEY", tt.serverToken)
+			defer os.Setenv("JWT_BASE64_SECRET_KEY", defaultServerToken)
 
 			// サーバを立てる
 			s := &utils.TestServer{}
