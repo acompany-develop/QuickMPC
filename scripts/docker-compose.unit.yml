@@ -1,0 +1,404 @@
+# require {docker-compose.core.yml}
+version: '3.3'
+services:
+  dev_unit_bts:
+    container_name: beaver_triple_service
+    image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
+    build:
+      context: ../
+      dockerfile: packages/server/beaver_triple_service/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
+      target: dev
+    command:
+      - /bin/bash
+      - '-c'
+      - ./beaver_triple_service
+    env_file:
+      - ../config/beaver_triple_service/.env
+      - ../config/beaver_triple_service/server.sample.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=beaver_triple_service:50020 -rpc-header=authorization:"bearer $$BTS_TOKEN"
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    networks:
+      shared-network:
+        aliases:
+          - beaver_triple_service
+        ipv4_address: 10.0.1.40
+    ports:
+      - 0.0.0.0:60020:50020
+  dev_unit_bts_envoy:
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/beaver_triple_service/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.21
+    expose:
+      - 9901
+    ports:
+      - 0.0.0.0:51020:51020
+    tty: true
+  dev_unit_cc_envoy1:
+    container_name: compute_envoy_container1
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/computation_container/compute1/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.21
+    expose:
+      - 50020
+      - 51020
+    tty: true
+  dev_unit_cc_envoy2:
+    container_name: compute_envoy_container2
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/computation_container/compute2/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.21
+    expose:
+      - 50020
+      - 51020
+    tty: true
+  dev_unit_cc_envoy3:
+    container_name: compute_envoy_container3
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/computation_container/compute3/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.3.21
+    expose:
+      - 50020
+      - 51020
+    tty: true
+  dev_unit_cc1:
+    container_name: computation_container1
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    build:
+      context: ../
+      dockerfile: packages/server/computation_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+      target: dev
+    volumes:
+      - target: /QuickMPC/config
+        source: /tmp/QuickMPC/config
+        type: bind
+      - target: /db/share
+        source: sharedb1
+        type: volume
+      - target: /db/result
+        source: resultdb1
+        type: volume
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && ./computation_container
+    env_file:
+      - ../config/computation_container/compute1/.env
+      - ../config/computation_container/jwt/client.sample.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=computation_container1:50010 && /bin/grpc_health_probe -addr=computation_container1:51020
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.20
+    expose:
+      - 51020
+      - 50010
+    tty: true
+  dev_unit_cc2:
+    container_name: computation_container2
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    build:
+      context: ../
+      dockerfile: packages/server/computation_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+      target: dev
+    volumes:
+      - target: /QuickMPC/config
+        source: ../config/computation_container/compute2
+        type: bind
+      - target: /db/share
+        source: sharedb2
+        type: volume
+      - target: /db/result
+        source: resultdb2
+        type: volume
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && ./computation_container
+    env_file:
+      - ../config/computation_container/compute2/.env
+      - ../config/computation_container/jwt/client.sample.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=computation_container2:50010 && /bin/grpc_health_probe -addr=computation_container2:51020
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.20
+    expose:
+      - 51020
+      - 50010
+    tty: true
+  dev_unit_cc3:
+    container_name: computation_container3
+    build:
+      context: ../
+      dockerfile: packages/server/computation_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+      target: dev
+    volumes:
+      - target: /QuickMPC/config
+        source: ../config/computation_container/compute3
+        type: bind
+      - target: /db/share
+        source: sharedb3
+        type: volume
+      - target: /db/result
+        source: resultdb3
+        type: volume
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && ./computation_container
+    env_file:
+      - ../config/computation_container/compute3/.env
+      - ../config/computation_container/jwt/client.sample.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=computation_container3:50010 && /bin/grpc_health_probe -addr=computation_container3:51020
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    networks:
+      shared-network:
+        ipv4_address: 10.0.3.20
+    expose:
+      - 51020
+      - 50010
+    tty: true
+  dev_unit_mc_envoy1:
+    container_name: manage_envoy_container1
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/manage_container/manage1/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.11
+    expose:
+      - 15000
+      - 50010
+    ports:
+      - 0.0.0.0:50001:50000
+    tty: true
+  dev_unit_mc_envoy2:
+    container_name: manage_envoy_container2
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/manage_container/manage2/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.11
+    expose:
+      - 15000
+      - 50010
+    ports:
+      - 0.0.0.0:50002:50000
+    tty: true
+  dev_unit_mc_envoy3:
+    container_name: manage_envoy_container3
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ../config/manage_container/manage3/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.3.11
+    expose:
+      - 15000
+      - 50010
+    ports:
+      - 0.0.0.0:50003:50000
+    tty: true
+  dev_unit_mc1:
+    container_name: manage_container1
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    build:
+      context: ../
+      dockerfile: packages/server/manage_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+      target: dev
+    volumes:
+      - target: /QuickMPC/config
+        source: ../config/manage_container/manage1
+        type: bind
+      - target: /QuickMPC/.vscode
+        source: ../.vscode
+        type: bind
+      - target: /db/share
+        source: sharedb1
+        type: volume
+      - target: /db/result
+        source: resultdb1
+        type: volume
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && ./manage_container
+    env_file:
+      - ../config/manage_container/manage1/.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=manage_container1:50011 && /bin/grpc_health_probe -addr=manage_container1:51011
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.10
+    expose:
+      - 50011
+      - 51011
+    tty: true
+  dev_unit_mc2:
+    container_name: manage_container2
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    build:
+      context: ../
+      dockerfile: packages/server/manage_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+      target: dev
+    volumes:
+      - target: /QuickMPC/config
+        source: ../config/manage_container/manage2
+        type: bind
+      - target: /db/share
+        source: sharedb2
+        type: volume
+      - target: /db/result
+        source: resultdb2
+        type: volume
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && ./manage_container
+    env_file:
+      - ../config/manage_container/manage2/.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=manage_container2:50011 && /bin/grpc_health_probe -addr=manage_container2:51011
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.10
+    expose:
+      - 50011
+      - 51011
+    tty: true
+  dev_unit_mc3:
+    container_name: manage_container3
+    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    build:
+      context: ../
+      dockerfile: packages/server/manage_container/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+      target: dev
+    volumes:
+      - target: /QuickMPC/config
+        source: ../config/manage_container/manage3
+        type: bind
+      - target: /db/share
+        source: sharedb3
+        type: volume
+      - target: /db/result
+        source: resultdb3
+        type: volume
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && ./manage_container
+    env_file:
+      - ../config/manage_container/manage3/.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=manage_container3:50011 && /bin/grpc_health_probe -addr=manage_container3:51011
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    networks:
+      shared-network:
+        ipv4_address: 10.0.3.10
+    expose:
+      - 50011
+      - 51011
+    tty: true
