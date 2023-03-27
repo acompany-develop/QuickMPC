@@ -11,7 +11,6 @@ import (
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 
 	"google.golang.org/grpc/metadata"
 )
@@ -177,22 +176,6 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 
 	if err == nil {
 		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
-	}
-}
-
-func TestInitTripleStore(t * testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewEngineToBtsClient(conn)
-
-	ctx, err := getContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	_,err = client.InitTripleStore(ctx, &emptypb.Empty{})
-	if err != nil {
-		t.Fatal(err)
 	}
 }
 

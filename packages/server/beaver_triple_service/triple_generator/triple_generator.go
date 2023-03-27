@@ -150,12 +150,6 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 	return triples, nil
 }
 
-func InitTripleStore() error {
-	// Dbを初期化
-	Db.Triples = map[uint32](map[uint32]([]*pb.Triple)){}
-	return nil
-}
-
 func DeleteJobIdTriple(jobId uint32) error {
 	// jobIdに紐付いたTripleを削除
 	delete(Db.Triples, jobId)

@@ -73,26 +73,6 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	}, nil
 }
 
-func (s *server) InitTripleStore(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if !ok {
-		return nil, status.Error(codes.Internal, "failed claims type assertions")
-	}
-
-	partyId, err := GetPartyIdFromClaims(claims)
-	if err != nil {
-		return nil, err
-	}
-	logger.Infof("partyId: %d \n", partyId)
-
-	err = tg.InitTripleStore()
-	if err != nil {
-		return nil, err
-	}
-
-	return &emptypb.Empty{}, err
-}
-
 func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
 	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
 	if !ok {

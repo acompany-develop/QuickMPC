@@ -54,30 +54,6 @@ void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
 
 TEST(ComputationToBtsTest, ReadTriplesTest10_10000) { readTriplesTest(10, 10000); }
 
-TEST(ComputationToBtsTest, InitTripleStoreTest)
-{
-    const unsigned int jobIdMax = 5;
-    const unsigned int amount = 1000;
-    Config *conf = Config::getInstance();
-    auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
-
-    if (conf->party_id == 1)
-    {
-        for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
-        {
-            auto triples = cc_to_bts->readTriples<FixedPoint>(jobId, amount);
-        }
-
-        // BTSの初期化
-        cc_to_bts->initTripleStore();
-    }
-
-    // partyで足並みを揃えるため
-    sync();
-
-    readTriplesTest(jobIdMax, amount);
-}
-
 TEST(ComputationToBtsTest, DeleteJobIdTripleTest)
 {
     const unsigned int jobIdMax = 5;
