@@ -3,10 +3,13 @@ package e2bserver
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var defaultServerToken string
@@ -70,17 +73,27 @@ func TestFailedIllegalToken(t *testing.T) {
 	testcases := map[string]struct {
 		serverToken string
 		clientToken string
+		expected    error
 	}{
-		"not_jwt_client": {defaultServerToken, "bokuha_jwt_janaiyo"},
-		"not_jwt_server": {"bokuha_jwt_janaiyo", defaultClientToken},
-		"not_pair_1":     {defaultServerToken, correctServerToken},
-		"not_pair_2":     {correctServerToken, defaultClientToken},
-		"expired":        {defaultServerToken, exp0ClientToken},
-		"not_HS256":      {defaultServerToken, notHS256ClientToken},
-		"party_id_under": {defaultServerToken, partyIdUnderClientToken},
-		"party_id_over":  {defaultServerToken, partyIdOverClientToken},
+		"not_jwt_client": {defaultServerToken, "bokuha_jwt_janaiyo",
+			status.Error(codes.Unauthenticated, "failed to parse token: token contains an invalid number of segments")},
+		"not_jwt_server": {"bokuha_jwt_janaiyo", defaultClientToken,
+			status.Error(codes.Unknown, "illegal base64 data")},
+		"not_pair_1": {defaultServerToken, correctServerToken,
+			status.Error(codes.Unauthenticated, "failed to parse token: token contains an invalid number of segments")},
+		"not_pair_2": {correctServerToken, defaultClientToken,
+			status.Error(codes.Unauthenticated, "failed to parse token: signature is invalid")},
+		"expired": {defaultServerToken, exp0ClientToken,
+			status.Error(codes.Unauthenticated, "failed to parse token: token is expired by")},
+		"not_HS256": {defaultServerToken, notHS256ClientToken,
+			status.Error(codes.Unauthenticated, "failed to parse token: unexpected signing method: HS512")},
+		"party_id_under": {defaultServerToken, partyIdUnderClientToken,
+			status.Error(codes.Internal, "party_id out of range")},
+		"party_id_over": {defaultServerToken, partyIdOverClientToken,
+			status.Error(codes.Internal, "party_id out of range")},
 		// NOTE: 現状IPのチェックはどこでも行っていない
-		// "different_ip": {defaultServerToken, noneIPClientToken},
+		// "different_ip": {defaultServerToken, noneIPClientToken,
+		// 	status.Error(codes.Unknown, "")},
 	}
 
 	for name, tt := range testcases {
@@ -106,8 +119,9 @@ func TestFailedIllegalToken(t *testing.T) {
 			_, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 1, Amount: 1, TripleType: pb.Type_TYPE_FIXEDPOINT})
 
 			// エラーしたかチェック
-			if err == nil {
-				t.Fatal("request with illegal token must be error")
+			// NOTE: error messageがunixtimeに依存するものがあるためcontainsで比較している
+			if !strings.Contains(err.Error(), tt.expected.Error()) {
+				t.Fatalf("error message must be `%v`, but `%v`", tt.expected, err)
 			}
 		})
 	}
