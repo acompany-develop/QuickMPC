@@ -1,6 +1,7 @@
 import json
 import subprocess
 import time
+from concurrent.futures import ProcessPoolExecutor
 from dataclasses import InitVar, dataclass, field
 from typing import ClassVar, List
 
@@ -47,6 +48,10 @@ class Container:
         raise RuntimeError(f"`{self.__service_name}` is not healthy.")
 
     def down(self) -> None:
+        cid = self.__container_id()
+        if not cid:
+            # コンテナが立ってなかったらdownしない
+            return
         command = f"docker-compose {compose_files_opt} " + \
             f"rm -fs {self.__service_name}"
         subprocess.run([command], shell=True)
@@ -63,11 +68,11 @@ class Containers:
         object.__setattr__(self, "_Containers__containers", containers)
 
     def up(self) -> None:
-        # TODO: 並列化
-        for c in self.__containers:
-            c.up()
+        with ProcessPoolExecutor() as executor:
+            for c in self.__containers:
+                executor.submit(c.up)
 
     def down(self) -> None:
-        # TODO: 並列化
-        for c in self.__containers:
-            c.down()
+        with ProcessPoolExecutor() as executor:
+            for c in self.__containers:
+                executor.submit(c.down)
