@@ -1,4 +1,12 @@
+from quickmpc import QMPC
+
 from container import Containers
+
+qmpc: QMPC = QMPC([
+    "http://localhost:50001",
+    "http://localhost:50002",
+    "http://localhost:50003",
+])
 
 __cc_names = [
     "dev_unit_cc1",
@@ -43,8 +51,5 @@ def bts_p() -> Containers:
     return Containers(__bts_names)
 
 
-def init():
-    # 自分自身(container_test)をdownしないように1つずつ指定してdownさせる
-    cc_all().down()
-    mc_all().down()
-    bts_p().down()
+def all_containers() -> Containers:
+    return Containers(__cc_names+__mc_names+__bts_names)
