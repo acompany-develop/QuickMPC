@@ -1,7 +1,7 @@
 import json
 import subprocess
 import time
-from dataclasses import dataclass
+from dataclasses import InitVar, dataclass, field
 from typing import ClassVar, List
 
 compose_files = [
@@ -54,6 +54,20 @@ class Container:
 
 @dataclass(frozen=True)
 class Containers:
-    service_names: List[str]
+    service_names: InitVar[List[str]]
 
-    containers: List[Container]
+    __containers: List[Container] = field(init=False)
+
+    def __post_init__(self, service_names: List[str]) -> None:
+        containers = [Container(name) for name in service_names]
+        object.__setattr__(self, "_Containers__containers", containers)
+
+    def up(self) -> None:
+        # TODO: 並列化
+        for c in self.__containers:
+            c.up()
+
+    def down(self) -> None:
+        # TODO: 並列化
+        for c in self.__containers:
+            c.down()
