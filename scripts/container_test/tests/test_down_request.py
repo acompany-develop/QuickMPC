@@ -9,9 +9,7 @@ from utils import (all_containers, bts_p, cc_p, data_id, execute_computation,
 
 @pytest.mark.parametrize(
     ("down_container"), [
-        (mc_p(1)),
-        (mc_p(2)),
-        (mc_p(3)),
+        (mc_p(1)), (mc_p(2)), (mc_p(3)),
     ]
 )
 def test_failed_send_share_with_down(down_container):
@@ -34,7 +32,7 @@ def test_failed_send_share_with_down(down_container):
         (cc_p(1)),
     ]
 )
-def test_failed_execute_computations_with_down(down_container):
+def test_failed_execute_computation_with_down(down_container):
     # 特定のコンテナがdownした状態でexecute_requestを送ってエラーが出るかどうか
     ac = all_containers()
     ac.down()
@@ -54,9 +52,7 @@ def test_failed_execute_computations_with_down(down_container):
 
 @pytest.mark.parametrize(
     ("down_container"), [
-        (mc_p(1)),
-        (mc_p(2)),
-        (mc_p(3)),
+        (mc_p(1)), (mc_p(2)), (mc_p(3)),
     ]
 )
 def test_failed_get_computation_result_with_down(down_container):
