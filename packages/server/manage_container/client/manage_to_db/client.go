@@ -62,6 +62,7 @@ type M2DbClient interface {
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
 	GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error)
+	CreateStatusFile(string)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -325,4 +326,11 @@ func (c Client) GetMatchingColumn(dataID string) (int32, error) {
 	}
 
 	return data.Meta.MatchingColumn, nil
+}
+
+func (c Client) CreateStatusFile(jobUUID string) {
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+	os.Mkdir(path, 0777)
+	fp, _ := os.Create(fmt.Sprintf("%s/status_RECEIVED", path))
+	fp.Close()
 }
