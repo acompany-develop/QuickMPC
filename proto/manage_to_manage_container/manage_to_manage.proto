@@ -10,6 +10,7 @@ option go_package = "github.com/acompany-develop/QuickMPC/proto/manage_to_manage
 service ManageToManage {
     rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}
     rpc Sync(SyncRequest) returns (SyncResponse) {}
+    rpc CreateStatusFile(CreateStatusFileRequest) returns (CreateStatusFileResponse) {}
 }
 
 /**
@@ -38,6 +39,15 @@ message SyncRequest{
  * the message of SyncResponse
 */
 message SyncResponse{
+    string message = 1;
+    bool is_ok = 2;
+}
+
+message CreateStatusFileRequest {
+    string job_uuid = 1;
+}
+
+message CreateStatusFileResponse {
     string message = 1;
     bool is_ok = 2;
 }
