@@ -16,6 +16,7 @@ services:
       - ./beaver_triple_service
     env_file:
       - ../config/beaver_triple_service/.env
+      - ../config/beaver_triple_service/client.sample.env
       - ../config/beaver_triple_service/server.sample.env
     healthcheck:
       test:
@@ -128,7 +129,6 @@ services:
       - printenv && ./computation_container
     env_file:
       - ../config/computation_container/compute1/.env
-      - ../config/computation_container/jwt/client.sample.env
     healthcheck:
       test:
         - CMD-SHELL
@@ -168,7 +168,6 @@ services:
       - printenv && ./computation_container
     env_file:
       - ../config/computation_container/compute2/.env
-      - ../config/computation_container/jwt/client.sample.env
     healthcheck:
       test:
         - CMD-SHELL
@@ -185,6 +184,7 @@ services:
     tty: true
   dev_unit_cc3:
     container_name: computation_container3
+    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
@@ -207,7 +207,6 @@ services:
       - printenv && ./computation_container
     env_file:
       - ../config/computation_container/compute3/.env
-      - ../config/computation_container/jwt/client.sample.env
     healthcheck:
       test:
         - CMD-SHELL
