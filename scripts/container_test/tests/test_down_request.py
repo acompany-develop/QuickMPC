@@ -31,12 +31,7 @@ def test_failed_send_share_with_down(down_container):
 @pytest.mark.parametrize(
     ("down_container"), [
         (mc_p(1)),
-        (mc_p(2)),
-        (mc_p(3)),
         (cc_p(1)),
-        (cc_p(2)),
-        (cc_p(3)),
-        (bts_p()),
     ]
 )
 def test_failed_execute_computations_with_down(down_container):

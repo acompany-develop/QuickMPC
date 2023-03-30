@@ -80,15 +80,15 @@ def job_uuid() -> str:
     job_uuid_: str = res_ec["job_uuid"]
     # 計算結果が保存されるまで待機する
     for _ in range(10):
+        time.sleep(3)
         try:
-            res = qmpc.get_computation_result(job_uuid)
+            res = qmpc.get_computation_result(job_uuid_)
         except Exception:
             continue
         if res["statuses"] is not None:
             if all([status == JobStatus.COMPLETED
                     for status in res["statuses"]]):
                 return job_uuid_
-        time.sleep(3)
     raise RuntimeError("`execute` is not completed.")
 
 
