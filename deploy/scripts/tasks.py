@@ -4,6 +4,8 @@ import pathlib
 import copy
 from typing import Callable, Iterable, Dict, Union, Optional, Any
 import json
+import shutil
+import re
 from invoke import task, Context, Result
 import fabric
 import fabric.transfer
@@ -174,27 +176,28 @@ def generate_config(context: Context, qmpc_config_path='./.output/qmpc_setting/c
     # template rendering
     templates_root_dir = pathlib.Path(context.cwd) / pathlib.Path('../templates/config')
     print(templates_root_dir.resolve())
-    loader = jinja2.FileSystemLoader(str(templates_root_dir))
 
     output = dict()
 
     # generate configuration files for each party
-    for item in templates_root_dir.glob('./party/**/*'):
+    templates_party_dir = templates_root_dir / 'party'
+    loader = jinja2.FileSystemLoader(str(templates_party_dir))
+    for item in templates_party_dir.glob('./**/*'):
         if item.is_dir():
             continue
-        item = item.relative_to(templates_root_dir)
-        print(f"INFO: Template file is {(templates_root_dir / item).resolve()}")
+        item = item.relative_to(templates_party_dir)
+        print(f"INFO: Template file is {(templates_party_dir / item).resolve()}")
 
         for i in range(len(qmpc_setting['party_list'])):
             dst_sub_path = item
             if dst_sub_path.suffix == '.jinja':
                 dst_sub_path = dst_sub_path.with_suffix('')
-            destination_path = pathlib.Path('./.output') / f"config/party{i+1}" / dst_sub_path
+            destination_path = pathlib.Path('./.output') / f"config/parties/{i+1}" / dst_sub_path
             destination_path = destination_path.resolve()
             print(f"INFO: -> {destination_path}")
             context.run(f"mkdir -p {destination_path.parent}")
 
-            update_path_info(output, (i + 1,) + dst_sub_path.parts, str(destination_path))
+            update_path_info(output, ('parties', i + 1) + dst_sub_path.parts, str(destination_path))
 
             template = jinja2.Environment(loader=loader, keep_trailing_newline=True).get_template(name=str(item))
             args = {
@@ -206,21 +209,23 @@ def generate_config(context: Context, qmpc_config_path='./.output/qmpc_setting/c
                 f.write(result)
 
     # generate configuration files for services which is outside party
-    for item in templates_root_dir.glob('./others/**/*'):
+    templates_others_dir = templates_root_dir / 'others'
+    loader = jinja2.FileSystemLoader(str(templates_others_dir))
+    for item in templates_others_dir.glob('./**/*'):
         if item.is_dir():
             continue
-        item = item.relative_to(templates_root_dir)
-        print(f"INFO: Template file is {(templates_root_dir / item).resolve()}")
+        item = item.relative_to(templates_others_dir)
+        print(f"INFO: Template file is {(templates_others_dir / item).resolve()}")
 
         dst_sub_path = item
         if dst_sub_path.suffix == '.jinja':
             dst_sub_path = dst_sub_path.with_suffix('')
-        destination_path = pathlib.Path('./.output') / 'config' / dst_sub_path
+        destination_path = pathlib.Path('./.output') / 'config' / 'others' / dst_sub_path
         destination_path = destination_path.resolve()
         print(f"INFO: -> {destination_path}")
         context.run(f"mkdir -p {destination_path.parent}")
 
-        update_path_info(output, dst_sub_path.parts, str(destination_path))
+        update_path_info(output, ('others',) + dst_sub_path.parts, str(destination_path))
 
         template = jinja2.Environment(loader=loader, keep_trailing_newline=True).get_template(name=str(item))
         args = {
@@ -277,7 +282,7 @@ def generate_docker_compose(context: Context,
     with open('./.output/env-locations.json') as f:
         env_locations = json.load(f)
 
-    for item in templates_root_dir.glob('**/docker-compose.yml.jinja'):
+    for item in templates_root_dir.glob('**/docker-compose.party.yaml.jinja'):
         if item.is_dir():
             continue
         item = item.relative_to(templates_root_dir)
@@ -285,9 +290,7 @@ def generate_docker_compose(context: Context,
 
         # generate configuration files for each party
         for cfg_party in qmpc_setting['party_list']:
-            destination_path = pathlib.Path('./.output') / f"docker-compose/party{cfg_party['party_id']}" / item
-            if destination_path.suffix == '.jinja':
-                destination_path = destination_path.with_suffix('')
+            destination_path = pathlib.Path('./.output') / f"docker-compose/parties/{cfg_party['party_id']}" / 'docker-compose.yaml'
             destination_path = destination_path.resolve()
             print(f"INFO: -> {destination_path}")
             context.run(f"mkdir -p {destination_path.parent}")
@@ -300,7 +303,6 @@ def generate_docker_compose(context: Context,
             args = {
                 'party_id': cfg_party['party_id'],
                 'docker_image_tag': docker_image_tag,
-                'is_party': True,
                 'docker_context': str(docker_context),
                 'envs': update_dict_values(copy.deepcopy(env_locations), lambda p: os.path.relpath(p, destination_path.parent)),
             }
@@ -308,10 +310,11 @@ def generate_docker_compose(context: Context,
             with open(destination_path, 'w') as f:
                 f.write(result)
 
-        # generate docker-compose.yml for services which is outside party
-        destination_path = pathlib.Path('./.output') / 'docker-compose/others' / item
-        if destination_path.suffix == '.jinja':
-            destination_path = destination_path.with_suffix('')
+    # generate docker-compose.yml for services which is outside party
+    for item in templates_root_dir.glob('**/docker-compose.bts.yaml.jinja'):
+        item = item.relative_to(templates_root_dir)
+
+        destination_path = pathlib.Path('./.output') / 'docker-compose/others/beaver-triple-service' / 'docker-compose.yaml'
         destination_path = destination_path.resolve()
         print(f"INFO: -> {destination_path}")
         context.run(f"mkdir -p {destination_path.parent}")
@@ -322,7 +325,6 @@ def generate_docker_compose(context: Context,
 
         template = jinja2.Environment(loader=loader, keep_trailing_newline=True).get_template(name=str(item))
         args = {
-            'is_party': False,
             'docker_context': str(docker_context),
             'envs': update_dict_values(copy.deepcopy(env_locations), lambda p: os.path.relpath(p, destination_path.parent)),
             'qmpc_setting': qmpc_setting,
@@ -352,7 +354,7 @@ def filter_for_kompose(c, _compose_root_dir='./.output/docker-compose'):
     compose_root_dir = pathlib.Path(_compose_root_dir)
     output_root_dir = pathlib.Path('./.output/kompose')
 
-    for item in compose_root_dir.glob('**/docker-compose.yml'):
+    for item in compose_root_dir.glob('**/docker-compose.yaml'):
         if item.is_dir():
             continue
 
@@ -409,9 +411,9 @@ def generate_k8s_manifests(c, _compose_root_dir='./.output/kompose'):
     '''
 
     compose_root_dir = pathlib.Path(_compose_root_dir)
-    output_root_dir = pathlib.Path('./.output/manifests')
+    output_root_dir = pathlib.Path('./.output/komposed')
 
-    for item in compose_root_dir.glob('**/docker-compose.yml'):
+    for item in compose_root_dir.glob('**/docker-compose.yaml'):
         if item.is_dir():
             continue
 
@@ -421,12 +423,13 @@ def generate_k8s_manifests(c, _compose_root_dir='./.output/kompose'):
 
         c.run(rf"""kompose convert -v -f {item.resolve()} \
                     --volumes hostPath \
+                    --with-kompose-annotation=false \
                     -o {output_path.parent}
                 """)
 
 
 @task
-def replace_k8s_host_path(c, manifests_dir='./.output/manifests'):
+def replace_k8s_host_path(c, manifests_dir='./.output/komposed'):
     # type: (Context, str) -> None
     '''k8s マニフェストの hostPath を変更する
 
@@ -447,6 +450,22 @@ def replace_k8s_host_path(c, manifests_dir='./.output/manifests'):
     with open('./.output/env-locations.json') as f:
         config_info = json.load(f)
 
+    candidates: list[str] = [config_info['__path__']]
+    for party_id in config_info['parties']:
+        if party_id == '__path__':
+            continue
+        candidates += [config_info['parties'][party_id]['__path__']]
+    candidates += [config_info['others']['__path__']]
+
+    def find_deepest_path(src: str):
+        ret: Optional[str] = None
+        for cand in candidates:
+            if src.find(cand) != 0:
+                continue
+            if not ret or len(ret) < len(cand):
+                ret = cand
+        return ret
+
     yaml = YAML()
     yaml.preserve_quotes = True
 
@@ -459,7 +478,92 @@ def replace_k8s_host_path(c, manifests_dir='./.output/manifests'):
         manifest = replace(
             manifest,
             ('hostPath', 'path'),
-            lambda src: src.replace(config_info['__path__'], '/opt/QuickMPC/config')
+            lambda src: src.replace(find_deepest_path(src), '/opt/QuickMPC/config')
+        )
+
+        with open(manifest_path, mode='w') as f:
+            yaml.dump(manifest, f)
+
+
+@task
+def remove_network_policy(c, manifests_dir='./.output/komposed'):
+    # type: (Context, str) -> None
+    '''
+    '''
+
+    yaml = YAML()
+    yaml.preserve_quotes = True
+
+    _manifests_dir = pathlib.Path(manifests_dir)
+    for manifest_path in _manifests_dir.glob('**/*.yaml'):
+        manifest: Optional[YAML] = None
+        with open(manifest_path) as f:
+            manifest = yaml.load(f)
+
+        if manifest['kind'] == 'NetworkPolicy':
+            manifest_path.unlink()
+
+
+@task
+def tidy_up_manifests(c, manifests_dir='./.output/komposed'):
+    # type: (Context, str) -> None
+    '''
+    '''
+    manifests_root_dir = pathlib.Path(manifests_dir)
+    output_root_dir = pathlib.Path('./.output/manifests')
+    c.run(f"mkdir -p {output_root_dir}")
+
+    # copy "others" manifests as-is
+    shutil.copytree(manifests_root_dir / 'others', output_root_dir / 'others', dirs_exist_ok=True)
+
+    # copy common manifests of "party"
+    output_parties_dir = output_root_dir / 'parties'
+    output_parties_common = output_parties_dir / 'common'
+    c.run(f"mkdir -p {output_parties_common}")
+
+    yaml = YAML()
+    yaml.preserve_quotes = True
+
+    for manifest_path in manifests_root_dir.glob('parties/1/*.yaml'):
+        manifest: Optional[YAML] = None
+        with open(manifest_path) as f:
+            manifest = yaml.load(f)
+
+        if manifest['kind'] == 'ConfigMap':
+            continue
+
+        shutil.copy2(manifest_path, output_parties_common)
+
+    # copy ConfigMap resources
+    manifests_parties_dir = manifests_root_dir / 'parties'
+    for manifest_path in manifests_parties_dir.glob('**/*.yaml'):
+        manifest: Optional[YAML] = None
+        with open(manifest_path) as f:
+            manifest = yaml.load(f)
+
+        if manifest['kind'] != 'ConfigMap':
+            continue
+
+        output_path = output_parties_dir / manifest_path.relative_to(manifests_parties_dir)
+
+        c.run(f"mkdir -p {output_path.parent}")
+
+        shutil.copy2(manifest_path, output_path)
+
+    # rename ConfigMap key name
+    def rename(src: str):
+        pattern = re.compile(r'parties-\d+?-')
+        return re.sub(pattern, '', src)
+
+    for manifest_path in output_root_dir.glob('**/*.yaml'):
+        manifest: Optional[YAML] = None
+        with open(manifest_path) as f:
+            manifest = yaml.load(f)
+
+        manifest = replace(
+            manifest,
+            ('name',),
+            rename
         )
 
         with open(manifest_path, mode='w') as f:
