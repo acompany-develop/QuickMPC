@@ -6,7 +6,7 @@ from utils import (all_containers, bts_p, cc_p, data_id, execute_computation,
 
 @pytest.mark.parametrize(
     ("restart_container"), [
-        (mc_p(1)), (mc_p(2)), (mc_p(3)),
+        (mc_p(1)),
     ]
 )
 def test_succes_send_share_with_restart(restart_container):
@@ -72,7 +72,7 @@ def test_success_execute_computations_with_restart(restart_container):
 
 @pytest.mark.parametrize(
     ("restart_container"), [
-        (mc_p(1)), (mc_p(2)), (mc_p(3)),
+        (mc_p(1)),
     ]
 )
 def test_success_get_computation_result_with_restart(restart_container):

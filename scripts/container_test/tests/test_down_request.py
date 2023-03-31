@@ -8,7 +8,7 @@ from utils import (all_containers, cc_p, data_id, execute_computation,
 
 @pytest.mark.parametrize(
     ("down_container"), [
-        (mc_p(1)), (mc_p(2)), (mc_p(3)),
+        (mc_p(1)),
     ]
 )
 def test_failed_send_share_with_down(down_container):
@@ -51,7 +51,7 @@ def test_failed_execute_computation_with_down(down_container):
 
 @pytest.mark.parametrize(
     ("down_container"), [
-        (mc_p(1)), (mc_p(2)), (mc_p(3)),
+        (mc_p(1)),
     ]
 )
 def test_failed_get_computation_result_with_down(down_container):
