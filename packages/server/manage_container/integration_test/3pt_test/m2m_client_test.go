@@ -100,3 +100,39 @@ func TestSync(t *testing.T) {
 	case <-done:
 	}
 }
+
+func TestCreateStatusFile(t *testing.T) {
+	/**
+	* 各手順ごとにsyncで同期
+	* 1. PT1がstatu_RECEIVED作成リクエストを送る
+	* 2. PT2,3の作成されたか確認
+	 */
+	jobUUID := "createStatusFile"
+	deleteId(t, jobUUID)
+	config, err := utils.GetConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := config.PartyID
+	m2m_client := m2m.Client{}
+	if id == 1 {
+		// NOTE: PT1はPT2,3へstatu_RECEIVED作成リクエストを送る
+		client := m2m.Client{}
+		err := client.CreateStatusFile(jobUUID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// data削除の終了を通知
+		m2m_client.Sync("createStatusFile")
+	} else {
+		// NOTE: PT2,3はstatu_RECEIVED作成リクエストを受け取る
+		// PT1のstatu_RECEIVED作成リクエストの終了を待機
+		m2m_client.Sync("createStatusFile")
+		// 同期させてから作成されてるかチェック
+		_, err = os.Stat(fmt.Sprintf("/db/result/%s/status_RECEIVED", jobUUID))
+		if err != nil {
+			t.Fatal("status_RECEIVED must be created")
+		}
+	}
+	deleteId(t, jobUUID)
+}
