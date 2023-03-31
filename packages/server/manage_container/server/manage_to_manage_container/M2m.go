@@ -42,6 +42,16 @@ func (s *server) Sync(ctx context.Context, in *pb.SyncRequest) (*pb.SyncResponse
 	}, nil
 }
 
+func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRequest) (*pb.CreateStatusFileResponse, error) {
+	jobUUID := in.JobUuid
+	AppLogger.Infof("create status file request: jobUUID = %s", jobUUID)
+	s.m2dbclient.CreateStatusFile(jobUUID)
+	return &pb.CreateStatusFileResponse{
+		Message: "ok",
+		IsOk:    true,
+	}, nil
+}
+
 func RunServer() {
 	config, err := utils.GetConfig()
 	if err != nil {

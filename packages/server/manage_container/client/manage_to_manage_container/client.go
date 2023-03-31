@@ -20,6 +20,7 @@ type Client struct{}
 type M2MClient interface {
 	DeleteShares(string) error
 	Sync(string) error
+	CreateStatusFile(string) error
 }
 
 // 自分以外のMCへのconnecterを得る
@@ -113,6 +114,34 @@ func (c Client) sync(conn *grpc.ClientConn, syncID string) error {
 	rm := helper.RetryManager{}
 	for {
 		_, err := mcTomcClient.Sync(context.TODO(), syncRequest)
+		retry, _ := rm.Retry(err)
+		if !retry {
+			return err
+		}
+	}
+}
+
+func (c Client) CreateStatusFile(jobUUID string) error {
+	connList, err := connect()
+	if err != nil {
+		return err
+	}
+	for _, conn := range connList {
+		defer conn.Close()
+		err = c.createStatusFile(conn, jobUUID)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c Client) createStatusFile(conn *grpc.ClientConn, jobUUID string) error {
+	mcTomcClient := pb.NewManageToManageClient(conn)
+	createStatusFileRequest := &pb.CreateStatusFileRequest{JobUuid: jobUUID}
+	rm := helper.RetryManager{}
+	for {
+		_, err := mcTomcClient.CreateStatusFile(context.TODO(), createStatusFileRequest)
 		retry, _ := rm.Retry(err)
 		if !retry {
 			return err
