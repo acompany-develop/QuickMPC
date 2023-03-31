@@ -16,11 +16,40 @@ def generate_random_string(seed: int, length: int) -> str:
 @pytest.mark.parametrize(
     ("secret"),
     [
+        # normal case
         'secret',
+        # random case
         *[generate_random_string(seed=seed, length=512) for seed in range(5)],
+        # alphabet
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        # hiragana
+        "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞ"
+        "ただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽ"
+        "まみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ",
+        # katakana
+        "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾ"
+        "タダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポ"
+        "マミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶヷヸヹヺ",
+        # kanji
+        "春眠不覚暁処処聞啼鳥夜来風雨声花落知多少",
+        # large number
+        # NOTE: 全角数字も数字と解釈されてしまい文字列として復元されない
+        # "１２３４５６７８９０",
+        # mix
+        "abcあいうアイウ你好世界１２３",
+        # 最長住所
+        "漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢"
+        "漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢"
+        "漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢"
+        "漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢"
+        "漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢",
+        # emoji
+        "😀😁😂🤣😃😄😅😆😉😊😋😎😍😘😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮"
+        "🤐😯😪😫😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😢😭😦😧😨😩🤯😬"
+        "😰😱😳🤪😵😡😠🤬😷🤒🤕🤢🤮🤧😇🤠🤡🤥🤫🤭🧐🤓",
     ]
 )
-def test_string(secret: str):
+def test_restor_string(secret: str):
     data = [
         ['id', 'str'],
         ['0', secret]

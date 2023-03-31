@@ -48,27 +48,42 @@ func init() {
 func getClaims() (*jwt_types.Claim, error) {
 	token, ok := os.LookupEnv("BTS_TOKEN")
 	if ok {
-		claims,err := utils.AuthJWT(token)
+		claims, err := utils.AuthJWT(token)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 
-		return claims,nil
+		return claims, nil
 	}
 
-	return nil,fmt.Errorf("BTS TOKEN is not valified")
+	return nil, fmt.Errorf("BTS TOKEN is not valified")
 }
 
-func getContext() (context.Context, error){
+type ctxOptFunc func(context.Context) context.Context
+
+func withToken(token string) ctxOptFunc {
+	return func(ctx context.Context) context.Context {
+		md := metadata.New(map[string]string{"authorization": "bearer " + token})
+		return metadata.NewOutgoingContext(ctx, md)
+	}
+}
+
+func getContext(opts ...ctxOptFunc) (context.Context, error) {
+	ctx := context.Background()
+
+	// default値の設定
 	token, ok := os.LookupEnv("BTS_TOKEN")
-	if ok {
-		ctx := context.Background()
-		md := metadata.New(map[string]string{"authorization": "bearer "+token})
-		ctx = metadata.NewOutgoingContext(ctx, md)
-		return ctx,nil
+	if !ok {
+		return nil, fmt.Errorf("BTS TOKEN is not valified")
+	}
+	ctx = withToken(token)(ctx)
+
+	// optionの設定
+	for _, opt := range opts {
+		ctx = opt(ctx)
 	}
 
-	return nil,fmt.Errorf("BTS TOKEN is not valified")
+	return ctx, nil
 }
 
 func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32, partyId uint32) {
@@ -179,7 +194,7 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 	}
 }
 
-func TestDeleteJobIdTriple(t * testing.T) {
+func TestDeleteJobIdTriple(t *testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
 	client := pb.NewEngineToBtsClient(conn)
@@ -189,7 +204,7 @@ func TestDeleteJobIdTriple(t * testing.T) {
 		t.Fatal(err)
 	}
 
-	_,err = client.DeleteJobIdTriple(ctx, &pb.DeleteJobIdTripleRequest{JobId: 0})
+	_, err = client.DeleteJobIdTriple(ctx, &pb.DeleteJobIdTripleRequest{JobId: 0})
 	if err != nil {
 		t.Fatal(err)
 	}

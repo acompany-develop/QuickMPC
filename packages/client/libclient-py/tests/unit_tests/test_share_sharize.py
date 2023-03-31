@@ -1,10 +1,16 @@
+import math
 from decimal import Decimal
 from typing import List
 
 import numpy as np
 import pytest
 
+from quickmpc.exception import ArgumentError
 from quickmpc.share import Share
+
+
+def sharize_params(secrets=[1], party_size=3):
+    return (secrets, party_size)
 
 
 class TestQMPC:
@@ -104,15 +110,47 @@ class TestQMPC:
 
             assert (is_inf(shares[0]))
 
-    def test_sharize_errorhandring(self):
+    @pytest.mark.parametrize(
+        ("secrets"),
+        [
+            # zero
+            (0),
+            # int_max
+            (1e1200),
+            # int_min
+            (-1e1200),
+            # float_min_plus
+            (1e-50),
+            # float_min_minus
+            (-1e-50),
+        ]
+    )
+    def test_sharize_edge(self, secrets: float):
+        """ nパーティのシェア化が正しくできているかのTest """
+        for party_size in range(2, 10):
+            shares: np.ndarray = np.vectorize(Decimal)(
+                Share.sharize(secrets, party_size=party_size))
+            assert (len(shares) == party_size)
+            assert math.isclose(secrets, sum(shares), abs_tol=1e-5)
+
+    @pytest.mark.parametrize(
+        ("args", "expected_exception"),
+        [
+            # string
+            (sharize_params(secrets="str"), ArgumentError),
+            # array string
+            (sharize_params(secrets="[str]"), ArgumentError),
+            # 列が異なる
+            (sharize_params(secrets=[[1, 2], [1]]), ValueError),
+            # 3-dim
+            (sharize_params(secrets=[[[1]]]), ArgumentError),
+            # empty
+            (sharize_params(secrets=[[], []]), ValueError),
+            # party_sizeが1
+            (sharize_params(party_size=1), ArgumentError),
+        ]
+    )
+    def test_sharize_errorhandring(self, args, expected_exception):
         """ 異常値を与えてエラーが出るかTest """
-        with pytest.raises(Exception):
-            Share.sharize("hey")
-        with pytest.raises(Exception):
-            Share.sharize(["str"])
-        with pytest.raises(Exception):
-            Share.sharize([[1, 2], [1]])
-        with pytest.raises(Exception):
-            Share.sharize([[[1]]])
-        with pytest.raises(Exception):
-            Share.sharize([[], []])
+        with pytest.raises(expected_exception):
+            Share.sharize(*args)

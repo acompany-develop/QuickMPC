@@ -98,7 +98,7 @@ class Share:
         """ 1次元リストのシェア化 """
         rnd: RandomInterface = ChaCha20()
         secrets_size: int = len(secrets)
-        max_val = max(secrets) * 2
+        max_val = (max(secrets)+1) * 2
         shares: np.ndarray = np.array([
             rnd.get_list(-max_val, max_val, secrets_size)
             for __ in range(party_size - 1)])
