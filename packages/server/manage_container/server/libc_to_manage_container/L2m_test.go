@@ -35,6 +35,7 @@ func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
 func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
+func (localDb) CreateStatusFile(string) {}
 func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }
@@ -48,6 +49,9 @@ func (localMC) DeleteShares(string) error {
 	return nil
 }
 func (localMC) Sync(string) error {
+	return nil
+}
+func (localMC) CreateStatusFile(string) error {
 	return nil
 }
 func (localDb) GetElapsedTime(string) (float64, error) {

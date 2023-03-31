@@ -23,6 +23,11 @@ func (s *server) Sync(ctx context.Context, in *pb.SyncRequest) (*pb.SyncResponse
 	return &pb.SyncResponse{}, nil
 }
 
+func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRequest) (*pb.CreateStatusFileResponse, error) {
+	AppLogger.Infof("Received: %v", in.GetJobUuid())
+	return &pb.CreateStatusFileResponse{}, nil
+}
+
 // Test用のサーバを起動(MC)
 var s *utils.TestServer
 var c = Client{}
@@ -48,5 +53,14 @@ func TestSync(t *testing.T) {
 	err := c.sync(conn, "SyncID")
 	if err != nil {
 		t.Error("sync faild: " + err.Error())
+	}
+}
+
+func TestCreateStatusFile(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	err := c.createStatusFile(conn, "jobUUID")
+	if err != nil {
+		t.Error("create status file faild: " + err.Error())
 	}
 }

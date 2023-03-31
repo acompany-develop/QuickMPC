@@ -31,6 +31,7 @@ func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult
 func (localDb) InsertModelParams(string, []string, int32) error {
 	return nil
 }
+func (localDb) CreateStatusFile(string) {}
 func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }
