@@ -5,8 +5,9 @@ services:
     tty: true
     container_name: computation-container{{ party_id }}
     expose:
-      - "51020"
+      - "31020"
       - "50010"
+      - "50020"
     image: ghcr.io/acompany-develop/quickmpc-cc{{ ':' if docker_image_tag}}{{ docker_image_tag }}
     build:
       context: {{ docker_context }}
@@ -42,7 +43,7 @@ services:
         - |-
           /bin/grpc_health_probe -addr=:50010 && \
           /bin/grpc_health_probe -addr=:50020 && \
-          /bin/grpc_health_probe -addr=:51020
+          /bin/grpc_health_probe -addr=:31020
       interval: 3s
       timeout: 5s
       start_period: 5s
@@ -60,7 +61,7 @@ services:
         target: /etc/envoy/envoy.yaml
     expose:
       - "50020"
-      - "51020"
+      - "31020"
     networks:
       shared-network:
         ipv4_address: 10.0.{{ party_id }}.21
