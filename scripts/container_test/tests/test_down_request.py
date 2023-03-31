@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from utils import (all_containers, cc_p, data_id, execute_computation,
@@ -57,6 +59,8 @@ def test_failed_get_computation_result_with_down(down_container):
     ac = all_containers()
     ac.down()
     ac.up()
+    # NOTE: 起動しきるためにsleep
+    time.sleep(5)
 
     # コンテナを落とす前にexecuteしておく
     job_uuid1: str = job_uuid()

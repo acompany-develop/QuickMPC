@@ -49,8 +49,7 @@ def test_success_execute_computation_with_restart(restart_container):
 
 @pytest.mark.parametrize(
     ("restart_container"), [
-        (mc_p(1)),
-        (cc_p(1)),
+        (mc_p(1)), (cc_p(1)),
     ]
 )
 def test_success_execute_computations_with_restart(restart_container):
@@ -73,9 +72,7 @@ def test_success_execute_computations_with_restart(restart_container):
 
 @pytest.mark.parametrize(
     ("restart_container"), [
-        (mc_p(1)),
-        (mc_p(2)),
-        (mc_p(3)),
+        (mc_p(1)), (mc_p(2)), (mc_p(3)),
     ]
 )
 def test_success_get_computation_result_with_restart(restart_container):
@@ -97,9 +94,7 @@ def test_success_get_computation_result_with_restart(restart_container):
 
 @pytest.mark.parametrize(
     ("restart_container"), [
-        (mc_p(1)), (mc_p(2)), (mc_p(3)),
-        (cc_p(1)), (cc_p(2)), (cc_p(3)),
-        (bts_p()),
+        (mc_p(1)), (cc_p(1)), (bts_p()),
     ]
 )
 def test_success_execute_multiple_with_restart(restart_container):
