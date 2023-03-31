@@ -217,7 +217,6 @@ std::string Client::writeTable(
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const
 {
-    fs::create_directories(resultDbPath + job_uuid);
     updateJobStatus(job_uuid, status);
 }
 
