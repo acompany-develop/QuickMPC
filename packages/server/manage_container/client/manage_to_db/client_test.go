@@ -530,5 +530,20 @@ func TestGetMatchingColumnFailedEmptyID(t *testing.T) {
 	initialize()
 }
 
+// status_RECEIVEDが生成されるかテスト
+func TestCreateStatusFile(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	client.CreateStatusFile(defaultJobUUID)
+
+	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s/status_RECEIVED", defaultJobUUID))
+	if errExist != nil {
+		t.Error("create status file failed: " + errExist.Error())
+	}
+
+	initialize()
+}
+
 // XXX: オブジェクトストレージへの移行に備えて廃止予定
 /* GetDataList() (string, error) */
