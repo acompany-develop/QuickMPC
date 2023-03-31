@@ -223,6 +223,19 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		}, nil
 	}
 
+	// status_RECEIVEDファイルを作成する
+	s.m2dbclient.CreateStatusFile(jobUUID)
+
+	// 他パーティにstatus_RECEIVEDファイルを作成するようリクエストを送る
+	err = s.m2mclient.CreateStatusFile(jobUUID)
+	if err != nil {
+		return &pb.ExecuteComputationResponse{
+			Message: "ok",
+			IsOk:    false,
+			JobUuid: jobUUID,
+		}, err
+	}
+
 	return &pb.ExecuteComputationResponse{
 		Message: "ok",
 		IsOk:    true,
