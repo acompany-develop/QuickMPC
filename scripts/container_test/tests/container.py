@@ -57,11 +57,10 @@ class Containers:
         subprocess.run([command], shell=True)
 
     def restart(self) -> None:
-        sn_str = " ".join(self.__service_names)
-        command = f"docker-compose {compose_files_opt} restart {sn_str}"
-        subprocess.run([command], shell=True)
-        # healthcheckが通るまで待機，timeoutを過ぎたらraise
-        for sn in self.__service_names:
-            if not Containers.__healthcheck(sn):
-                self.down()
-                raise RuntimeError(f"`{sn}` is not healthy.")
+        # NOTE: restartだと通信が上手くいかないことがあるのでdownしてupしている
+        # TODO: 上手くいかない原因の調査
+        # sn_str = " ".join(self.__service_names)
+        # command = f"docker-compose {compose_files_opt} restart {sn_str}"
+        # subprocess.run([command], shell=True)
+        self.down()
+        self.up()

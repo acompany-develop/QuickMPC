@@ -1,10 +1,7 @@
-import time
-
 import pytest
 
-from utils import (all_containers, bts_p, cc_p, data_id, execute_computation,
-                   get_computation_result, job_uuid, mc_all, mc_p, qmpc,
-                   send_share)
+from utils import (all_containers, cc_p, data_id, execute_computation,
+                   get_computation_result, job_uuid, mc_all, mc_p, send_share)
 
 
 @pytest.mark.parametrize(

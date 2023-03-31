@@ -1,10 +1,7 @@
-import time
-
 import pytest
 
 from utils import (all_containers, bts_p, cc_p, data_id, execute_computation,
-                   get_computation_result, job_uuid, mc_all, mc_p, qmpc,
-                   send_share)
+                   get_computation_result, job_uuid, mc_all, mc_p, send_share)
 
 
 @pytest.mark.parametrize(
@@ -43,7 +40,7 @@ def test_success_execute_computation_with_restart(restart_container):
     data_id2: str = data_id()
 
     # コンテナをrestartさせてからexecute_computationを送る
-    restart_container.down()
+    restart_container.restart()
     res = execute_computation(data_id1, data_id2)
     ac.down()
 
@@ -67,7 +64,7 @@ def test_success_execute_computations_with_restart(restart_container):
     data_id2: str = data_id()
 
     # コンテナをrestartさせてからexecute_computationを送る
-    restart_container.down()
+    restart_container.restart()
     res = execute_computation(data_id1, data_id2)
     ac.down()
 
