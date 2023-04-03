@@ -201,11 +201,11 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Build images and run libclient
+      - name: Build container test images
         run: make test t=./container_test m=build p=medium
         working-directory: ./scripts
 
-      - name: Run bazel test in libclient
+      - name: Run container test
         run: make test t=./container_test m=run p=medium
         working-directory: ./scripts
   medium_test:
