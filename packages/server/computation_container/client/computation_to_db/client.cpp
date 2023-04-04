@@ -234,29 +234,6 @@ std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
     return schemas;
 }
 
-// Tableの保存
-std::string Client::writeTable(
-    const std::string &data_id,
-    std::vector<std::vector<std::string>> &table,
-    const std::vector<SchemaType> &schema
-) const
-{
-    // TODO: piece_idを引数に受け取ってpieceごとに保存できるようにする
-    const int piece_id = 0;
-
-    auto json_schema = convertSchemaVectorToJsonVector(schema);
-    nlohmann::json data_json = {
-        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", json_schema}}}};
-    const std::string data = data_json.dump();
-
-    auto data_path = shareDbPath + data_id;
-    fs::create_directories(data_path);
-    std::ofstream ofs(data_path + "/" + std::to_string(piece_id));
-    ofs << data;
-    ofs.close();
-    return data_id;
-};
-
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const
 {

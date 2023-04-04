@@ -360,29 +360,6 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultCompletedTest)
     initialize(job_uuid);
 }
 
-TEST(ComputationToDbTest, SuccessWriteTableTest)
-{
-    const std::string data_id = "SuccessWriteTableTest";
-    initialize(data_id);
-
-    std::vector<std::vector<std::string>> table = {{"1", "2"}, {"3", "4"}};
-    using SchemaType = qmpc::ComputationToDb::SchemaType;
-    std::vector<SchemaType> schema = {
-        SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
-        SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT)};
-
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeTable(data_id, table, schema);
-
-    auto ifs = std::ifstream("/db/share/" + data_id + "/0");
-    std::string data;
-    getline(ifs, data);
-    std::string true_data =
-        R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
-        R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})";
-    EXPECT_EQ(true_data, data);
-}
-
 TEST(ComputationToDbTest, SuccessTableWriteTest)
 {
     const std::string data_id = "SuccessTableWriteTest";
