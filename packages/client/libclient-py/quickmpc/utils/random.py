@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import ClassVar, List
+import math
 
 from nacl.utils import random, randombytes_deterministic
 
@@ -35,11 +36,12 @@ class ChaCha20(RandomInterface):
 
     @get.register(int)
     def __get_int(self, a: int, b: int) -> int:
-        # TRNGで32byte(256bit)生成
+        # TRNGで [a,b) の乱数生成
         self.__exception_check(a, b)
-        byte_val: bytes = self.__get_32byte()
-        int32byte = int.from_bytes(byte_val, "big")
-        return int32byte % (b-a)+a
+        interval_byte = self.__get_byte_size(b-a)
+        byte_val: bytes = random(interval_byte)
+        int_val = int.from_bytes(byte_val, "big")
+        return int_val % (b - a) + a
 
     @get.register(Decimal)
     def __get_decimal(self, a: Decimal, b: Decimal) -> Decimal:
@@ -57,7 +59,7 @@ class ChaCha20(RandomInterface):
     @get_list.register(int)
     def __get_list_int(self, a: int, b: int, size: int) -> List[int]:
         # TRNGの32byteをseedとしてCSPRNGでsize分生成
-        byte_size: int = 16
+        byte_size: int = self.__get_byte_size(b-a)
         self.__exception_check(a, b)
         seed: bytes = self.__get_32byte()
         bytes_list: bytes = randombytes_deterministic(size*byte_size, seed)
@@ -73,6 +75,10 @@ class ChaCha20(RandomInterface):
         valList: List[int] = self.get_list(self.mn, self.mx, size)
         return [Decimal(val-self.mn)/(self.mx-self.mn)*(b-a)+a
                 for val in valList]
+
+    def __get_byte_size(self, x: int)-> int:
+        # 整数の byte サイズを取得
+        return max(math.ceil(math.log2(x))//8 + 1, 32)
 
     def __get_32byte(self) -> bytes:
         return random()
