@@ -103,6 +103,49 @@ void Client::ComputationResultWriter::emplace(const SchemaType &s)
     emplace(json.dump());
 }
 
+/************ Client::TableWrite ************/
+Client::TableWrite::TableWrite(const std::string &data_id, int piece_size)
+    : current_size(0), piece_id(0), data_id(data_id), piece_size(piece_size)
+{
+    fs::create_directories(shareDbPath + data_id);
+}
+
+void Client::TableWrite::write()
+{
+    nlohmann::json piece_data_json = {
+        {"value", piece_data}, {"meta", {{"piece_id", piece_id}, {"schema", json_schemas}}}};
+    const std::string data = piece_data_json.dump();
+
+    auto ofs = std::ofstream(shareDbPath + data_id + "/" + std::to_string(piece_id));
+    ofs << data;
+    ofs.close();
+
+    ++piece_id;
+    current_size = 0;
+    piece_data.clear();
+    json_schemas.clear();
+}
+
+void Client::TableWrite::emplace(const std::vector<std::string> &v)
+{
+    int size = 0;
+    for (const auto &s : v)
+    {
+        size += s.size();
+    }
+    if (current_size + size > piece_size)
+    {
+        write();
+    }
+    piece_data.emplace_back(v);
+    current_size += size;
+}
+
+void Client::TableWrite::emplace(const std::vector<SchemaType> &s)
+{
+    json_schemas = convertSchemaVectorToJsonVector(s);
+}
+
 /************ Client ************/
 
 static std::vector<SchemaType> load_schema(const nlohmann::json &json)

@@ -89,5 +89,27 @@ public:
         writer.write();
         std::ofstream(resultDbPath + job_uuid + "/completed");
     }
+
+    // TableWriteとComputationResultWriteは本質的には同じことをしているが，
+    // 微妙に形式が異なるため別の実装としている
+    // 例)send_share時は行ごとにpieceとするが，計算結果は値ごとにpieceとしている
+    class TableWrite
+    {
+        int current_size;
+        int piece_id;
+        std::vector<std::vector<std::string>> piece_data;
+        nlohmann::json json_schemas;
+
+        const std::string data_id;
+        const int piece_size;
+
+    public:
+        TableWrite(const std::string &, int piece_size = 1000000);
+
+        void write();
+
+        void emplace(const std::vector<std::string> &);
+        void emplace(const std::vector<SchemaType> &);
+    };
 };
 }  // namespace qmpc::ComputationToDb
