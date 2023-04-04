@@ -76,7 +76,7 @@ class ChaCha20(RandomInterface):
         return [Decimal(val-self.mn)/(self.mx-self.mn)*(b-a)+a
                 for val in valList]
 
-    def __get_byte_size(self, x: int)-> int:
+    def __get_byte_size(self, x: int) -> int:
         # 整数の byte サイズを取得
         return max(math.ceil(math.log2(x))//8 + 1, 32)
 
