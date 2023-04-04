@@ -90,10 +90,10 @@ public:
         std::ofstream(resultDbPath + job_uuid + "/completed");
     }
 
-    // TableWriteとComputationResultWriteは本質的には同じことをしているが，
+    // TableWriterとComputationResultWriterは本質的には同じことをしているが，
     // 微妙に形式が異なるため別の実装としている
     // 例)send_share時は行ごとにpieceとするが，計算結果は値ごとにpieceとしている
-    class TableWrite
+    class TableWriter
     {
         int current_size;
         int piece_id;
@@ -104,7 +104,7 @@ public:
         const int piece_size;
 
     public:
-        TableWrite(const std::string &, int piece_size = 1000000);
+        TableWriter(const std::string &, int piece_size = 1000000);
 
         void write();
 

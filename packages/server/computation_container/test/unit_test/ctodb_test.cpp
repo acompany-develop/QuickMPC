@@ -394,7 +394,7 @@ TEST(ComputationToDbTest, SuccessTableWriteTest)
         SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
         SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT)};
 
-    qmpc::ComputationToDb::Client::TableWrite writer(data_id);
+    qmpc::ComputationToDb::Client::TableWriter writer(data_id);
 
     writer.emplace(schema);
     for (const auto& row : table)
@@ -424,7 +424,7 @@ TEST(ComputationToDbTest, SuccessTableWritePieceTest)
         SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
         SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT)};
 
-    qmpc::ComputationToDb::Client::TableWrite writer(data_id, 4);
+    qmpc::ComputationToDb::Client::TableWriter writer(data_id, 4);
 
     writer.emplace(schema);
     for (const auto& row : table)
