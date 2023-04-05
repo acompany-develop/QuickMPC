@@ -159,7 +159,8 @@ class TestQMPC:
             (qmpc_failed.get_computation_result, ("uuid", None)),
         ]
     )
-    def test_retry(self, function, argument, run_server1, run_server2, run_server3):
+    def test_retry(self, function, argument,
+                   run_server1, run_server2, run_server3):
         # 10回の retry に失敗したら RuntimeError が出るかをテスト
         with pytest.raises(RuntimeError):
             _ = function(*argument)
