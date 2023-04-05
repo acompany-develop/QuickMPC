@@ -143,7 +143,7 @@ class TestQMPC:
         for res in response["job_error_info"]:
             assert (res.what == "QMPCJobError")
 
-    qmpc_failed:QMPCServer = QMPCServer(
+    qmpc_failed: QMPCServer = QMPCServer(
         # 通信失敗する場合をテストするようのサーバー
         ["http://localhost:50011",
          "http://localhost:50012",
@@ -154,12 +154,12 @@ class TestQMPC:
     )
 
     @pytest.mark.parametrize(
-        ("function","argument"), [
-            (qmpc_failed.execute_computation,execute_computation_param()),
-            (qmpc_failed.get_computation_result,("uuid",None)),
+        ("function", "argument"), [
+            (qmpc_failed.execute_computation, execute_computation_param()),
+            (qmpc_failed.get_computation_result, ("uuid", None)),
         ]
     )
-    def test_retry(self,function, argument,run_server1, run_server2, run_server3):
+    def test_retry(self, function, argument, run_server1, run_server2, run_server3):
         # 10回の retry に失敗したら RuntimeError が出るかをテスト
         with pytest.raises(RuntimeError):
             _ = function(*argument)
