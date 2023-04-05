@@ -47,6 +47,8 @@ class QMPCServer:
     __client_stubs: Tuple[LibcToManageStub] = field(init=False)
     __party_size: int = field(init=False)
     token: str
+    retry_num: int = 10
+    retry_wait_time: int = 5
 
     def __post_init__(self, endpoints: List[str]) -> None:
         stubs = [LibcToManageStub(QMPCServer.__create_grpc_channel(ep))
@@ -90,8 +92,6 @@ class QMPCServer:
 
     @staticmethod
     def __retry(f: Callable, *request: Any) -> Any:
-        retry_num: int = 10
-        retry_wait_time: int = 5
         for _ in range(retry_num):
             try:
                 return f(*request)
