@@ -28,9 +28,8 @@ TEST(CsprngTest, GetRandLL)
 {
     Utility::CSPRNG rng = Utility::CSPRNG();
     std::vector<long long int> rndLLVec = {};
-    std::set<int> rndLLSet;
-
-    for (unsigned int i = 0; i < 10000; i++)
+    std::set<long long int> rndLLSet;
+    for (unsigned int i = 0; i < 10'000; i++)
     {
         long long int rndLL = rng.GetRandLL();
         rndLLVec.push_back(rndLL);
@@ -46,7 +45,7 @@ TEST(CsprngTest, GetRandLLVec)
     Utility::CSPRNG rng = Utility::CSPRNG();
     unsigned int vecSize = 1000;
     std::vector<long long int> rndLLVec = rng.GetRandLLVec(vecSize);
-    std::set<int> rndLLSet(rndLLVec.begin(), rndLLVec.end());
+    std::set<long long int> rndLLSet(rndLLVec.begin(), rndLLVec.end());
     ;
 
     // SetとVecのサイズで重複チェックテスト
