@@ -90,9 +90,8 @@ class QMPCServer:
             return False
         return True
 
-    @staticmethod
-    def __retry(f: Callable, *request: Any) -> Any:
-        for _ in range(retry_num):
+    def __retry(self, f: Callable, *request: Any) -> Any:
+        for _ in range(self.retry_num):
             try:
                 return f(*request)
             except grpc.RpcError as e:
@@ -120,8 +119,8 @@ class QMPCServer:
                     raise QMPCServerError("backend server return error") from e
             except Exception as e:
                 logger.error(e)
-            time.sleep(retry_wait_time)
-        raise RuntimeError(f"All {retry_num} times it was an error")
+            time.sleep(self.retry_wait_time)
+        raise RuntimeError(f"All {self.retry_num} times it was an error")
 
     @staticmethod
     def __futures_result(
@@ -243,7 +242,7 @@ class QMPCServer:
 
         # リクエストパラメータを設定して非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(QMPCServer.__retry,
+        futures = [executor.submit(self.__retry,
                                    stub.SendShares,
                                    SendSharesRequest(
                                        data_id=data_id,
@@ -264,7 +263,7 @@ class QMPCServer:
         req = DeleteSharesRequest(dataIds=data_ids, token=self.token)
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(QMPCServer.__retry, stub.DeleteShares, req)
+        futures = [executor.submit(self.__retry, stub.DeleteShares, req)
                    for stub in self.__client_stubs]
         is_ok, _ = QMPCServer.__futures_result(futures)
         return {"is_ok": is_ok}
@@ -293,7 +292,7 @@ class QMPCServer:
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
         # JobidをMCから貰う関係で単一MC（現在はSP（ID=0）のみ対応）にリクエストを送る
-        futures = [executor.submit(QMPCServer.__retry,
+        futures = [executor.submit(self.__retry,
                                    self.__client_stubs[0].ExecuteComputation, req)]
 
         is_ok, response = QMPCServer.__futures_result(futures)
@@ -304,7 +303,7 @@ class QMPCServer:
     def get_data_list(self) -> Dict:
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(QMPCServer.__retry,
+        futures = [executor.submit(self.__retry,
                                    stub.GetDataList,
                                    GetDataListRequest(token=self.token))
                    for stub in self.__client_stubs]
@@ -321,7 +320,7 @@ class QMPCServer:
         )
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(QMPCServer.__retry,
+        futures = [executor.submit(self.__retry,
                                    stub.GetElapsedTime,
                                    req)
                    for stub in self.__client_stubs]
@@ -340,7 +339,7 @@ class QMPCServer:
         )
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(QMPCServer.__retry,
+        futures = [executor.submit(self.__retry,
                                    QMPCServer.__stream_result,
                                    stub.GetComputationResult(req),
                                    job_uuid, party, path)
@@ -414,7 +413,7 @@ class QMPCServer:
         )
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(QMPCServer.__retry, stub.GetJobErrorInfo, req)
+        futures = [executor.submit(self.__retry, stub.GetJobErrorInfo, req)
                    for stub in self.__client_stubs]
         is_ok, response = QMPCServer.__futures_result(
             futures, enable_progress_bar=False)
