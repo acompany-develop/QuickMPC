@@ -8,7 +8,7 @@ import struct
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, InitVar
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, Callable
 from urllib.parse import urlparse
 
 import google.protobuf.json_format
@@ -89,6 +89,40 @@ class QMPCServer:
         return True
 
     @staticmethod
+    def __retry(f:Callable, *request:Any)->Any:
+        retry_num:int = 10
+        retry_wait_time:int = 5
+        for _ in range(retry_num):
+            try:
+                return f(*request)
+            except grpc.RpcError as e:
+                logger.error(f'{e.details()} ({e.code()})')
+
+                # エラーが詳細な情報を持っているか確認
+                status = rpc_status.from_call(e)
+                if status is not None:
+                    for detail in status.details:
+                        if detail.Is(
+                            JobErrorInfo.DESCRIPTOR   # type: ignore[attr-defined]
+                        ):
+                            # CC で Job 実行時にエラーが発生していた場合
+                            # 例外を rethrow する
+                            err_info = JobErrorInfo()
+                            detail.Unpack(err_info)
+                            logger.error(f"job error information: {err_info}")
+
+                            raise QMPCJobError(err_info) from e
+
+                # MC で Internal Server Error が発生している場合
+                # 例外を rethrow する
+                if e.code() == grpc.StatusCode.UNKNOWN:
+                    raise QMPCServerError("backend server return error") from e
+            except Exception as e:
+                logger.error(e)
+            time.sleep(retry_wait_time)
+        raise RuntimeError(f"All {retry_num} times it was an error")
+
+    @staticmethod
     def __futures_result(
             futures: Iterable, enable_progress_bar=True) -> Tuple[bool, List]:
         """ エラーチェックしてfutureのresultを得る """
@@ -98,32 +132,9 @@ class QMPCServer:
             if enable_progress_bar:
                 futures = tqdm.tqdm(futures, desc='receive')
             response = [f.result() for f in futures]
-        except grpc.RpcError as e:
+        except Exception:
             is_ok = False
-            logger.error(f'{e.details()} ({e.code()})')
-
-            # エラーが詳細な情報を持っているか確認
-            status = rpc_status.from_call(e)
-            if status is not None:
-                for detail in status.details:
-                    if detail.Is(
-                        JobErrorInfo.DESCRIPTOR   # type: ignore[attr-defined]
-                    ):
-                        # CC で Job 実行時にエラーが発生していた場合
-                        # 例外を rethrow する
-                        err_info = JobErrorInfo()
-                        detail.Unpack(err_info)
-                        logger.error(f"job error information: {err_info}")
-
-                        raise QMPCJobError(err_info) from e
-
-            # MC で Internal Server Error が発生している場合
-            # 例外を rethrow する
-            if e.code() == grpc.StatusCode.UNKNOWN:
-                raise QMPCServerError("backend server return error") from e
-        except Exception as e:
-            is_ok = False
-            logger.error(e)
+            raise
 
         for b in response:
             if hasattr(b, "is_ok"):
