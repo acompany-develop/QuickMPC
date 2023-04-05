@@ -89,9 +89,9 @@ class QMPCServer:
         return True
 
     @staticmethod
-    def __retry(f:Callable, *request:Any)->Any:
-        retry_num:int = 10
-        retry_wait_time:int = 5
+    def __retry(f: Callable, *request: Any) -> Any:
+        retry_num: int = 10
+        retry_wait_time: int = 5
         for _ in range(retry_num):
             try:
                 return f(*request)
@@ -103,7 +103,8 @@ class QMPCServer:
                 if status is not None:
                     for detail in status.details:
                         if detail.Is(
-                            JobErrorInfo.DESCRIPTOR   # type: ignore[attr-defined]
+                            # type: ignore[attr-defined]
+                            JobErrorInfo.DESCRIPTOR
                         ):
                             # CC で Job 実行時にエラーが発生していた場合
                             # 例外を rethrow する
