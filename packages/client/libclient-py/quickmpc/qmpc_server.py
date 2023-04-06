@@ -131,6 +131,8 @@ class QMPCServer:
             if enable_progress_bar:
                 futures = tqdm.tqdm(futures, desc='receive')
             response = [f.result() for f in futures]
+        except (QMPCJobError, QMPCServerError):
+            raise
         except Exception as e:
             is_ok = False
             logger.error(e)
