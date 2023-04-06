@@ -4,14 +4,16 @@ package managetomanage;
 
 option go_package = "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container";
 
+import "google/protobuf/empty.proto";
+
 /**
  * ManagecToManage service
 */
 service ManageToManage {
     rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}
     rpc Sync(SyncRequest) returns (SyncResponse) {}
-    rpc CreateStatusFile(CreateStatusFileRequest) returns (CreateStatusFileResponse) {}
-    rpc DeleteStatusFile(DeleteStatusFileRequest) returns (DeleteStatusFileResponse) {}
+    rpc CreateStatusFile(CreateStatusFileRequest) returns (google.protobuf.Empty) {}
+    rpc DeleteStatusFile(DeleteStatusFileRequest) returns (google.protobuf.Empty) {}
 }
 
 /**
@@ -48,16 +50,6 @@ message CreateStatusFileRequest {
     string job_uuid = 1;
 }
 
-message CreateStatusFileResponse {
-    string message = 1;
-    bool is_ok = 2;
-}
-
 message DeleteStatusFileRequest {
     string job_uuid = 1;
-}
-
-message DeleteStatusFileResponse {
-    string message = 1;
-    bool is_ok = 2;
 }

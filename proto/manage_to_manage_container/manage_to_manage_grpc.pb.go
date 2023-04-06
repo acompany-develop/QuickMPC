@@ -11,6 +11,7 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -24,8 +25,8 @@ const _ = grpc.SupportPackageIsVersion7
 type ManageToManageClient interface {
 	DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*DeleteSharesResponse, error)
 	Sync(ctx context.Context, in *SyncRequest, opts ...grpc.CallOption) (*SyncResponse, error)
-	CreateStatusFile(ctx context.Context, in *CreateStatusFileRequest, opts ...grpc.CallOption) (*CreateStatusFileResponse, error)
-	DeleteStatusFile(ctx context.Context, in *DeleteStatusFileRequest, opts ...grpc.CallOption) (*DeleteStatusFileResponse, error)
+	CreateStatusFile(ctx context.Context, in *CreateStatusFileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	DeleteStatusFile(ctx context.Context, in *DeleteStatusFileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type manageToManageClient struct {
@@ -54,8 +55,8 @@ func (c *manageToManageClient) Sync(ctx context.Context, in *SyncRequest, opts .
 	return out, nil
 }
 
-func (c *manageToManageClient) CreateStatusFile(ctx context.Context, in *CreateStatusFileRequest, opts ...grpc.CallOption) (*CreateStatusFileResponse, error) {
-	out := new(CreateStatusFileResponse)
+func (c *manageToManageClient) CreateStatusFile(ctx context.Context, in *CreateStatusFileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/managetomanage.ManageToManage/CreateStatusFile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -63,8 +64,8 @@ func (c *manageToManageClient) CreateStatusFile(ctx context.Context, in *CreateS
 	return out, nil
 }
 
-func (c *manageToManageClient) DeleteStatusFile(ctx context.Context, in *DeleteStatusFileRequest, opts ...grpc.CallOption) (*DeleteStatusFileResponse, error) {
-	out := new(DeleteStatusFileResponse)
+func (c *manageToManageClient) DeleteStatusFile(ctx context.Context, in *DeleteStatusFileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/managetomanage.ManageToManage/DeleteStatusFile", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -78,8 +79,8 @@ func (c *manageToManageClient) DeleteStatusFile(ctx context.Context, in *DeleteS
 type ManageToManageServer interface {
 	DeleteShares(context.Context, *DeleteSharesRequest) (*DeleteSharesResponse, error)
 	Sync(context.Context, *SyncRequest) (*SyncResponse, error)
-	CreateStatusFile(context.Context, *CreateStatusFileRequest) (*CreateStatusFileResponse, error)
-	DeleteStatusFile(context.Context, *DeleteStatusFileRequest) (*DeleteStatusFileResponse, error)
+	CreateStatusFile(context.Context, *CreateStatusFileRequest) (*emptypb.Empty, error)
+	DeleteStatusFile(context.Context, *DeleteStatusFileRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedManageToManageServer()
 }
 
@@ -93,10 +94,10 @@ func (UnimplementedManageToManageServer) DeleteShares(context.Context, *DeleteSh
 func (UnimplementedManageToManageServer) Sync(context.Context, *SyncRequest) (*SyncResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Sync not implemented")
 }
-func (UnimplementedManageToManageServer) CreateStatusFile(context.Context, *CreateStatusFileRequest) (*CreateStatusFileResponse, error) {
+func (UnimplementedManageToManageServer) CreateStatusFile(context.Context, *CreateStatusFileRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStatusFile not implemented")
 }
-func (UnimplementedManageToManageServer) DeleteStatusFile(context.Context, *DeleteStatusFileRequest) (*DeleteStatusFileResponse, error) {
+func (UnimplementedManageToManageServer) DeleteStatusFile(context.Context, *DeleteStatusFileRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteStatusFile not implemented")
 }
 func (UnimplementedManageToManageServer) mustEmbedUnimplementedManageToManageServer() {}
