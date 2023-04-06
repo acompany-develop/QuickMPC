@@ -36,6 +36,7 @@ func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
 func (localDb) CreateStatusFile(string) {}
+func (localDb) DeleteStatusFile(string) {}
 func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }
@@ -52,6 +53,9 @@ func (localMC) Sync(string) error {
 	return nil
 }
 func (localMC) CreateStatusFile(string) error {
+	return nil
+}
+func (localMC) DeleteStatusFile(string) error {
 	return nil
 }
 func (localDb) GetElapsedTime(string) (float64, error) {
