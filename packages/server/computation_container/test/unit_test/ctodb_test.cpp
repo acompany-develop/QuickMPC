@@ -208,7 +208,6 @@ TEST(ComputationToDbTest, SuccessRregisterJobTest)
     const std::string job_uuid = "SuccessRregisterJobTest";
     initialize(job_uuid);
 
-    fs::create_directories("/db/result/" + job_uuid);
     auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
     cc_to_db->registerJob(job_uuid, pb_common_types::JobStatus::UNKNOWN);
 
