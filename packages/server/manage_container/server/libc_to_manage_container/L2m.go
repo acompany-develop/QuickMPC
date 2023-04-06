@@ -209,6 +209,17 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	}
 	AppLogger.Info("jobUUID: " + jobUUID)
 
+	// 他パーティにstatus_RECEIVEDファイルを作成するようリクエストを送る
+	err = s.m2mclient.CreateStatusFile(jobUUID)
+	if err != nil {
+		return &pb.ExecuteComputationResponse{
+			Message: err.Error(),
+			IsOk:    false,
+		}, err
+	}
+	// status_RECEIVEDファイルを作成する
+	s.m2dbclient.CreateStatusFile(jobUUID)
+
 	// 計算コンテナにリクエストを送信する
 	out := utils.ConvertExecuteComputationRequest(in, jobUUID)
 	message, status, err := s.m2cclient.ExecuteComputation(out)
@@ -221,19 +232,6 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 			IsOk:    false,
 			JobUuid: jobUUID,
 		}, nil
-	}
-
-	// status_RECEIVEDファイルを作成する
-	s.m2dbclient.CreateStatusFile(jobUUID)
-
-	// 他パーティにstatus_RECEIVEDファイルを作成するようリクエストを送る
-	err = s.m2mclient.CreateStatusFile(jobUUID)
-	if err != nil {
-		return &pb.ExecuteComputationResponse{
-			Message: "ok",
-			IsOk:    false,
-			JobUuid: jobUUID,
-		}, err
 	}
 
 	return &pb.ExecuteComputationResponse{
