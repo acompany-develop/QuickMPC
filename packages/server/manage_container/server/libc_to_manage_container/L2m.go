@@ -212,6 +212,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	// 他パーティにstatus_RECEIVEDファイルを作成するようリクエストを送る
 	err = s.m2mclient.CreateStatusFile(jobUUID)
 	if err != nil {
+		s.m2dbclient.DeleteStatusFile(jobUUID)
 		return &pb.ExecuteComputationResponse{
 			Message: err.Error(),
 			IsOk:    false,
@@ -227,6 +228,9 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	if err != nil {
 		AppLogger.Error(err)
 		AppLogger.Error(status)
+		// statusファイルを削除
+		s.m2mclient.DeleteStatusFile(jobUUID)
+		s.m2dbclient.DeleteStatusFile(jobUUID)
 		return &pb.ExecuteComputationResponse{
 			Message: message,
 			IsOk:    false,
