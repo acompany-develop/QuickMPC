@@ -7,6 +7,7 @@ import (
 	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container"
+	empty "github.com/golang/protobuf/ptypes/empty"
 )
 
 // Test用のMCのmock
@@ -23,14 +24,14 @@ func (s *server) Sync(ctx context.Context, in *pb.SyncRequest) (*pb.SyncResponse
 	return &pb.SyncResponse{}, nil
 }
 
-func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRequest) (*pb.CreateStatusFileResponse, error) {
+func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRequest) (*empty.Empty, error) {
 	AppLogger.Infof("Received: %v", in.GetJobUuid())
-	return &pb.CreateStatusFileResponse{}, nil
+	return &empty.Empty{}, nil
 }
 
-func (s *server) DeleteStatusFile(ctx context.Context, in *pb.DeleteStatusFileRequest) (*pb.DeleteStatusFileResponse, error) {
+func (s *server) DeleteStatusFile(ctx context.Context, in *pb.DeleteStatusFileRequest) (*empty.Empty, error) {
 	AppLogger.Infof("Received: %v", in.GetJobUuid())
-	return &pb.DeleteStatusFileResponse{}, nil
+	return &empty.Empty{}, nil
 }
 
 // Test用のサーバを起動(MC)
