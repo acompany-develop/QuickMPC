@@ -8,7 +8,7 @@ import struct
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, InitVar
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union
+from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, Callable
 from urllib.parse import urlparse
 
 import google.protobuf.json_format
@@ -47,6 +47,8 @@ class QMPCServer:
     __client_stubs: Tuple[LibcToManageStub] = field(init=False)
     __party_size: int = field(init=False)
     token: str
+    retry_num: int = 10
+    retry_wait_time: int = 5
 
     def __post_init__(self, endpoints: List[str]) -> None:
         stubs = [LibcToManageStub(QMPCServer.__create_grpc_channel(ep))
@@ -88,6 +90,37 @@ class QMPCServer:
             return False
         return True
 
+    def __retry(self, f: Callable, *request: Any) -> Any:
+        for _ in range(self.retry_num):
+            try:
+                return f(*request)
+            except grpc.RpcError as e:
+                logger.error(f'{e.details()} ({e.code()})')
+
+                # エラーが詳細な情報を持っているか確認
+                status = rpc_status.from_call(e)
+                if status is not None:
+                    for detail in status.details:
+                        if detail.Is(
+                            JobErrorInfo.DESCRIPTOR
+                        ):
+                            # CC で Job 実行時にエラーが発生していた場合
+                            # 例外を rethrow する
+                            err_info = JobErrorInfo()
+                            detail.Unpack(err_info)
+                            logger.error(f"job error information: {err_info}")
+
+                            raise QMPCJobError(err_info) from e
+
+                # MC で Internal Server Error が発生している場合
+                # 例外を rethrow する
+                if e.code() == grpc.StatusCode.UNKNOWN:
+                    raise QMPCServerError("backend server return error") from e
+            except Exception as e:
+                logger.error(e)
+            time.sleep(self.retry_wait_time)
+        raise RuntimeError(f"All {self.retry_num} times it was an error")
+
     @staticmethod
     def __futures_result(
             futures: Iterable, enable_progress_bar=True) -> Tuple[bool, List]:
@@ -98,29 +131,8 @@ class QMPCServer:
             if enable_progress_bar:
                 futures = tqdm.tqdm(futures, desc='receive')
             response = [f.result() for f in futures]
-        except grpc.RpcError as e:
-            is_ok = False
-            logger.error(f'{e.details()} ({e.code()})')
-
-            # エラーが詳細な情報を持っているか確認
-            status = rpc_status.from_call(e)
-            if status is not None:
-                for detail in status.details:
-                    if detail.Is(
-                        JobErrorInfo.DESCRIPTOR   # type: ignore[attr-defined]
-                    ):
-                        # CC で Job 実行時にエラーが発生していた場合
-                        # 例外を rethrow する
-                        err_info = JobErrorInfo()
-                        detail.Unpack(err_info)
-                        logger.error(f"job error information: {err_info}")
-
-                        raise QMPCJobError(err_info) from e
-
-            # MC で Internal Server Error が発生している場合
-            # 例外を rethrow する
-            if e.code() == grpc.StatusCode.UNKNOWN:
-                raise QMPCServerError("backend server return error") from e
+        except (QMPCJobError, QMPCServerError):
+            raise
         except Exception as e:
             is_ok = False
             logger.error(e)
@@ -231,7 +243,8 @@ class QMPCServer:
 
         # リクエストパラメータを設定して非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(stub.SendShares,
+        futures = [executor.submit(self.__retry,
+                                   stub.SendShares,
                                    SendSharesRequest(
                                        data_id=data_id,
                                        shares=json.dumps(s),
@@ -251,7 +264,7 @@ class QMPCServer:
         req = DeleteSharesRequest(dataIds=data_ids, token=self.token)
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(stub.DeleteShares, req)
+        futures = [executor.submit(self.__retry, stub.DeleteShares, req)
                    for stub in self.__client_stubs]
         is_ok, _ = QMPCServer.__futures_result(futures)
         return {"is_ok": is_ok}
@@ -280,8 +293,9 @@ class QMPCServer:
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
         # JobidをMCから貰う関係で単一MC（現在はSP（ID=0）のみ対応）にリクエストを送る
-        futures = [executor.submit(
-            self.__client_stubs[0].ExecuteComputation, req)]
+        futures = [executor.submit(self.__retry,
+                                   self.__client_stubs[0].ExecuteComputation,
+                                   req)]
 
         is_ok, response = QMPCServer.__futures_result(futures)
         job_uuid = response[0].job_uuid if is_ok else None
@@ -291,7 +305,8 @@ class QMPCServer:
     def get_data_list(self) -> Dict:
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(stub.GetDataList,
+        futures = [executor.submit(self.__retry,
+                                   stub.GetDataList,
                                    GetDataListRequest(token=self.token))
                    for stub in self.__client_stubs]
         is_ok, response = QMPCServer.__futures_result(futures)
@@ -307,7 +322,8 @@ class QMPCServer:
         )
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(stub.GetElapsedTime,
+        futures = [executor.submit(self.__retry,
+                                   stub.GetElapsedTime,
                                    req)
                    for stub in self.__client_stubs]
         is_ok, response = QMPCServer.__futures_result(futures)
@@ -325,7 +341,8 @@ class QMPCServer:
         )
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(QMPCServer.__stream_result,
+        futures = [executor.submit(self.__retry,
+                                   QMPCServer.__stream_result,
                                    stub.GetComputationResult(req),
                                    job_uuid, party, path)
                    for party, stub in enumerate(self.__client_stubs)]
@@ -398,7 +415,7 @@ class QMPCServer:
         )
         # 非同期にリクエスト送信
         executor = ThreadPoolExecutor()
-        futures = [executor.submit(stub.GetJobErrorInfo, req)
+        futures = [executor.submit(self.__retry, stub.GetJobErrorInfo, req)
                    for stub in self.__client_stubs]
         is_ok, response = QMPCServer.__futures_result(
             futures, enable_progress_bar=False)
