@@ -12,7 +12,7 @@ compose_files = [
     "dev",
 ]
 compose_files_opt = " ".join(
-    [f"-f docker-compose.{t}.yml" for t in compose_files])
+    [f"-f ../docker-compose.{t}.yml" for t in compose_files])
 
 
 @dataclass(frozen=True)
