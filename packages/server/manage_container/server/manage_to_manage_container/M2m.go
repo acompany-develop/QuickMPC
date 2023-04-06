@@ -52,6 +52,16 @@ func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRe
 	}, nil
 }
 
+func (s *server) DeleteStatusFile(ctx context.Context, in *pb.DeleteStatusFileRequest) (*pb.DeleteStatusFileResponse, error) {
+	jobUUID := in.JobUuid
+	AppLogger.Infof("delete status file request: jobUUID = %s", jobUUID)
+	s.m2dbclient.DeleteStatusFile(jobUUID)
+	return &pb.DeleteStatusFileResponse{
+		Message: "ok",
+		IsOk:    true,
+	}, nil
+}
+
 func RunServer() {
 	config, err := utils.GetConfig()
 	if err != nil {
