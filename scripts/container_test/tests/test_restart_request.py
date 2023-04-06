@@ -13,9 +13,7 @@ from utils import (all_containers, bts_p, cc_p, data_id, execute_computation,
 def test_succes_send_share_with_restart(restart_container):
     # 特定のコンテナをrestartさせてsend_shareを送れるか
     Containers.down_all()
-
-    mc = mc_all()
-    mc.up()
+    mc_all().up()
 
     # コンテナをrestartさせてからsend_shareを送る
     restart_container.restart()
@@ -34,9 +32,7 @@ def test_succes_send_share_with_restart(restart_container):
 def test_success_execute_computation_with_restart(restart_container):
     # 特定のコンテナをrestartさせてexecute_computationを送れるか
     Containers.down_all()
-
-    ac = all_containers()
-    ac.up()
+    all_containers().up()
 
     # コンテナを落とす前にsend_shareしておく
     data_id1: str = data_id()
@@ -58,9 +54,7 @@ def test_success_execute_computation_with_restart(restart_container):
 def test_success_execute_computations_with_restart(restart_container):
     # 特定のコンテナをrestartさせてexecute_computationを送れるか
     Containers.down_all()
-
-    ac = all_containers()
-    ac.up()
+    all_containers().up()
 
     # コンテナを落とす前にsend_shareしておく
     data_id1: str = data_id()
@@ -82,9 +76,7 @@ def test_success_execute_computations_with_restart(restart_container):
 def test_success_get_computation_result_with_restart(restart_container):
     # 特定のコンテナをrestartさせてget_compuation_resultを送れるか
     Containers.down_all()
-
-    ac = all_containers()
-    ac.up()
+    all_containers().up()
 
     # コンテナを落とす前にexecuteしておく
     job_uuid1: str = job_uuid()
@@ -105,9 +97,7 @@ def test_success_get_computation_result_with_restart(restart_container):
 def test_success_execute_multiple_with_restart(restart_container):
     # 特定のコンテナをrestartさせてhjoinを何回も計算できるか
     Containers.down_all()
-
-    ac = all_containers()
-    ac.up()
+    all_containers().up()
 
     for _ in range(3):
         job_uuid()

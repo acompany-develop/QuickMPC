@@ -13,9 +13,7 @@ from utils import (all_containers, cc_p, data_id, execute_computation,
 def test_failed_send_share_with_down(down_container):
     # 特定のコンテナがdownした状態でsend_shareを送ってエラーが出るかどうか
     Containers.down_all()
-
-    mc = mc_all()
-    mc.up()
+    mc_all().up()
 
     # コンテナをdownさせてからsend_shareを送る
     down_container.down()
@@ -34,9 +32,7 @@ def test_failed_send_share_with_down(down_container):
 def test_failed_execute_computation_with_down(down_container):
     # 特定のコンテナがdownした状態でexecute_requestを送ってエラーが出るかどうか
     Containers.down_all()
-
-    ac = all_containers()
-    ac.up()
+    all_containers().up()
 
     # コンテナを落とす前にsend_shareしておく
     data_id1: str = data_id()
@@ -58,9 +54,7 @@ def test_failed_execute_computation_with_down(down_container):
 def test_failed_get_computation_result_with_down(down_container):
     # 特定のコンテナがdownした状態でget_compuation_resultを送ってエラーが出るかどうか
     Containers.down_all()
-
-    ac = all_containers()
-    ac.up()
+    all_containers().up()
 
     # コンテナを落とす前にexecuteしておく
     job_uuid1: str = job_uuid()
