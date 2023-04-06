@@ -1,7 +1,6 @@
 import pytest
 
 from container import Containers
-from utils import all_containers
 
 
 @pytest.mark.parametrize(
@@ -17,7 +16,6 @@ from utils import all_containers
 )
 def test_up(container):
     # コンテナ単体で起動してhealthcheckが通るかtest
-    ac = all_containers()
-    ac.down()
+    Containers.down_all()
     container.up()
-    ac.down()
+    Containers.down_all()

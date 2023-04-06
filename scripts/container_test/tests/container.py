@@ -40,6 +40,11 @@ class Containers:
             time.sleep(Containers.__healthcheck_interval)
         return False
 
+    @staticmethod
+    def down_all() -> None:
+        command = f"docker-compose {compose_files_opt} down -v"
+        subprocess.run([command], shell=True)
+
     def up(self) -> None:
         sn_str = " ".join(self.__service_names)
         command = f"docker-compose {compose_files_opt} up -d {sn_str}"
@@ -52,14 +57,10 @@ class Containers:
 
     def down(self) -> None:
         sn_str = " ".join(self.__service_names)
-        command = f"docker-compose {compose_files_opt} rm -fs {sn_str}"
+        command = f"docker-compose {compose_files_opt} rm -fsv {sn_str}"
         subprocess.run([command], shell=True)
 
     def restart(self) -> None:
-        # NOTE: restartだと通信が上手くいかないことがあるのでdownしてupしている
-        # TODO: 上手くいかない原因の調査
-        # sn_str = " ".join(self.__service_names)
-        # command = f"docker-compose {compose_files_opt} restart {sn_str}"
-        # subprocess.run([command], shell=True)
-        self.down()
-        self.up()
+        sn_str = " ".join(self.__service_names)
+        command = f"docker-compose {compose_files_opt} restart {sn_str}"
+        subprocess.run([command], shell=True)
