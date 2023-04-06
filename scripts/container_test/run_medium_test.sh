@@ -8,7 +8,7 @@ if [[ ! $PIP_LIST =~ "pipenv" ]]; then
   exit 1
 fi
 
-# libclient-pyはバージョンがっ
+# 環境を構築してTestを走らせる
 pipenv sync
 pipenv install --skip-lock ../../packages/client/libclient-py
-pipenv run pytest ./tests -s -v -log-cli-level=DEBUG -x
+pipenv run pytest ./tests -s -v -log-cli-level=DEBUG
