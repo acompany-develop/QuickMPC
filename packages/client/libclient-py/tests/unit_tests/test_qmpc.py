@@ -144,7 +144,7 @@ class TestQMPC:
             assert (res.what == "QMPCJobError")
 
     qmpc_failed: QMPCServer = QMPCServer(
-        # 通信失敗する場合をテストするようのサーバー
+        # 通信失敗する場合をテストする用のサーバー
         ["http://localhost:50011",
          "http://localhost:50012",
          "http://localhost:50013"],
