@@ -11,6 +11,7 @@ service ManageToManage {
     rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}
     rpc Sync(SyncRequest) returns (SyncResponse) {}
     rpc CreateStatusFile(CreateStatusFileRequest) returns (CreateStatusFileResponse) {}
+    rpc DeleteStatusFile(DeleteStatusFileRequest) returns (DeleteStatusFileResponse) {}
 }
 
 /**
@@ -48,6 +49,15 @@ message CreateStatusFileRequest {
 }
 
 message CreateStatusFileResponse {
+    string message = 1;
+    bool is_ok = 2;
+}
+
+message DeleteStatusFileRequest {
+    string job_uuid = 1;
+}
+
+message DeleteStatusFileResponse {
     string message = 1;
     bool is_ok = 2;
 }

@@ -25,6 +25,7 @@ type ManageToManageClient interface {
 	DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*DeleteSharesResponse, error)
 	Sync(ctx context.Context, in *SyncRequest, opts ...grpc.CallOption) (*SyncResponse, error)
 	CreateStatusFile(ctx context.Context, in *CreateStatusFileRequest, opts ...grpc.CallOption) (*CreateStatusFileResponse, error)
+	DeleteStatusFile(ctx context.Context, in *DeleteStatusFileRequest, opts ...grpc.CallOption) (*DeleteStatusFileResponse, error)
 }
 
 type manageToManageClient struct {
@@ -62,6 +63,15 @@ func (c *manageToManageClient) CreateStatusFile(ctx context.Context, in *CreateS
 	return out, nil
 }
 
+func (c *manageToManageClient) DeleteStatusFile(ctx context.Context, in *DeleteStatusFileRequest, opts ...grpc.CallOption) (*DeleteStatusFileResponse, error) {
+	out := new(DeleteStatusFileResponse)
+	err := c.cc.Invoke(ctx, "/managetomanage.ManageToManage/DeleteStatusFile", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ManageToManageServer is the server API for ManageToManage service.
 // All implementations must embed UnimplementedManageToManageServer
 // for forward compatibility
@@ -69,6 +79,7 @@ type ManageToManageServer interface {
 	DeleteShares(context.Context, *DeleteSharesRequest) (*DeleteSharesResponse, error)
 	Sync(context.Context, *SyncRequest) (*SyncResponse, error)
 	CreateStatusFile(context.Context, *CreateStatusFileRequest) (*CreateStatusFileResponse, error)
+	DeleteStatusFile(context.Context, *DeleteStatusFileRequest) (*DeleteStatusFileResponse, error)
 	mustEmbedUnimplementedManageToManageServer()
 }
 
@@ -84,6 +95,9 @@ func (UnimplementedManageToManageServer) Sync(context.Context, *SyncRequest) (*S
 }
 func (UnimplementedManageToManageServer) CreateStatusFile(context.Context, *CreateStatusFileRequest) (*CreateStatusFileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateStatusFile not implemented")
+}
+func (UnimplementedManageToManageServer) DeleteStatusFile(context.Context, *DeleteStatusFileRequest) (*DeleteStatusFileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteStatusFile not implemented")
 }
 func (UnimplementedManageToManageServer) mustEmbedUnimplementedManageToManageServer() {}
 
@@ -152,6 +166,24 @@ func _ManageToManage_CreateStatusFile_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ManageToManage_DeleteStatusFile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteStatusFileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ManageToManageServer).DeleteStatusFile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/managetomanage.ManageToManage/DeleteStatusFile",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ManageToManageServer).DeleteStatusFile(ctx, req.(*DeleteStatusFileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ManageToManage_ServiceDesc is the grpc.ServiceDesc for ManageToManage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +202,10 @@ var ManageToManage_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateStatusFile",
 			Handler:    _ManageToManage_CreateStatusFile_Handler,
+		},
+		{
+			MethodName: "DeleteStatusFile",
+			Handler:    _ManageToManage_DeleteStatusFile_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
