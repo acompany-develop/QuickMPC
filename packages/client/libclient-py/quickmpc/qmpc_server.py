@@ -102,7 +102,6 @@ class QMPCServer:
                 if status is not None:
                     for detail in status.details:
                         if detail.Is(
-                            # type: ignore[attr-defined]
                             JobErrorInfo.DESCRIPTOR
                         ):
                             # CC で Job 実行時にエラーが発生していた場合
