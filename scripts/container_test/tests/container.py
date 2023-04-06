@@ -7,7 +7,6 @@ from typing import ClassVar, List
 
 compose_files = [
     "core",
-    "unit",
     "medium",
     "dev",
 ]

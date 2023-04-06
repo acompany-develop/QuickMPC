@@ -6,23 +6,23 @@ from container import Containers
 
 """ 各種コンテナ """
 __cc_names = [
-    "dev_unit_cc1",
-    "dev_unit_cc_envoy1",
-    "dev_unit_cc3",
-    "dev_unit_cc_envoy2",
-    "dev_unit_cc2",
-    "dev_unit_cc_envoy3",
+    "dev_cc1",
+    "dev_cc_envoy1",
+    "dev_cc3",
+    "dev_cc_envoy2",
+    "dev_cc2",
+    "dev_cc_envoy3",
 ]
 __mc_names = [
-    "dev_unit_mc1",
-    "dev_unit_mc_envoy1",
-    "dev_unit_mc2",
-    "dev_unit_mc_envoy2",
-    "dev_unit_mc3",
-    "dev_unit_mc_envoy3",
+    "dev_mc1",
+    "dev_mc_envoy1",
+    "dev_mc2",
+    "dev_mc_envoy2",
+    "dev_mc3",
+    "dev_mc_envoy3",
 ]
 __bts_names = [
-    "dev_unit_bts",
+    "dev_bts",
 ]
 
 

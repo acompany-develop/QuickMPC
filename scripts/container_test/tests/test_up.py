@@ -6,13 +6,13 @@ from utils import all_containers
 
 @pytest.mark.parametrize(
     ("container"), [
-        (Containers(["dev_unit_cc1"])),
-        (Containers(["dev_unit_cc2"])),
-        (Containers(["dev_unit_cc3"])),
-        (Containers(["dev_unit_mc1"])),
-        (Containers(["dev_unit_mc2"])),
-        (Containers(["dev_unit_mc3"])),
-        (Containers(["dev_unit_bts"])),
+        (Containers(["dev_cc1"])),
+        (Containers(["dev_cc2"])),
+        (Containers(["dev_cc3"])),
+        (Containers(["dev_mc1"])),
+        (Containers(["dev_mc2"])),
+        (Containers(["dev_mc3"])),
+        (Containers(["dev_bts"])),
     ]
 )
 def test_up(container):
