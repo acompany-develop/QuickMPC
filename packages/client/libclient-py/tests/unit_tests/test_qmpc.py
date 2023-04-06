@@ -156,12 +156,12 @@ class TestQMPC:
     @pytest.mark.parametrize(
         ("function", "argument"), [
             (qmpc_failed.send_share, send_share_param()),
-            (qmpc_failed.delete_share, []),
+            (qmpc_failed.delete_share, [[]]),
             (qmpc_failed.execute_computation, execute_computation_param()),
-            (qmpc_failed.get_data_list, ()),
-            (qmpc_failed.get_elapsed_time, "uuid"),
-            (qmpc_failed.get_computation_result, ("uuid", None)),
-            (qmpc_failed.get_job_error_info, "uuid"),
+            (qmpc_failed.get_data_list, []),
+            (qmpc_failed.get_elapsed_time, ["uuid"]),
+            (qmpc_failed.get_computation_result, ["uuid", None]),
+            (qmpc_failed.get_job_error_info, ["uuid"]),
         ]
     )
     def test_retry(self, function, argument,
