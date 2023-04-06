@@ -537,7 +537,7 @@ func TestCreateStatusFile(t *testing.T) {
 	client := Client{}
 	client.CreateStatusFile(defaultJobUUID)
 
-	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s/status_RECEIVED", defaultJobUUID))
+	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus(2).String()))
 	if errExist != nil {
 		t.Error("create status file failed: " + errExist.Error())
 	}
@@ -551,7 +551,7 @@ func TestDeleteStatusFile(t *testing.T) {
 
 	path := fmt.Sprintf("/db/result/%s", defaultJobUUID)
 	os.Mkdir(path, 0777)
-	fp, _ := os.Create(fmt.Sprintf("%s/status_RECEIVED", path))
+	fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus(2).String()))
 	fp.Close()
 
 	client := Client{}
