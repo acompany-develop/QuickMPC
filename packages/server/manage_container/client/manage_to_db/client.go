@@ -63,6 +63,7 @@ type M2DbClient interface {
 	GetMatchingColumn(string) (int32, error)
 	GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error)
 	CreateStatusFile(string)
+	DeleteStatusFile(string)
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -329,8 +330,17 @@ func (c Client) GetMatchingColumn(dataID string) (int32, error) {
 }
 
 func (c Client) CreateStatusFile(jobUUID string) {
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 	os.Mkdir(path, 0777)
 	fp, _ := os.Create(fmt.Sprintf("%s/status_RECEIVED", path))
 	fp.Close()
+}
+
+func (c Client) DeleteStatusFile(jobUUID string) {
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+	os.RemoveAll(path)
 }
