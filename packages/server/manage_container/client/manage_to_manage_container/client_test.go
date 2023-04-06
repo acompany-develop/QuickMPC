@@ -28,6 +28,11 @@ func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRe
 	return &pb.CreateStatusFileResponse{}, nil
 }
 
+func (s *server) DeleteStatusFile(ctx context.Context, in *pb.DeleteStatusFileRequest) (*pb.DeleteStatusFileResponse, error) {
+	AppLogger.Infof("Received: %v", in.GetJobUuid())
+	return &pb.DeleteStatusFileResponse{}, nil
+}
+
 // Test用のサーバを起動(MC)
 var s *utils.TestServer
 var c = Client{}
@@ -62,5 +67,14 @@ func TestCreateStatusFile(t *testing.T) {
 	err := c.createStatusFile(conn, "jobUUID")
 	if err != nil {
 		t.Error("create status file faild: " + err.Error())
+	}
+}
+
+func TestDeleteStatusFile(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	err := c.deleteStatusFile(conn, "jobUUID")
+	if err != nil {
+		t.Error("delete status file faild: " + err.Error())
 	}
 }

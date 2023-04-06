@@ -545,5 +545,25 @@ func TestCreateStatusFile(t *testing.T) {
 	initialize()
 }
 
+// jobUUIDのディレクトリが削除されるかテスト
+func TestDeleteStatusFile(t *testing.T) {
+	initialize()
+
+	path := fmt.Sprintf("/db/result/%s", defaultJobUUID)
+	os.Mkdir(path, 0777)
+	fp, _ := os.Create(fmt.Sprintf("%s/status_RECEIVED", path))
+	fp.Close()
+
+	client := Client{}
+	client.DeleteStatusFile(defaultJobUUID)
+
+	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s", defaultJobUUID))
+	if errExist == nil {
+		t.Error(fmt.Sprintf("%s directory must be deleted", defaultJobUUID))
+	}
+
+	initialize()
+}
+
 // XXX: オブジェクトストレージへの移行に備えて廃止予定
 /* GetDataList() (string, error) */
