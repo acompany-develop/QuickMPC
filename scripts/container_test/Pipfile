@@ -11,4 +11,4 @@ quickmpc = {path = "./../../packages/client/libclient-py"}
 
 [requires]
 python_version = "3.7"
-python_full_version = "3.7.10"
+python_full_version = "3.7"
