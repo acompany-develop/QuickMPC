@@ -8,7 +8,7 @@ import struct
 import time
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field, InitVar
-from typing import Any, Dict, Iterable, List, Optional, Tuple, Union, Callable
+from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple, Union
 from urllib.parse import urlparse
 
 import google.protobuf.json_format
@@ -242,20 +242,20 @@ class QMPCServer:
         sent_at = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
         # リクエストパラメータを設定して非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.__retry,
-                                   stub.SendShares,
-                                   SendSharesRequest(
-                                       data_id=data_id,
-                                       shares=json.dumps(s),
-                                       schema=typed_schema,
-                                       piece_id=piece_id,
-                                       sent_at=sent_at,
-                                       matching_column=matching_column,
-                                       token=self.token))
-                   for piece_id, share_piece in enumerate(shares)
-                   for stub, s in zip(self.__client_stubs, share_piece)
-                   ]
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       stub.SendShares,
+                                       SendSharesRequest(
+                                           data_id=data_id,
+                                           shares=json.dumps(s),
+                                           schema=typed_schema,
+                                           piece_id=piece_id,
+                                           sent_at=sent_at,
+                                           matching_column=matching_column,
+                                           token=self.token))
+                       for piece_id, share_piece in enumerate(shares)
+                       for stub, s in zip(self.__client_stubs, share_piece)
+                       ]
         is_ok, _ = QMPCServer.__futures_result(futures)
         return {"is_ok": is_ok, "data_id": data_id}
 
@@ -263,9 +263,9 @@ class QMPCServer:
         """ Shareを削除 """
         req = DeleteSharesRequest(dataIds=data_ids, token=self.token)
         # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.__retry, stub.DeleteShares, req)
-                   for stub in self.__client_stubs]
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry, stub.DeleteShares, req)
+                       for stub in self.__client_stubs]
         is_ok, _ = QMPCServer.__futures_result(futures)
         return {"is_ok": is_ok}
 
@@ -291,11 +291,11 @@ class QMPCServer:
         )
 
         # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        # JobidをMCから貰う関係で単一MC（現在はSP（ID=0）のみ対応）にリクエストを送る
-        futures = [executor.submit(self.__retry,
-                                   self.__client_stubs[0].ExecuteComputation,
-                                   req)]
+        with ThreadPoolExecutor() as executor:
+            # JobidをMCから貰う関係で単一MC（現在はSP（ID=0）のみ対応）にリクエストを送る
+            futures = [executor.submit(self.__retry,
+                                       self.__client_stubs[0].ExecuteComputation,
+                                       req)]
 
         is_ok, response = QMPCServer.__futures_result(futures)
         job_uuid = response[0].job_uuid if is_ok else None
@@ -304,11 +304,11 @@ class QMPCServer:
 
     def get_data_list(self) -> Dict:
         # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.__retry,
-                                   stub.GetDataList,
-                                   GetDataListRequest(token=self.token))
-                   for stub in self.__client_stubs]
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       stub.GetDataList,
+                                       GetDataListRequest(token=self.token))
+                       for stub in self.__client_stubs]
         is_ok, response = QMPCServer.__futures_result(futures)
         results = [eval(r.result) for r in response] if is_ok else None
 
@@ -321,11 +321,11 @@ class QMPCServer:
             token=self.token
         )
         # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.__retry,
-                                   stub.GetElapsedTime,
-                                   req)
-                   for stub in self.__client_stubs]
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       stub.GetElapsedTime,
+                                       req)
+                       for stub in self.__client_stubs]
         is_ok, response = QMPCServer.__futures_result(futures)
         elapsed_time = max([res.elapsed_time
                             for res in response]) if is_ok else None
@@ -340,12 +340,12 @@ class QMPCServer:
             token=self.token
         )
         # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.__retry,
-                                   QMPCServer.__stream_result,
-                                   stub.GetComputationResult(req),
-                                   job_uuid, party, path)
-                   for party, stub in enumerate(self.__client_stubs)]
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       QMPCServer.__stream_result,
+                                       stub.GetComputationResult(req),
+                                       job_uuid, party, path)
+                       for party, stub in enumerate(self.__client_stubs)]
         is_ok, response = QMPCServer.__futures_result(
             futures, enable_progress_bar=False)
         results_sorted = [sorted(res["responses"], key=lambda r: r.piece_id)
@@ -414,9 +414,9 @@ class QMPCServer:
             token=self.token
         )
         # 非同期にリクエスト送信
-        executor = ThreadPoolExecutor()
-        futures = [executor.submit(self.__retry, stub.GetJobErrorInfo, req)
-                   for stub in self.__client_stubs]
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry, stub.GetJobErrorInfo, req)
+                       for stub in self.__client_stubs]
         is_ok, response = QMPCServer.__futures_result(
             futures, enable_progress_bar=False)
 
