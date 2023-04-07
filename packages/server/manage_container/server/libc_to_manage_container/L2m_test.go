@@ -35,8 +35,12 @@ func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
 func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
 	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
 }
-func (localDb) CreateStatusFile(string) {}
-func (localDb) DeleteStatusFile(string) {}
+func (localDb) CreateStatusFile(string) error {
+	return nil
+}
+func (localDb) DeleteStatusFile(string) error {
+	return nil
+}
 func (localDb) GetDataList() (string, error) {
 	return "result", nil
 }

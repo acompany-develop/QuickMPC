@@ -219,7 +219,15 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		}, err
 	}
 	// status_RECEIVEDファイルを作成する
-	s.m2dbclient.CreateStatusFile(jobUUID)
+	err = s.m2dbclient.CreateStatusFile(jobUUID)
+	if err != nil {
+		AppLogger.Error(err)
+		s.m2dbclient.DeleteStatusFile(jobUUID)
+		return &pb.ExecuteComputationResponse{
+			Message: err.Error(),
+			IsOk:    false,
+		}, err
+	}
 
 	// 計算コンテナにリクエストを送信する
 	out := utils.ConvertExecuteComputationRequest(in, jobUUID)

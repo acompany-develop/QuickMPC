@@ -62,8 +62,8 @@ type M2DbClient interface {
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
 	GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error)
-	CreateStatusFile(string)
-	DeleteStatusFile(string)
+	CreateStatusFile(string) error
+	DeleteStatusFile(string) error
 }
 
 // path(ファイル，ディレクトリ)が存在するか
@@ -329,18 +329,23 @@ func (c Client) GetMatchingColumn(dataID string) (int32, error) {
 	return data.Meta.MatchingColumn, nil
 }
 
-func (c Client) CreateStatusFile(jobUUID string) {
+func (c Client) CreateStatusFile(jobUUID string) error {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
-	os.Mkdir(path, 0777)
-	fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus_RECEIVED.String()))
+	err := os.Mkdir(path, 0777)
+	if err != nil {
+		return err
+	}
+	fp, err := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus_RECEIVED.String()))
 	fp.Close()
+
+	return err
 }
 
-func (c Client) DeleteStatusFile(jobUUID string) {
+func (c Client) DeleteStatusFile(jobUUID string) error {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
-	os.RemoveAll(path)
+	return os.RemoveAll(path)
 }

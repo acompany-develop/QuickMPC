@@ -535,7 +535,10 @@ func TestCreateStatusFile(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	client.CreateStatusFile(defaultJobUUID)
+	err := client.CreateStatusFile(defaultJobUUID)
+	if err != nil {
+		t.Error("create status file failed: " + err.Error())
+	}
 
 	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_RECEIVED.String()))
 	if errExist != nil {
@@ -555,7 +558,10 @@ func TestDeleteStatusFile(t *testing.T) {
 	fp.Close()
 
 	client := Client{}
-	client.DeleteStatusFile(defaultJobUUID)
+	err := client.DeleteStatusFile(defaultJobUUID)
+	if err != nil {
+		t.Error("delete status file failed: " + err.Error())
+	}
 
 	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s", defaultJobUUID))
 	if errExist == nil {
