@@ -334,7 +334,7 @@ func (c Client) CreateStatusFile(jobUUID string) {
 	defer ls.Unlock(jobUUID)
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 	os.Mkdir(path, 0777)
-	fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus(2).String()))
+	fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus_RECEIVED.String()))
 	fp.Close()
 }
 

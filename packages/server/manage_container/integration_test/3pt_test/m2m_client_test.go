@@ -129,7 +129,7 @@ func TestCreateStatusFile(t *testing.T) {
 		// PT1のstatu_RECEIVED作成リクエストの終了を待機
 		m2m_client.Sync("createStatusFile")
 		// 同期させてから作成されてるかチェック
-		_, err = os.Stat(fmt.Sprintf("/db/result/%s/status_%s", jobUUID, pb_types.JobStatus(2).String()))
+		_, err = os.Stat(fmt.Sprintf("/db/result/%s/status_%s", jobUUID, pb_types.JobStatus_RECEIVED.String()))
 		if err != nil {
 			t.Fatal("status_RECEIVED must be created")
 		}
@@ -168,7 +168,7 @@ func TestDeleteStatusFile(t *testing.T) {
 		// PT2,3はstatu_RECEIVEDを作成する
 		path := fmt.Sprintf("/db/result/%s", jobUUID)
 		os.Mkdir(path, 0777)
-		fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus(2).String()))
+		fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus_RECEIVED.String()))
 		fp.Close()
 		// 作成完了を通知
 		m2m_client.Sync("create")
