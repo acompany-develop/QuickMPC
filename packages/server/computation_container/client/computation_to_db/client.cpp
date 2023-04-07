@@ -114,9 +114,11 @@ void Client::TableWriter::write()
 {
     nlohmann::json piece_data_json = {
         {"value", piece_data}, {"meta", {{"piece_id", piece_id}, {"schema", json_schemas}}}};
+
     const std::string data = piece_data_json.dump();
 
-    auto ofs = std::ofstream(shareDbPath + data_id + "/" + std::to_string(piece_id));
+    // TODO: shareDbPathの型もfs::pathに変更してコンストラクタを外す
+    auto ofs = std::ofstream(fs::path(shareDbPath) / data_id / std::to_string(piece_id));
     ofs << data;
     ofs.close();
 
