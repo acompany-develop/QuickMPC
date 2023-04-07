@@ -293,9 +293,10 @@ class QMPCServer:
         # 非同期にリクエスト送信
         with ThreadPoolExecutor() as executor:
             # JobidをMCから貰う関係で単一MC（現在はSP（ID=0）のみ対応）にリクエストを送る
-            futures = [executor.submit(self.__retry,
-                                       self.__client_stubs[0].ExecuteComputation,
-                                       req)]
+            futures = [
+                executor.submit(self.__retry,
+                                self.__client_stubs[0].ExecuteComputation,
+                                req)]
 
         is_ok, response = QMPCServer.__futures_result(futures)
         job_uuid = response[0].job_uuid if is_ok else None
