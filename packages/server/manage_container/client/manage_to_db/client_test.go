@@ -530,5 +530,46 @@ func TestGetMatchingColumnFailedEmptyID(t *testing.T) {
 	initialize()
 }
 
+// status_RECEIVEDが生成されるかテスト
+func TestCreateStatusFile(t *testing.T) {
+	initialize()
+
+	client := Client{}
+	err := client.CreateStatusFile(defaultJobUUID)
+	if err != nil {
+		t.Error("create status file failed: " + err.Error())
+	}
+
+	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_RECEIVED.String()))
+	if errExist != nil {
+		t.Error("create status file failed: " + errExist.Error())
+	}
+
+	initialize()
+}
+
+// jobUUIDのディレクトリが削除されるかテスト
+func TestDeleteStatusFile(t *testing.T) {
+	initialize()
+
+	path := fmt.Sprintf("/db/result/%s", defaultJobUUID)
+	os.Mkdir(path, 0777)
+	fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus_RECEIVED.String()))
+	fp.Close()
+
+	client := Client{}
+	err := client.DeleteStatusFile(defaultJobUUID)
+	if err != nil {
+		t.Error("delete status file failed: " + err.Error())
+	}
+
+	_, errExist := os.Stat(fmt.Sprintf("/db/result/%s", defaultJobUUID))
+	if errExist == nil {
+		t.Error(fmt.Sprintf("%s directory must be deleted", defaultJobUUID))
+	}
+
+	initialize()
+}
+
 // XXX: オブジェクトストレージへの移行に備えて廃止予定
 /* GetDataList() (string, error) */

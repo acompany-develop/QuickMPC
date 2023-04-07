@@ -26,19 +26,21 @@ class _JobStatusEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._Enum
     DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
     UNKNOWN: _JobStatus.ValueType  # 0
     ERROR: _JobStatus.ValueType  # 1
-    PRE_JOB: _JobStatus.ValueType  # 2
-    READ_DB: _JobStatus.ValueType  # 3
-    COMPUTE: _JobStatus.ValueType  # 4
-    COMPLETED: _JobStatus.ValueType  # 5
+    RECEIVED: _JobStatus.ValueType  # 2
+    PRE_JOB: _JobStatus.ValueType  # 3
+    READ_DB: _JobStatus.ValueType  # 4
+    COMPUTE: _JobStatus.ValueType  # 5
+    COMPLETED: _JobStatus.ValueType  # 6
 
 class JobStatus(_JobStatus, metaclass=_JobStatusEnumTypeWrapper): ...
 
 UNKNOWN: JobStatus.ValueType  # 0
 ERROR: JobStatus.ValueType  # 1
-PRE_JOB: JobStatus.ValueType  # 2
-READ_DB: JobStatus.ValueType  # 3
-COMPUTE: JobStatus.ValueType  # 4
-COMPLETED: JobStatus.ValueType  # 5
+RECEIVED: JobStatus.ValueType  # 2
+PRE_JOB: JobStatus.ValueType  # 3
+READ_DB: JobStatus.ValueType  # 4
+COMPUTE: JobStatus.ValueType  # 5
+COMPLETED: JobStatus.ValueType  # 6
 global___JobStatus = JobStatus
 
 class _ComputationMethod:

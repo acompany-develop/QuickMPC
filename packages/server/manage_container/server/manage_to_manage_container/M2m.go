@@ -8,6 +8,7 @@ import (
 	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/server"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container"
+	empty "github.com/golang/protobuf/ptypes/empty"
 )
 
 type server struct {
@@ -40,6 +41,20 @@ func (s *server) Sync(ctx context.Context, in *pb.SyncRequest) (*pb.SyncResponse
 		Message: "ok",
 		IsOk:    true,
 	}, nil
+}
+
+func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRequest) (*empty.Empty, error) {
+	jobUUID := in.JobUuid
+	AppLogger.Infof("create status file request: jobUUID = %s", jobUUID)
+	err := s.m2dbclient.CreateStatusFile(jobUUID)
+	return &empty.Empty{}, err
+}
+
+func (s *server) DeleteStatusFile(ctx context.Context, in *pb.DeleteStatusFileRequest) (*empty.Empty, error) {
+	jobUUID := in.JobUuid
+	AppLogger.Infof("delete status file request: jobUUID = %s", jobUUID)
+	err := s.m2dbclient.DeleteStatusFile(jobUUID)
+	return &empty.Empty{}, err
 }
 
 func RunServer() {

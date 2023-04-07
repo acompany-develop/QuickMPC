@@ -7,6 +7,7 @@ import (
 	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container"
+	empty "github.com/golang/protobuf/ptypes/empty"
 )
 
 // Test用のMCのmock
@@ -21,6 +22,16 @@ func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (
 
 func (s *server) Sync(ctx context.Context, in *pb.SyncRequest) (*pb.SyncResponse, error) {
 	return &pb.SyncResponse{}, nil
+}
+
+func (s *server) CreateStatusFile(ctx context.Context, in *pb.CreateStatusFileRequest) (*empty.Empty, error) {
+	AppLogger.Infof("Received: %v", in.GetJobUuid())
+	return &empty.Empty{}, nil
+}
+
+func (s *server) DeleteStatusFile(ctx context.Context, in *pb.DeleteStatusFileRequest) (*empty.Empty, error) {
+	AppLogger.Infof("Received: %v", in.GetJobUuid())
+	return &empty.Empty{}, nil
 }
 
 // Test用のサーバを起動(MC)
@@ -48,5 +59,23 @@ func TestSync(t *testing.T) {
 	err := c.sync(conn, "SyncID")
 	if err != nil {
 		t.Error("sync faild: " + err.Error())
+	}
+}
+
+func TestCreateStatusFile(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	err := c.createStatusFile(conn, "jobUUID")
+	if err != nil {
+		t.Error("create status file faild: " + err.Error())
+	}
+}
+
+func TestDeleteStatusFile(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	err := c.deleteStatusFile(conn, "jobUUID")
+	if err != nil {
+		t.Error("delete status file faild: " + err.Error())
 	}
 }

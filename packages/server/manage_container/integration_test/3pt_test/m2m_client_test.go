@@ -100,3 +100,85 @@ func TestSync(t *testing.T) {
 	case <-done:
 	}
 }
+
+func TestCreateStatusFile(t *testing.T) {
+	/**
+	* 各手順ごとにsyncで同期
+	* 1. PT1がstatu_RECEIVED作成リクエストを送る
+	* 2. PT2,3の作成されたか確認
+	 */
+	jobUUID := "createStatusFile"
+	deleteId(t, jobUUID)
+	config, err := utils.GetConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := config.PartyID
+	m2m_client := m2m.Client{}
+	if id == 1 {
+		// NOTE: PT1はPT2,3へstatu_RECEIVED作成リクエストを送る
+		client := m2m.Client{}
+		err := client.CreateStatusFile(jobUUID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// data削除の終了を通知
+		m2m_client.Sync("createStatusFile")
+	} else {
+		// NOTE: PT2,3はstatu_RECEIVED作成リクエストを受け取る
+		// PT1のstatu_RECEIVED作成リクエストの終了を待機
+		m2m_client.Sync("createStatusFile")
+		// 同期させてから作成されてるかチェック
+		_, err = os.Stat(fmt.Sprintf("/db/result/%s/status_%s", jobUUID, pb_types.JobStatus_RECEIVED.String()))
+		if err != nil {
+			t.Fatal("status_RECEIVED must be created")
+		}
+	}
+	deleteId(t, jobUUID)
+}
+
+func TestDeleteStatusFile(t *testing.T) {
+	/**
+	* 各手順ごとにsyncで同期
+	* 1. PT2,3がstatu_RECEIVEDを作成
+	* 2. PT1が削除リクエストを送信
+	* 3. PT2,3で削除されたか確認
+	 */
+	jobUUID := "deleteStatusFile"
+	deleteId(t, jobUUID)
+
+	config, err := utils.GetConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	id := config.PartyID
+	m2m_client := m2m.Client{}
+	if id == 1 {
+		// NOTE: PT1はPT2,3へstatu_RECEIVED削除リクエストを送る
+		m2m_client.Sync("create")
+		client := m2m.Client{}
+		err := client.DeleteStatusFile(jobUUID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// 削除リクエスト完了の通知
+		m2m_client.Sync("deleteStatusFile")
+	} else {
+		// NOTE: PT2,3はstatu_RECEIVED作成リクエストを受け取る
+		// PT2,3はstatu_RECEIVEDを作成する
+		path := fmt.Sprintf("/db/result/%s", jobUUID)
+		os.Mkdir(path, 0777)
+		fp, _ := os.Create(fmt.Sprintf("%s/status_%s", path, pb_types.JobStatus_RECEIVED.String()))
+		fp.Close()
+		// 作成完了を通知
+		m2m_client.Sync("create")
+		// PT1からの削除リクエストの終了を待機
+		m2m_client.Sync("deleteStatusFile")
+		// 同期させてから削除されてるかチェック
+		_, err = os.Stat(fmt.Sprintf("/db/result/%s", jobUUID))
+		if err == nil {
+			t.Fatal(fmt.Sprintf("%s directory must be deleted", jobUUID))
+		}
+	}
+	deleteId(t, jobUUID)
+}
