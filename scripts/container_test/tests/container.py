@@ -61,6 +61,5 @@ class Containers:
         subprocess.run([command], shell=True)
 
     def restart(self) -> None:
-        sn_str = " ".join(self.__service_names)
-        command = f"docker-compose {compose_files_opt} restart {sn_str}"
-        subprocess.run([command], shell=True)
+        self.down()
+        self.up()
