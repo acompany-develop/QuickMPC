@@ -5,8 +5,13 @@ aud: ~ # unused
 exp: {{ exp }}
 # user defined claims is folloing
 room_uuid: '' # this field is filled by generator
+party_id: {{ party_id }}
 party_info:
+{%- if setting -%}
   {%- for party in setting['party_list'] %}
   - id: {{ party['party_id'] }}
     address: {{ party['host'] }}
   {%- endfor %}
+{%- else %}
+   null
+{%- endif -%}

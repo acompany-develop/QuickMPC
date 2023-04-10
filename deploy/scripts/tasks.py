@@ -6,6 +6,8 @@ from typing import Callable, Iterable, Dict, Union, Optional, Any
 import json
 import shutil
 import re
+import secrets
+import base64
 from invoke import task, Context, Result
 import fabric
 import fabric.transfer
@@ -65,6 +67,13 @@ def generate_qmpc_setting(c: Context, party_list_raw: str, bts_host: str, bts_ta
 
     qmpc_config_path = pathlib.Path('qmpc_setting/config.yaml.jinja')
 
+    # secret となる 256 bit の乱数を生成する
+    SECRET_BITS = 256
+    SECRET_BYTES = SECRET_BITS // 8
+
+    secret_bytes = secrets.token_bytes(SECRET_BYTES)
+    secret_base64 = base64.standard_b64encode(secret_bytes).decode('ascii')
+
     template = jinja2.Environment(loader=loader, keep_trailing_newline=True).get_template(
         name=str(qmpc_config_path)
     )
@@ -73,6 +82,7 @@ def generate_qmpc_setting(c: Context, party_list_raw: str, bts_host: str, bts_ta
         'party_list': party_list,
         'bts_host': bts_host,
         'bts_tag': bts_tag,
+        'bts_jwt_secret': secret_base64,
     }
 
     result = template.render(args)
@@ -101,43 +111,70 @@ def generate_jwt_tokens(context: Context, exp=9223371974719179007, qmpc_config_p
     templates_root_dir = pathlib.Path(context.cwd) / pathlib.Path('../templates')
     loader = jinja2.FileSystemLoader(templates_root_dir)
 
-    jwt_config_path = pathlib.Path('./qmpc_setting') / 'jwt.yaml.jinja'
+    jwt_config_tamplate_path = pathlib.Path('./qmpc_setting') / 'jwt.yaml.jinja'
 
     template = jinja2.Environment(loader=loader, keep_trailing_newline=True).get_template(
-        name=str(jwt_config_path)
+        name=str(jwt_config_tamplate_path)
     )
 
+    def generate(args: dict[str, Any], jwt_config_dst_path: pathlib.Path, jwt_envs_dir: pathlib.Path):
+        result = template.render(args)
+
+        context.run(f"mkdir -p {jwt_config_dst_path.parent}")
+
+        with open(jwt_config_dst_path, mode='w') as f:
+            f.write(result)
+
+        # jwt token を生成する
+        context.run(f"mkdir -p {jwt_envs_dir}")
+
+        uid_cmd: Result = context.run('id -u')
+        uid = int(uid_cmd.stdout.strip())
+        gid_cmd: Result = context.run('id -g')
+        gid = int(gid_cmd.stdout.strip())
+
+        context.run(rf"""docker run \
+                        -u {uid}:{gid} \
+                        -v {jwt_config_dst_path.resolve()}:/input/{jwt_config_dst_path.name} \
+                        -v {jwt_envs_dir.resolve()}:/output \
+                        --env JWT_BASE64_SECRET_KEY={qmpc_setting['bts']['secret']} \
+                        ghcr.io/acompany-develop/quickmpc-bts:{qmpc_setting['bts']['tag']} \
+                        ./beaver_triple_service generateJwt \
+                        --file /input/{jwt_config_dst_path.name} \
+                        --output /output
+                    """)
+
+    for party in qmpc_setting['party_list']:
+        print(party)
+
+        args = {
+            'setting': qmpc_setting,
+            'exp': exp,
+            'party_id': party['party_id']
+        }
+
+        jwt_config_dst_path = pathlib.Path('./.output') \
+            / jwt_config_tamplate_path.parent / f"{party['party_id']}" / jwt_config_tamplate_path.name
+        jwt_config_dst_path = jwt_config_dst_path.with_suffix('')
+
+        jwt_envs_dir = pathlib.Path('./.output/config/') / f"party{party['party_id']}" / 'jwt-envs'
+
+        generate(args, jwt_config_dst_path, jwt_envs_dir)
+
+    # generate jwt token for healthcheck
     args = {
-        'setting': qmpc_setting,
+        'setting': None,
         'exp': exp,
+        'party_id': 'null'
     }
 
-    result = template.render(args)
+    jwt_config_dst_path = pathlib.Path('./.output') \
+        / jwt_config_tamplate_path.parent / 'others' / jwt_config_tamplate_path.name
+    jwt_config_dst_path = jwt_config_dst_path.with_suffix('')
 
-    jwt_config_path = pathlib.Path('./.output') / jwt_config_path.with_suffix('')
-    context.run(f"mkdir -p {jwt_config_path.parent}")
+    jwt_envs_dir = pathlib.Path('./.output/config/') / 'others' / 'jwt-envs'
 
-    with open(jwt_config_path, mode='w') as f:
-        f.write(result)
-
-    # jwt token を生成する
-    jwt_envs_dir = pathlib.Path('./.output/config/others') / 'jwt-envs'
-    context.run(f"mkdir -p {jwt_envs_dir}")
-
-    uid_cmd: Result = context.run('id -u')
-    uid = int(uid_cmd.stdout.strip())
-    gid_cmd: Result = context.run('id -g')
-    gid = int(gid_cmd.stdout.strip())
-
-    context.run(rf"""docker run \
-                    -u {uid}:{gid} \
-                    -v {jwt_config_path.resolve()}:/input/{jwt_config_path.name} \
-                    -v {jwt_envs_dir.resolve()}:/output \
-                    ghcr.io/acompany-develop/quickmpc-bts:{qmpc_setting['bts']['tag']} \
-                    ./beaver_triple_service generateJwt \
-                    --file /input/{jwt_config_path.name} \
-                    --output /output
-                """)
+    generate(args, jwt_config_dst_path, jwt_envs_dir)
 
 
 def update_path_info(destination: Dict, path: Iterable, value: str) -> Dict:
