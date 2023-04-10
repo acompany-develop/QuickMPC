@@ -6,7 +6,7 @@
 
 #include "random/csprng.hpp"
 
-unsigned long long RandGenerator::generateRand()
+std::uint64_t RandGenerator::generateRand()
 {
     if (this->rands.empty())
     {
@@ -14,7 +14,7 @@ unsigned long long RandGenerator::generateRand()
         this->rands = generator.GetRandLLVec(n_hold);
     }
 
-    unsigned long long rnd = static_cast<unsigned long long>(*(this->rands.end() - 1));
+    std::uint64_t rnd = static_cast<std::uint64_t>(*(this->rands.end() - 1));
     this->rands.pop_back();
 
     return rnd;

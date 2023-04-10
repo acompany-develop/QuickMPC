@@ -13,7 +13,7 @@ bool CSPRNG::entropyCheck()
 {
     while (sodium_init() < 0)
     {
-        static unsigned int ctr = 0;
+        static uint16_t ctr = 0;
         ctr++;
         if (ctr > 3000)  // エントロピーが出来上がるのに最大3分程度待つ
         {
@@ -33,7 +33,7 @@ bool CSPRNG::entropyCheck()
     return true;
 };
 
-void CSPRNG::GetRand(const std::unique_ptr<unsigned char[]>& buf, const std::size_t byteSize)
+void CSPRNG::GetRand(const std::unique_ptr<std::uint8_t[]>& buf, const std::size_t byteSize)
 {
     if (!this->CSPRNG::entropyCheck())
     {
@@ -49,22 +49,22 @@ void CSPRNG::GetRand(const std::unique_ptr<unsigned char[]>& buf, const std::siz
     }
     else
     {
-        std::unique_ptr<unsigned char[]> seed =
-            std::make_unique<unsigned char[]>(randombytes_SEEDBYTES);
+        std::unique_ptr<std::uint8_t[]> seed =
+            std::make_unique<std::uint8_t[]>(randombytes_SEEDBYTES);
         syscall(SYS_getrandom, seed.get(), randombytes_SEEDBYTES, 1);
         randombytes_buf_deterministic(buf.get(), byteSize, seed.get());
     }
 };
 
-long long int CSPRNG::GetRandLL()
+std::int64_t CSPRNG::GetRandLL()
 {
-    constexpr std::size_t LL_SIZE = sizeof(long long int);  // 8byte = 64bit
+    constexpr std::size_t LL_SIZE = sizeof(std::int64_t);  // 8byte = 64bit
 
-    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(LL_SIZE);
-    // 64bit乱数[unsigned char*]生成
+    std::unique_ptr<std::uint8_t[]> rnd = std::make_unique<std::uint8_t[]>(LL_SIZE);
+    // 64bit乱数[std::uint8_t*]生成
     this->CSPRNG::GetRand(rnd, LL_SIZE);
 
-    // unsiged char* -> str(bin)
+    // uint8_t* -> str(bin)
     std::stringstream str;
     for (std::size_t i = 0; i < LL_SIZE; i++)
     {
@@ -72,22 +72,22 @@ long long int CSPRNG::GetRandLL()
     }
     std::string rndBinStr = str.str();
 
-    long long int rndVal = std::stoull(rndBinStr, nullptr, 2);
+    std::int64_t rndVal = std::stoull(rndBinStr, nullptr, 2);
     return rndVal;
 };
 
-std::vector<long long int> CSPRNG::GetRandLLVec(const std::size_t size)
+std::vector<std::int64_t> CSPRNG::GetRandLLVec(const std::size_t size)
 {
-    std::vector<long long int> randLLVec = {};
+    std::vector<std::int64_t> randLLVec = {};
 
-    constexpr std::size_t LL_SIZE = sizeof(long long int);  // 8byte
-    const std::size_t byteSize = size * LL_SIZE;            // size * 8[byte/llsize]
+    constexpr std::size_t LL_SIZE = sizeof(std::int64_t);  // 8byte
+    const std::size_t byteSize = size * LL_SIZE;           // size * 8[byte/llsize]
 
-    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(byteSize);
-    // 64bit乱数[unsigned char*]生成
+    std::unique_ptr<std::uint8_t[]> rnd = std::make_unique<std::uint8_t[]>(byteSize);
+    // 64bit乱数[std::uint8_t*]生成
     this->CSPRNG::GetRand(rnd, byteSize);
 
-    // unsiged char* -> str(bin)
+    // unit8_t* -> str(bin)
     for (std::size_t i = 0; i < byteSize; i += LL_SIZE)
     {
         std::stringstream str;
@@ -96,7 +96,7 @@ std::vector<long long int> CSPRNG::GetRandLLVec(const std::size_t size)
             str << std::bitset<LL_SIZE>(rnd[i + j]);
         }
 
-        long long int rndVal = std::stoull(str.str(), nullptr, 2);
+        std::int64_t rndVal = std::stoull(str.str(), nullptr, 2);
         randLLVec.push_back(rndVal);
     }
 
