@@ -76,7 +76,7 @@ static_resources:
             - endpoint:
                 address:
                   socket_address:
-                    address: computation-container{{ party_id }}
+                    address: computation-container
                     port_value: 50020
   - name: cc_to_cc_for_job_service
     connect_timeout: 1000s  # クラスター内のホストへのネットワーク接続のタイムアウト
@@ -94,5 +94,5 @@ static_resources:
             - endpoint:
                 address:
                   socket_address:
-                    address: computation-container{{ party_id }}
+                    address: computation-container
                     port_value: 31020
