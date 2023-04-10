@@ -25,7 +25,7 @@ services:
         target: /db/result
     env_file:
       - {{ envs.parties[(party_id)|string]['computation-container']['.env'].__path__ }}
-      - {{ envs.others['jwt-envs']['client.jwt.env'].__path__ }}
+      - {{ envs.parties[(party_id)|string]['jwt-envs']['client.jwt.env'].__path__ }}
     networks:
       shared-network:
         ipv4_address: 10.0.{{ party_id }}.20
@@ -87,7 +87,6 @@ services:
         target: /db/result
     env_file:
       - {{ envs.parties[(party_id)|string]['manage-container']['.env'].__path__ }}
-      - {{ envs.others['jwt-envs']['client.jwt.env'].__path__ }}
     expose:
       - "50011"
       - "51011"

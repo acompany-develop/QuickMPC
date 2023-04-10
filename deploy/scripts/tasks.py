@@ -154,10 +154,10 @@ def generate_jwt_tokens(context: Context, exp=9223371974719179007, qmpc_config_p
         }
 
         jwt_config_dst_path = pathlib.Path('./.output') \
-            / jwt_config_tamplate_path.parent / f"{party['party_id']}" / jwt_config_tamplate_path.name
+            / jwt_config_tamplate_path.parent / 'parties' / f"{party['party_id']}" / jwt_config_tamplate_path.name
         jwt_config_dst_path = jwt_config_dst_path.with_suffix('')
 
-        jwt_envs_dir = pathlib.Path('./.output/config/') / f"party{party['party_id']}" / 'jwt-envs'
+        jwt_envs_dir = pathlib.Path('./.output/config/') / 'parties' / f"{party['party_id']}" / 'jwt-envs'
 
         generate(args, jwt_config_dst_path, jwt_envs_dir)
 
@@ -234,7 +234,7 @@ def generate_config(context: Context, qmpc_config_path='./.output/qmpc_setting/c
             print(f"INFO: -> {destination_path}")
             context.run(f"mkdir -p {destination_path.parent}")
 
-            update_path_info(output, ('parties', i + 1) + dst_sub_path.parts, str(destination_path))
+            update_path_info(output, ('parties', str(i + 1)) + dst_sub_path.parts, str(destination_path))
 
             template = jinja2.Environment(loader=loader, keep_trailing_newline=True).get_template(name=str(item))
             args = {
@@ -273,11 +273,11 @@ def generate_config(context: Context, qmpc_config_path='./.output/qmpc_setting/c
             f.write(result)
 
     # add jwt envs
-    jwt_envs_dir = pathlib.Path('./.output/config') / 'others' / 'jwt-envs'
-    for item in jwt_envs_dir.glob("**/*.env"):
+    jwt_envs_dir = pathlib.Path('./.output/config')
+    for item in jwt_envs_dir.glob("**/*.jwt.env"):
         relpath = item.relative_to(jwt_envs_dir)
         print(f"INFO: env file is {(jwt_envs_dir / relpath).resolve()}")
-        update_path_info(output, ('others', 'jwt-envs',) + relpath.parts, str(item.resolve()))
+        update_path_info(output, relpath.parts, str(item.resolve()))
 
     context.run('mkdir -p ./.output')
     with open('./.output/env-locations.json', mode='w') as f:

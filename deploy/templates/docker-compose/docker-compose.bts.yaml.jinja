@@ -15,8 +15,8 @@ services:
         - type=registry,ref={{ bts_image }}
     env_file:
       - {{ envs.others['beaver-triple-service']['.env'].__path__ }}
+      - {{ envs.others['beaver-triple-service']['server.jwt.env'].__path__ }}
       - {{ envs.others['jwt-envs']['client.jwt.env'].__path__ }}
-      - {{ envs.others['jwt-envs']['server.jwt.env'].__path__ }}
     expose:
       - "50020"
     networks:
