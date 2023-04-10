@@ -13,7 +13,7 @@ bool CSPRNG::entropyCheck()
 {
     while (sodium_init() < 0)
     {
-        static uint16_t ctr = 0;
+        static std::uint16_t ctr = 0;
         ctr++;
         if (ctr > 3000)  // エントロピーが出来上がるのに最大3分程度待つ
         {
