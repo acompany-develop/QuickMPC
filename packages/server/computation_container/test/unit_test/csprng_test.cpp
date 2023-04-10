@@ -9,16 +9,16 @@
 
 TEST(CsprngTest, GetRand)
 {
-    const unsigned int byteSize = 8;  // 8byte = 64bit
+    const std::uint32_t byteSize = 8;  // 8byte = 64bit
 
-    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(byteSize);
+    std::unique_ptr<std::uint8_t[]> rnd = std::make_unique<std::uint8_t[]>(byteSize);
 
     Utility::CSPRNG rng = Utility::CSPRNG();
     rng.GetRand(rnd, byteSize);
 
-    for (unsigned int i = 0; i < byteSize; i++)
+    for (std::uint32_t i = 0; i < byteSize; i++)
     {
-        unsigned int r = (unsigned int)rnd[i];
+        std::uint32_t r = (std::uint32_t)rnd[i];
         QMPC_LOG_INFO("{:d}", r);
         ASSERT_TRUE((r >= 0) && (r <= 255));
     }
@@ -27,11 +27,11 @@ TEST(CsprngTest, GetRand)
 TEST(CsprngTest, GetRandLL)
 {
     Utility::CSPRNG rng = Utility::CSPRNG();
-    std::vector<long long int> rndLLVec = {};
-    std::set<long long int> rndLLSet;
-    for (unsigned int i = 0; i < 10'000; i++)
+    std::vector<std::int64_t> rndLLVec = {};
+    std::set<std::int64_t> rndLLSet;
+    for (std::uint32_t i = 0; i < 10'000; i++)
     {
-        long long int rndLL = rng.GetRandLL();
+        std::int64_t rndLL = rng.GetRandLL();
         rndLLVec.push_back(rndLL);
         rndLLSet.insert(rndLL);
     }
@@ -43,9 +43,9 @@ TEST(CsprngTest, GetRandLL)
 TEST(CsprngTest, GetRandLLVec)
 {
     Utility::CSPRNG rng = Utility::CSPRNG();
-    unsigned int vecSize = 1000;
-    std::vector<long long int> rndLLVec = rng.GetRandLLVec(vecSize);
-    std::set<long long int> rndLLSet(rndLLVec.begin(), rndLLVec.end());
+    std::size_t vecSize = 1000;
+    std::vector<std::int64_t> rndLLVec = rng.GetRandLLVec(vecSize);
+    std::set<std::int64_t> rndLLSet(rndLLVec.begin(), rndLLVec.end());
     ;
 
     // SetとVecのサイズで重複チェックテスト
@@ -56,16 +56,16 @@ TEST(CsprngTest, HowUse)
 {
     Utility::CSPRNG rng = Utility::CSPRNG();
 
-    const unsigned int byteSize = 8;  // 8byte = 64bit
-    const unsigned int bitSize = byteSize * 8;
+    const std::uint32_t byteSize = 8;  // 8byte = 64bit
+    const std::uint32_t bitSize = byteSize * 8;
 
-    std::unique_ptr<unsigned char[]> rnd = std::make_unique<unsigned char[]>(byteSize);
+    std::unique_ptr<std::uint8_t[]> rnd = std::make_unique<std::uint8_t[]>(byteSize);
     rng.GetRand(rnd, byteSize);
 
     QMPC_LOG_INFO("変換前");
-    QMPC_LOG_INFO("[bin] unsigned char*: ");
+    QMPC_LOG_INFO("[bin] std::uint8_t*: ");
     std::string rnd_bin_str = "";
-    for (unsigned int i = 0; i < byteSize; i++)
+    for (std::uint32_t i = 0; i < byteSize; i++)
     {
         QMPC_LOG_INFO(std::bitset<8>(rnd[i]));
         std::stringstream str;
@@ -73,26 +73,26 @@ TEST(CsprngTest, HowUse)
         rnd_bin_str += str.str();
     }
 
-    QMPC_LOG_INFO("[hex] unsigned char*: ");
-    for (unsigned int i = 0; i < byteSize; i++)
+    QMPC_LOG_INFO("[hex] std::uint8_t*: ");
+    for (std::uint32_t i = 0; i < byteSize; i++)
     {
-        QMPC_LOG_INFO("{:x}", (unsigned int)rnd[i]);
+        QMPC_LOG_INFO("{:x}", (std::uint32_t)rnd[i]);
     }
 
-    QMPC_LOG_INFO("[dec] unsigned char*: ");
-    for (unsigned int i = 0; i < byteSize; i++)
+    QMPC_LOG_INFO("[dec] std::uint8_t*: ");
+    for (std::uint32_t i = 0; i < byteSize; i++)
     {
-        QMPC_LOG_INFO((unsigned int)rnd[i]);
+        QMPC_LOG_INFO((std::uint32_t)rnd[i]);
     }
     QMPC_LOG_INFO("\n");
 
     QMPC_LOG_INFO("変換");
-    QMPC_LOG_INFO("[bin] unsigned char* -> string: ");
+    QMPC_LOG_INFO("[bin] std::uint8_t* -> string: ");
     QMPC_LOG_INFO("{}\n", rnd_bin_str);
 
-    // unsigned char* から long longへキャスト
-    long long val = std::stoull(rnd_bin_str, nullptr, 2);
-    unsigned long long uval = std::stoull(rnd_bin_str, nullptr, 2);
+    // std::uint8_t* から std::int64_t へキャスト
+    std::int64_t val = std::stoull(rnd_bin_str, nullptr, 2);
+    std::uint64_t uval = std::stoull(rnd_bin_str, nullptr, 2);
 
     QMPC_LOG_INFO("変換後");
     std::stringstream str;
@@ -134,15 +134,15 @@ TEST(CsprngTest, HowUse)
 
     /* 例
     変換前
-    [bin] unsigned char*:
+    [bin] std::uint8_t*:
     1010010010110000111000111010011111001100000010100110101001100010
-    [hex] unsigned char*:
+    [hex] std::uint8_t*:
     a4 b0 e3 a7 cc a 6a 62
-    [dec] unsigned char*:
+    [dec] std::uint8_t*:
     164 176 227 167 204 10 106 98
 
     変換
-    [bin] unsigned char* -> string:
+    [bin] std::uint8_t* -> string:
     1010010010110000111000111010011111001100000010100110101001100010
 
     変換後
