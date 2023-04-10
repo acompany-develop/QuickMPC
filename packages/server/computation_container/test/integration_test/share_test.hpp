@@ -64,17 +64,6 @@ TEST(ShareTest, MulBetweenShares)
     EXPECT_EQ(a_rec, FixedPoint(std::to_string((3.0 * n_parties) * (3.0 * n_parties))));
 }
 
-TEST(ShareTest, DivBetweenShares)
-{
-    Share a(FixedPoint("1.0"));
-    Share b(FixedPoint("2.0"));
-    a = a / b;
-    open(a);
-    FixedPoint a_rec = recons(a);
-    QMPC_LOG_INFO("a_rec = {}", a_rec.getDoubleVal());
-    EXPECT_NEAR(a_rec.getDoubleVal(), 0.50, 0.01);
-}
-
 TEST(ShareTest, AddBetweenShareAndFixedPoint)
 {
     Config *conf = Config::getInstance();
@@ -142,30 +131,6 @@ TEST(ShareTest, GetAdditiveInvVec)
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_EQ(expected[i], ret[i].getDoubleVal());
-    }
-}
-
-// 各要素の乗法に関する逆元を一括で求めるテスト
-TEST(ShareTest, GetMultiplicativeInvVec)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    std::vector<Share> a = {
-        Share(FixedPoint("5")),
-        Share(FixedPoint("3.6")),
-        Share(FixedPoint("-6")),
-        Share(FixedPoint("-4.2"))};
-    a = getMultiplicativeInvVec(a);
-    std::vector<double> expected = {
-        1 / (5.0 * n_parties),
-        1 / (3.6 * n_parties),
-        -1 / (6.0 * n_parties),
-        -1 / (4.2 * n_parties)};
-    open(a);
-    std::vector<FixedPoint> ret = recons(a);
-    for (int i = 0; i < static_cast<int>(a.size()); ++i)
-    {
-        EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
     }
 }
 
@@ -286,14 +251,6 @@ TEST(ShareTest, DivBetweenSharesAndFixedPoint)
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
-    }
-
-    c = b / a;
-    open(c);
-    ret = recons(c);
-    for (int i = 0; i < static_cast<int>(a.size()); ++i)
-    {
-        EXPECT_NEAR(1.0 / expected[i], ret[i].getDoubleVal(), 0.1);
     }
 }
 
@@ -461,20 +418,6 @@ TEST(ShareTest, MulBetweenFixedPointAndShare)
     FixedPoint a_rec = recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(3 * (2 * n_parties))));
 }
-
-TEST(ShareTest, DivBetweenFixedPointAndShare)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    Share a(FixedPoint("2.0"));
-    FixedPoint b("12.0");
-    a = b / a;
-    open(a);
-    FixedPoint a_rec = recons(a);
-    QMPC_LOG_INFO("a_rec = {}", a_rec.getDoubleVal());
-    EXPECT_NEAR(a_rec.getDoubleVal(), 12.0 / (2 * n_parties), 0.1);
-}
-
 TEST(ShareTest, RandBitShare)
 {
     int N = 5;
@@ -1084,30 +1027,6 @@ TEST(ShareTest, Sort)
         // QMPC_LOG_INFO("Y is {}", y_rec[i]);
         EXPECT_EQ(x_rec[i], y_rec[i]);
     }
-}
-
-// sqrtのテスト
-TEST(ShareTest, Sqrt)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-
-    Share a(FixedPoint(3));
-    auto a_sqrt = qmpc::Share::sqrt(a);
-    open(a_sqrt);
-    auto target = recons(a_sqrt);
-
-    QMPC_LOG_INFO("3 * n_parties sqrt is {}", target);
-    EXPECT_NEAR(target.getDoubleVal(), std::sqrt(3 * n_parties), 0.01);
-
-    Share b;
-    b += FixedPoint(121);
-    auto b_sqrt = qmpc::Share::sqrt(b);
-    open(b_sqrt);
-    auto targetb = recons(b_sqrt);
-
-    QMPC_LOG_INFO("121 sqrt is {}", targetb);
-    EXPECT_NEAR(targetb.getDoubleVal(), 11, 0.01);
 }
 
 // streamのテスト

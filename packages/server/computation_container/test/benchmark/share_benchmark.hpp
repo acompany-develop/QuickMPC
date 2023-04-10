@@ -36,15 +36,6 @@ TEST(ShareBenchmark, MulBetweenShares)
 
     measureExecTime("MulBetweenShares", 5, [&]() { auto c = a * b; });
 }
-
-TEST(ShareBenchmark, DivBetweenShares)
-{
-    Share a(FixedPoint("1.0"));
-    Share b(FixedPoint("2.0"));
-
-    measureExecTime("DivBetweenShares", 5, [&]() { auto c = a / b; });
-}
-
 TEST(ShareBenchmark, AddBetweenShareAndFixedPoint)
 {
     Share a(FixedPoint("1.0"));
@@ -88,18 +79,6 @@ TEST(ShareBenchmark, GetAdditiveInvVec)
         Share(FixedPoint("0"))};
 
     measureExecTime("GetAdditiveInvVec", 5, [&]() { auto b = getAdditiveInvVec(a); });
-}
-
-// 各要素の乗法に関する逆元を一括で求めるテスト
-TEST(ShareBenchmark, GetMultiplicativeInvVec)
-{
-    std::vector<Share> a = {
-        Share(FixedPoint("5")),
-        Share(FixedPoint("3.6")),
-        Share(FixedPoint("-6")),
-        Share(FixedPoint("-4.2"))};
-
-    measureExecTime("GetMultiplicativeInvVec", 5, [&]() { auto b = getMultiplicativeInvVec(a); });
 }
 
 TEST(ShareBenchmark, AddBetweenSharesAndFixedPoint)
@@ -190,15 +169,6 @@ TEST(ShareBenchmark, MulBetweenFixedPointAndShare)
 
     measureExecTime("MulBetweenFixedPointAndShare", 5, [&]() { auto c = b * a; });
 }
-
-TEST(ShareBenchmark, DivBetweenFixedPointAndShare)
-{
-    Share a(FixedPoint("2.0"));
-    FixedPoint b("12.0");
-
-    measureExecTime("DivBetweenFixedPointAndShare", 5, [&]() { auto c = b / a; });
-}
-
 TEST(ShareBenchmark, RandBitShare)
 {
     // ランダム要素を含むため，計測回数は1回
@@ -481,17 +451,6 @@ TEST(ShareBenchmark, Sort)
     auto y_rec = recons(y);
 
     measureExecTime("Sort.Svalue", N, [&]() { std::sort(y_rec.begin(), y_rec.end()); });
-}
-
-// sqrtのテスト
-TEST(ShareBenchmark, Sqrt)
-{
-    // IntagrationTest/share_test.hpp からコピペ
-    // share_test にある b = 121 のみ計測
-    Share b;
-    b += FixedPoint(121);
-
-    measureExecTime("Sqrt", 5, [&]() { auto b_sqrt = qmpc::Share::sqrt(b); });
 }
 
 TEST(ShareBench, unarySend)

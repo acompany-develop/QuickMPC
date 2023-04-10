@@ -155,33 +155,4 @@ Share exp(const Share &x)
     }
     return std::accumulate(px.begin(), px.end(), Share{0});
 }
-Share sigmoid(const Share &x, const FixedPoint &a)
-{
-    auto exp_ = exp(x * a);
-    auto exp_inv = qmpc::Share::getInv(exp_);
-    auto exp_1 = exp_inv + 1;
-    return qmpc::Share::getInv(exp_1);
-}
-
-Share open_sigmoid(const Share &x_s, const FixedPoint &a)
-{
-    qmpc::Share::open(x_s);
-    auto s = qmpc::Share::recons(x_s);
-    auto E = FixedPoint(std::exp(-((s * a).getDoubleVal())));
-    auto E_s = qmpc::Share::sharize(E);
-    auto one_s = qmpc::Share::getConstantShare(FixedPoint("1"));
-    auto ret = one_s / (one_s + E_s);
-    // 乱数によりまれにinfになることがあるためその場合は計算消し直す
-    if (boost::math::isinf(ret.getVal().getVal<double>()))
-    {
-        ret = qmpc::Math::open_sigmoid(s);
-    }
-    return ret;
-}
-
-Share open_sigmoid_vector(const std::vector<Share> &v_s, const FixedPoint &a)
-{
-    auto x_s = sum(v_s);
-    return open_sigmoid(x_s);
-}
 }  // namespace qmpc::Math
