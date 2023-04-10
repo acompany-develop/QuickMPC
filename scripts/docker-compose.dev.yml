@@ -106,11 +106,6 @@ services:
     tty: true
   dev_cc1:
     container_name: computation_container1
-    depends_on:
-      dev_bts:
-        condition: service_healthy
-      dev_cc_envoy1:
-        condition: service_started
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
@@ -150,9 +145,6 @@ services:
     tty: true
   dev_cc2:
     container_name: computation_container2
-    depends_on:
-      dev_cc_envoy2:
-        condition: service_started
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
@@ -192,9 +184,6 @@ services:
     tty: true
   dev_cc3:
     container_name: computation_container3
-    depends_on:
-      dev_cc_envoy3:
-        condition: service_started
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
     build:
       context: ../
@@ -294,11 +283,6 @@ services:
     tty: true
   dev_mc1:
     container_name: manage_container1
-    depends_on:
-      dev_cc1:
-        condition: service_started
-      dev_mc_envoy1:
-        condition: service_started
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
@@ -341,11 +325,6 @@ services:
     tty: true
   dev_mc2:
     container_name: manage_container2
-    depends_on:
-      dev_cc2:
-        condition: service_started
-      dev_mc_envoy2:
-        condition: service_started
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
@@ -385,11 +364,6 @@ services:
     tty: true
   dev_mc3:
     container_name: manage_container3
-    depends_on:
-      dev_cc3:
-        condition: service_started
-      dev_mc_envoy3:
-        condition: service_started
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
     build:
       context: ../
@@ -420,114 +394,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.10
-    expose:
-      - 50011
-      - 51011
-    tty: true
-  send_share_mc1:
-    container_name: manage_container1
-    depends_on:
-      dev_mc_envoy1:
-        condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
-    build:
-      context: ../
-      dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
-      target: dev
-    volumes:
-      - target: /QuickMPC/config
-        source: ../config/manage_container/manage1
-        type: bind
-      - target: /QuickMPC/.vscode
-        source: ../.vscode
-        type: bind
-      - target: /db/share
-        source: sharedb1
-        type: volume
-      - target: /db/result
-        source: resultdb1
-        type: volume
-    command:
-      - /bin/bash
-      - '-c'
-      - printenv && ./manage_container
-    env_file:
-      - ../config/manage_container/manage1/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.10
-    expose:
-      - 50011
-      - 51011
-    tty: true
-  send_share_mc2:
-    container_name: manage_container2
-    depends_on:
-      dev_mc_envoy2:
-        condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
-    build:
-      context: ../
-      dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
-      target: dev
-    volumes:
-      - target: /QuickMPC/config
-        source: ../config/manage_container/manage2
-        type: bind
-      - target: /db/share
-        source: sharedb2
-        type: volume
-      - target: /db/result
-        source: resultdb2
-        type: volume
-    command:
-      - /bin/bash
-      - '-c'
-      - printenv && ./manage_container
-    env_file:
-      - ../config/manage_container/manage2/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.10
-    expose:
-      - 50011
-      - 51011
-    tty: true
-  send_share_mc3:
-    container_name: manage_container3
-    depends_on:
-      dev_mc_envoy3:
-        condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
-    build:
-      context: ../
-      dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
-      target: dev
-    volumes:
-      - target: /QuickMPC/config
-        source: ../config/manage_container/manage3
-        type: bind
-      - target: /db/share
-        source: sharedb3
-        type: volume
-      - target: /db/result
-        source: resultdb3
-        type: volume
-    command:
-      - /bin/bash
-      - '-c'
-      - printenv && ./manage_container
-    env_file:
-      - ../config/manage_container/manage3/.env
     networks:
       shared-network:
         ipv4_address: 10.0.3.10

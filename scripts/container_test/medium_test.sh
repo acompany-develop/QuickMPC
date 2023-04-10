@@ -15,7 +15,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose $COMPOSE_FILES_OPT up dev_bts dev_cc1 dev_cc2 dev_cc3 dev_mc1 dev_mc2 dev_mc3
+  ./container_test/run_medium_test.sh
 }
 
 # runの後に実行されるteardown処理を記述する関数

@@ -217,9 +217,29 @@ services:
     depends_on:
       dev_mc1:
         condition: service_healthy
+      dev_mc_envoy1:
+        condition: service_started
       dev_mc2:
         condition: service_healthy
+      dev_mc_envoy2:
+        condition: service_started
       dev_mc3:
+        condition: service_healthy
+      dev_mc_envoy3:
+        condition: service_started
+      dev_cc1:
+        condition: service_healthy
+      dev_cc_envoy1:
+        condition: service_started
+      dev_cc2:
+        condition: service_healthy
+      dev_cc_envoy2:
+        condition: service_started
+      dev_cc3:
+        condition: service_healthy
+      dev_cc_envoy3:
+        condition: service_started
+      dev_bts:
         condition: service_healthy
     image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
     build:
