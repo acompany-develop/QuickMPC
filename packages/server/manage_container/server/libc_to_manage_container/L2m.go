@@ -187,7 +187,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 
 	// 計算コンテナにリクエストを送信する
 	out := utils.ConvertExecuteComputationRequest(in, jobUUID)
-	message, status, err := s.m2cclient.ExecuteComputation(out)
+	_, status, err := s.m2cclient.ExecuteComputation(out)
 
 	if err != nil {
 		AppLogger.Error(err)
