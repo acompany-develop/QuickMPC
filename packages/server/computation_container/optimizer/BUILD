@@ -56,13 +56,11 @@ cc_library(
         "gradient_descent.hpp",
         "sgd.hpp",
         "momentum.hpp",
-        "adam.hpp",
     ],
     deps = [
         "//optimizer:gradient_descent",
         "//optimizer:sgd",
         "//optimizer:momentum",
-        "//optimizer:adam",
     ],
     visibility = ["//visibility:public"],
 )
