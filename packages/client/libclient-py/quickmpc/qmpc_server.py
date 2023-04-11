@@ -149,10 +149,10 @@ class QMPCServer:
             logger.error(e)
 
         for b in response:
-            if hasattr(b, "is_ok"):
-                is_ok &= b.is_ok
-            elif "is_ok" in b:
+            try:
                 is_ok &= b["is_ok"]
+            except Exception:
+                pass
         return is_ok, response
 
     @staticmethod
