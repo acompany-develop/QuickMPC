@@ -45,14 +45,16 @@ logger = logging.getLogger(__name__)
 class QMPCServer:
     endpoints: InitVar[List[str]]
     __client_stubs: Tuple[LibcToManageStub] = field(init=False)
+    __client_channels: Tuple[grpc.Channel] = field(init=False)
     __party_size: int = field(init=False)
     token: str
     retry_num: int = 10
     retry_wait_time: int = 5
 
     def __post_init__(self, endpoints: List[str]) -> None:
-        stubs = [LibcToManageStub(QMPCServer.__create_grpc_channel(ep))
-                 for ep in endpoints]
+        chs = [QMPCServer.__create_grpc_channel(ep) for ep in endpoints]
+        stubs = [LibcToManageStub(ch) for ch in chs]
+        object.__setattr__(self, "_QMPCServer__client_channels", chs)
         object.__setattr__(self, "_QMPCServer__client_stubs", stubs)
         object.__setattr__(self, "_QMPCServer__party_size", len(endpoints))
 
@@ -92,6 +94,15 @@ class QMPCServer:
 
     def __retry(self, f: Callable, *request: Any) -> Any:
         for _ in range(self.retry_num):
+            # channelの接続チェック
+            try:
+                for ch in self.__client_channels:
+                    grpc.channel_ready_future(ch).result(timeout=5)
+            except grpc.FutureTimeoutError as e:
+                logger.error(e)
+                continue
+
+            # requestを送る
             try:
                 return f(*request)
             except grpc.RpcError as e:
