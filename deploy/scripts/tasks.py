@@ -163,9 +163,10 @@ def generate_jwt_tokens(context: Context, exp=9223371974719179007, qmpc_config_p
 
     # generate jwt token for healthcheck
     args = {
-        'setting': None,
         'exp': exp,
-        'party_id': 'null'
+        # required for authentication
+        'setting': {'party_list': {'id': 1, 'address': ''}},  # dummy data
+        'party_id': 1,
     }
 
     jwt_config_dst_path = pathlib.Path('./.output') \
