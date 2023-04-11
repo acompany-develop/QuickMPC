@@ -352,20 +352,16 @@ func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeReques
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetElapsedTimeResponse{
-			IsOk: false,
-		}, errToken
+		return nil, errToken
 	}
+
 	elapsedTime, err := s.m2dbclient.GetElapsedTime(JobUUID)
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.GetElapsedTimeResponse{
-			IsOk: false,
-		}, err
+		return nil, err
 	}
 
 	return &pb.GetElapsedTimeResponse{
-		IsOk:        true,
 		ElapsedTime: elapsedTime,
 	}, nil
 }
