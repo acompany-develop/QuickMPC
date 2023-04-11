@@ -131,13 +131,6 @@ public:
 
         return *this;
     }
-    /*
-    Share &operator/=(const Share &obj)
-    {
-        *this *= getInv(obj);
-        return *this;
-    }
-    */
 
     Share &operator+=(const SV &obj)
     {
