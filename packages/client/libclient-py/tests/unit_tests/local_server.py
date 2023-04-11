@@ -2,7 +2,7 @@
 from concurrent import futures
 
 import grpc
-from google.protobuf import any_pb2
+from google.protobuf import any_pb2, empty_pb2
 from google.rpc import code_pb2, status_pb2
 from grpc_status import rpc_status
 
@@ -17,10 +17,10 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
     def __init__(self): ...
 
     def SendShares(self, request, context):
-        return google.protobuf.Empty()
+        return empty_pb2.Empty()
 
     def DeleteShares(self, request, context):
-        return google.protobuf.Empty()
+        return empty_pb2.Empty()
 
     def ExecuteComputation(self, request, context):
         if len(request.arg.src) > 0 \
