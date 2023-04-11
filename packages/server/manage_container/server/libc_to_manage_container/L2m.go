@@ -143,10 +143,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.ExecuteComputationResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return nil, errToken
 	}
 
 	dataIds := in.GetTable().GetDataIds()
@@ -155,17 +152,13 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
 		if err != nil {
 			AppLogger.Error(err)
-			return &pb.ExecuteComputationResponse{
-				IsOk: false,
-			}, err
+			return nil, err
 		}
 
 		if matchingColumn != index[i] {
 			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
 			AppLogger.Error(errMessage)
-			return &pb.ExecuteComputationResponse{
-				IsOk: false,
-			}, errors.New(errMessage)
+			return nil, errors.New(errMessage)
 		}
 	}
 
@@ -173,10 +166,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	jobUUID, err := utils.CreateJobuuid()
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.ExecuteComputationResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, nil
+		return nil, err
 	}
 	AppLogger.Info("jobUUID: " + jobUUID)
 
@@ -185,20 +175,14 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	if err != nil {
 		AppLogger.Error(err)
 		s.m2mclient.DeleteStatusFile(jobUUID)
-		return &pb.ExecuteComputationResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, err
+		return nil, err
 	}
 	// status_RECEIVEDファイルを作成する
 	err = s.m2dbclient.CreateStatusFile(jobUUID)
 	if err != nil {
 		AppLogger.Error(err)
 		s.m2dbclient.DeleteStatusFile(jobUUID)
-		return &pb.ExecuteComputationResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, err
+		return nil, err
 	}
 
 	// 計算コンテナにリクエストを送信する
@@ -212,15 +196,11 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		s.m2mclient.DeleteStatusFile(jobUUID)
 		s.m2dbclient.DeleteStatusFile(jobUUID)
 		return &pb.ExecuteComputationResponse{
-			Message: message,
-			IsOk:    false,
 			JobUuid: jobUUID,
-		}, nil
+		}, err
 	}
 
 	return &pb.ExecuteComputationResponse{
-		Message: "ok",
-		IsOk:    true,
 		JobUuid: jobUUID,
 	}, nil
 }
