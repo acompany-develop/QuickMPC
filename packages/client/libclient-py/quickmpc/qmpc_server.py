@@ -151,7 +151,7 @@ class QMPCServer:
         for b in response:
             if hasattr(b, "is_ok"):
                 is_ok &= b.is_ok
-            else:
+            elif "is_ok" in b:
                 is_ok &= b["is_ok"]
         return is_ok, response
 
