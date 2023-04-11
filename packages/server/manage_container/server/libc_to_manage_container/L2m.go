@@ -374,21 +374,16 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetJobErrorInfoResponse{
-			IsOk: false,
-		}, errToken
+		return nil, errToken
 	}
 
 	errInfo, err := s.m2dbclient.GetJobErrorInfo(JobUUID)
 
 	if err != nil {
-		return &pb.GetJobErrorInfoResponse{
-			IsOk: false,
-		}, err
+		return nil, err
 	}
 
 	return &pb.GetJobErrorInfoResponse{
-		IsOk:         true,
 		JobErrorInfo: errInfo,
 	}, nil
 }
