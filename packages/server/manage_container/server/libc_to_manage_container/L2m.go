@@ -117,25 +117,16 @@ func (s *server) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.Ge
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetSchemaResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return nil, errToken
 	}
 
 	schema, err := s.m2dbclient.GetSchema(dataID)
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.GetSchemaResponse{
-			Message: "Internal server error",
-			IsOk:    false,
-			Schema:  schema,
-		}, nil
+		return nil, errors.New("Internal server error")
 	}
 
 	return &pb.GetSchemaResponse{
-		Message: "ok",
-		IsOk:    true,
 		Schema:  schema,
 	}, nil
 }
