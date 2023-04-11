@@ -14,12 +14,11 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14libc_to_manage.proto\x12\x0clibctomanage\x1a\x1f\x63ommon_types/common_types.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa8\x01\n\x11SendSharesRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0e\n\x06shares\x18\x02 \x01(\t\x12\'\n\x06schema\x18\x03 \x03(\x0b\x32\x17.pb_common_types.Schema\x12\x10\n\x08piece_id\x18\x04 \x01(\x05\x12\x0f\n\x07sent_at\x18\x05 \x01(\t\x12\x17\n\x0fmatching_column\x18\x06 \x01(\x05\x12\r\n\x05token\x18\x07 \x01(\t\"5\n\x13\x44\x65leteSharesRequest\x12\x0f\n\x07\x64\x61taIds\x18\x01 \x03(\t\x12\r\n\x05token\x18\x02 \x01(\t\"6\n\x14\x44\x65leteSharesResponse\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\r\n\x05is_ok\x18\x02 \x01(\x08\"2\n\x10GetSchemaRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\"\\\n\x11GetSchemaResponse\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\r\n\x05is_ok\x18\x02 \x01(\x08\x12\'\n\x06schema\x18\x03 \x03(\x0b\x32\x17.pb_common_types.Schema\"9\n\tJoinOrder\x12\x0f\n\x07\x64\x61taIds\x18\x01 \x03(\t\x12\x0c\n\x04join\x18\x02 \x03(\x05\x12\r\n\x05index\x18\x03 \x03(\x05\"$\n\x05Input\x12\x0b\n\x03src\x18\x01 \x03(\x05\x12\x0e\n\x06target\x18\x02 \x03(\x05\"\xab\x01\n\x19\x45xecuteComputationRequest\x12\x35\n\tmethod_id\x18\x01 \x01(\x0e\x32\".pb_common_types.ComputationMethod\x12\r\n\x05token\x18\x02 \x01(\t\x12&\n\x05table\x18\x03 \x01(\x0b\x32\x17.libctomanage.JoinOrder\x12 \n\x03\x61rg\x18\x04 \x01(\x0b\x32\x13.libctomanage.Input\"N\n\x1a\x45xecuteComputationResponse\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\r\n\x05is_ok\x18\x02 \x01(\x08\x12\x10\n\x08job_uuid\x18\x03 \x01(\t\">\n\x1bGetComputationResultRequest\x12\x10\n\x08job_uuid\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\"\xaf\x02\n\x1cGetComputationResultResponse\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\r\n\x05is_ok\x18\x02 \x01(\x08\x12\x0e\n\x06result\x18\x03 \x03(\t\x12\x15\n\rcolumn_number\x18\x04 \x01(\x05\x12*\n\x06status\x18\x05 \x01(\x0e\x32\x1a.pb_common_types.JobStatus\x12\x10\n\x08piece_id\x18\x06 \x01(\x05\x12\x33\n\x08progress\x18\x07 \x01(\x0b\x32\x1c.pb_common_types.JobProgressH\x01\x88\x01\x01\x12\x11\n\x07is_dim1\x18\x08 \x01(\x08H\x00\x12\x11\n\x07is_dim2\x18\t \x01(\x08H\x00\x12\x13\n\tis_schema\x18\n \x01(\x08H\x00\x42\r\n\x0bresult_typeB\x0b\n\t_progress\"#\n\x12GetDataListRequest\x12\r\n\x05token\x18\x01 \x01(\t\"4\n\x13GetDataListResponse\x12\x0e\n\x06result\x18\x01 \x01(\t\x12\r\n\x05is_ok\x18\x02 \x01(\x08\"8\n\x15GetElapsedTimeRequest\x12\x10\n\x08job_uuid\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\"=\n\x16GetElapsedTimeResponse\x12\r\n\x05is_ok\x18\x01 \x01(\x08\x12\x14\n\x0c\x65lapsed_time\x18\x02 \x01(\x01\"9\n\x16GetJobErrorInfoRequest\x12\x10\n\x08job_uuid\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\"w\n\x17GetJobErrorInfoResponse\x12:\n\x0ejob_error_info\x18\x01 \x01(\x0b\x32\x1d.pb_common_types.JobErrorInfoH\x00\x88\x01\x01\x12\r\n\x05is_ok\x18\x02 \x01(\x08\x42\x11\n\x0f_job_error_info2\xf5\x05\n\x0cLibcToManage\x12G\n\nSendShares\x12\x1f.libctomanage.SendSharesRequest\x1a\x16.google.protobuf.Empty\"\x00\x12W\n\x0c\x44\x65leteShares\x12!.libctomanage.DeleteSharesRequest\x1a\".libctomanage.DeleteSharesResponse\"\x00\x12N\n\tGetSchema\x12\x1e.libctomanage.GetSchemaRequest\x1a\x1f.libctomanage.GetSchemaResponse\"\x00\x12i\n\x12\x45xecuteComputation\x12\'.libctomanage.ExecuteComputationRequest\x1a(.libctomanage.ExecuteComputationResponse\"\x00\x12q\n\x14GetComputationResult\x12).libctomanage.GetComputationResultRequest\x1a*.libctomanage.GetComputationResultResponse\"\x00\x30\x01\x12T\n\x0bGetDataList\x12 .libctomanage.GetDataListRequest\x1a!.libctomanage.GetDataListResponse\"\x00\x12]\n\x0eGetElapsedTime\x12#.libctomanage.GetElapsedTimeRequest\x1a$.libctomanage.GetElapsedTimeResponse\"\x00\x12`\n\x0fGetJobErrorInfo\x12$.libctomanage.GetJobErrorInfoRequest\x1a%.libctomanage.GetJobErrorInfoResponse\"\x00\x42\x45ZCgithub.com/acompany-develop/QuickMPC/proto/libc_to_manage_containerb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x14libc_to_manage.proto\x12\x0clibctomanage\x1a\x1f\x63ommon_types/common_types.proto\x1a\x1bgoogle/protobuf/empty.proto\"\xa8\x01\n\x11SendSharesRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\x0e\n\x06shares\x18\x02 \x01(\t\x12\'\n\x06schema\x18\x03 \x03(\x0b\x32\x17.pb_common_types.Schema\x12\x10\n\x08piece_id\x18\x04 \x01(\x05\x12\x0f\n\x07sent_at\x18\x05 \x01(\t\x12\x17\n\x0fmatching_column\x18\x06 \x01(\x05\x12\r\n\x05token\x18\x07 \x01(\t\"5\n\x13\x44\x65leteSharesRequest\x12\x0f\n\x07\x64\x61taIds\x18\x01 \x03(\t\x12\r\n\x05token\x18\x02 \x01(\t\"2\n\x10GetSchemaRequest\x12\x0f\n\x07\x64\x61ta_id\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\"<\n\x11GetSchemaResponse\x12\'\n\x06schema\x18\x01 \x03(\x0b\x32\x17.pb_common_types.Schema\"9\n\tJoinOrder\x12\x0f\n\x07\x64\x61taIds\x18\x01 \x03(\t\x12\x0c\n\x04join\x18\x02 \x03(\x05\x12\r\n\x05index\x18\x03 \x03(\x05\"$\n\x05Input\x12\x0b\n\x03src\x18\x01 \x03(\x05\x12\x0e\n\x06target\x18\x02 \x03(\x05\"\xab\x01\n\x19\x45xecuteComputationRequest\x12\x35\n\tmethod_id\x18\x01 \x01(\x0e\x32\".pb_common_types.ComputationMethod\x12\r\n\x05token\x18\x02 \x01(\t\x12&\n\x05table\x18\x03 \x01(\x0b\x32\x17.libctomanage.JoinOrder\x12 \n\x03\x61rg\x18\x04 \x01(\x0b\x32\x13.libctomanage.Input\".\n\x1a\x45xecuteComputationResponse\x12\x10\n\x08job_uuid\x18\x03 \x01(\t\">\n\x1bGetComputationResultRequest\x12\x10\n\x08job_uuid\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\"\xaf\x02\n\x1cGetComputationResultResponse\x12\x0f\n\x07message\x18\x01 \x01(\t\x12\r\n\x05is_ok\x18\x02 \x01(\x08\x12\x0e\n\x06result\x18\x03 \x03(\t\x12\x15\n\rcolumn_number\x18\x04 \x01(\x05\x12*\n\x06status\x18\x05 \x01(\x0e\x32\x1a.pb_common_types.JobStatus\x12\x10\n\x08piece_id\x18\x06 \x01(\x05\x12\x33\n\x08progress\x18\x07 \x01(\x0b\x32\x1c.pb_common_types.JobProgressH\x01\x88\x01\x01\x12\x11\n\x07is_dim1\x18\x08 \x01(\x08H\x00\x12\x11\n\x07is_dim2\x18\t \x01(\x08H\x00\x12\x13\n\tis_schema\x18\n \x01(\x08H\x00\x42\r\n\x0bresult_typeB\x0b\n\t_progress\"#\n\x12GetDataListRequest\x12\r\n\x05token\x18\x01 \x01(\t\"%\n\x13GetDataListResponse\x12\x0e\n\x06result\x18\x01 \x01(\t\"8\n\x15GetElapsedTimeRequest\x12\x10\n\x08job_uuid\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\".\n\x16GetElapsedTimeResponse\x12\x14\n\x0c\x65lapsed_time\x18\x01 \x01(\x01\"9\n\x16GetJobErrorInfoRequest\x12\x10\n\x08job_uuid\x18\x01 \x01(\t\x12\r\n\x05token\x18\x02 \x01(\t\"h\n\x17GetJobErrorInfoResponse\x12:\n\x0ejob_error_info\x18\x01 \x01(\x0b\x32\x1d.pb_common_types.JobErrorInfoH\x00\x88\x01\x01\x42\x11\n\x0f_job_error_info2\xe9\x05\n\x0cLibcToManage\x12G\n\nSendShares\x12\x1f.libctomanage.SendSharesRequest\x1a\x16.google.protobuf.Empty\"\x00\x12K\n\x0c\x44\x65leteShares\x12!.libctomanage.DeleteSharesRequest\x1a\x16.google.protobuf.Empty\"\x00\x12N\n\tGetSchema\x12\x1e.libctomanage.GetSchemaRequest\x1a\x1f.libctomanage.GetSchemaResponse\"\x00\x12i\n\x12\x45xecuteComputation\x12\'.libctomanage.ExecuteComputationRequest\x1a(.libctomanage.ExecuteComputationResponse\"\x00\x12q\n\x14GetComputationResult\x12).libctomanage.GetComputationResultRequest\x1a*.libctomanage.GetComputationResultResponse\"\x00\x30\x01\x12T\n\x0bGetDataList\x12 .libctomanage.GetDataListRequest\x1a!.libctomanage.GetDataListResponse\"\x00\x12]\n\x0eGetElapsedTime\x12#.libctomanage.GetElapsedTimeRequest\x1a$.libctomanage.GetElapsedTimeResponse\"\x00\x12`\n\x0fGetJobErrorInfo\x12$.libctomanage.GetJobErrorInfoRequest\x1a%.libctomanage.GetJobErrorInfoResponse\"\x00\x42\x45ZCgithub.com/acompany-develop/QuickMPC/proto/libc_to_manage_containerb\x06proto3')
 
 
 _SENDSHARESREQUEST = DESCRIPTOR.message_types_by_name['SendSharesRequest']
 _DELETESHARESREQUEST = DESCRIPTOR.message_types_by_name['DeleteSharesRequest']
-_DELETESHARESRESPONSE = DESCRIPTOR.message_types_by_name['DeleteSharesResponse']
 _GETSCHEMAREQUEST = DESCRIPTOR.message_types_by_name['GetSchemaRequest']
 _GETSCHEMARESPONSE = DESCRIPTOR.message_types_by_name['GetSchemaResponse']
 _JOINORDER = DESCRIPTOR.message_types_by_name['JoinOrder']
@@ -47,13 +46,6 @@ DeleteSharesRequest = _reflection.GeneratedProtocolMessageType('DeleteSharesRequ
     # @@protoc_insertion_point(class_scope:libctomanage.DeleteSharesRequest)
 })
 _sym_db.RegisterMessage(DeleteSharesRequest)
-
-DeleteSharesResponse = _reflection.GeneratedProtocolMessageType('DeleteSharesResponse', (_message.Message,), {
-    'DESCRIPTOR': _DELETESHARESRESPONSE,
-    '__module__': 'libc_to_manage_pb2'
-    # @@protoc_insertion_point(class_scope:libctomanage.DeleteSharesResponse)
-})
-_sym_db.RegisterMessage(DeleteSharesResponse)
 
 GetSchemaRequest = _reflection.GeneratedProtocolMessageType('GetSchemaRequest', (_message.Message,), {
     'DESCRIPTOR': _GETSCHEMAREQUEST,
@@ -162,36 +154,34 @@ if _descriptor._USE_C_DESCRIPTORS == False:
     _SENDSHARESREQUEST._serialized_end = 269
     _DELETESHARESREQUEST._serialized_start = 271
     _DELETESHARESREQUEST._serialized_end = 324
-    _DELETESHARESRESPONSE._serialized_start = 326
-    _DELETESHARESRESPONSE._serialized_end = 380
-    _GETSCHEMAREQUEST._serialized_start = 382
-    _GETSCHEMAREQUEST._serialized_end = 432
-    _GETSCHEMARESPONSE._serialized_start = 434
-    _GETSCHEMARESPONSE._serialized_end = 526
-    _JOINORDER._serialized_start = 528
-    _JOINORDER._serialized_end = 585
-    _INPUT._serialized_start = 587
-    _INPUT._serialized_end = 623
-    _EXECUTECOMPUTATIONREQUEST._serialized_start = 626
-    _EXECUTECOMPUTATIONREQUEST._serialized_end = 797
-    _EXECUTECOMPUTATIONRESPONSE._serialized_start = 799
-    _EXECUTECOMPUTATIONRESPONSE._serialized_end = 877
-    _GETCOMPUTATIONRESULTREQUEST._serialized_start = 879
-    _GETCOMPUTATIONRESULTREQUEST._serialized_end = 941
-    _GETCOMPUTATIONRESULTRESPONSE._serialized_start = 944
-    _GETCOMPUTATIONRESULTRESPONSE._serialized_end = 1247
-    _GETDATALISTREQUEST._serialized_start = 1249
-    _GETDATALISTREQUEST._serialized_end = 1284
-    _GETDATALISTRESPONSE._serialized_start = 1286
-    _GETDATALISTRESPONSE._serialized_end = 1338
-    _GETELAPSEDTIMEREQUEST._serialized_start = 1340
-    _GETELAPSEDTIMEREQUEST._serialized_end = 1396
-    _GETELAPSEDTIMERESPONSE._serialized_start = 1398
-    _GETELAPSEDTIMERESPONSE._serialized_end = 1459
-    _GETJOBERRORINFOREQUEST._serialized_start = 1461
-    _GETJOBERRORINFOREQUEST._serialized_end = 1518
-    _GETJOBERRORINFORESPONSE._serialized_start = 1520
-    _GETJOBERRORINFORESPONSE._serialized_end = 1639
-    _LIBCTOMANAGE._serialized_start = 1642
-    _LIBCTOMANAGE._serialized_end = 2399
+    _GETSCHEMAREQUEST._serialized_start = 326
+    _GETSCHEMAREQUEST._serialized_end = 376
+    _GETSCHEMARESPONSE._serialized_start = 378
+    _GETSCHEMARESPONSE._serialized_end = 438
+    _JOINORDER._serialized_start = 440
+    _JOINORDER._serialized_end = 497
+    _INPUT._serialized_start = 499
+    _INPUT._serialized_end = 535
+    _EXECUTECOMPUTATIONREQUEST._serialized_start = 538
+    _EXECUTECOMPUTATIONREQUEST._serialized_end = 709
+    _EXECUTECOMPUTATIONRESPONSE._serialized_start = 711
+    _EXECUTECOMPUTATIONRESPONSE._serialized_end = 757
+    _GETCOMPUTATIONRESULTREQUEST._serialized_start = 759
+    _GETCOMPUTATIONRESULTREQUEST._serialized_end = 821
+    _GETCOMPUTATIONRESULTRESPONSE._serialized_start = 824
+    _GETCOMPUTATIONRESULTRESPONSE._serialized_end = 1127
+    _GETDATALISTREQUEST._serialized_start = 1129
+    _GETDATALISTREQUEST._serialized_end = 1164
+    _GETDATALISTRESPONSE._serialized_start = 1166
+    _GETDATALISTRESPONSE._serialized_end = 1203
+    _GETELAPSEDTIMEREQUEST._serialized_start = 1205
+    _GETELAPSEDTIMEREQUEST._serialized_end = 1261
+    _GETELAPSEDTIMERESPONSE._serialized_start = 1263
+    _GETELAPSEDTIMERESPONSE._serialized_end = 1309
+    _GETJOBERRORINFOREQUEST._serialized_start = 1311
+    _GETJOBERRORINFOREQUEST._serialized_end = 1368
+    _GETJOBERRORINFORESPONSE._serialized_start = 1370
+    _GETJOBERRORINFORESPONSE._serialized_end = 1474
+    _LIBCTOMANAGE._serialized_start = 1477
+    _LIBCTOMANAGE._serialized_end = 2222
 # @@protoc_insertion_point(module_scope)

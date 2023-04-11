@@ -20,7 +20,7 @@ class LibcToManageStub:
     ]
     DeleteShares: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.DeleteSharesRequest,
-        libc_to_manage_pb2.DeleteSharesResponse,
+        google.protobuf.empty_pb2.Empty,
     ]
     GetSchema: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.GetSchemaRequest,
@@ -63,7 +63,7 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
         self,
         request: libc_to_manage_pb2.DeleteSharesRequest,
         context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.DeleteSharesResponse: ...
+    ) -> google.protobuf.empty_pb2.Empty: ...
     @abc.abstractmethod
     def GetSchema(
         self,

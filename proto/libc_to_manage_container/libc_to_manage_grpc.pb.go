@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type LibcToManageClient interface {
 	SendShares(ctx context.Context, in *SendSharesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*DeleteSharesResponse, error)
+	DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetSchema(ctx context.Context, in *GetSchemaRequest, opts ...grpc.CallOption) (*GetSchemaResponse, error)
 	ExecuteComputation(ctx context.Context, in *ExecuteComputationRequest, opts ...grpc.CallOption) (*ExecuteComputationResponse, error)
 	GetComputationResult(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error)
@@ -50,8 +50,8 @@ func (c *libcToManageClient) SendShares(ctx context.Context, in *SendSharesReque
 	return out, nil
 }
 
-func (c *libcToManageClient) DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*DeleteSharesResponse, error) {
-	out := new(DeleteSharesResponse)
+func (c *libcToManageClient) DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/DeleteShares", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -141,7 +141,7 @@ func (c *libcToManageClient) GetJobErrorInfo(ctx context.Context, in *GetJobErro
 // for forward compatibility
 type LibcToManageServer interface {
 	SendShares(context.Context, *SendSharesRequest) (*emptypb.Empty, error)
-	DeleteShares(context.Context, *DeleteSharesRequest) (*DeleteSharesResponse, error)
+	DeleteShares(context.Context, *DeleteSharesRequest) (*emptypb.Empty, error)
 	GetSchema(context.Context, *GetSchemaRequest) (*GetSchemaResponse, error)
 	ExecuteComputation(context.Context, *ExecuteComputationRequest) (*ExecuteComputationResponse, error)
 	GetComputationResult(*GetComputationResultRequest, LibcToManage_GetComputationResultServer) error
@@ -158,7 +158,7 @@ type UnimplementedLibcToManageServer struct {
 func (UnimplementedLibcToManageServer) SendShares(context.Context, *SendSharesRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendShares not implemented")
 }
-func (UnimplementedLibcToManageServer) DeleteShares(context.Context, *DeleteSharesRequest) (*DeleteSharesResponse, error) {
+func (UnimplementedLibcToManageServer) DeleteShares(context.Context, *DeleteSharesRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteShares not implemented")
 }
 func (UnimplementedLibcToManageServer) GetSchema(context.Context, *GetSchemaRequest) (*GetSchemaResponse, error) {
