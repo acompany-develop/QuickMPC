@@ -5,12 +5,14 @@ package libctomanage;
 option go_package = "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container";
 
 import "common_types/common_types.proto";
+import "google/protobuf/empty.proto";
+
 
 /**
  * LibcToManage service
 */
 service LibcToManage {
-    rpc SendShares(SendSharesRequest) returns (SendSharesResponse) {}                                // シェアの送信リクエスト
+    rpc SendShares(SendSharesRequest) returns (google.protobuf.Empty) {}                                // シェアの送信リクエスト
     rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}                          // シェアの削除リクエスト
     rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                   // スキーマ取得リクエスト
     rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
@@ -31,14 +33,6 @@ message SendSharesRequest {
     string sent_at = 5;
     int32 matching_column = 6;
     string token = 7;
-}
-
-/**
- * the message of SendSharesResponse
-*/
-message SendSharesResponse {
-    string message = 1;
-    bool is_ok = 2;
 }
 
 /**

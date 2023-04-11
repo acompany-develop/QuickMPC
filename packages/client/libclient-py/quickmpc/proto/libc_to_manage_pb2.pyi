@@ -55,27 +55,6 @@ class SendSharesRequest(google.protobuf.message.Message):
 
 global___SendSharesRequest = SendSharesRequest
 
-class SendSharesResponse(google.protobuf.message.Message):
-    """*
-    the message of SendSharesResponse
-    """
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    MESSAGE_FIELD_NUMBER: builtins.int
-    IS_OK_FIELD_NUMBER: builtins.int
-    message: builtins.str
-    is_ok: builtins.bool
-    def __init__(
-        self,
-        *,
-        message: builtins.str = ...,
-        is_ok: builtins.bool = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["is_ok", b"is_ok", "message", b"message"]) -> None: ...
-
-global___SendSharesResponse = SendSharesResponse
-
 class DeleteSharesRequest(google.protobuf.message.Message):
     """*
     the message of DeleteSharesRequest

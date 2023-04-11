@@ -4,6 +4,7 @@ isort:skip_file
 """
 import abc
 import collections.abc
+import google.protobuf.empty_pb2
 import grpc
 import libc_to_manage_pb2
 
@@ -15,7 +16,7 @@ class LibcToManageStub:
     def __init__(self, channel: grpc.Channel) -> None: ...
     SendShares: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.SendSharesRequest,
-        libc_to_manage_pb2.SendSharesResponse,
+        google.protobuf.empty_pb2.Empty,
     ]
     DeleteShares: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.DeleteSharesRequest,
@@ -56,7 +57,7 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
         self,
         request: libc_to_manage_pb2.SendSharesRequest,
         context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.SendSharesResponse: ...
+    ) -> google.protobuf.empty_pb2.Empty: ...
     @abc.abstractmethod
     def DeleteShares(
         self,
