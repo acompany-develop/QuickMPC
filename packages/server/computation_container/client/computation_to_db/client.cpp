@@ -103,32 +103,28 @@ void Client::ComputationResultWriter::emplace(const SchemaType &s)
     emplace(json.dump());
 }
 
-/************ Client::TableWriter ************/
-Client::TableWriter::TableWriter(const std::string &data_id, int piece_size)
+/************ TableWriter ************/
+TableWriter::TableWriter(const std::string &data_id, int piece_size)
     : current_size(0), piece_id(0), data_id(data_id), piece_size(piece_size)
 {
-    fs::create_directories(shareDbPath + data_id);
 }
 
-void Client::TableWriter::write()
+void TableWriter::write()
 {
+    // データを書き込む
     nlohmann::json piece_data_json = {
         {"value", piece_data}, {"meta", {{"piece_id", piece_id}, {"schema", json_schemas}}}};
-
     const std::string data = piece_data_json.dump();
+    Client::getInstance()->writeShareDB(data_id, data, piece_id);
 
-    // TODO: shareDbPathの型もfs::pathに変更してコンストラクタを外す
-    auto ofs = std::ofstream(fs::path(shareDbPath) / data_id / std::to_string(piece_id));
-    ofs << data;
-    ofs.close();
-
+    // 書き込んだデータをclearしてpieceを進める
     ++piece_id;
     current_size = 0;
     piece_data.clear();
     json_schemas.clear();
 }
 
-void Client::TableWriter::emplace(const std::vector<std::string> &v)
+void TableWriter::emplace(const std::vector<std::string> &v)
 {
     int size = 0;
     for (const auto &s : v)
@@ -143,7 +139,7 @@ void Client::TableWriter::emplace(const std::vector<std::string> &v)
     current_size += size;
 }
 
-void Client::TableWriter::emplace(const std::vector<SchemaType> &s)
+void TableWriter::emplace(const std::vector<SchemaType> &s)
 {
     json_schemas = convertSchemaVectorToJsonVector(s);
 }
@@ -234,6 +230,15 @@ std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
     auto j = json["meta"]["schema"];
     std::vector<SchemaType> schemas = load_schema(j);
     return schemas;
+}
+
+// shareDBに対してdataを書き込む
+void Client::writeShareDB(const std::string &data_id, const std::string &data, int piece_id)
+{
+    fs::create_directories(shareDbPath + data_id);
+    auto ofs = std::ofstream(fs::path(shareDbPath) / data_id / std::to_string(piece_id));
+    ofs << data;
+    ofs.close();
 }
 
 // Job を DB に新規登録する
