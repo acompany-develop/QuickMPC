@@ -4,7 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-quickmpc = {path = "./.."}
+quickmpc = {path = "./../../packages/client/libclient-py/"}
 tabulate = "*"
 [dev-packages]
 
