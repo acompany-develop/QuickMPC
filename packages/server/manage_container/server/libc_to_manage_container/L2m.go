@@ -86,7 +86,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*emp
 }
 
 // シェア削除リクエストをDBに送信
-func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*pb.DeleteSharesResponse, error) {
+func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*empty.Empty, error) {
 	AppLogger.Info("Delete Shares;")
 
 	dataIDs := in.GetDataIds()
@@ -94,25 +94,16 @@ func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.DeleteSharesResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return &empty.Empty{}, errToken
 	}
 
 	err := s.m2dbclient.DeleteShares(dataIDs)
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.DeleteSharesResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, nil
+		return &empty.Empty{}, err
 	}
 
-	return &pb.DeleteSharesResponse{
-		Message: "ok",
-		IsOk:    true,
-	}, nil
+	return &empty.Empty{}, nil
 }
 
 // DBからschemaを取得
