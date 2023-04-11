@@ -325,21 +325,16 @@ func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*p
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetDataListResponse{
-			IsOk: false,
-		}, errToken
+		return nil, errToken
 	}
+
 	getDataList, err := s.m2dbclient.GetDataList()
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.GetDataListResponse{
-			IsOk:   false,
-			Result: "",
-		}, nil
+		return nil, errors.New("")
 	}
 
 	return &pb.GetDataListResponse{
-		IsOk:   true,
 		Result: getDataList,
 	}, nil
 }
