@@ -15,6 +15,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
+    docker-compose $COMPOSE_FILES_OPT up -d dev_cc_envoy1 dev_cc_envoy2 dev_cc_envoy3 dev_mc_envoy1 dev_mc_envoy2 dev_mc_envoy3
     docker-compose $COMPOSE_FILES_OPT up dev_bts dev_cc1 dev_cc2 dev_cc3 dev_mc1 dev_mc2 dev_mc3
 }
 
