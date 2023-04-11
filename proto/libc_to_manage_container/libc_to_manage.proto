@@ -13,7 +13,7 @@ import "google/protobuf/empty.proto";
 */
 service LibcToManage {
     rpc SendShares(SendSharesRequest) returns (google.protobuf.Empty) {}                                // シェアの送信リクエスト
-    rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}                          // シェアの削除リクエスト
+    rpc DeleteShares(DeleteSharesRequest) returns (google.protobuf.Empty) {}                          // シェアの削除リクエスト
     rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                   // スキーマ取得リクエスト
     rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
     rpc GetComputationResult(GetComputationResultRequest) returns (stream GetComputationResultResponse) {}  // 計算結果取得リクエスト
@@ -44,14 +44,6 @@ message DeleteSharesRequest {
 }
 
 /**
- * the message of DeleteSharesResponse
-*/
-message DeleteSharesResponse {
-    string message = 1;
-    bool is_ok = 2;
-}
-
-/**
  * the message of GetSchemaRequest
 */
 message GetSchemaRequest {
@@ -63,9 +55,7 @@ message GetSchemaRequest {
  * the message of GetSchemaResponse
 */
 message GetSchemaResponse {
-    string message = 1;
-    bool is_ok = 2;
-    repeated pb_common_types.Schema schema = 3;
+    repeated pb_common_types.Schema schema = 1;
 }
 
 /**
@@ -91,8 +81,6 @@ message ExecuteComputationRequest {
  * the message of ExecuteComputationResponse
 */
 message ExecuteComputationResponse {
-    string message = 1;
-    bool is_ok = 2;
     string job_uuid = 3;
 }
 
@@ -128,7 +116,6 @@ message GetDataListRequest {
 
 message GetDataListResponse {
     string result = 1;
-    bool is_ok = 2;
 }
 
 message GetElapsedTimeRequest {
@@ -137,8 +124,7 @@ message GetElapsedTimeRequest {
 }
 
 message GetElapsedTimeResponse {
-    bool is_ok = 1;
-    double elapsed_time = 2;
+    double elapsed_time = 1;
 }
 
 message GetJobErrorInfoRequest {
@@ -148,5 +134,4 @@ message GetJobErrorInfoRequest {
 
 message GetJobErrorInfoResponse {
     optional pb_common_types.JobErrorInfo job_error_info = 1;
-    bool is_ok = 2;
 }
