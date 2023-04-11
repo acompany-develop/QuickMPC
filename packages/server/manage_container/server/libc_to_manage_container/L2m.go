@@ -18,6 +18,7 @@ import (
 	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/server"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
+	empty "github.com/golang/protobuf/ptypes/empty"
 )
 
 // ServerのInterface定義
@@ -51,7 +52,7 @@ func (s *server) authorize(token string, stages []string) error {
 }
 
 // シェアをDBに送信
-func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.SendSharesResponse, error) {
+func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*empty.Empty, error) {
 	AppLogger.Info("Send Shares;")
 	AppLogger.Info("dataID: " + in.GetDataId())
 	AppLogger.Info("pieceID: " + strconv.Itoa(int(in.GetPieceId())))
@@ -66,10 +67,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.SendSharesResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return &empty.Empty{}, errToken
 	}
 
 	errInsert := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at, machingColumn)
@@ -79,21 +77,12 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 		s.m2dbclient.DeleteShares([]string{dataID})
 		s.m2mclient.DeleteShares(dataID)
 		if errInsert != nil {
-			return &pb.SendSharesResponse{
-				Message: errInsert.Error(),
-				IsOk:    false,
-			}, errInsert
+			return &empty.Empty{}, errInsert
 		}
-		return &pb.SendSharesResponse{
-			Message: errSync.Error(),
-			IsOk:    false,
-		}, errSync
+		return &empty.Empty{}, errSync
 	}
 
-	return &pb.SendSharesResponse{
-		Message: "ok",
-		IsOk:    true,
-	}, nil
+	return &empty.Empty{}, nil
 }
 
 // シェア削除リクエストをDBに送信
