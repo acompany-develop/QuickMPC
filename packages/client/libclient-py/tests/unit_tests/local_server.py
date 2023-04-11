@@ -20,11 +20,7 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
         return google.protobuf.Empty()
 
     def DeleteShares(self, request, context):
-        res = libc_to_manage_pb2.DeleteSharesResponse(
-            message="ok",
-            is_ok=True
-        )
-        return res
+        return google.protobuf.Empty()
 
     def ExecuteComputation(self, request, context):
         if len(request.arg.src) > 0 \
@@ -52,8 +48,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             return libc_to_manage_pb2.ExecuteComputationResponse()
 
         res = libc_to_manage_pb2.ExecuteComputationResponse(
-            message="ok",
-            is_ok=True,
             job_uuid="jobjobjob"
         )
         return res
@@ -80,7 +74,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
 
     def GetDataList(self, request, context):
         res = libc_to_manage_pb2.GetDataListResponse(
-            is_ok=True,
             result="[]"
         )
         return res
@@ -95,7 +88,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
 
     def GetJobErrorInfo(self, request, context):
         res = libc_to_manage_pb2.GetJobErrorInfoResponse(
-            is_ok=True,
             job_error_info=JobErrorInfo(
                 what="QMPCJobError",
                 stacktrace=Stacktrace()
