@@ -17,11 +17,7 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
     def __init__(self): ...
 
     def SendShares(self, request, context):
-        res = libc_to_manage_pb2.SendSharesResponse(
-            message="ok",
-            is_ok=True
-        )
-        return res
+        return google.protobuf.Empty()
 
     def DeleteShares(self, request, context):
         res = libc_to_manage_pb2.DeleteSharesResponse(
