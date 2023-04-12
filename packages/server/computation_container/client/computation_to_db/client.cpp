@@ -103,6 +103,47 @@ void Client::ComputationResultWriter::emplace(const SchemaType &s)
     emplace(json.dump());
 }
 
+/************ TableWriter ************/
+TableWriter::TableWriter(const std::string &data_id, int piece_size)
+    : current_size(0), piece_id(0), data_id(data_id), piece_size(piece_size)
+{
+}
+
+void TableWriter::write()
+{
+    // データを書き込む
+    nlohmann::json piece_data_json = {
+        {"value", piece_data}, {"meta", {{"piece_id", piece_id}, {"schema", json_schemas}}}};
+    const std::string data = piece_data_json.dump();
+    Client::getInstance()->writeShareDB(data_id, data, piece_id);
+
+    // 書き込んだデータをclearしてpieceを進める
+    ++piece_id;
+    current_size = 0;
+    piece_data.clear();
+    json_schemas.clear();
+}
+
+void TableWriter::emplace(const std::vector<std::string> &v)
+{
+    int size = 0;
+    for (const auto &s : v)
+    {
+        size += s.size();
+    }
+    if (current_size + size > piece_size)
+    {
+        write();
+    }
+    piece_data.emplace_back(v);
+    current_size += size;
+}
+
+void TableWriter::emplace(const std::vector<SchemaType> &s)
+{
+    json_schemas = convertSchemaVectorToJsonVector(s);
+}
+
 /************ Client ************/
 
 static std::vector<SchemaType> load_schema(const nlohmann::json &json)
@@ -191,28 +232,14 @@ std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
     return schemas;
 }
 
-// Tableの保存
-std::string Client::writeTable(
-    const std::string &data_id,
-    std::vector<std::vector<std::string>> &table,
-    const std::vector<SchemaType> &schema
-) const
+// shareDBに対してdataを書き込む
+void Client::writeShareDB(const std::string &data_id, const std::string &data, int piece_id)
 {
-    // TODO: piece_idを引数に受け取ってpieceごとに保存できるようにする
-    const int piece_id = 0;
-
-    auto json_schema = convertSchemaVectorToJsonVector(schema);
-    nlohmann::json data_json = {
-        {"value", table}, {"meta", {{"piece_id", piece_id}, {"schema", json_schema}}}};
-    const std::string data = data_json.dump();
-
-    auto data_path = shareDbPath + data_id;
-    fs::create_directories(data_path);
-    std::ofstream ofs(data_path + "/" + std::to_string(piece_id));
+    fs::create_directories(shareDbPath + data_id);
+    auto ofs = std::ofstream(fs::path(shareDbPath) / data_id / std::to_string(piece_id));
     ofs << data;
     ofs.close();
-    return data_id;
-};
+}
 
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const

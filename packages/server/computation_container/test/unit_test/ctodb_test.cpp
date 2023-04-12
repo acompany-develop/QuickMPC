@@ -360,9 +360,9 @@ TEST(ComputationToDbTest, SuccessWriteComputationResultCompletedTest)
     initialize(job_uuid);
 }
 
-TEST(ComputationToDbTest, SuccessWriteTableTest)
+TEST(ComputationToDbTest, SuccessTableWriteTest)
 {
-    const std::string data_id = "SuccessWriteTableTest";
+    const std::string data_id = "SuccessTableWriteTest";
     initialize(data_id);
 
     std::vector<std::vector<std::string>> table = {{"1", "2"}, {"3", "4"}};
@@ -371,8 +371,14 @@ TEST(ComputationToDbTest, SuccessWriteTableTest)
         SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
         SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT)};
 
-    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
-    cc_to_db->writeTable(data_id, table, schema);
+    qmpc::ComputationToDb::TableWriter writer(data_id);
+
+    writer.emplace(schema);
+    for (const auto& row : table)
+    {
+        writer.emplace(row);
+    }
+    writer.write();
 
     auto ifs = std::ifstream("/db/share/" + data_id + "/0");
     std::string data;
@@ -381,4 +387,40 @@ TEST(ComputationToDbTest, SuccessWriteTableTest)
         R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
         R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})";
     EXPECT_EQ(true_data, data);
+    initialize(data_id);
+}
+
+TEST(ComputationToDbTest, SuccessTableWritePieceTest)
+{
+    const std::string data_id = "SuccessTableWriteTest";
+    initialize(data_id);
+
+    std::vector<std::vector<std::string>> table = {{"1", "2"}, {"3", "4"}, {"5", "6"}};
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
+    std::vector<SchemaType> schema = {
+        SchemaType("attr1", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT),
+        SchemaType("attr2", pb_common_types::ShareValueTypeEnum::SHARE_VALUE_TYPE_FIXED_POINT)};
+
+    qmpc::ComputationToDb::TableWriter writer(data_id, 4);
+
+    writer.emplace(schema);
+    for (const auto& row : table)
+    {
+        writer.emplace(row);
+    }
+    writer.write();
+
+    std::vector<std::string> true_data = {
+        R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
+        R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})",
+
+        R"({"meta":{"piece_id":1,"schema":[]},"value":[["5","6"]]})"};
+    for (int piece_id = 0; piece_id < 2; ++piece_id)
+    {
+        auto ifs = std::ifstream("/db/share/" + data_id + "/" + std::to_string(piece_id));
+        std::string data;
+        getline(ifs, data);
+        EXPECT_EQ(true_data[piece_id], data);
+    }
+    initialize(data_id);
 }

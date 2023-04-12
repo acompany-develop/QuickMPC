@@ -316,6 +316,10 @@ std::string writeVJoinTable(
     const std::vector<int> &row2
 )
 {
+    // tableをpieceごとに保存する機構
+    const std::string new_data_id = joinDataId(table1, table2, 1);
+    auto writer = TableWriter(new_data_id);
+
     // schemasを構築
     auto new_schemas = std::vector<SchemaType>();
     auto schemas1 = table1.getSchemas();
@@ -323,16 +327,12 @@ std::string writeVJoinTable(
     {
         new_schemas.emplace_back(schemas1[it]);
     }
+    writer.emplace(new_schemas);
 
     // tableを構築
-    auto new_table = std::vector<std::vector<std::string>>();
-    new_table.reserve(row1.size());
     auto row_dq1 = std::deque<int>(row1.begin(), row1.end());
-    auto row_dq2 = std::deque<int>(row2.begin(), row2.end());
     auto itr1 = table1.begin();
-    auto itr2 = table2.begin();
     auto table_idx1 = 0;
-    auto table_idx2 = 0;
     while (!row_dq1.empty())
     {
         // 使用される行になるまでincrement
@@ -355,11 +355,15 @@ std::string writeVJoinTable(
         {
             new_row.emplace_back(r1[it]);
         }
-        new_table.emplace_back(new_row);
+        writer.emplace(new_row);
         ++itr1;
         ++table_idx1;
         row_dq1.pop_front();
     }
+
+    auto row_dq2 = std::deque<int>(row2.begin(), row2.end());
+    auto itr2 = table2.begin();
+    auto table_idx2 = 0;
     while (!row_dq2.empty())
     {
         // 使用される行になるまでincrement
@@ -383,16 +387,13 @@ std::string writeVJoinTable(
             new_row.emplace_back(r2[it]);
         }
 
-        new_table.emplace_back(new_row);
+        writer.emplace(new_row);
         ++itr2;
         ++table_idx2;
         row_dq2.pop_front();
     }
 
-    // 保存
-    const std::string new_data_id = joinDataId(table1, table2, 0);
-    auto db = Client::getInstance();
-    db->writeTable(new_data_id, new_table, new_schemas);
+    writer.write();
     return new_data_id;
 }
 
@@ -405,6 +406,10 @@ std::string writeHJoinTable(
     const std::vector<int> &row2
 )
 {
+    // tableをpieceごとに保存する機構
+    const std::string new_data_id = joinDataId(table1, table2, 1);
+    auto writer = TableWriter(new_data_id);
+
     // schemasを構築
     auto new_schemas = std::vector<SchemaType>();
     auto schemas1 = table1.getSchemas();
@@ -417,10 +422,9 @@ std::string writeHJoinTable(
     {
         new_schemas.emplace_back(schemas2[it]);
     }
+    writer.emplace(new_schemas);
 
     // tableを構築
-    auto new_table = std::vector<std::vector<std::string>>();
-    new_table.reserve(row1.size());
     auto row_dq1 = std::deque<int>(row1.begin(), row1.end());
     auto row_dq2 = std::deque<int>(row2.begin(), row2.end());
     auto itr1 = table1.begin();
@@ -460,7 +464,7 @@ std::string writeHJoinTable(
             new_row.emplace_back(r2[it]);
         }
 
-        new_table.emplace_back(new_row);
+        writer.emplace(new_row);
         ++itr1;
         ++itr2;
         ++table_idx1;
@@ -469,10 +473,7 @@ std::string writeHJoinTable(
         row_dq2.pop_front();
     }
 
-    // 保存
-    const std::string new_data_id = joinDataId(table1, table2, 1);
-    auto db = Client::getInstance();
-    db->writeTable(new_data_id, new_table, new_schemas);
+    writer.write();
     return new_data_id;
 }
 

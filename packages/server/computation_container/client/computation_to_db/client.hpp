@@ -51,10 +51,8 @@ public:
     std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
     std::vector<SchemaType> readSchema(const std::string &) const;
 
-    // Tableの保存
-    std::string
-    writeTable(const std::string &, std::vector<std::vector<std::string>> &, const std::vector<SchemaType> &)
-        const;
+    // shareDBに対してdataを書き込む
+    void writeShareDB(const std::string &data_id, const std::string &data, int piece_id = 0);
 
     // Job を DB に新規登録する
     void registerJob(const std::string &job_uuid, const int &status) const;
@@ -90,4 +88,27 @@ public:
         std::ofstream(resultDbPath + job_uuid + "/completed");
     }
 };
+
+// TableWriterとComputationResultWriterは本質的には同じことをしているが，
+// 微妙に形式が異なるため別の実装としている
+// 例)send_share時は行ごとにpieceとするが，計算結果は値ごとにpieceとしている
+class TableWriter
+{
+    int current_size;
+    int piece_id;
+    std::vector<std::vector<std::string>> piece_data;
+    nlohmann::json json_schemas;
+
+    const std::string data_id;
+    const int piece_size;
+
+public:
+    TableWriter(const std::string &, int piece_size = 1000000);
+
+    void write();
+
+    void emplace(const std::vector<std::string> &);
+    void emplace(const std::vector<SchemaType> &);
+};
+
 }  // namespace qmpc::ComputationToDb
