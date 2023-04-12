@@ -54,8 +54,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
 
     def GetComputationResult(self, request, context):
         yield libc_to_manage_pb2.GetComputationResultResponse(
-            message="ok",
-            is_ok=True,
             result=["1"],
             status=common_types_pb2.COMPLETED,
             piece_id=1,
@@ -63,8 +61,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             is_dim1=True,
         )
         yield libc_to_manage_pb2.GetComputationResultResponse(
-            message="ok",
-            is_ok=True,
             result=["2"],
             status=common_types_pb2.COMPLETED,
             piece_id=2,

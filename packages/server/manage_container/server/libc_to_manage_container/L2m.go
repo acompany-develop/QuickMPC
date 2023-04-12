@@ -215,10 +215,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		stream.Send(&pb.GetComputationResultResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		})
 		return errToken
 	}
 
@@ -247,10 +243,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
 
 	if err != nil {
-		stream.Send(&pb.GetComputationResultResponse{
-			Message: "Internal server Error",
-			IsOk:    false,
-		})
 		return err
 	}
 
@@ -264,8 +256,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 
 	for _, result := range computationResults {
 		response := pb.GetComputationResultResponse{
-			Message:      "ok",
-			IsOk:         true,
 			Status:       computationResults[0].Status,
 			Result:       result.Result,
 			ColumnNumber: result.Meta.ColumnNumber,
