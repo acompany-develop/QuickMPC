@@ -96,8 +96,6 @@ message GetComputationResultRequest {
  * the message of GetComputationResultResponse
 */
 message GetComputationResultResponse {
-    string message = 1;
-    bool is_ok = 2;
     repeated string result = 3;
     int32 column_number = 4;
     pb_common_types.JobStatus status = 5;
