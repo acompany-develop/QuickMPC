@@ -67,7 +67,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*emp
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &empty.Empty{}, errToken
+		return nil, errToken
 	}
 
 	errInsert := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at, machingColumn)
@@ -77,9 +77,9 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*emp
 		s.m2dbclient.DeleteShares([]string{dataID})
 		s.m2mclient.DeleteShares(dataID)
 		if errInsert != nil {
-			return &empty.Empty{}, errInsert
+			return nil, errInsert
 		}
-		return &empty.Empty{}, errSync
+		return nil, errSync
 	}
 
 	return &empty.Empty{}, nil
