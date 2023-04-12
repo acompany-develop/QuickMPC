@@ -115,6 +115,8 @@ func TestCreateStatusFile(t *testing.T) {
 	}
 	id := config.PartyID
 	m2m_client := m2m.Client{}
+	m2m_client.Sync("start_createStatusFile")
+
 	if id == 1 {
 		// NOTE: PT1はPT2,3へstatu_RECEIVED作成リクエストを送る
 		client := m2m.Client{}
@@ -153,6 +155,8 @@ func TestDeleteStatusFile(t *testing.T) {
 	}
 	id := config.PartyID
 	m2m_client := m2m.Client{}
+	m2m_client.Sync("start_deleteStatusFile")
+
 	if id == 1 {
 		// NOTE: PT1はPT2,3へstatu_RECEIVED削除リクエストを送る
 		m2m_client.Sync("create")
