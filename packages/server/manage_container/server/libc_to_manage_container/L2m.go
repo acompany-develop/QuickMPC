@@ -302,7 +302,7 @@ func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*p
 	getDataList, err := s.m2dbclient.GetDataList()
 	if err != nil {
 		AppLogger.Error(err)
-		return nil, errors.New("")
+		return nil, err
 	}
 
 	return &pb.GetDataListResponse{
