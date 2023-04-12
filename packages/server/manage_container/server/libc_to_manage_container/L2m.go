@@ -94,13 +94,13 @@ func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &empty.Empty{}, errToken
+		return nil, errToken
 	}
 
 	err := s.m2dbclient.DeleteShares(dataIDs)
 	if err != nil {
 		AppLogger.Error(err)
-		return &empty.Empty{}, err
+		return nil, err
 	}
 
 	return &empty.Empty{}, nil
