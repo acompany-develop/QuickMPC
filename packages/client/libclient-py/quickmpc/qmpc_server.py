@@ -148,11 +148,6 @@ class QMPCServer:
             is_ok = False
             logger.error(e)
 
-        for b in response:
-            try:
-                is_ok &= b["is_ok"]
-            except Exception:
-                pass
         return is_ok, response
 
     @staticmethod
