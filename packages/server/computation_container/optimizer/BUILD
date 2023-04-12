@@ -38,19 +38,6 @@ cc_library(
     visibility = ["//visibility:public"],
 )
 cc_library(
-    name = "adam",
-    hdrs = [
-        "adam.hpp",
-    ],
-    srcs = [
-    ],
-    deps = [
-        "//share:share",
-        "//optimizer:optInterface",
-    ],
-    visibility = ["//visibility:public"],
-)
-cc_library(
     name = "optInterface",
     hdrs = [
         "opt_interface.hpp",
@@ -69,13 +56,11 @@ cc_library(
         "gradient_descent.hpp",
         "sgd.hpp",
         "momentum.hpp",
-        "adam.hpp",
     ],
     deps = [
         "//optimizer:gradient_descent",
         "//optimizer:sgd",
         "//optimizer:momentum",
-        "//optimizer:adam",
     ],
     visibility = ["//visibility:public"],
 )

@@ -257,65 +257,6 @@ TEST(MathTest, ExpTest)
 
     EXPECT_NEAR(expect, exp_n_rec.getDoubleVal(), 0.001);
 }
-
-TEST(MathTest, SigmoidTest)
-{
-    auto sigmoid = [](const double &x, const double &a) { return 1.0 / (1.0 + std::exp(-x * a)); };
-
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-
-    // x = n_parties;
-    Share x{1.5};
-    auto start = std::chrono::system_clock::now();
-
-    auto sigmoid_n = qmpc::Math::sigmoid(x, FixedPoint{1.0});
-    double expect = sigmoid(1.5 * n_parties, 1.0);
-    open(sigmoid_n);
-    auto sigmoid_n_rec = recons(sigmoid_n);
-    auto end = std::chrono::system_clock::now();
-    auto dur = end - start;
-
-    // 計算に要した時間をミリ秒（1/1000秒）に変換して表示
-    auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
-
-    QMPC_LOG_INFO("share sigmoid time is {}", msec);
-    QMPC_LOG_INFO("share sigmoid_n is ", sigmoid_n_rec);
-    QMPC_LOG_INFO("expect sigmoid_n is {}", expect);
-    EXPECT_NEAR(expect, sigmoid_n_rec.getDoubleVal(), 0.01);
-}
-
-TEST(MathTest, OpenSigmoidTest)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    double x_d = 2.0;
-    auto x = FixedPoint(x_d);
-    auto val_s = qmpc::Math::open_sigmoid(x);
-
-    qmpc::Share::open(val_s);
-    auto val = qmpc::Share::recons(val_s);
-
-    auto true_val = 1.0 / (1.0 + std::exp(-1 * n_parties * x_d));
-    EXPECT_NEAR(val.getDoubleVal(), true_val, 0.01);
-}
-
-TEST(MathTest, OpenSigmoidVectorTest)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-
-    std::vector<Share> x{
-        FixedPoint("0.2"), FixedPoint("0.7"), FixedPoint("-0.3"), FixedPoint("0.5")};
-    auto val_s = qmpc::Math::open_sigmoid_vector(x);
-
-    qmpc::Share::open(val_s);
-    auto val = qmpc::Share::recons(val_s);
-
-    auto true_val = 1.0 / (1.0 + std::exp(-1.1 * n_parties));
-    EXPECT_NEAR(val.getDoubleVal(), true_val, 0.01);
-}
-
 TEST(MathTest, correlVecExceptionTest)
 {
     constexpr int N = 28000;

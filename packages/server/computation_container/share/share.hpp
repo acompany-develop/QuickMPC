@@ -15,7 +15,12 @@
 namespace qmpc::Share
 {
 template <typename SV>
-class Share : boost::operators<Share<SV>>,
+class Share : boost::totally_ordered<Share<SV>>,
+              boost::bitwise<Share<SV>>,
+              boost::unit_steppable<Share<SV>>,
+              boost::additive<Share<SV>>,
+              boost::modable<Share<SV>>,
+              boost::multipliable<Share<SV>>,
               boost::addable<Share<SV>, SV>,
               boost::subtractable<Share<SV>, SV>,
               boost::multipliable<Share<SV>, SV>,
@@ -126,11 +131,6 @@ public:
 
         return *this;
     }
-    Share &operator/=(const Share &obj)
-    {
-        *this *= getInv(obj);
-        return *this;
-    }
 
     Share &operator+=(const SV &obj)
     {
@@ -207,10 +207,7 @@ public:
 
         return ret;
     }
-    friend std::vector<Share> operator/(const SV &left, const std::vector<Share> &right)
-    {
-        return left * getMultiplicativeInvVec(right);
-    }
+
     Share &operator/=(const SV &obj)
     {
         value /= obj;
@@ -220,12 +217,6 @@ public:
     {
         Share ret{-right};
         ret += left;
-        return ret;
-    }
-    friend Share operator/(const SV &left, const Share &right)
-    {
-        Share ret = getInv(right);
-        ret *= left;
         return ret;
     }
     friend bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
@@ -391,41 +382,12 @@ std::vector<Share<T>> getAdditiveInvVec(const std::vector<Share<T>> &s)
     return ret;
 }
 
-// vector の各要素の乗法逆元を求める。
-template <typename T>
-std::vector<Share<T>> getMultiplicativeInvVec(const std::vector<Share<T>> &s)
-{
-    std::vector<Share<T>> ret;
-    ret.reserve(s.size());
-    for (const auto &v : s)
-    {
-        ret.emplace_back(T(1.0) / v);
-    }
-    return ret;
-}
-
 template <typename T>
 Share<T> getConstantShare(const T &t)
 {
     Share<T> s;
     s += t;
     return s;
-}
-/*
-入力されたShareの平方根を求める関数
-入力値　真値が正の数のみ（負の数はNG）、内部で判定できないので実装時に注意
-*/
-template <typename T>
-Share<T> sqrt(const Share<T> &share)
-{
-    // epsの代わり
-    Share<T> x = (share + FixedPoint(1)) / FixedPoint(2);
-    // 回数は適当
-    for (size_t i = 0; i < 50; ++i)
-    {
-        x = (x + share / x) / FixedPoint(2);
-    }
-    return x;
 }
 
 template <typename T>
