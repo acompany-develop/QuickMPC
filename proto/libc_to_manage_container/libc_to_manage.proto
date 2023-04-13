@@ -5,13 +5,15 @@ package libctomanage;
 option go_package = "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container";
 
 import "common_types/common_types.proto";
+import "google/protobuf/empty.proto";
+
 
 /**
  * LibcToManage service
 */
 service LibcToManage {
-    rpc SendShares(SendSharesRequest) returns (SendSharesResponse) {}                                // シェアの送信リクエスト
-    rpc DeleteShares(DeleteSharesRequest) returns (DeleteSharesResponse) {}                          // シェアの削除リクエスト
+    rpc SendShares(SendSharesRequest) returns (google.protobuf.Empty) {}                                // シェアの送信リクエスト
+    rpc DeleteShares(DeleteSharesRequest) returns (google.protobuf.Empty) {}                          // シェアの削除リクエスト
     rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                   // スキーマ取得リクエスト
     rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
     rpc GetComputationResult(GetComputationResultRequest) returns (stream GetComputationResultResponse) {}  // 計算結果取得リクエスト
@@ -34,27 +36,11 @@ message SendSharesRequest {
 }
 
 /**
- * the message of SendSharesResponse
-*/
-message SendSharesResponse {
-    string message = 1;
-    bool is_ok = 2;
-}
-
-/**
  * the message of DeleteSharesRequest
 */
 message DeleteSharesRequest {
     repeated string dataIds = 1;
     string token = 2;
-}
-
-/**
- * the message of DeleteSharesResponse
-*/
-message DeleteSharesResponse {
-    string message = 1;
-    bool is_ok = 2;
 }
 
 /**
@@ -69,9 +55,7 @@ message GetSchemaRequest {
  * the message of GetSchemaResponse
 */
 message GetSchemaResponse {
-    string message = 1;
-    bool is_ok = 2;
-    repeated pb_common_types.Schema schema = 3;
+    repeated pb_common_types.Schema schema = 1;
 }
 
 /**
@@ -97,8 +81,6 @@ message ExecuteComputationRequest {
  * the message of ExecuteComputationResponse
 */
 message ExecuteComputationResponse {
-    string message = 1;
-    bool is_ok = 2;
     string job_uuid = 3;
 }
 
@@ -114,8 +96,6 @@ message GetComputationResultRequest {
  * the message of GetComputationResultResponse
 */
 message GetComputationResultResponse {
-    string message = 1;
-    bool is_ok = 2;
     repeated string result = 3;
     int32 column_number = 4;
     pb_common_types.JobStatus status = 5;
@@ -134,7 +114,6 @@ message GetDataListRequest {
 
 message GetDataListResponse {
     string result = 1;
-    bool is_ok = 2;
 }
 
 message GetElapsedTimeRequest {
@@ -143,8 +122,7 @@ message GetElapsedTimeRequest {
 }
 
 message GetElapsedTimeResponse {
-    bool is_ok = 1;
-    double elapsed_time = 2;
+    double elapsed_time = 1;
 }
 
 message GetJobErrorInfoRequest {
@@ -154,5 +132,4 @@ message GetJobErrorInfoRequest {
 
 message GetJobErrorInfoResponse {
     optional pb_common_types.JobErrorInfo job_error_info = 1;
-    bool is_ok = 2;
 }

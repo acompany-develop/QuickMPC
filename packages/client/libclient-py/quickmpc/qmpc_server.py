@@ -148,11 +148,6 @@ class QMPCServer:
             is_ok = False
             logger.error(e)
 
-        for b in response:
-            if hasattr(b, "is_ok"):
-                is_ok &= b.is_ok
-            else:
-                is_ok &= b["is_ok"]
         return is_ok, response
 
     @staticmethod
@@ -162,7 +157,6 @@ class QMPCServer:
         is_ok: bool = True
         res_list = []
         for res in stream:
-            is_ok &= res.is_ok
             if path is not None:
                 file_title = "dim1"
                 if res.HasField("is_dim2"):
@@ -179,8 +173,6 @@ class QMPCServer:
                     writer.writerow(res.result)
                 progress = res.progress if res.HasField('progress') else None
                 res = GetComputationResultResponse(
-                    message=res.message,
-                    is_ok=res.is_ok,
                     column_number=res.column_number,
                     status=res.status,
                     piece_id=res.piece_id,

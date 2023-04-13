@@ -2,6 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 import libc_to_manage_pb2 as libc__to__manage__pb2
 
 
@@ -19,12 +20,12 @@ class LibcToManageStub(object):
         self.SendShares = channel.unary_unary(
             '/libctomanage.LibcToManage/SendShares',
             request_serializer=libc__to__manage__pb2.SendSharesRequest.SerializeToString,
-            response_deserializer=libc__to__manage__pb2.SendSharesResponse.FromString,
+            response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
         )
         self.DeleteShares = channel.unary_unary(
             '/libctomanage.LibcToManage/DeleteShares',
             request_serializer=libc__to__manage__pb2.DeleteSharesRequest.SerializeToString,
-            response_deserializer=libc__to__manage__pb2.DeleteSharesResponse.FromString,
+            response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
         )
         self.GetSchema = channel.unary_unary(
             '/libctomanage.LibcToManage/GetSchema',
@@ -117,12 +118,12 @@ def add_LibcToManageServicer_to_server(servicer, server):
         'SendShares': grpc.unary_unary_rpc_method_handler(
             servicer.SendShares,
             request_deserializer=libc__to__manage__pb2.SendSharesRequest.FromString,
-            response_serializer=libc__to__manage__pb2.SendSharesResponse.SerializeToString,
+            response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
         ),
         'DeleteShares': grpc.unary_unary_rpc_method_handler(
             servicer.DeleteShares,
             request_deserializer=libc__to__manage__pb2.DeleteSharesRequest.FromString,
-            response_serializer=libc__to__manage__pb2.DeleteSharesResponse.SerializeToString,
+            response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
         ),
         'GetSchema': grpc.unary_unary_rpc_method_handler(
             servicer.GetSchema,
@@ -180,7 +181,7 @@ class LibcToManage(object):
                    metadata=None):
         return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/SendShares',
                                              libc__to__manage__pb2.SendSharesRequest.SerializeToString,
-                                             libc__to__manage__pb2.SendSharesResponse.FromString,
+                                             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                                              options, channel_credentials,
                                              insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -197,7 +198,7 @@ class LibcToManage(object):
                      metadata=None):
         return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/DeleteShares',
                                              libc__to__manage__pb2.DeleteSharesRequest.SerializeToString,
-                                             libc__to__manage__pb2.DeleteSharesResponse.FromString,
+                                             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
                                              options, channel_credentials,
                                              insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

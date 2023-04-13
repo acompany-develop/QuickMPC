@@ -2,7 +2,7 @@
 from concurrent import futures
 
 import grpc
-from google.protobuf import any_pb2
+from google.protobuf import any_pb2, empty_pb2
 from google.rpc import code_pb2, status_pb2
 from grpc_status import rpc_status
 
@@ -17,18 +17,10 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
     def __init__(self): ...
 
     def SendShares(self, request, context):
-        res = libc_to_manage_pb2.SendSharesResponse(
-            message="ok",
-            is_ok=True
-        )
-        return res
+        return empty_pb2.Empty()
 
     def DeleteShares(self, request, context):
-        res = libc_to_manage_pb2.DeleteSharesResponse(
-            message="ok",
-            is_ok=True
-        )
-        return res
+        return empty_pb2.Empty()
 
     def ExecuteComputation(self, request, context):
         if len(request.arg.src) > 0 \
@@ -56,16 +48,12 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             return libc_to_manage_pb2.ExecuteComputationResponse()
 
         res = libc_to_manage_pb2.ExecuteComputationResponse(
-            message="ok",
-            is_ok=True,
             job_uuid="jobjobjob"
         )
         return res
 
     def GetComputationResult(self, request, context):
         yield libc_to_manage_pb2.GetComputationResultResponse(
-            message="ok",
-            is_ok=True,
             result=["1"],
             status=common_types_pb2.COMPLETED,
             piece_id=1,
@@ -73,8 +61,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             is_dim1=True,
         )
         yield libc_to_manage_pb2.GetComputationResultResponse(
-            message="ok",
-            is_ok=True,
             result=["2"],
             status=common_types_pb2.COMPLETED,
             piece_id=2,
@@ -84,7 +70,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
 
     def GetDataList(self, request, context):
         res = libc_to_manage_pb2.GetDataListResponse(
-            is_ok=True,
             result="[]"
         )
         return res
@@ -99,7 +84,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
 
     def GetJobErrorInfo(self, request, context):
         res = libc_to_manage_pb2.GetJobErrorInfoResponse(
-            is_ok=True,
             job_error_info=JobErrorInfo(
                 what="QMPCJobError",
                 stacktrace=Stacktrace()

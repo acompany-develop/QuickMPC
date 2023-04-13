@@ -18,6 +18,7 @@ import (
 	common "github.com/acompany-develop/QuickMPC/packages/server/manage_container/server"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
+	empty "github.com/golang/protobuf/ptypes/empty"
 )
 
 // ServerのInterface定義
@@ -51,7 +52,7 @@ func (s *server) authorize(token string, stages []string) error {
 }
 
 // シェアをDBに送信
-func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.SendSharesResponse, error) {
+func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*empty.Empty, error) {
 	AppLogger.Info("Send Shares;")
 	AppLogger.Info("dataID: " + in.GetDataId())
 	AppLogger.Info("pieceID: " + strconv.Itoa(int(in.GetPieceId())))
@@ -66,10 +67,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.SendSharesResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return nil, errToken
 	}
 
 	errInsert := s.m2dbclient.InsertShares(dataID, schema, pieceID, shares, sent_at, machingColumn)
@@ -79,25 +77,16 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*pb.
 		s.m2dbclient.DeleteShares([]string{dataID})
 		s.m2mclient.DeleteShares(dataID)
 		if errInsert != nil {
-			return &pb.SendSharesResponse{
-				Message: errInsert.Error(),
-				IsOk:    false,
-			}, errInsert
+			return nil, errInsert
 		}
-		return &pb.SendSharesResponse{
-			Message: errSync.Error(),
-			IsOk:    false,
-		}, errSync
+		return nil, errSync
 	}
 
-	return &pb.SendSharesResponse{
-		Message: "ok",
-		IsOk:    true,
-	}, nil
+	return &empty.Empty{}, nil
 }
 
 // シェア削除リクエストをDBに送信
-func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*pb.DeleteSharesResponse, error) {
+func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*empty.Empty, error) {
 	AppLogger.Info("Delete Shares;")
 
 	dataIDs := in.GetDataIds()
@@ -105,25 +94,16 @@ func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.DeleteSharesResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return nil, errToken
 	}
 
 	err := s.m2dbclient.DeleteShares(dataIDs)
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.DeleteSharesResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, nil
+		return nil, err
 	}
 
-	return &pb.DeleteSharesResponse{
-		Message: "ok",
-		IsOk:    true,
-	}, nil
+	return &empty.Empty{}, nil
 }
 
 // DBからschemaを取得
@@ -137,25 +117,16 @@ func (s *server) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.Ge
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetSchemaResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return nil, errToken
 	}
 
 	schema, err := s.m2dbclient.GetSchema(dataID)
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.GetSchemaResponse{
-			Message: "Internal server error",
-			IsOk:    false,
-			Schema:  schema,
-		}, nil
+		return nil, errors.New("Internal server error")
 	}
 
 	return &pb.GetSchemaResponse{
-		Message: "ok",
-		IsOk:    true,
 		Schema:  schema,
 	}, nil
 }
@@ -172,10 +143,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.ExecuteComputationResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		}, errToken
+		return nil, errToken
 	}
 
 	dataIds := in.GetTable().GetDataIds()
@@ -184,17 +152,13 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
 		if err != nil {
 			AppLogger.Error(err)
-			return &pb.ExecuteComputationResponse{
-				IsOk: false,
-			}, err
+			return nil, err
 		}
 
 		if matchingColumn != index[i] {
 			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
 			AppLogger.Error(errMessage)
-			return &pb.ExecuteComputationResponse{
-				IsOk: false,
-			}, errors.New(errMessage)
+			return nil, errors.New(errMessage)
 		}
 	}
 
@@ -202,10 +166,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	jobUUID, err := utils.CreateJobuuid()
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.ExecuteComputationResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, nil
+		return nil, err
 	}
 	AppLogger.Info("jobUUID: " + jobUUID)
 
@@ -214,25 +175,19 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	if err != nil {
 		AppLogger.Error(err)
 		s.m2mclient.DeleteStatusFile(jobUUID)
-		return &pb.ExecuteComputationResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, err
+		return nil, err
 	}
 	// status_RECEIVEDファイルを作成する
 	err = s.m2dbclient.CreateStatusFile(jobUUID)
 	if err != nil {
 		AppLogger.Error(err)
 		s.m2dbclient.DeleteStatusFile(jobUUID)
-		return &pb.ExecuteComputationResponse{
-			Message: err.Error(),
-			IsOk:    false,
-		}, err
+		return nil, err
 	}
 
 	// 計算コンテナにリクエストを送信する
 	out := utils.ConvertExecuteComputationRequest(in, jobUUID)
-	message, status, err := s.m2cclient.ExecuteComputation(out)
+	_, status, err := s.m2cclient.ExecuteComputation(out)
 
 	if err != nil {
 		AppLogger.Error(err)
@@ -241,15 +196,11 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 		s.m2mclient.DeleteStatusFile(jobUUID)
 		s.m2dbclient.DeleteStatusFile(jobUUID)
 		return &pb.ExecuteComputationResponse{
-			Message: message,
-			IsOk:    false,
 			JobUuid: jobUUID,
-		}, nil
+		}, err
 	}
 
 	return &pb.ExecuteComputationResponse{
-		Message: "ok",
-		IsOk:    true,
 		JobUuid: jobUUID,
 	}, nil
 }
@@ -264,10 +215,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		stream.Send(&pb.GetComputationResultResponse{
-			Message: errToken.Error(),
-			IsOk:    false,
-		})
 		return errToken
 	}
 
@@ -296,10 +243,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
 
 	if err != nil {
-		stream.Send(&pb.GetComputationResultResponse{
-			Message: "Internal server Error",
-			IsOk:    false,
-		})
 		return err
 	}
 
@@ -313,8 +256,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 
 	for _, result := range computationResults {
 		response := pb.GetComputationResultResponse{
-			Message:      "ok",
-			IsOk:         true,
 			Status:       computationResults[0].Status,
 			Result:       result.Result,
 			ColumnNumber: result.Meta.ColumnNumber,
@@ -345,21 +286,16 @@ func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*p
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetDataListResponse{
-			IsOk: false,
-		}, errToken
+		return nil, errToken
 	}
+
 	getDataList, err := s.m2dbclient.GetDataList()
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.GetDataListResponse{
-			IsOk:   false,
-			Result: "",
-		}, nil
+		return nil, err
 	}
 
 	return &pb.GetDataListResponse{
-		IsOk:   true,
 		Result: getDataList,
 	}, nil
 }
@@ -372,20 +308,16 @@ func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeReques
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetElapsedTimeResponse{
-			IsOk: false,
-		}, errToken
+		return nil, errToken
 	}
+
 	elapsedTime, err := s.m2dbclient.GetElapsedTime(JobUUID)
 	if err != nil {
 		AppLogger.Error(err)
-		return &pb.GetElapsedTimeResponse{
-			IsOk: false,
-		}, err
+		return nil, err
 	}
 
 	return &pb.GetElapsedTimeResponse{
-		IsOk:        true,
 		ElapsedTime: elapsedTime,
 	}, nil
 }
@@ -398,21 +330,16 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
-		return &pb.GetJobErrorInfoResponse{
-			IsOk: false,
-		}, errToken
+		return nil, errToken
 	}
 
 	errInfo, err := s.m2dbclient.GetJobErrorInfo(JobUUID)
 
 	if err != nil {
-		return &pb.GetJobErrorInfoResponse{
-			IsOk: false,
-		}, err
+		return nil, err
 	}
 
 	return &pb.GetJobErrorInfoResponse{
-		IsOk:         true,
 		JobErrorInfo: errInfo,
 	}, nil
 }
