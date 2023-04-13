@@ -609,6 +609,39 @@ def tidy_up_manifests(c, manifests_dir='./.output/komposed'):
 
 
 @task
+def add_k8s_volume_manifests(context: Context, manifests_dir='./.output/manifests/parties/common', num_volumes=4):
+    '''
+    '''
+    # template rendering
+    templates_root_dir = pathlib.Path(context.cwd) / pathlib.Path('../templates')
+    print(templates_root_dir.resolve())
+
+    loader = jinja2.FileSystemLoader(str(templates_root_dir))
+    for item in templates_root_dir.glob('./volume/**/*'):
+        if item.is_dir():
+            continue
+
+        item = item.relative_to(templates_root_dir)
+        print(f"INFO: Template file is {(templates_root_dir / item).resolve()}")
+
+        dst_sub_path = item
+        if dst_sub_path.suffix == '.jinja':
+            dst_sub_path = dst_sub_path.with_suffix('')
+        destination_path = pathlib.Path(manifests_dir) / dst_sub_path
+        destination_path = destination_path.resolve()
+        print(f"INFO: -> {destination_path}")
+        context.run(f"mkdir -p {destination_path.parent}")
+
+        template = jinja2.Environment(loader=loader, keep_trailing_newline=True).get_template(name=str(item))
+        args = {
+            'num_volumes': num_volumes,
+        }
+        result = template.render(args)
+        with open(destination_path, 'w') as f:
+            f.write(result)
+
+
+@task
 def transfer_files(c, destination, manifests_dir='./manifests', config_dir='./config'):
     # type: (Context, str, str, str) -> None
     '''k8s マニフェストと設定ファイルをデプロイ先にコピーする

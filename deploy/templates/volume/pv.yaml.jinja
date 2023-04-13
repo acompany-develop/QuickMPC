@@ -1,0 +1,20 @@
+{% for index in range(num_volumes) -%}
+{%- if index > 0 %}
+---
+{% endif -%}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv{{ index + 1 }}
+spec:
+  capacity:
+    storage: 100Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  hostPath:
+    path: /data/pv{{ index + 1 }}
+    type: DirectoryOrCreate
+{%- endfor %}
