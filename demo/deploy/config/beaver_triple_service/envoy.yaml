@@ -33,18 +33,17 @@ static_resources:
                   - name: envoy.filters.http.router
                 use_remote_address: true
                 skip_xff_append: false
-      # TLS を用いて通信を行う場合コメントを外す
-      # transport_socket:
-      #   name: envoy.transport_sockets.tls
-      #   typed_config:
-      #     "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
-      #     common_tls_context:
-      #       alpn_protocols: ["h2"]
-      #       tls_certificates:
-      #         - certificate_chain:
-      #             filename: /Certificates/Server.pem
-      #           private_key:
-      #             filename: /Certificates/Server.key
+          transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+              common_tls_context:
+                alpn_protocols: ["h2"]
+                tls_certificates:
+                  - certificate_chain:
+                      filename: /certificate/Server.pem
+                    private_key:
+                      filename: /certificate/Server.key
   clusters: # リクエストがフィルタに一致するとclusterに渡される
     - name: cc_to_bts
       connect_timeout: 10s # クラスター内のホストへのネットワーク接続のタイムアウト

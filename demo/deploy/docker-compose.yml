@@ -39,6 +39,9 @@ services:
       - target: /etc/envoy/envoy.yaml
         source: ./config/beaver_triple_service/envoy.yaml
         type: bind
+      - target: /certificate
+        source: ./certificate
+        type: bind
     command:
       - /bin/sh
       - '-c'
@@ -59,6 +62,9 @@ services:
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ./config/computation_container/envoy.yaml
+        type: bind
+      - target: /certificate
+        source: ./certificate
         type: bind
     command:
       - /bin/sh
@@ -116,6 +122,9 @@ services:
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ./config/manage_container/envoy.yaml
+        type: bind
+      - target: /certificate
+        source: ./certificate
         type: bind
     command:
       - /bin/sh
