@@ -9,7 +9,6 @@ sudo cp -f /etc/kubernetes/admin.conf ~/.kube/config
 sudo chown $(id -g):$(id -u) ~/.kube/config
 
 # untaint
-kubectl taint nodes --all node-role.kubernetes.io/master:NoSchedule-
 kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
 
 # install and deploy cilium
