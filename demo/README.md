@@ -71,7 +71,7 @@
             N_PARTIES=2
             SP_ID=1
             MC_TO_CC=http://0.0.0.0:50010
-            CC_TO_BTS=http://{サーバ3のドメイン}:50020
+            CC_TO_BTS=http://{サーバ3のドメイン}:54000
             PORT_FOR_JOB=51020
             PARTY_LIST1=https://{サーバ1のドメイン}:50020
             PARTY_LIST2=https://{サーバ2のドメイン}:50020
@@ -107,6 +107,8 @@
     make upnet
     make upd
     ```
+9. GCPのネットワーク設定で{variable.tfで設定したinstance_name}-vpc-{0,1}ネットワークのファイアウォール設定を変更する. <br>
+    clientからリクエストを送れるように50000番ポートを解放する
 
 ## 計算
 `./client_demo`の[README.md](./client_demo/README-ja.md)を参考の上、計算デモを実行します.
