@@ -163,18 +163,6 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_MESH_CODE"),
             join_order, (src, []))
 
-    def decision_tree(self, join_order: Tuple[List, List, List],
-                      inp: Tuple[List, List]) -> Dict:
-        logger.info("decision_tree request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={inp[0]}"
-                    f"[objective variable columns]={inp[1]}")
-        return self.__qmpc_server.execute_computation(
-            ComputationMethod.Value("COMPUTATION_METHOD_DECISION_TREE"),
-            join_order, inp)
-
     def get_join_table(self, join_order: Tuple[List, List, List]) -> Dict:
         logger.info("get_join_table request. "
                     f"[data_id list]={join_order[0]} "
