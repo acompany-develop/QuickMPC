@@ -128,18 +128,6 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_CORREL"),
             join_order, inp)
 
-    def logistic_regression(self, join_order: Tuple[List, List, List],
-                            inp: Tuple[List, List]) -> Dict:
-        logger.info("logistic_regression request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={inp[0]}"
-                    f"[objective variable columns]={inp[1]}")
-        return self.__qmpc_server.execute_computation(
-            ComputationMethod.Value("COMPUTATION_METHOD_LOGISTIC_REGRESSION"),
-            join_order, inp)
-
     def meshcode(self, join_order: Tuple[List, List, List],
                  src: List) -> Dict:
         logger.info("meshcode request. "
