@@ -1,0 +1,179 @@
+version: '3.3'
+services:
+  bts:
+    container_name: beaver_triple_service
+    image: ghcr.io/acompany-develop/quickmpc-bts:0.3.2
+    command:
+      - /bin/bash
+      - '-c'
+      - ./beaver_triple_service
+    env_file:
+      - ./config/beaver_triple_service/.env
+      - ./config/beaver_triple_service/client.sample.env
+      - ./config/beaver_triple_service/server.sample.env
+    volumes:
+      - target: /QuickMPC/config
+        source: ./config/beaver_triple_service
+        type: bind
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=beaver_triple_service:50020 -rpc-header=authorization:"bearer $$BTS_TOKEN"
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    depends_on:
+      bts_envoy:
+        condition: service_started
+    networks:
+      shared-network:
+        aliases:
+          - beaver_triple_service
+        ipv4_address: 10.0.1.40
+    expose:
+      - 50020
+
+  bts_envoy:
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ./config/beaver_triple_service/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      default: {}
+      shared-network:
+        ipv4_address: 10.0.1.21
+    expose:
+      - 9901
+    ports:
+      - 0.0.0.0:54000:51020
+    tty: true
+
+  cc_envoy:
+    container_name: compute_envoy_container
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ./config/computation_container/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      default: {}
+      shared-network:
+        ipv4_address: 10.0.1.21
+    ports:
+      - 0.0.0.0:50020:50020
+      - 0.0.0.0:51020:51020
+    tty: true
+
+  cc:
+    container_name: computation_container
+    image: ghcr.io/acompany-develop/quickmpc-cc:0.3.2
+    volumes:
+      - target: /db/share
+        source: sharedb
+        type: volume
+      - target: /db/result
+        source: resultdb
+        type: volume
+      - target: /QuickMPC/config
+        source: ./config/computation_container
+        type: bind
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && /QuickMPC/scripts/wrapped_run.sh /QuickMPC/bazel-bin/computation_container
+    env_file:
+      - ./config/computation_container/.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=computation_container:50010 && /bin/grpc_health_probe -addr=computation_container:51020
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    depends_on:
+      cc_envoy:
+        condition: service_started
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.20
+    expose:
+      - 50020
+      - 51020
+    tty: true
+
+  mc_envoy:
+    container_name: manage_envoy_container
+    image: envoyproxy/envoy:v1.17.1
+    volumes:
+      - target: /etc/envoy/envoy.yaml
+        source: ./config/manage_container/envoy.yaml
+        type: bind
+    command:
+      - /bin/sh
+      - '-c'
+      - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+    networks:
+      default: {}
+      shared-network:
+        ipv4_address: 10.0.1.11
+    expose:
+      - 9901
+    ports:
+      - 0.0.0.0:50000:50000
+      - 0.0.0.0:50010:50010
+    tty: true
+
+  mc:
+    container_name: manage_container
+    image: ghcr.io/acompany-develop/quickmpc-mc:0.3.2
+    volumes:
+      - target: /db/share
+        source: sharedb
+        type: volume
+      - target: /db/result
+        source: resultdb
+        type: volume
+      - target: /QuickMPC/config
+        source: ./config/manage_container
+        type: bind
+    command:
+      - /bin/bash
+      - '-c'
+      - printenv && ./manage_container
+    env_file:
+      - ./config/manage_container/.env
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - /bin/grpc_health_probe -addr=manage_container:50011 && /bin/grpc_health_probe -addr=manage_container:51011
+      interval: 3s
+      start_period: 5s
+      timeout: 5s
+    depends_on:
+      mc_envoy:
+        condition: service_started
+      cc:
+        condition: service_started
+    networks:
+      shared-network:
+        ipv4_address: 10.0.1.10
+    expose:
+      - 50011
+      - 51011
+    tty: true
+
+volumes:
+  resultdb: {}
+  sharedb: {}
+networks:
+  shared-network:
+    external: true
