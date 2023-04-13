@@ -161,45 +161,6 @@ def parse(data: List[List[str]], matching_column: Optional[int] = None) \
     return secrets, schema
 
 
-def parse_to_bitvector(data: List[List[str]],
-                       exclude: List[int] = [],
-                       matching_column: Optional[int] = None) \
-        -> Tuple[List[List[ShareValueType]], List[Schema]]:
-    secrets, schema = parse(data, matching_column)
-
-    secrets_bitbevtor: List[List[float]] = []
-    schema_bitvector: List[Schema] = []
-    for col, (sec, sch) in enumerate(zip(np.transpose(secrets), schema)):
-        # 列が除外リストに含まれていたらそのままappend
-        if col in exclude:
-            secrets_bitbevtor.append(sec)
-            schema_bitvector.append(
-                Schema(
-                    name=sch.name + "#0",
-                    type=sch.type))
-            continue
-
-        # 座標圧縮
-        position: dict = {}
-        it: int = 0
-        for key in sec:
-            if key not in position:
-                position[key] = it
-                it += 1
-
-        # bitvector化
-        for key, val in position.items():
-            bitvector: list = [1 if (key == k) else 0 for k in sec]
-            sch_val: str = sch.name + "#" + str(val)
-            secrets_bitbevtor.append(bitvector)
-            schema_bitvector.append(
-                Schema(
-                    name=sch_val,
-                    type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT))
-
-    return np.transpose(secrets_bitbevtor).tolist(), schema_bitvector
-
-
 def parse_csv(
     filename: str, matching_column: Optional[int] = None) \
         -> Tuple[List[List[ShareValueType]], List[Schema]]:
@@ -207,13 +168,3 @@ def parse_csv(
         reader = csv.reader(f)
         text: List[List[str]] = [row for row in reader]
         return parse(text, matching_column)
-
-
-def parse_csv_to_bitvector(filename: str,
-                           exclude: List[int] = [],
-                           matching_column: Optional[int] = None) ->  \
-        Tuple[List[List[ShareValueType]], List[Schema]]:
-    with open(filename) as f:
-        reader = csv.reader(f)
-        text: List[List[str]] = [row for row in reader]
-        return parse_to_bitvector(text, exclude, matching_column)
