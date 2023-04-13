@@ -11,20 +11,6 @@ csvファイルからテーブルデータを読み込んでパースする．
 	- parse_data[0]: schemaを除くテーブルデータ
 	- parse_data[1]: schema
 
-## QMPC.csv_file_to_bitvector
-csvファイルからテーブルデータを読み込んでbitvectorにパースする．
-### Parameters
-- file: `str`
-	- 読み込むファイル名
-- exclude: `List[int]`
-	- bitvector化する対象から除外する列
-
-### Returns
-- parse_data: `Tuple[List[List[float]], List[str]]`
-	- parse_data[0]: schemaを除くbitvector化したテーブルデータ
-	- parse_data[1]: bitvector化したschema
-	- 例えば"s"というschemaを持つ列を3つのbitvectorに分割すると，`["s0","s1","s2"]`となる
-
 ## QMPC.parse_csv_data
 テーブルデータをパースする．
 ### Parameters
@@ -35,20 +21,6 @@ csvファイルからテーブルデータを読み込んでbitvectorにパー�
 - parse_data: `Tuple[List[List[float]], List[str]]`
 	- parse_data[0]: schemaを除くテーブルデータ
 	- parse_data[1]: schema
-
-## QMPC.parse_csv_data_to_bitvector
-テーブルデータをbitvectorにパースする．
-### Parameters
-- data: `List[List[str]]`
-	- パースするテーブルデータ
-- exclude: `List[int]`
-	- bitvector化する対象から除外する列
-
-### Returns
-- parse_data: `Tuple[List[List[float]], List[str]]`
-	- parse_data[0]: schemaを除くbitvector化したテーブルデータ
-	- parse_data[1]: bitvector化したschema
-	- 例えば"s"というschemaを持つ列を3つのbitvectorに分割すると，`["s0","s1","s2"]`となる
 
 ## QMPC.send_share
 エンジンにテーブルデータをShare化して送信する
