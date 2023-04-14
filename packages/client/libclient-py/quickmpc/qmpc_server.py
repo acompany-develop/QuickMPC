@@ -93,15 +93,20 @@ class QMPCServer:
         return True
 
     def __retry(self, f: Callable, *request: Any) -> Any:
-        for _ in range(self.retry_num):
+        for ch in self.__client_channels:
             # channelの接続チェック
-            try:
-                for ch in self.__client_channels:
-                    grpc.channel_ready_future(ch).result(timeout=5)
-            except grpc.FutureTimeoutError as e:
-                logger.error(e)
-                continue
+            is_channel_ready = False
+            for _ in range(self.retry_num):
+                try:
+                    grpc.channel_ready_future(ch).result(self.retry_wait_time)
+                    is_channel_ready = True
+                    break
+                except grpc.FutureTimeoutError as e:
+                    logger.error(e)
+            if not is_channel_ready:
+                raise RuntimeError("channel の準備が出来ません")
 
+        for _ in range(self.retry_num):
             # requestを送る
             try:
                 return f(*request)
