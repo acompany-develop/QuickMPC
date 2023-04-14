@@ -3,12 +3,12 @@
 # 検査するファイル，ディレクトリ
 filename =
 	./quickmpc/*.py
-	./demo/*.py
+	../../..//demo/client_demo/*.py
 	./tests/*.py
 
 # 検査から外すファイル
 # cache等は指定不要だが，明示的に指定することで速度が速くなった
-exclude = 
+exclude =
   quickmpc/proto/*_pb2*,
 	*cache/*,
 	.tox/*,
