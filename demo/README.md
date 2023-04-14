@@ -77,11 +77,11 @@
             N_PARTIES=2
             SP_ID=1
             MC_TO_CC=http://0.0.0.0:50010
-            CC_TO_BTS=https://{サーバ3のドメイン}:54000
+            CC_TO_BTS=https://{サーバ3のドメイン or IPアドレス}:54000
             PORT_FOR_JOB=51020
-            PARTY_LIST1=https://{サーバ1のドメイン}:50020
-            PARTY_LIST2=https://{サーバ2のドメイン}:50020
-            BTS_TOKEN={ステップ4でサーバ3から受け取った値を設定する}
+            PARTY_LIST1=https://{サーバ1のドメイン or IPアドレス}:50020
+            PARTY_LIST2=https://{サーバ2のドメイン or IPアドレス}:50020
+            BTS_TOKEN={ステップ6でサーバ3から受け取った値を設定する}
             GETSHARE_TIME_LIMIT=50
             ```
         * config/manage_container/.env
