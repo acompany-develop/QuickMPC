@@ -45,7 +45,7 @@ class JobManager
     static auto try_catch_run(const std::string &job_uuid, const F &func)
     {
         StatusManager statusManager(job_uuid);
-        auto exception_post_process = [&statusManager](const std::exeception &e)
+        auto exception_post_process = [&](const std::exception &e)
         {
             QMPC_LOG_ERROR("error job_uuid is {}", job_uuid);
             QMPC_LOG_ERROR("{} | Job Error", e.what());
@@ -131,7 +131,7 @@ public:
         auto job_id = job_param.getJobId();
         auto job_uuid = job_param.getRequest().job_uuid();
         QMPC_LOG_INFO("start job_id is {}", job_id);
-        QMPC_LOG_INFO("start job_uuid is {}", uuid);
+        QMPC_LOG_INFO("start job_uuid is {}", job_uuid);
         QMPC_LOG_INFO("JobManager: method Id is {}", job_param.getRequest().method_id());
 
         ProgressManager::getInstance()->registerJob(job_id, job_uuid);
