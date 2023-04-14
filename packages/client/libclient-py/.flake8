@@ -3,7 +3,7 @@
 # 検査するファイル，ディレクトリ
 filename =
 	./quickmpc/*.py
-	../../..//demo/client_demo/*.py
+	../../../demo/client_demo/*.py
 	./tests/*.py
 
 # 検査から外すファイル
