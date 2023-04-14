@@ -2,7 +2,7 @@ version: '3.3'
 services:
   bts:
     container_name: beaver_triple_service
-    image: ghcr.io/acompany-develop/quickmpc-bts:0.3.2
+    image: ghcr.io/acompany-develop/quickmpc-bts:{tag}
     command:
       - /bin/bash
       - '-c'
@@ -81,7 +81,7 @@ services:
 
   cc:
     container_name: computation_container
-    image: ghcr.io/acompany-develop/quickmpc-cc:0.3.2
+    image: ghcr.io/acompany-develop/quickmpc-cc:{tag}
     volumes:
       - target: /db/share
         source: sharedb
@@ -143,7 +143,7 @@ services:
 
   mc:
     container_name: manage_container
-    image: ghcr.io/acompany-develop/quickmpc-mc:0.3.2
+    image: ghcr.io/acompany-develop/quickmpc-mc:{tag}
     volumes:
       - target: /db/share
         source: sharedb
