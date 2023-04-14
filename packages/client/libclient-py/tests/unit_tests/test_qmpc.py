@@ -168,4 +168,4 @@ class TestQMPC:
                    run_server1, run_server2, run_server3):
         # 10回の retry に失敗したら "All 10 times it was an error" が log に出るかをテスト
         _ = function(*argument)
-        assert "All 10 times it was an error" in caplog.text
+        assert "channel の準備が出来ません" in caplog.text
