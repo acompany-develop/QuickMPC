@@ -23,7 +23,12 @@
     ```
     cd QuickMPC/demo/deploy
     ```
-4. dockerイメージを設定する <br>
+4. QuickMPCを立ち上げる用の環境を構築する
+    以下のコマンドを実行し、Docker,docker-compose,GNU Makeをinstallします。
+    ```
+    sh setup.sh
+    ```
+5. dockerイメージを設定する <br>
     [docker-compose.yml](./deploy/docker-compose.yml)の`image`項目を修正する <br>
     この[ページ](https://github.com/acompany-develop/QuickMPC/tags)の最新のtagを設定します。
     ```
@@ -36,7 +41,7 @@
     ...
     ```
 
-5. JSON Web Token(以下JWT)を生成する(サーバ3のみ)
+6. JSON Web Token(以下JWT)を生成する(サーバ3のみ)
     1. サーバ3のマシンにてconfig/beaver_triple_service/sample.yamlの{}内を適切に修正する。
         ```
         # registered claims is following
@@ -62,7 +67,7 @@
 
     3. client.sample.envが更新されるため、更新されたファイルの中身をサーバ1に送る
     5. ステップ1に戻り、party_idを2に更新の上、同じ処理を行い、生成されたファイルの中身をサーバ2に送る
-6. 環境変数を設定する
+7. 環境変数を設定する
     それぞれの{}内を適切に設定の上書き換える <br>
     1. サーバ1,サーバ2の場合
         * config/computation_container/.env
@@ -94,20 +99,20 @@
             ```
             IS_BTS=true
             ```
-7. SSL証明書の配置 (`https`通信を行う場合) <br>
+8. SSL証明書の配置 (`https`通信を行う場合) <br>
     certificateディレクトリに秘密鍵と証明書を配置する
     ```
     certificate
     ├── Server.crt # 証明書をリネーム
     └── Server.key # 秘密鍵をリネーム
     ```
-8. コンテナを起動する <br>
+9. コンテナを起動する <br>
     以下のコマンドでコンテナを起動する
     ```
     make upnet
     make upd
     ```
-9. GCPのネットワーク設定で{variable.tfで設定したinstance_name}-vpc-{0,1}ネットワークのファイアウォール設定を変更する. <br>
+10. GCPのネットワーク設定で{variable.tfで設定したinstance_name}-vpc-{0,1}ネットワークのファイアウォール設定を変更する. <br>
     clientからリクエストを送れるように50000番ポートを解放する
 
 ## 計算
