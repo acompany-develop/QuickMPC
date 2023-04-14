@@ -45,6 +45,24 @@ class JobManager
     static auto try_catch_run(const std::string &job_uuid, const F &func)
     {
         StatusManager statusManager(job_uuid);
+        auto exception_post_process = [&statusManager](const std::exeception &e)
+        {
+            QMPC_LOG_ERROR("error job_uuid is {}", job_uuid);
+            QMPC_LOG_ERROR("{} | Job Error", e.what());
+
+            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
+            if (error_info)
+            {
+                QMPC_LOG_ERROR("{}", *error_info);
+                statusManager.error(e, *error_info);
+            }
+            else
+            {
+                QMPC_LOG_ERROR("thrown exception has no stack trace information");
+                statusManager.error(e, std::nullopt);
+            }
+        };
+
         try
         {
             func();
@@ -53,36 +71,12 @@ class JobManager
         catch (const std::runtime_error &e)
         {
             QMPC_LOG_ERROR("{}", static_cast<int>(statusManager.getStatus()));
-            QMPC_LOG_ERROR("{} | Job Error", e.what());
-
-            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
-            if (error_info)
-            {
-                QMPC_LOG_ERROR("{}", *error_info);
-                statusManager.error(e, *error_info);
-            }
-            else
-            {
-                QMPC_LOG_ERROR("thrown exception has no stack trace information");
-                statusManager.error(e, std::nullopt);
-            }
+            exception_post_process(e);
         }
         catch (const std::exception &e)
         {
             QMPC_LOG_ERROR("unexpected Error");
-            QMPC_LOG_ERROR("{} | Job Error", e.what());
-
-            auto error_info = boost::get_error_info<qmpc::Log::traced>(e);
-            if (error_info)
-            {
-                QMPC_LOG_ERROR("{}", *error_info);
-                statusManager.error(e, *error_info);
-            }
-            else
-            {
-                QMPC_LOG_ERROR("thrown exception has no stack trace information");
-                statusManager.error(e, std::nullopt);
-            }
+            exception_post_process(e);
         }
         return false;
     }
@@ -136,7 +130,8 @@ public:
         // Job実行の中身
         auto job_id = job_param.getJobId();
         auto job_uuid = job_param.getRequest().job_uuid();
-        QMPC_LOG_INFO("job_id is {}", job_param.getJobId());
+        QMPC_LOG_INFO("start job_id is {}", job_id);
+        QMPC_LOG_INFO("start job_uuid is {}", uuid);
         QMPC_LOG_INFO("JobManager: method Id is {}", job_param.getRequest().method_id());
 
         ProgressManager::getInstance()->registerJob(job_id, job_uuid);
@@ -155,7 +150,8 @@ public:
                 {
                     try_catch_run(job_uuid, [&]() { job->run(); });
                 }
-                QMPC_LOG_INFO("end_job_id is {}", job_id);
+                QMPC_LOG_INFO("end job_id is {}", job_id);
+                QMPC_LOG_INFO("end job_uuid is {}", job_uuid);
                 if (is_job_trigger_party) pushJobId(job_id);
             }
         );
