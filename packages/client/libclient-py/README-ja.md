@@ -24,7 +24,7 @@ $ pipenv run tox -e py37
 ```
 
 ## Demo
-このデモは実際の使用を想定して本リポジトリをpip installする形で行われる．動作手順は[demo/README.md](./demo/README.md)に記載．
+このデモは実際の使用を想定して本リポジトリをpip installする形で行われる．動作手順は[../../../demo/client_demo/README.md](../../../demo/client_demo/README-ja.md)に記載．
 
 ## Coding Style
 Pythonファイルは[pep8](https://peps.python.org/pep-0008/)に準拠しており，

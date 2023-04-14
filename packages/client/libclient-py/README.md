@@ -20,7 +20,7 @@ $ pipenv run tox -e py37
 ```
 
 ## Demo
-This demonstration is performed by pip installing this repository under the assumption of actual use. The operating procedure is described in [demo/README.md](./demo/README.md).
+This demonstration is performed by pip installing this repository under the assumption of actual use. The operating procedure is described in [../../../demo/client_demo/README.md](../../../demo/client_demo/README.md).
 
 ## Coding Style
 Complies with [pep8](https://peps.python.org/pep-0008/) and checked with [flake8](https://github.com/PyCQA/flake8).
