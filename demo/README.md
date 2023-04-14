@@ -14,8 +14,8 @@
     ```
 ### GCP環境にQuickMPCを立ち上げる場合
 以下ではVMを3台立ち上げた場合を例に挙げて説明します。
-1. `./terraform`ディレクトリ内の[README.md](terraform/README.md)を参照の上、GCP環境を立ち上げる。
-2. 作成したGCP環境に本リポジトリをcloneする.
+1. `./terraform`ディレクトリ内の[README.md](terraform/README.md)を参照の上、GCP環境を立ち上げる
+2. 作成したGCP環境に本リポジトリをcloneする
     ```
     git clone git@github.com:acompany-develop/QuickMPC.git
     ```
@@ -31,6 +31,7 @@
 5. dockerイメージを設定する <br>
     [docker-compose.yml](./deploy/docker-compose.yml)の`image`項目を修正する <br>
     この[ページ](https://github.com/acompany-develop/QuickMPC/tags)の最新のtagを設定します。
+    ※ 全てのサーバのコンテナイメージは同じtagに設定する必要があります。
     ```
     version: '3.3'
     services:
@@ -66,9 +67,9 @@
         ```
 
     3. client.sample.envが更新されるため、更新されたファイルの中身をサーバ1に送る
-    5. ステップ1に戻り、party_idを2に更新の上、同じ処理を行い、生成されたファイルの中身をサーバ2に送る
+    4. party_idを2に更新の上、上記の処理を行い、生成されたファイルの中身をサーバ2に送る
 7. 環境変数を設定する
-    それぞれの{}内を適切に設定の上書き換える <br>
+    それぞれの{}内を適切に設定の上書き換えます。 <br>
     1. サーバ1,サーバ2の場合
         * config/computation_container/.env
             ```
@@ -76,7 +77,7 @@
             N_PARTIES=2
             SP_ID=1
             MC_TO_CC=http://0.0.0.0:50010
-            CC_TO_BTS=http://{サーバ3のドメイン}:54000
+            CC_TO_BTS=https://{サーバ3のドメイン}:54000
             PORT_FOR_JOB=51020
             PARTY_LIST1=https://{サーバ1のドメイン}:50020
             PARTY_LIST2=https://{サーバ2のドメイン}:50020
@@ -85,35 +86,35 @@
             ```
         * config/manage_container/.env
             ```
-            PARTY_ID=1
+            PARTY_ID={サーバの番号　ex) サーバ1なら1}
             N_PARTIES=2
             MANAGE=http://localhost:50011
             COMPUTATION=http://computation_container:50010
-            PARTY_LIST1=http://{サーバ1のドメイン}:{サーバ1なら51011,サーバ2なら50010}
-            PARTY_LIST2=http://{サーバ2のドメイン}:{サーバ1なら50010,サーバ2なら51011}
+            PARTY_LIST1=https://{サーバ1のドメイン}:{サーバ1なら51011,サーバ2なら50010}
+            PARTY_LIST2=https://{サーバ2のドメイン}:{サーバ1なら50010,サーバ2なら51011}
             ALLOWEDORIGIN=http://localhost:8080
             ```
     2. サーバ3の場合
-        サーバ3は以下のファイルのみ修正を行う
+        サーバ3は以下のファイルのみ修正を行います。
         * ./.env
             ```
             IS_BTS=true
             ```
-8. SSL証明書の配置 (`https`通信を行う場合) <br>
-    certificateディレクトリに秘密鍵と証明書を配置する
+8. SSL証明書の配置 <br>
+    certificateディレクトリに秘密鍵と証明書を配置します。
     ```
     certificate
     ├── Server.crt # 証明書をリネーム
     └── Server.key # 秘密鍵をリネーム
     ```
 9. コンテナを起動する <br>
-    以下のコマンドでコンテナを起動する
+    以下のコマンドでコンテナを起動します。
     ```
     make upnet
     make upd
     ```
 10. GCPのネットワーク設定で{variable.tfで設定したinstance_name}-vpc-{0,1}ネットワークのファイアウォール設定を変更する. <br>
-    clientからリクエストを送れるように50000番ポートを解放する
+    clientからリクエストを送れるように50000番ポートを解放します。
 
 ## 計算
-`./client_demo`の[README.md](./client_demo/README-ja.md)を参考の上、計算デモを実行します.
+`./client_demo`の[README.md](./client_demo/README-ja.md)を参考の上、計算デモを実行します。
