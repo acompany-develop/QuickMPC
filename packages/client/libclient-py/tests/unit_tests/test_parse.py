@@ -6,8 +6,7 @@ import numpy as np
 import pytest
 
 from quickmpc import Schema, ShareValueTypeEnum
-from quickmpc.utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
-                                      parse_to_bitvector)
+from quickmpc.utils.parse_csv import parse, parse_csv
 
 
 def schema_fp(name: str):
@@ -29,13 +28,6 @@ normal_data: List[List[str]] = [s.split(",") for s in [
     "piyo,1,0.34,0.34,0.44,0.50,0.32",
     "moge,1,0.47,0.43,0.34,0.29,0.34",
     "moga,0,0.67,0.41,0.25,0.49,0.25",
-]]
-bitvector_data: List[List[str]] = [s.split(",") for s in [
-    "id,attr1,attr2,attr3",
-    "hoge,0,1,3",
-    "huga,0,2,1",
-    "moge,1,0,4",
-    "moga,0,1,2",
 ]]
 data3: List[List[str]] = [s.split(",") for s in [
     "id,id:id",
@@ -82,14 +74,6 @@ def test_parse():
     secrets, schema = parse(normal_data, matching_column=1)
     assert (np.allclose(secrets, d1_secrets))
     assert (schema == d1_schema)
-
-
-def test_parse_to_bitvector():
-    """ 正しくパースできるかTest """
-    secrets, schema = parse_to_bitvector(
-        bitvector_data, [0], matching_column=1)
-    assert (np.allclose(secrets, d2_secrets))
-    assert (schema == d2_schema)
 
 
 def test_parse_str():
@@ -227,15 +211,6 @@ def test_parse_csv(csv_file, expected_secrets, expected_schema):
             else:
                 assert math.isclose(x, y)
     assert (schema == expected_schema)
-
-
-def test_parse_csv_to_bitvector():
-    """ csvを正しくパースできるかTest """
-    secrets, schema = parse_csv_to_bitvector(
-        f"{os.path.dirname(__file__)}/test_files/bitvector.csv",
-        [0], matching_column=1)
-    assert (np.allclose(secrets, d2_secrets))
-    assert (schema == d2_schema)
 
 
 @pytest.mark.parametrize(

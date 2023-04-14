@@ -5,8 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
-from .utils.parse_csv import (parse, parse_csv, parse_csv_to_bitvector,
-                              parse_to_bitvector, ShareValueType)
+from .utils.parse_csv import (parse, parse_csv, ShareValueType)
 from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
@@ -44,15 +43,6 @@ class QMPC:
                     f"[filename]='{filename}'")
         return parse_csv(filename, matching_column)
 
-    def parse_csv_file_to_bitvector(self, filename: str,
-                                    exclude: List[int] = [],
-                                    matching_column: Optional[int] = 1) \
-            -> Tuple[List[List[ShareValueType]], List[Schema]]:
-        logger.info("parse_csv_file_to_bitvector. "
-                    f"[filename]='{filename}' "
-                    f"[not bitvector columns]={exclude}")
-        return parse_csv_to_bitvector(filename, exclude, matching_column)
-
     def parse_csv_data(self,
                        data: List[List[str]],
                        matching_column: Optional[int] = 1) \
@@ -60,15 +50,6 @@ class QMPC:
         logger.info("parse_csv_data. "
                     f"[data size]={len(data)}x{len(data[0])}")
         return parse(data, matching_column)
-
-    def parse_csv_data_to_bitvector(self, data: List[List[str]],
-                                    exclude: List[int] = [],
-                                    matching_column: Optional[int] = 1) \
-            -> Tuple[List[List[ShareValueType]], List[Schema]]:
-        logger.info("parse_csv_file_to_bitvector. "
-                    f"[data size]={len(data)}x{len(data[0])} "
-                    f"[not bitvector columns]={exclude}")
-        return parse_to_bitvector(data, exclude, matching_column)
 
     def send_share(self, secrets: List, schema: List[Schema],
                    matching_column: int = 1,
@@ -128,30 +109,6 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_CORREL"),
             join_order, inp)
 
-    def linear_regression(self, join_order: Tuple[List, List, List],
-                          inp: Tuple[List, List]) -> Dict:
-        logger.info("linear_regression request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={inp[0]}"
-                    f"[objective variable columns]={inp[1]}")
-        return self.__qmpc_server.execute_computation(
-            ComputationMethod.Value("COMPUTATION_METHOD_LINEAR_REGRESSION"),
-            join_order, inp)
-
-    def logistic_regression(self, join_order: Tuple[List, List, List],
-                            inp: Tuple[List, List]) -> Dict:
-        logger.info("logistic_regression request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={inp[0]}"
-                    f"[objective variable columns]={inp[1]}")
-        return self.__qmpc_server.execute_computation(
-            ComputationMethod.Value("COMPUTATION_METHOD_LOGISTIC_REGRESSION"),
-            join_order, inp)
-
     def meshcode(self, join_order: Tuple[List, List, List],
                  src: List) -> Dict:
         logger.info("meshcode request. "
@@ -162,18 +119,6 @@ class QMPC:
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_MESH_CODE"),
             join_order, (src, []))
-
-    def decision_tree(self, join_order: Tuple[List, List, List],
-                      inp: Tuple[List, List]) -> Dict:
-        logger.info("decision_tree request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
-                    f"[design variable columns]={inp[0]}"
-                    f"[objective variable columns]={inp[1]}")
-        return self.__qmpc_server.execute_computation(
-            ComputationMethod.Value("COMPUTATION_METHOD_DECISION_TREE"),
-            join_order, inp)
 
     def get_join_table(self, join_order: Tuple[List, List, List]) -> Dict:
         logger.info("get_join_table request. "
