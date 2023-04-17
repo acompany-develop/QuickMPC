@@ -46,7 +46,6 @@ TEST(CsprngTest, GetRandLLVec)
     std::size_t vecSize = 1000;
     std::vector<std::int64_t> rndLLVec = rng.GetRandLLVec(vecSize);
     std::set<std::int64_t> rndLLSet(rndLLVec.begin(), rndLLVec.end());
-    ;
 
     // SetとVecのサイズで重複チェックテスト
     ASSERT_EQ(rndLLVec.size(), rndLLSet.size());

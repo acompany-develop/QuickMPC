@@ -33,7 +33,7 @@ bool CSPRNG::entropyCheck()
     return true;
 };
 
-void CSPRNG::GetRand(const std::unique_ptr<std::uint8_t[]>& buf, const std::size_t byteSize)
+void CSPRNG::GetRand(const std::unique_ptr<std::uint8_t[]> &buf, const std::size_t byteSize)
 {
     if (!this->CSPRNG::entropyCheck())
     {
@@ -65,14 +65,7 @@ std::int64_t CSPRNG::GetRandLL()
     this->CSPRNG::GetRand(rnd, LL_SIZE);
 
     // uint8_t* -> str(bin)
-    std::stringstream str;
-    for (std::size_t i = 0; i < LL_SIZE; i++)
-    {
-        str << std::bitset<LL_SIZE>(rnd[i]);
-    }
-    std::string rndBinStr = str.str();
-
-    std::int64_t rndVal = std::stoull(rndBinStr, nullptr, 2);
+    const std::int64_t rndVal = *reinterpret_cast<std::int64_t *>(rnd.get());
     return rndVal;
 };
 
@@ -90,13 +83,7 @@ std::vector<std::int64_t> CSPRNG::GetRandLLVec(const std::size_t size)
     // unit8_t* -> str(bin)
     for (std::size_t i = 0; i < byteSize; i += LL_SIZE)
     {
-        std::stringstream str;
-        for (std::size_t j = 0; j < LL_SIZE; j++)
-        {
-            str << std::bitset<LL_SIZE>(rnd[i + j]);
-        }
-
-        std::int64_t rndVal = std::stoull(str.str(), nullptr, 2);
+        const std::int64_t rndVal = *reinterpret_cast<std::int64_t *>(&rnd[i]);
         randLLVec.push_back(rndVal);
     }
 
