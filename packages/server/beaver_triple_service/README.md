@@ -91,7 +91,7 @@ grpc_health_probe -addr=localhost:54100
 ```
 
 ## JWT token の生成
-YAML ファイルと SECRET_KET を入力に JWT token を生成する．
+YAML ファイルと SECRET_KEY  を入力に JWT token を生成する．
 
 ### 手順
 #### btsのイメージ取得
