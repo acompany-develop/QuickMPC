@@ -147,5 +147,4 @@ dim1_0     status_COMPUTE    status_READ_DB
     "5257983048358581332.678723316"
   ]
 }
-}
 ```
