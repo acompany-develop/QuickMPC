@@ -62,5 +62,5 @@ static_resources:
               - endpoint:
                   address:
                     socket_address:
-                      address: 10.0.1.40
+                      address: beaver_triple_service
                       port_value: 50020
