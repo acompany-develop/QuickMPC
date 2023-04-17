@@ -344,23 +344,3 @@ func (s *server_v0) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoR
 		JobErrorInfo: errInfo,
 	}, nil
 }
-
-// LibtoMCサーバ起動
-func RunServer() {
-	config, err := utils.GetConfig()
-	if err != nil {
-		AppLogger.Fatalf("failed to parse config: %v", err)
-	}
-	ip := config.Containers.Manage
-	lis, port := common.Listen(ip)
-
-	s := common.NewServer()
-	reflection.Register(s)
-
-	pb.RegisterLibcToManageServer(s, &server{m2dbclient: m2db.Client{}, m2cclient: m2c.Client{}, m2mclient: m2m.Client{}, m2tclient: m2t.Client{}})
-
-	AppLogger.Info("L2m server listening on", port)
-	if err := s.Serve(lis); err != nil {
-		AppLogger.Fatalf("failed to serve: %v", err)
-	}
-}
