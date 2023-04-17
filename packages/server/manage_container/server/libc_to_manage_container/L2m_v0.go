@@ -22,7 +22,7 @@ import (
 )
 
 // ServerのInterface定義
-type server struct {
+type server_v0 struct {
 	pb.UnimplementedLibcToManageServer
 	m2dbclient m2db.M2DbClient
 	m2cclient  m2c.M2CClient
@@ -30,7 +30,8 @@ type server struct {
 	m2tclient  m2t.M2TCAClient
 }
 
-func (s *server) authorize(token string, stages []string) error {
+
+func (s *server_v0) authorize(token string, stages []string) error {
 	var errAll error = nil
 	for _, stage := range stages {
 		if stage == "demo" {
@@ -52,7 +53,7 @@ func (s *server) authorize(token string, stages []string) error {
 }
 
 // シェアをDBに送信
-func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*empty.Empty, error) {
+func (s *server_v0) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*empty.Empty, error) {
 	AppLogger.Info("Send Shares;")
 	AppLogger.Info("dataID: " + in.GetDataId())
 	AppLogger.Info("pieceID: " + strconv.Itoa(int(in.GetPieceId())))
@@ -86,7 +87,7 @@ func (s *server) SendShares(ctx context.Context, in *pb.SendSharesRequest) (*emp
 }
 
 // シェア削除リクエストをDBに送信
-func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*empty.Empty, error) {
+func (s *server_v0) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (*empty.Empty, error) {
 	AppLogger.Info("Delete Shares;")
 
 	dataIDs := in.GetDataIds()
@@ -107,7 +108,7 @@ func (s *server) DeleteShares(ctx context.Context, in *pb.DeleteSharesRequest) (
 }
 
 // DBからschemaを取得
-func (s *server) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.GetSchemaResponse, error) {
+func (s *server_v0) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.GetSchemaResponse, error) {
 	AppLogger.Info("Get Schema;")
 	AppLogger.Info("dataID:")
 	AppLogger.Info(in.GetDataId())
@@ -132,7 +133,7 @@ func (s *server) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.Ge
 }
 
 // CCに計算リクエストを送信
-func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputationRequest) (*pb.ExecuteComputationResponse, error) {
+func (s *server_v0) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputationRequest) (*pb.ExecuteComputationResponse, error) {
 	AppLogger.Info("Execute Computation;")
 	AppLogger.Info("methodID: " + strconv.Itoa(int(in.GetMethodId())))
 	AppLogger.Info("joinOrder:")
@@ -186,7 +187,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	}
 
 	// 計算コンテナにリクエストを送信する
-	out := utils.ConvertExecuteComputationRequest(in, jobUUID)
+	out := utils.ConvertExecuteComputationRequest_v0(in, jobUUID)
 	_, status, err := s.m2cclient.ExecuteComputation(out)
 
 	if err != nil {
@@ -206,7 +207,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 }
 
 // DBから計算結果を得る
-func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream pb.LibcToManage_GetComputationResultServer) error {
+func (s *server_v0) GetComputationResult(in *pb.GetComputationResultRequest, stream pb.LibcToManage_GetComputationResultServer) error {
 	AppLogger.Info("Get Computation Result;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 
@@ -281,7 +282,7 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 	return nil
 }
 
-func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*pb.GetDataListResponse, error) {
+func (s *server_v0) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*pb.GetDataListResponse, error) {
 	token := in.GetToken()
 
 	errToken := s.authorize(token, []string{"demo", "dep"})
@@ -300,7 +301,7 @@ func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*p
 	}, nil
 }
 
-func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeRequest) (*pb.GetElapsedTimeResponse, error) {
+func (s *server_v0) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeRequest) (*pb.GetElapsedTimeResponse, error) {
 	AppLogger.Info("Get Elapsed time;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 	JobUUID := in.GetJobUuid()
@@ -322,7 +323,7 @@ func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeReques
 	}, nil
 }
 
-func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequest) (*pb.GetJobErrorInfoResponse, error) {
+func (s *server_v0) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequest) (*pb.GetJobErrorInfoResponse, error) {
 	AppLogger.Info("Get Job Error Info;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 	JobUUID := in.GetJobUuid()
