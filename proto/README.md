@@ -173,11 +173,11 @@ go 1.18
 ```sh
 make generate
 ```
-特定のディレクトリを指定して実行したい場合は以下のようにする <br>
+特定のディレクトリを指定して実行したい場合は以下のようにする
 
-### オプション <br>
-t = hoge	# hoge配下のprotoのgRPCコードを生成<br>
-
+### オプション
+特定のディレクトリをを指定する場合は `t=dir` として指定する
 ```sh
-make generate t=./lib_to_manage_container/ # proto/libc_to_manage_container/ 直下のprotoのgRPCコードを生成したい場合
+# proto/libc_to_manage_container/ 直下のprotoのgRPCコードを生成したい場合
+make generate t=./lib_to_manage_container/ 
 ```

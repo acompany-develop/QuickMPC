@@ -91,38 +91,48 @@ grpc_health_probe -addr=localhost:54100
 ```
 
 ## JWT token の生成
-YAML ファイルを入力に JWT token を生成します
+YAML ファイルと SECRET_KEY  を入力に JWT token を生成する．
 
 ### 手順
-btsのイメージを取得します
+#### btsのイメージ取得
 
-  ※ tagはこちらの[ページ](https://github.com/acompany-develop/QuickMPC/pkgs/container/quickmpc-bts)は参照のうえ、latestのtagに変更してください
-  ```
-  docker pull ghcr.io/acompany-develop/quickmpc-bts:<tag>
-  ```
-
-JWT tokenの生成
-
-  ```console
-  docker run --rm \
-    -v ./path/to/directory_with_config.yml:<mount_path> \
-    ghcr.io/acompany-develop/quickmpc-bts:<tag> ./beaver_triple_service generateJwt \
-    --file /path/to/config.yml \
-    --output <mount_path>                                           # use own configuration
-  ```
-
---output で指定したPATH直下にクライアントとサーバ向けにそれぞれ `server.<ymlのファイル名>.env`, `client.<ymlのファイル名>.env` というファイル形式の設定ファイルが書き込まれます
-
-```
-// server.<ymlのファイル名>.env
-JWT_BASE64_SECRET_KEY=...
+※ tagはこちらの[ページ](https://github.com/acompany-develop/QuickMPC/pkgs/container/quickmpc-bts)は参照のうえ，latestのtagに変更する．
+```console
+docker pull ghcr.io/acompany-develop/quickmpc-bts:<tag>
 ```
 
+#### 設定を作成
+[sample設定](https://github.com/acompany-develop/QuickMPC/tree/main/packages/server/beaver_triple_service/cmd/jwt_generator/sample)を参考にして，適当な名前 `<name>` を定めて次の2ファイルを生成する．
+- `<name>.yaml`
+- `server.<name>.env`
+
+`server.<name>.env`に記載するkeyはBASE64で生成する．
+
+#### JWT tokenを生成
+次のコマンドを実行する．
+
+```bash
+docker run --rm \
+  --env-file=/path/to/server.<name>.env \
+  -v /absolute_path/to/directory_with_config.yaml:<mount_path> \
+  ghcr.io/acompany-develop/quickmpc-bts:<tag> ./beaver_triple_service generateJwt \
+  --file <mount_path>/to/<name>.yaml \
+  --output <mount_path>
+
+# 具体例
+docker run --rm \
+  --env-file=/config_dir/server.sample.env \
+  -v /config_dir:/tmp \
+  ghcr.io/acompany-develop/quickmpc-bts:0.3.3 ./beaver_triple_service generateJwt \
+  --file /tmp/sample.yaml \
+  --output /tmp
 ```
-// client.// client.<ymlのファイル名>.env
-.env
+
+
+`--output` で指定したPATH直下にクライアント向けの`client.<name>.env` というファイル形式の設定ファイルが以下の形式で生成される．
+```env
 BTS_TOKEN=...
 ```
-
-これを`config/computation_container/compute{1,2,3}/`直下に `.env` という名前で配置し、
-docker-compose.ymlのccコンテナのenv_fileで上記のパスを指定することでJWTが利用可能になります。
+#### Clientに配置
+`client.<name>.env`に記載されている環境変数(`BTS_TOKEN`)を`config/computation_container/compute{1,2,3}/`直下の `.env` に追記し，
+docker-compose.ymlのccコンテナのenv_fileでこのパスを指定する．

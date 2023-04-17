@@ -31,8 +31,6 @@ csvファイルからテーブルデータを読み込んでパースする．
 	- テーブルデータのschema
 - matching_column: `int`
 	- 結合する場合に用いる列
-- party_size: `int`
-	- エンジンのParty数
 - piece_size: `int`
 	- 分割データの最大サイズ
 ### Returns
@@ -66,8 +64,8 @@ csvファイルからテーブルデータを読み込んでパースする．
 - res: `Dict`
 	- res["is_ok"]: `bool`
 		- 送信が成功したかどうか
-	- res["job_id"]: `str`
-		- 計算スレッドのID
+	- res["job_uuid"]: `str`
+		- 計算スレッドのUUID
 
 ## QMPC.variance
 分散を計算する
@@ -83,8 +81,8 @@ csvファイルからテーブルデータを読み込んでパースする．
 - res: `Dict`
 	- res["is_ok"]: `bool`
 		- 送信が成功したかどうか
-	- res["job_id"]: `str`
-		- 計算スレッドのID
+	- res["job_uuid"]: `str`
+		- 計算スレッドのUUID
 
 ## QMPC.sum
 総和を計算する
@@ -100,8 +98,8 @@ csvファイルからテーブルデータを読み込んでパースする．
 - res: `Dict`
 	- res["is_ok"]: `bool`
 		- 送信が成功したかどうか
-	- res["job_id"]: `str`
-		- 計算スレッドのID
+	- res["job_uuid"]: `str`
+		- 計算スレッドのUUID
 
 ## QMPC.correl
 相関係数を計算する
@@ -118,8 +116,8 @@ csvファイルからテーブルデータを読み込んでパースする．
 - res: `Dict`
 	- res["is_ok"]: `bool`
 		- 送信が成功したかどうか
-	- res["job_id"]: `str`
-		- 計算スレッドのID
+	- res["job_uuid"]: `str`
+		- 計算スレッドのUUID
 
 ## QMPC.meshcode
 メッシュコードを計算する
@@ -135,8 +133,8 @@ csvファイルからテーブルデータを読み込んでパースする．
 - res: `Dict`
 	- res["is_ok"]: `bool`
 		- 送信が成功したかどうか
-	- res["job_id"]: `str`
-		- 計算スレッドのID
+	- res["job_uuid"]: `str`
+		- 計算スレッドのUUID
 
 ## QMPC.get_join_table
 テーブルを結合する
@@ -150,14 +148,14 @@ csvファイルからテーブルデータを読み込んでパースする．
 - res: `Dict`
 	- res["is_ok"]: `bool`
 		- 送信が成功したかどうか
-	- res["job_id"]: `str`
-		- 計算スレッドのID
+	- res["job_uuid"]: `str`
+		- 計算スレッドのUUID
 
 ## QMPC.get_computation_result
 計算結果を取得する
 ### Parameters
-- job_id: `str`
-	- 計算スレッドのID
+- job_uuid: `str`
+	- 計算スレッドのUUID
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -166,6 +164,7 @@ csvファイルからテーブルデータを読み込んでパースする．
 		- 計算結果
 
 ## QMPC.get_data_list
+[deplecated]
 エンジンに保存されているテーブルデータのIDを全て取得する
 ### Parameters
 ### Returns
