@@ -12,7 +12,8 @@ from quickmpc.proto.common_types.common_types_pb2 import (JobErrorInfo,
                                                           Stacktrace)
 
 
-class LibToManageServiceServicer(libc_to_manage_v0_pb2_grpc.LibcToManageServicer):
+class LibToManageServiceServicer \
+        (libc_to_manage_v0_pb2_grpc.LibcToManageServicer):
 
     def __init__(self): ...
 

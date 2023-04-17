@@ -21,13 +21,13 @@ from .exception import ArgumentError, QMPCJobError, QMPCServerError
 from .proto.common_types.common_types_pb2 import (JobErrorInfo, JobStatus,
                                                   Schema, ShareValueTypeEnum)
 from .proto.libc_to_manage_v0_pb2 import (DeleteSharesRequest,
-                                       ExecuteComputationRequest,
-                                       GetComputationResultRequest,
-                                       GetComputationResultResponse,
-                                       GetDataListRequest,
-                                       GetElapsedTimeRequest,
-                                       GetJobErrorInfoRequest, Input,
-                                       JoinOrder, SendSharesRequest)
+                                          ExecuteComputationRequest,
+                                          GetComputationResultRequest,
+                                          GetComputationResultResponse,
+                                          GetDataListRequest,
+                                          GetElapsedTimeRequest,
+                                          GetJobErrorInfoRequest, Input,
+                                          JoinOrder, SendSharesRequest)
 from .proto.libc_to_manage_v0_pb2_grpc import LibcToManageStub
 from .share import Share
 from .utils.if_present import if_present
