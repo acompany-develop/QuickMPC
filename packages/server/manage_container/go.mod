@@ -5,6 +5,7 @@ go 1.18
 replace (
 	github.com/acompany-develop/QuickMPC/proto/common_types => ./../proto/common_types
 	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container => ./../proto/libc_to_manage_container
+	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container_v0 => ./../proto/libc_to_manage_container_v0
 	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container => ./../proto/manage_to_computation_container
 	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container => ./../proto/manage_to_manage_container
 )
@@ -12,6 +13,7 @@ replace (
 require (
 	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container_v0 v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.5.0
