@@ -59,20 +59,19 @@ void CSPRNG::GetRand(const std::unique_ptr<std::uint8_t[]>& buf, const std::size
 std::int64_t CSPRNG::GetRandLL()
 {
     constexpr std::size_t LL_SIZE = sizeof(std::int64_t);  // 8byte = 64bit
+    constexpr std::size_t BYTE_SIZE = 8;                   // 8bit
 
     std::unique_ptr<std::uint8_t[]> rnd = std::make_unique<std::uint8_t[]>(LL_SIZE);
     // 64bit乱数[std::uint8_t*]生成
     this->CSPRNG::GetRand(rnd, LL_SIZE);
 
     // uint8_t* -> str(bin)
-    std::stringstream str;
+    std::int64_t rndVal = 0;
     for (std::size_t i = 0; i < LL_SIZE; i++)
     {
-        str << std::bitset<LL_SIZE>(rnd[i]);
+        rndVal =
+            (rndVal << BYTE_SIZE) + *reinterpret_cast<std::int64_t *>(&rnd[i]);
     }
-    std::string rndBinStr = str.str();
-
-    std::int64_t rndVal = std::stoull(rndBinStr, nullptr, 2);
     return rndVal;
 };
 
@@ -81,6 +80,7 @@ std::vector<std::int64_t> CSPRNG::GetRandLLVec(const std::size_t size)
     std::vector<std::int64_t> randLLVec = {};
 
     constexpr std::size_t LL_SIZE = sizeof(std::int64_t);  // 8byte
+    constexpr std::size_t BYTE_SIZE = 8;                   // 8bit
     const std::size_t byteSize = size * LL_SIZE;           // size * 8[byte/llsize]
 
     std::unique_ptr<std::uint8_t[]> rnd = std::make_unique<std::uint8_t[]>(byteSize);
@@ -90,13 +90,12 @@ std::vector<std::int64_t> CSPRNG::GetRandLLVec(const std::size_t size)
     // unit8_t* -> str(bin)
     for (std::size_t i = 0; i < byteSize; i += LL_SIZE)
     {
-        std::stringstream str;
+        std::int64_t rndVal = 0;
         for (std::size_t j = 0; j < LL_SIZE; j++)
         {
-            str << std::bitset<LL_SIZE>(rnd[i + j]);
+            rndVal = (rndVal << BYTE_SIZE) +
+                     *reinterpret_cast<std::int64_t *>(&rnd[i + j]);
         }
-
-        std::int64_t rndVal = std::stoull(str.str(), nullptr, 2);
         randLLVec.push_back(rndVal);
     }
 
