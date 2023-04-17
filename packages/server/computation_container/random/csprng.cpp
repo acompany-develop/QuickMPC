@@ -33,7 +33,7 @@ bool CSPRNG::entropyCheck()
     return true;
 };
 
-void CSPRNG::GetRand(const std::unique_ptr<std::uint8_t[]>& buf, const std::size_t byteSize)
+void CSPRNG::GetRand(const std::unique_ptr<std::uint8_t[]> &buf, const std::size_t byteSize)
 {
     if (!this->CSPRNG::entropyCheck())
     {
@@ -69,8 +69,7 @@ std::int64_t CSPRNG::GetRandLL()
     std::int64_t rndVal = 0;
     for (std::size_t i = 0; i < LL_SIZE; i++)
     {
-        rndVal =
-            (rndVal << BYTE_SIZE) + *reinterpret_cast<std::int64_t *>(&rnd[i]);
+        rndVal = (rndVal << BYTE_SIZE) + *reinterpret_cast<std::int64_t *>(&rnd[i]);
     }
     return rndVal;
 };
@@ -93,8 +92,7 @@ std::vector<std::int64_t> CSPRNG::GetRandLLVec(const std::size_t size)
         std::int64_t rndVal = 0;
         for (std::size_t j = 0; j < LL_SIZE; j++)
         {
-            rndVal = (rndVal << BYTE_SIZE) +
-                     *reinterpret_cast<std::int64_t *>(&rnd[i + j]);
+            rndVal = (rndVal << BYTE_SIZE) + *reinterpret_cast<std::int64_t *>(&rnd[i + j]);
         }
         randLLVec.push_back(rndVal);
     }
