@@ -58,7 +58,7 @@ void CSPRNG::GetRand(const std::unique_ptr<std::uint8_t[]> &buf, const std::size
 
 std::int64_t CSPRNG::GetRandLL()
 {
-    constexpr std::size_t LL_SIZE = sizeof(std::int64_t); // 8byte = 64bit
+    constexpr std::size_t LL_SIZE = sizeof(std::int64_t);  // 8byte = 64bit
 
     std::unique_ptr<std::uint8_t[]> rnd = std::make_unique<std::uint8_t[]>(LL_SIZE);
     // 64bit乱数[std::uint8_t*]生成
