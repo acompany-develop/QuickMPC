@@ -14,12 +14,14 @@ def generate_files():
             "-I{}".format(pkg_resources.resource_filename('grpc_tools',
                                                           '_proto')),
             "-I./libc_to_manage_container",
+            "-I./libc_to_manage_container_v0",
             "-I./",
             f"--python_out={_output_path}",
             f"--grpc_python_out={_output_path}",
             f"--mypy_out={_output_path}",
             f"--mypy_grpc_out={_output_path}",
             "./libc_to_manage_container/libc_to_manage.proto",
+            "./libc_to_manage_container_v0/libc_to_manage_v0.proto",
         )
     )
     protoc.main(
