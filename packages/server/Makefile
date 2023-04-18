@@ -1,19 +1,8 @@
 #!make
-NETWORK_NAME = shared-network
-NETWORK_GATEWAY = 10.0.0.1
-NETWORK_SUBNET = 10.0.0.0/16
 
 CC = computation_container
 MC = manage_container
 BTS = beaver_triple_service
-
-# docker-composeを束ねるネットワークの作成
-upnet:
-	@if [ -z "`docker network ls | grep $(NETWORK_NAME)`" ]; then docker network create --gateway $(NETWORK_GATEWAY) --subnet $(NETWORK_SUBNET) $(NETWORK_NAME); fi
-
-# docker-composeを束ねるネットワークの削除
-downnet:
-	- docker network rm $(NETWORK_NAME)
 
 # 全てのコンテナイメージを構築
 build:
@@ -21,12 +10,12 @@ build:
 	docker-compose -f $(MC)/docker-compose.yml build
 
 # 全てのコンテナイメージを構築かつ、コンテナの実体化と立ち上げをバックグラウンドで実行
-upd-build: upnet
+upd-build:
 	docker-compose -f $(MC)/docker-compose.yml up -d --build
 	docker-compose -f $(CC)/docker-compose.yml up -d --build
 
 # 全てのコンテナイメージを構築せず、コンテナの実体化と立ち上げをバックグラウンドで実行
-upd: upnet
+upd:
 	docker-compose -f $(MC)/docker-compose.yml up -d
 	docker-compose -f $(CC)/docker-compose.yml up -d
 
@@ -55,14 +44,14 @@ up-bts-build:
 	docker-compose -f $(BTS)/docker-compose.yml up --build
 
 # 全てのコンテナイメージを構築せず、コンテナの実体化と立ち上げ
-up-build: upnet
+up-build:
 	docker-compose -f $(CC)/docker-compose.yml up -d --build
 	docker-compose -f $(MC)/docker-compose.yml up -d --build
 	docker-compose -f $(CC)/docker-compose.yml logs -f&
 	docker-compose -f $(MC)/docker-compose.yml logs -f
 
 # 全てのコンテナイメージを構築せず、コンテナの実体化と立ち上げ
-up: upnet
+up:
 	docker-compose -f $(CC)/docker-compose.yml up -d
 	docker-compose -f $(MC)/docker-compose.yml up -d
 	docker-compose -f $(CC)/docker-compose.yml logs -f&

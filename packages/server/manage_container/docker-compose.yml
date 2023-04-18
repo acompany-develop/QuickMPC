@@ -29,9 +29,6 @@ services:
         target: /db
     env_file:
       - ../../../config/manage_container/manage1/.src.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.110
 
   envoy:
     container_name: manage_envoy_container1
@@ -44,6 +41,3 @@ services:
     ports:
       - "50001:50001"
     command: ["/bin/sh", "-c", "/usr/local/bin/envoy -c /etc/envoy/envoy.yaml"]
-networks:
-  shared-network:
-    external: true
