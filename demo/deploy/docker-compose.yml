@@ -25,11 +25,6 @@ services:
     depends_on:
       bts_envoy:
         condition: service_started
-    networks:
-      shared-network:
-        aliases:
-          - beaver_triple_service
-        ipv4_address: 10.0.1.40
     expose:
       - 50020
 
@@ -46,10 +41,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.21
     expose:
       - 9901
     ports:
@@ -70,10 +61,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.21
     ports:
       - 0.0.0.0:50020:50020
       - 0.0.0.0:51020:51020
@@ -108,9 +95,6 @@ services:
     depends_on:
       cc_envoy:
         condition: service_started
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.20
     expose:
       - 50020
       - 51020
@@ -130,10 +114,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      default: {}
-      shared-network:
-        ipv4_address: 10.0.1.11
     expose:
       - 9901
     ports:
@@ -172,9 +152,6 @@ services:
         condition: service_started
       cc:
         condition: service_started
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.10
     expose:
       - 50011
       - 51011
@@ -183,6 +160,3 @@ services:
 volumes:
   resultdb: {}
   sharedb: {}
-networks:
-  shared-network:
-    external: true
