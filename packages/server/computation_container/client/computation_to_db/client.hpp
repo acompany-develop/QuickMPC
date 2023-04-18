@@ -1,5 +1,6 @@
 #pragma once
 
+#include <experimental/filesystem>
 #include <fstream>
 #include <memory>
 #include <optional>
@@ -13,6 +14,7 @@
 
 namespace qmpc::ComputationToDb
 {
+namespace fs = std::experimental::filesystem;
 using SchemaType = std::tuple<std::string, pb_common_types::ShareValueTypeEnum>;
 
 std::vector<nlohmann::json>
@@ -20,8 +22,8 @@ convertSchemaVectorToJsonVector(const std::vector<qmpc::ComputationToDb::SchemaT
 
 class Client final
 {
-    static inline const std::string shareDbPath = "/db/share/";
-    static inline const std::string resultDbPath = "/db/result/";
+    static inline const auto shareDbPath = fs::path("/db/share/");
+    static inline const auto resultDbPath = fs::path("/db/result/");
 
     class ComputationResultWriter
     {
@@ -85,7 +87,7 @@ public:
             writer.emplace(f(x));
         }
         writer.write();
-        std::ofstream(resultDbPath + job_uuid + "/completed");
+        std::ofstream(resultDbPath / job_uuid / "completed");
     }
 };
 

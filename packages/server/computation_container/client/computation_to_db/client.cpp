@@ -12,8 +12,6 @@
 namespace qmpc::ComputationToDb
 {
 
-namespace fs = std::experimental::filesystem;
-
 nlohmann::json convertSchemaToJson(const qmpc::ComputationToDb::SchemaType &src)
 {
     pb_common_types::Schema col_pb;
@@ -70,8 +68,8 @@ void Client::ComputationResultWriter::write()
         {"meta", {{"piece_id", piece_id}, {"column_number", column_number}}}};
     const std::string data = piece_data_json.dump();
 
-    auto ofs =
-        std::ofstream(resultDbPath + job_uuid + "/" + data_name + "_" + std::to_string(piece_id));
+    auto data_file = data_name + "_" + std::to_string(piece_id);
+    auto ofs = std::ofstream(resultDbPath / job_uuid / data_file);
     ofs << data;
     ofs.close();
 
@@ -200,7 +198,7 @@ std::optional<std::vector<std::vector<std::string>>> Client::readTable(
     const std::string &data_id, int piece_id
 ) const
 {
-    auto data_path = shareDbPath + data_id + "/" + std::to_string(piece_id);
+    auto data_path = shareDbPath / data_id / std::to_string(piece_id);
     if (!fs::exists(data_path))
     {
         return std::nullopt;
@@ -223,7 +221,7 @@ std::optional<std::vector<std::vector<std::string>>> Client::readTable(
 std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
 {
     // DBから値を取り出す
-    auto ifs = std::ifstream(shareDbPath + data_id + "/0");
+    auto ifs = std::ifstream(shareDbPath / data_id / "0");
     std::string data;
     getline(ifs, data);
     auto json = nlohmann::json::parse(data);
@@ -235,8 +233,8 @@ std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
 // shareDBに対してdataを書き込む
 void Client::writeShareDB(const std::string &data_id, const std::string &data, int piece_id)
 {
-    fs::create_directories(shareDbPath + data_id);
-    auto ofs = std::ofstream(fs::path(shareDbPath) / data_id / std::to_string(piece_id));
+    fs::create_directories(shareDbPath / data_id);
+    auto ofs = std::ofstream(shareDbPath / data_id / std::to_string(piece_id));
     ofs << data;
     ofs.close();
 }
@@ -244,7 +242,7 @@ void Client::writeShareDB(const std::string &data_id, const std::string &data, i
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const
 {
-    fs::create_directories(resultDbPath + job_uuid);
+    fs::create_directories(resultDbPath / job_uuid);
     updateJobStatus(job_uuid, status);
 }
 
@@ -254,9 +252,8 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
     const google::protobuf::EnumDescriptor *descriptor =
         google::protobuf::GetEnumDescriptor<pb_common_types::JobStatus>();
 
-    std::ofstream ofs(
-        resultDbPath + job_uuid + "/status_" + descriptor->FindValueByNumber(status)->name()
-    );
+    auto status_file = "status_" + descriptor->FindValueByNumber(status)->name();
+    std::ofstream ofs(resultDbPath / job_uuid / status_file);
 
     std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
     auto tp_msec = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
@@ -269,10 +266,9 @@ void Client::saveErrorInfo(const std::string &job_uuid, const pb_common_types::J
     const google::protobuf::EnumDescriptor *descriptor =
         google::protobuf::GetEnumDescriptor<pb_common_types::JobStatus>();
 
-    std::ofstream ofs(
-        resultDbPath + job_uuid + "/status_"
-        + descriptor->FindValueByNumber(pb_common_types::JobStatus::ERROR)->name()
-    );
+    auto status_file =
+        "status_" + descriptor->FindValueByNumber(pb_common_types::JobStatus::ERROR)->name();
+    std::ofstream ofs(resultDbPath / job_uuid / status_file);
 
     static const auto options = []()
     {
