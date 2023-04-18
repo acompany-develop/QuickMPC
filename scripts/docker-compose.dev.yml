@@ -25,11 +25,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        aliases:
-          - beaver_triple_service
-        ipv4_address: 10.0.1.40
     ports:
       - 0.0.0.0:60020:50020
   dev_bts_envoy:
@@ -42,9 +37,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.21
     expose:
       - 9901
     ports:
@@ -61,9 +53,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.21
     expose:
       - 50020
       - 51020
@@ -79,9 +68,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.21
     expose:
       - 50020
       - 51020
@@ -97,9 +83,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.21
     expose:
       - 50020
       - 51020
@@ -136,9 +119,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.20
     expose:
       - 51020
       - 50010
@@ -175,9 +155,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.20
     expose:
       - 51020
       - 50010
@@ -214,9 +191,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.20
     expose:
       - 51020
       - 50010
@@ -232,9 +206,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.11
     expose:
       - 15000
       - 50010
@@ -252,9 +223,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.11
     expose:
       - 15000
       - 50010
@@ -272,9 +240,6 @@ services:
       - /bin/sh
       - '-c'
       - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.11
     expose:
       - 15000
       - 50010
@@ -316,9 +281,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.10
     expose:
       - 50011
       - 51011
@@ -355,9 +317,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.10
     expose:
       - 50011
       - 51011
@@ -394,9 +353,6 @@ services:
       interval: 3s
       start_period: 5s
       timeout: 5s
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.10
     expose:
       - 50011
       - 51011
