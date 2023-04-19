@@ -40,7 +40,7 @@ def get_data_id(size: int, data_num):
     data = large_data(size, data_num)
 
     """ Step 3. シェアをコンテナに送信 """
-    res = qmpc.send_share_from_csv_file(data)
+    res = qmpc.send_share_from_csv_data(data)
     assert (res["is_ok"])
     data_id: str = res["data_id"]
 
