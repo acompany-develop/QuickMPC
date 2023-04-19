@@ -16,7 +16,7 @@ if __name__ == '__main__':
     )
 
     # 複数のシェアを作成・送信
-    data = [["key", "1"]]
+    data = [["key"], ["1"]]
     data_ids = []
     for i in range(3):
         res = qmpc.send_share_from_csv_data(data)
