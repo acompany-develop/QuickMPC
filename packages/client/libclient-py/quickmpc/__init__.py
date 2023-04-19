@@ -3,6 +3,7 @@ from quickmpc.qmpc import (
     Schema, ShareValueTypeEnum
 )
 from .version import __version__
+from .utils.parse_csv import parse
 
 __all__ = [
     "QMPC",
@@ -11,4 +12,5 @@ __all__ = [
     "Schema",
     "ShareValueTypeEnum",
     "__version__",
+    "parse",
 ]
