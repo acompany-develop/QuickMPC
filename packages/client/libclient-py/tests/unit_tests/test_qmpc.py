@@ -10,7 +10,7 @@ def send_share_param(secrets=[[1, 2, 3]],
                      schema=["attr1", "attr2", "attr3"],
                      matching_column=1,
                      piece_size=1_000_000):
-    return (secrets, schema, matching_column, piece_size)
+    return ([schema]+secrets, matching_column, piece_size)
 
 
 def execute_computation_param(method_id=1,
@@ -44,7 +44,7 @@ class TestQMPC:
     def test_send_shares(self, params,
                          run_server1, run_server2, run_server3):
         """ serverにシェアを送れるかのTest"""
-        response: Dict[str, Any] = self.qmpc.send_share(*params)
+        response: Dict[str, Any] = self.qmpc.send_share_from_csv_data(*params)
         assert (response["is_ok"])
 
     @pytest.mark.parametrize(
@@ -70,7 +70,7 @@ class TestQMPC:
     def test_send_shares_errorhandring(self, params, expected_exception,
                                        run_server1, run_server2, run_server3):
         with pytest.raises(expected_exception):
-            self.qmpc.send_share(*params)
+            self.qmpc.send_share_from_csv_data(*params)
 
     def test_delete_shares(self, run_server1, run_server2, run_server3):
         """ serverにシェア削除要求を送れるかのTest"""

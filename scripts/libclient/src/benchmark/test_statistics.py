@@ -15,12 +15,12 @@ def get_data_id():
     def get(size: int, data_num):
         if (size, data_num) in val:
             return val[(size, data_num)]
-        secrets, schema = large_data(size, data_num)
+        data = large_data(size, data_num)
         with PrintTime("send_share"):
-            res = qmpc.send_share(secrets, schema)
+            res = qmpc.send_share_from_csv_data(data)
         assert (res["is_ok"])
         data_id: str = res["data_id"]
-        schema_size: int = len(schema)
+        schema_size: int = len(data[0])
         val[(size, data_num)] = (data_id, schema_size)
         return val[(size, data_num)]
     return lambda size, data_num=1: get(size, data_num)
