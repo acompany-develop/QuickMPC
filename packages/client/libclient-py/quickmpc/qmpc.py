@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
-from .utils.parse_csv import (parse, parse_csv, ShareValueType)
+from .utils.parse_csv import (parse, parse_csv)
 from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
@@ -35,7 +35,10 @@ class QMPC:
             endpoints, token))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
-    def send_share_from_csv_file(self, filename: str, matching_column: int = 1, piece_size: int = 1_000_000) -> Dict:
+    def send_share_from_csv_file(self,
+                                 filename: str,
+                                 matching_column: int = 1,
+                                 piece_size: int = 1_000_000) -> Dict:
         logger.info("parse_csv_file. "
                     f"[filename]='{filename}'")
         secrets, schema = parse_csv(filename, matching_column)
@@ -45,7 +48,10 @@ class QMPC:
         return self.__qmpc_server.send_share(
             secrets, schema, matching_column, piece_size)
 
-    def send_share_from_csv_data(self, data: List[List[str]], matching_column: int = 1, piece_size: int = 1_000_000) -> Dict:
+    def send_share_from_csv_data(self,
+                                 data: List[List[str]],
+                                 matching_column: int = 1,
+                                 piece_size: int = 1_000_000) -> Dict:
         logger.info("parse_csv_data. "
                     f"[data size]={len(data)}x{len(data[0])}")
         secrets, schema = parse(data, matching_column)
