@@ -10,7 +10,7 @@ def send_share_param(secrets=[[1, 2, 3]],
                      schema=["attr1", "attr2", "attr3"],
                      matching_column=1,
                      piece_size=1_000_000):
-    return ([schema]+secrets, matching_column, piece_size)
+    return (secrets, schema, matching_column, piece_size)
 
 
 def execute_computation_param(method_id=1,
