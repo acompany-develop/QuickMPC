@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 import pytest
 from utils import get_result, qmpc
+from quickmpc import parse
 
 parallel_num = [
     (5),
@@ -20,14 +21,13 @@ parallel_num = [
 def test_send_share(parallel_num: int):
     # csv dataをパースする
     filename: str = "data/table_data_5x5.csv"
-    secrets, schema = qmpc.parse_csv_file(filename)
 
     # 並列にsend_share
     executor = ThreadPoolExecutor()
     futures = []
     for _ in range(parallel_num):
         futures.append(
-            executor.submit(qmpc.send_share, secrets, schema)
+            executor.submit(qmpc.send_share_from_csv_file, filename)
         )
 
     data_ids = []
@@ -45,11 +45,11 @@ def test_send_share(parallel_num: int):
 )
 def test_execute(parallel_num: int):
     filename: str = "data/table_data_5x5.csv"
-    secrets, schema = qmpc.parse_csv_file(filename)
-    res = qmpc.send_share(secrets, schema)
+    res = qmpc.send_share_from_csv_file(filename)
     data_id = res["data_id"]
 
     # table情報と列指定情報を定義して計算
+    secrets, schema = parse(filename)
     length: int = len(secrets[0])
     table = [[data_id], [], [1]]
     inp = [i for i in range(2, length+1)]

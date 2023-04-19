@@ -61,7 +61,7 @@ qmpc: QMPC = QMPC([
 
 
 def send_share() -> dict:
-    return qmpc.send_share([[1, 2, 3], [4, 5, 6]], ["a", "b", "c"])
+    return qmpc.send_share_from_csv_data([["a", "b", "c"], [1, 2, 3], [4, 5, 6]])
 
 
 def data_id() -> str:

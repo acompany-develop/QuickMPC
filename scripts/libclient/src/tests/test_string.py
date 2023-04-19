@@ -50,12 +50,8 @@ def generate_random_string(seed: int, length: int) -> str:
     ]
 )
 def test_restor_string(secret: str):
-    data = [
-        ['id', 'str'],
-        ['0', secret]
-    ]
-
-    secrets, schema = qmpc.parse_csv_data(data)
+    secrets = [['0', secret]]
+    schema = ['id', 'str']
 
     data_id = tests.common.data_id(secrets, schema)
 

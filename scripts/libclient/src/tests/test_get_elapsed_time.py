@@ -1,16 +1,15 @@
 import pytest
 from utils import get_result, qmpc
+from quickmpc import parse
 
 
 # tableデータを送信してdata_idとtable dataを得る
-def send_share(filename: str) -> tuple:
-    # csv dataをパースする
-    secrets, schema = qmpc.parse_csv_file(filename)
-
+def send_share(filename: str) -> str:
     # データをシェア化し送信する
-    send_res = qmpc.send_share(secrets, schema)
+    send_res = qmpc.send_share_from_csv_file(filename)
     assert(send_res["is_ok"])
-    return secrets, send_res["data_id"]
+    return send_res["data_id"]
+
 
 @pytest.mark.parametrize(
     ("table_file"),
@@ -25,11 +24,13 @@ def send_share(filename: str) -> tuple:
     ]
 )
 def test_get_elapsed_time(table_file: str):
+    filename = f"data/{table_file}.csv"
 
     # share送信
-    secrets, data_id = send_share(f"data/{table_file}.csv")
+    data_id = send_share(filename)
 
     # table情報と列指定情報を定義して計算
+    secrets, schema = parse(filename)
     length = len(secrets[0])
     table = [[data_id], [], [1]]
     inp = [i for i in range(2, length+1)]

@@ -1,4 +1,4 @@
-from quickmpc import QMPC
+from quickmpc import QMPC, parse_csv
 from tabulate import tabulate
 from typing import List
 import sys
@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # csv dataをパースする
     filename: str = sys.argv[1]
 
-    secrets, schema = qmpc.parse_csv_file(filename)
+    secrets, schema = parse_csv(filename)
     # データをシェア化する
     res = qmpc.demo_sharize(secrets)
     for party_id, share in enumerate(res['results']):

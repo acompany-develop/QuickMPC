@@ -9,8 +9,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 def send_share(filename: str):
-    secrets, schema = qmpc.parse_csv_file(filename)
-    res = qmpc.send_share(secrets, schema)
+    res = qmpc.send_share_from_csv_file(filename)
     return res["data_id"]
 
 
