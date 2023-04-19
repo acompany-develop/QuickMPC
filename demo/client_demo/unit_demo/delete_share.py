@@ -16,13 +16,10 @@ if __name__ == '__main__':
     )
 
     # 複数のシェアを作成・送信
+    data = [["key", "1"]]
     data_ids = []
     for i in range(3):
-        res = qmpc.send_share(
-            [[1]],
-            [Schema(name="key",
-                    type=ShareValueTypeEnum.SHARE_VALUE_TYPE_FIXED_POINT)]
-        )
+        res = qmpc.send_share_from_csv_data(data)
         data_ids.append(res['data_id'])
         logger.info(res)
 
