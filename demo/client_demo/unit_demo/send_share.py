@@ -18,11 +18,8 @@ if __name__ == '__main__':
         print('Usage: $ pipenv run python send_share.py [file_path]',
               file=sys.stderr)
         sys.exit(1)
-    # csv dataをパースする
-    filename: str = sys.argv[1]
-
-    secrets, schema = qmpc.parse_csv_file(filename)
 
     # データをシェア化し送信する
-    res = qmpc.send_share(secrets, schema)
+    filename: str = sys.argv[1]
+    res = qmpc.send_share_from_csv_file(filename)
     logger.info(res)

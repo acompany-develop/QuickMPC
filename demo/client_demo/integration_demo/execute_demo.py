@@ -29,27 +29,24 @@ if __name__ == '__main__':
     )
     # データ Setting
     data_dir: str = "../data/"
-    secrets1, schema1 = qmpc.parse_csv_file(data_dir+"data1-1.csv")
-    secrets2, schema2 = qmpc.parse_csv_file(data_dir+"data1-2.csv")
-    secrets3, schema3 = qmpc.parse_csv_file(data_dir+"data-meshcode.csv")
 
     """ Step 2. シェア送信 """
     logger.info("---- send_share start ----")
-    send_res1 = qmpc.send_share(secrets1, schema1)
+    send_res1 = qmpc.send_share_from_csv_data(data_dir+"data1-1.csv")
     if not send_res1["is_ok"]:
         raise
     data_id1 = send_res1["data_id"]
     logger.info(f"data_id1: {data_id1}")
 
     time.sleep(1)
-    send_res2 = qmpc.send_share(secrets2, schema2)
+    send_res2 = qmpc.send_share_from_csv_data(data_dir+"data1-2.csv")
     if not send_res2["is_ok"]:
         raise
     data_id2 = send_res2["data_id"]
     logger.info(f"data_id2: {data_id2}")
 
     time.sleep(1)
-    send_res3 = qmpc.send_share(secrets3, schema3)
+    send_res3 = qmpc.send_share_from_csv_data(data_dir+"data-meshcode.csv")
     if not send_res3["is_ok"]:
         raise
     data_id3 = send_res3["data_id"]
