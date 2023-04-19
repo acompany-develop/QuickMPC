@@ -44,7 +44,7 @@ class TestQMPC:
     def test_send_shares(self, params,
                          run_server1, run_server2, run_server3):
         """ serverにシェアを送れるかのTest"""
-        response: Dict[str, Any] = self.qmpc.send_share_from_csv_data(*params)
+        response: Dict[str, Any] = self.qmpc.send_share(*params)
         assert (response["is_ok"])
 
     @pytest.mark.parametrize(
@@ -70,7 +70,7 @@ class TestQMPC:
     def test_send_shares_errorhandring(self, params, expected_exception,
                                        run_server1, run_server2, run_server3):
         with pytest.raises(expected_exception):
-            self.qmpc.send_share_from_csv_data(*params)
+            self.qmpc.send_share(*params)
 
     def test_delete_shares(self, run_server1, run_server2, run_server3):
         """ serverにシェア削除要求を送れるかのTest"""
