@@ -62,7 +62,7 @@ class QMPC:
                     f"[delete id list]={data_ids}")
         return self.__qmpc_server.delete_share(data_ids)
 
-    def mean(self, join_order: Tuple[List, List, List],
+    def mean(self, join_order: Tuple[List[str], List[int], List[int]],
              src: List) -> Dict:
         logger.info("mean request. "
                     f"[data_id list]={join_order[0]} "
@@ -73,7 +73,7 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_MEAN"),
             join_order, (src, []))
 
-    def variance(self, join_order: Tuple[List, List, List],
+    def variance(self, join_order: Tuple[List[str], List[int], List[int]],
                  src: List) -> Dict:
         logger.info("variance request. "
                     f"[data_id list]={join_order[0]} "
@@ -84,7 +84,7 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_VARIANCE"),
             join_order, (src, []))
 
-    def sum(self, join_order: Tuple[List, List, List], src: List) -> Dict:
+    def sum(self, join_order: Tuple[List[str], List[int], List[int]], src: List) -> Dict:
         logger.info("sum request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
@@ -94,7 +94,7 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_SUM"),
             join_order, (src, []))
 
-    def correl(self, join_order: Tuple[List, List, List],
+    def correl(self, join_order: Tuple[List[str], List[int], List[int]],
                inp: Tuple[List, List]) -> Dict:
         logger.info("correl request. "
                     f"[data_id list]={join_order[0]} "
@@ -106,7 +106,7 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_CORREL"),
             join_order, inp)
 
-    def meshcode(self, join_order: Tuple[List, List, List],
+    def meshcode(self, join_order: Tuple[List[str], List[int], List[int]],
                  src: List) -> Dict:
         logger.info("meshcode request. "
                     f"[data_id list]={join_order[0]} "
@@ -117,7 +117,7 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_MESH_CODE"),
             join_order, (src, []))
 
-    def get_join_table(self, join_order: Tuple[List, List, List]) -> Dict:
+    def get_join_table(self, join_order: Tuple[List[str], List[int], List[int]]) -> Dict:
         logger.info("get_join_table request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
