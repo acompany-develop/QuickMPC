@@ -126,12 +126,12 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_JOIN_TABLE"),
             join_order, (join_order[2], []))
 
-    def get_computation_result(self, job_id: str,
+    def get_computation_result(self, job_uuid: str,
                                path: Optional[str] = None) -> Dict:
         logger.info("get_computation_result request. "
-                    f"[job_id]={job_id} "
+                    f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
-        return self.__qmpc_server.get_computation_result(job_id, path)
+        return self.__qmpc_server.get_computation_result(job_uuid, path)
 
     def get_data_list(self) \
             -> Dict:
@@ -144,21 +144,21 @@ class QMPC:
         share = Share.sharize(secrets, self.__party_size)
         return {'is_ok': True, 'results': share}
 
-    def get_elapsed_time(self, job_id: str) -> Dict:
+    def get_elapsed_time(self, job_uuid: str) -> Dict:
         logger.info("get_elapsed_time request. "
-                    f"[job_id]={job_id}")
-        return self.__qmpc_server.get_elapsed_time(job_id)
+                    f"[job_uuid]={job_uuid}")
+        return self.__qmpc_server.get_elapsed_time(job_uuid)
 
-    def restore(self, job_id: str, path: str):
+    def restore(self, job_uuid: str, path: str):
         logger.info("restore request. "
-                    f"[job_id]={job_id} "
+                    f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
-        return restore(job_id, path, self.__party_size)
+        return restore(job_uuid, path, self.__party_size)
 
-    def get_job_error_info(self, job_id: str) -> Dict:
+    def get_job_error_info(self, job_uuid: str) -> Dict:
         logger.info("get_job_error_info request. "
-                    f"[job_id]={job_id}")
-        return self.__qmpc_server.get_job_error_info(job_id)
+                    f"[job_uuid]={job_uuid}")
+        return self.__qmpc_server.get_job_error_info(job_uuid)
 
     @staticmethod
     def set_log_level(level: int):
