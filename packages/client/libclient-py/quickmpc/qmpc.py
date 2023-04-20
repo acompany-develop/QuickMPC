@@ -84,7 +84,8 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_VARIANCE"),
             join_order, (src, []))
 
-    def sum(self, join_order: Tuple[List[str], List[int], List[int]], src: List) -> Dict:
+    def sum(self, join_order: Tuple[List[str], List[int], List[int]],
+            src: List) -> Dict:
         logger.info("sum request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
@@ -117,7 +118,9 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_MESH_CODE"),
             join_order, (src, []))
 
-    def get_join_table(self, join_order: Tuple[List[str], List[int], List[int]]) -> Dict:
+    def get_join_table(self,
+                       join_order: Tuple[List[str], List[int], List[int]]) \
+            -> Dict:
         logger.info("get_join_table request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
