@@ -1,38 +1,24 @@
 # QuickMPC-libClient-pyが提供する機能
 
-## QMPC.parse_csv_file
-csvファイルからテーブルデータを読み込んでパースする．
+## QMPC.send_share_from_csv_file
+csvファイルからテーブルデータを読み込みShare化して送信する
 ### Parameters
 - file: `str`
 	- 読み込むファイル名
 
 ### Returns
-- parse_data: `Tuple[List[List[float]], List[str]]`
-	- parse_data[0]: schemaを除くテーブルデータ
-	- parse_data[1]: schema
+- res: `Dict`
+	- res["is_ok"]: `bool`
+		- 送信が成功したかどうか
+	- res["data_id"]: `str`
+		- テーブルデータのID
 
-## QMPC.parse_csv_data
-テーブルデータをパースする．
+## QMPC.send_share_from_csv_data
+テーブルデータをShare化して送信する
 ### Parameters
 - data: `List[List[str]]`
 	- パースするテーブルデータ
 
-### Returns
-- parse_data: `Tuple[List[List[float]], List[str]]`
-	- parse_data[0]: schemaを除くテーブルデータ
-	- parse_data[1]: schema
-
-## QMPC.send_share
-エンジンにテーブルデータをShare化して送信する
-### Parameters
-- secrets: `List[List[str]]`
-	- 送信するテーブルデータ
-- schema: `List[str]`
-	- テーブルデータのschema
-- matching_column: `int`
-	- 結合する場合に用いる列
-- piece_size: `int`
-	- 分割データの最大サイズ
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
