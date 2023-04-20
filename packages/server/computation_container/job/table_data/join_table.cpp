@@ -343,8 +343,9 @@ std::string writeVJoinTable(
         }
         if (itr1 == table1.end())
         {
-            // TODO: 適切なエラーを返す
-            throw std::runtime_error("");
+            qmpc::Log::throw_with_trace(
+                std::range_error("The specified row is out of range of the table data.")
+            );
         }
 
         // 行を構築
@@ -374,8 +375,9 @@ std::string writeVJoinTable(
         }
         if (itr2 == table2.end())
         {
-            // TODO: 適切なエラーを返す
-            throw std::runtime_error("");
+            qmpc::Log::throw_with_trace(
+                std::range_error("The specified row is out of range of the table data.")
+            );
         }
 
         // 行を構築
@@ -446,8 +448,9 @@ std::string writeHJoinTable(
         }
         if (itr1 == table1.end() || itr2 == table2.end())
         {
-            // TODO: 適切なエラーを返す
-            throw std::runtime_error("");
+            qmpc::Log::throw_with_trace(
+                std::range_error("The specified row is out of range of the table data.")
+            );
         }
 
         // 行を構築
