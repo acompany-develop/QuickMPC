@@ -95,7 +95,7 @@ class QMPC:
             join_order, (src, []))
 
     def correl(self, join_order: Tuple[List[str], List[int], List[int]],
-               inp: Tuple[List, List]) -> Dict:
+               inp: Tuple[List[int], List[int]]) -> Dict:
         logger.info("correl request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
