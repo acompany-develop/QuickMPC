@@ -62,7 +62,7 @@ class QMPC:
                     f"[delete id list]={data_ids}")
         return self.__qmpc_server.delete_share(data_ids)
 
-    def mean(self, join_order: Tuple[List, List, List],
+    def mean(self, join_order: Tuple[List[str], List[int], List[int]],
              src: List) -> Dict:
         logger.info("mean request. "
                     f"[data_id list]={join_order[0]} "
@@ -73,7 +73,7 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_MEAN"),
             join_order, (src, []))
 
-    def variance(self, join_order: Tuple[List, List, List],
+    def variance(self, join_order: Tuple[List[str], List[int], List[int]],
                  src: List) -> Dict:
         logger.info("variance request. "
                     f"[data_id list]={join_order[0]} "
@@ -84,7 +84,8 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_VARIANCE"),
             join_order, (src, []))
 
-    def sum(self, join_order: Tuple[List, List, List], src: List) -> Dict:
+    def sum(self, join_order: Tuple[List[str], List[int], List[int]],
+            src: List) -> Dict:
         logger.info("sum request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
@@ -94,8 +95,8 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_SUM"),
             join_order, (src, []))
 
-    def correl(self, join_order: Tuple[List, List, List],
-               inp: Tuple[List, List]) -> Dict:
+    def correl(self, join_order: Tuple[List[str], List[int], List[int]],
+               inp: Tuple[List[int], List[int]]) -> Dict:
         logger.info("correl request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
@@ -106,7 +107,7 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_CORREL"),
             join_order, inp)
 
-    def meshcode(self, join_order: Tuple[List, List, List],
+    def meshcode(self, join_order: Tuple[List[str], List[int], List[int]],
                  src: List) -> Dict:
         logger.info("meshcode request. "
                     f"[data_id list]={join_order[0]} "
@@ -117,7 +118,9 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_MESH_CODE"),
             join_order, (src, []))
 
-    def get_join_table(self, join_order: Tuple[List, List, List]) -> Dict:
+    def get_join_table(self,
+                       join_order: Tuple[List[str], List[int], List[int]]) \
+            -> Dict:
         logger.info("get_join_table request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
@@ -126,12 +129,12 @@ class QMPC:
             ComputationMethod.Value("COMPUTATION_METHOD_JOIN_TABLE"),
             join_order, (join_order[2], []))
 
-    def get_computation_result(self, job_id: str,
+    def get_computation_result(self, job_uuid: str,
                                path: Optional[str] = None) -> Dict:
         logger.info("get_computation_result request. "
-                    f"[job_id]={job_id} "
+                    f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
-        return self.__qmpc_server.get_computation_result(job_id, path)
+        return self.__qmpc_server.get_computation_result(job_uuid, path)
 
     def get_data_list(self) \
             -> Dict:
@@ -144,21 +147,21 @@ class QMPC:
         share = Share.sharize(secrets, self.__party_size)
         return {'is_ok': True, 'results': share}
 
-    def get_elapsed_time(self, job_id: str) -> Dict:
+    def get_elapsed_time(self, job_uuid: str) -> Dict:
         logger.info("get_elapsed_time request. "
-                    f"[job_id]={job_id}")
-        return self.__qmpc_server.get_elapsed_time(job_id)
+                    f"[job_uuid]={job_uuid}")
+        return self.__qmpc_server.get_elapsed_time(job_uuid)
 
-    def restore(self, job_id: str, path: str):
+    def restore(self, job_uuid: str, path: str):
         logger.info("restore request. "
-                    f"[job_id]={job_id} "
+                    f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
-        return restore(job_id, path, self.__party_size)
+        return restore(job_uuid, path, self.__party_size)
 
-    def get_job_error_info(self, job_id: str) -> Dict:
+    def get_job_error_info(self, job_uuid: str) -> Dict:
         logger.info("get_job_error_info request. "
-                    f"[job_id]={job_id}")
-        return self.__qmpc_server.get_job_error_info(job_id)
+                    f"[job_uuid]={job_uuid}")
+        return self.__qmpc_server.get_job_error_info(job_uuid)
 
     @staticmethod
     def set_log_level(level: int):
