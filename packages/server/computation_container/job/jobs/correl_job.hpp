@@ -72,8 +72,10 @@ public:
 
         auto results = toString(ret);
         auto column_number = (results.empty() ? -1 : results[0].size());
-        auto db_client = qmpc::ComputationToDb::Client::getInstance();
-        db_client->writeComputationResult(job_uuid, results, 1, column_number);
+        auto computationResultWriter =
+            qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 1, column_number);
+        computationResultWriter.emplace(results);
+        computationResultWriter.write();
     }
 };
 }  // namespace qmpc::Job

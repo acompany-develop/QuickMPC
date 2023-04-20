@@ -42,63 +42,77 @@ std::vector<nlohmann::json> convertSchemaVectorToJsonVector(
     return dst;
 }
 
-/************ Client::ComputationResultWriter ************/
-Client::ComputationResultWriter::ComputationResultWriter(
-    const std::string &job_uuid, int key, int column_number, int piece_size
+/************ ComputationResultWriter ************/
+ComputationResultWriter::ComputationResultWriter(
+    const std::string &job_uuid, int data_type, int column_number, int piece_size
 )
     : current_size(0)
     , piece_id(0)
     , job_uuid(job_uuid)
-    , data_name(
-          (key == 0)   ? "dim1"
-          : (key == 1) ? "dim2"
-                       : "schema"
-      )
+    , data_type(data_type)
     // NOTE: Client側で復元する際に0以下だと不都合が生じるため
     , column_number(std::max(1, column_number))
     , piece_size(piece_size)
 {
 }
 
-void Client::ComputationResultWriter::write()
+void ComputationResultWriter::write(bool fin)
 {
     nlohmann::json piece_data_json = {
         {"job_uuid", job_uuid},
         {"result", piece_data},
         {"meta", {{"piece_id", piece_id}, {"column_number", column_number}}}};
     const std::string data = piece_data_json.dump();
-
-    auto data_file = data_name + "_" + std::to_string(piece_id);
-    auto ofs = std::ofstream(resultDbPath / job_uuid / data_file);
-    ofs << data;
-    ofs.close();
+    Client::getInstance()->writeResultDB(job_uuid, data, data_type, piece_id);
 
     ++piece_id;
     current_size = 0;
     piece_data.clear();
+
+    if (fin)
+    {
+        Client::getInstance()->updateJobCompleted(job_uuid);
+    }
 }
 
-void Client::ComputationResultWriter::emplace(const std::string &s)
+void ComputationResultWriter::emplace(const std::string &s)
 {
     int size = s.size();
     if (current_size + size >= piece_size)
     {
-        write();
+        write(false);
     }
     piece_data.emplace_back(s);
     current_size += size;
 }
-void Client::ComputationResultWriter::emplace(const std::vector<std::string> &v)
+void ComputationResultWriter::emplace(const std::vector<std::string> &v)
 {
     for (const auto &x : v)
     {
         emplace(x);
     }
 }
-void Client::ComputationResultWriter::emplace(const SchemaType &s)
+
+void ComputationResultWriter::emplace(const std::vector<std::vector<std::string>> &v)
+{
+    for (const auto &x : v)
+    {
+        emplace(x);
+    }
+}
+
+void ComputationResultWriter::emplace(const SchemaType &s)
 {
     auto json = convertSchemaToJson(s);
     emplace(json.dump());
+}
+
+void ComputationResultWriter::emplace(const std::vector<SchemaType> &v)
+{
+    for (const auto &x : v)
+    {
+        emplace(x);
+    }
 }
 
 /************ TableWriter ************/
@@ -239,6 +253,19 @@ void Client::writeShareDB(const std::string &data_id, const std::string &data, i
     ofs.close();
 }
 
+// resultDBに対してdataを書き込む
+void Client::writeResultDB(
+    const std::string &job_uuid, const std::string &data, int data_type, int piece_id
+)
+{
+    fs::create_directories(resultDbPath / job_uuid);
+    std::string data_name = (data_type == 0) ? "dim1" : (data_type == 1) ? "dim2" : "schema";
+    auto data_file = data_name + "_" + std::to_string(piece_id);
+    auto ofs = std::ofstream(shareDbPath / job_uuid / data_file);
+    ofs << data;
+    ofs.close();
+}
+
 // Job を DB に新規登録する
 void Client::registerJob(const std::string &job_uuid, const int &status) const
 {
@@ -258,6 +285,12 @@ void Client::updateJobStatus(const std::string &job_uuid, const int &status) con
     std::chrono::system_clock::time_point tp = std::chrono::system_clock::now();
     auto tp_msec = std::chrono::duration_cast<std::chrono::milliseconds>(tp.time_since_epoch());
     ofs << tp_msec.count();
+}
+
+// Job の完了を登録する
+void Client::updateJobCompleted(const std::string &job_uuid) const
+{
+    std::ofstream(resultDbPath / job_uuid / "completed");
 }
 
 void Client::saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)

@@ -25,26 +25,6 @@ class Client final
     static inline const auto shareDbPath = fs::path("/db/share/");
     static inline const auto resultDbPath = fs::path("/db/result/");
 
-    class ComputationResultWriter
-    {
-        int current_size;
-        int piece_id;
-        std::vector<std::string> piece_data;
-
-        const std::string job_uuid;
-        const std::string data_name;
-        const int column_number;
-        const int piece_size;
-
-    public:
-        ComputationResultWriter(const std::string &, int, int, int);
-        void write();
-
-        void emplace(const std::string &);
-        void emplace(const std::vector<std::string> &);
-        void emplace(const SchemaType &);
-    };
-
 public:
     Client();
     static std::shared_ptr<Client> getInstance();
@@ -55,6 +35,10 @@ public:
 
     // shareDBに対してdataを書き込む
     void writeShareDB(const std::string &data_id, const std::string &data, int piece_id = 0);
+    // resultDBに対してdataを書き込む
+    void writeResultDB(
+        const std::string &job_uuid, const std::string &data, int data_type, int piece_id = 0
+    );
 
     // Job を DB に新規登録する
     void registerJob(const std::string &job_uuid, const int &status) const;
@@ -62,33 +46,37 @@ public:
     // Job の実行状態を更新する
     void updateJobStatus(const std::string &job_uuid, const int &status) const;
 
+    // Job の完了を登録する
+    void updateJobCompleted(const std::string &job_uuid) const;
+
     // Job 実行中に発生したエラーに関する情報を保存する
     void saveErrorInfo(const std::string &job_uuid, const pb_common_types::JobErrorInfo &info)
         const;
+};
 
-    // 保存時にデフォルトで呼ばれる恒等関数
-    static inline auto identity = [](const auto &t) { return t; };
+// 計算結果のWriter
+class ComputationResultWriter
+{
+    int current_size;
+    int piece_id;
+    std::vector<std::string> piece_data;
+
+    const std::string job_uuid;
+    const int data_type;
+    const int column_number;
+    const int piece_size;
+
+public:
+    ComputationResultWriter(const std::string &, int, int, int piece_size = 1000000);
 
     // resultの保存
-    // NOTE: result_listにbegin()とend()が実装されている必要がある
-    template <class T, class F = decltype(identity)>
-    void writeComputationResult(
-        const std::string &job_uuid,
-        const T &result_list,
-        int data_type,  // 0:dim1, 1:dim2, 2:schema
-        int column_number,
-        const F &f = identity,  // 保存時にitrごとに加工したい場合に指定する
-        int piece_size = 1000000
-    ) const
-    {
-        auto writer = ComputationResultWriter(job_uuid, data_type, column_number, piece_size);
-        for (const auto &x : result_list)
-        {
-            writer.emplace(f(x));
-        }
-        writer.write();
-        std::ofstream(resultDbPath / job_uuid / "completed");
-    }
+    void emplace(const std::string &);
+    void emplace(const std::vector<std::string> &);
+    void emplace(const std::vector<std::vector<std::string>> &);
+    void emplace(const SchemaType &);
+    void emplace(const std::vector<SchemaType> &);
+
+    void write(bool fin = true);
 };
 
 // TableWriterとComputationResultWriterは本質的には同じことをしているが，
