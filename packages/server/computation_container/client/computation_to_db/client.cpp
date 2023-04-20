@@ -85,34 +85,10 @@ void ComputationResultWriter::emplace(const std::string &s)
     piece_data.emplace_back(s);
     current_size += size;
 }
-void ComputationResultWriter::emplace(const std::vector<std::string> &v)
-{
-    for (const auto &x : v)
-    {
-        emplace(x);
-    }
-}
-
-void ComputationResultWriter::emplace(const std::vector<std::vector<std::string>> &v)
-{
-    for (const auto &x : v)
-    {
-        emplace(x);
-    }
-}
-
 void ComputationResultWriter::emplace(const SchemaType &s)
 {
     auto json = convertSchemaToJson(s);
     emplace(json.dump());
-}
-
-void ComputationResultWriter::emplace(const std::vector<SchemaType> &v)
-{
-    for (const auto &x : v)
-    {
-        emplace(x);
-    }
 }
 
 /************ TableWriter ************/

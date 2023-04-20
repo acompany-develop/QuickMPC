@@ -70,11 +70,16 @@ public:
     ComputationResultWriter(const std::string &, int, int, int piece_size = 1000000);
 
     // resultの保存
+    template <class Iteratable>
+    void emplace(const Iteratable &v)
+    {
+        for (const auto &x : v)
+        {
+            emplace(x);
+        }
+    }
     void emplace(const std::string &);
-    void emplace(const std::vector<std::string> &);
-    void emplace(const std::vector<std::vector<std::string>> &);
     void emplace(const SchemaType &);
-    void emplace(const std::vector<SchemaType> &);
 
     void write(bool fin = true);
 };
