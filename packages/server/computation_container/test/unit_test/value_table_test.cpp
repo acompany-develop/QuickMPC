@@ -1,8 +1,8 @@
 #include <experimental/filesystem>
 #include <fstream>
 
-#include "client/computation_to_db/value_table.hpp"
 #include "gtest/gtest.h"
+#include "job/table_data/value_table.hpp"
 
 namespace fs = std::experimental::filesystem;
 
