@@ -237,7 +237,7 @@ void Client::writeResultDB(
     fs::create_directories(resultDbPath / job_uuid);
     std::string data_name = (data_type == 0) ? "dim1" : (data_type == 1) ? "dim2" : "schema";
     auto data_file = data_name + "_" + std::to_string(piece_id);
-    auto ofs = std::ofstream(shareDbPath / job_uuid / data_file);
+    auto ofs = std::ofstream(resultDbPath / job_uuid / data_file);
     ofs << data;
     ofs.close();
 }

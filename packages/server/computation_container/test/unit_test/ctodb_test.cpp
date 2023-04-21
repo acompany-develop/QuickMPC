@@ -300,7 +300,7 @@ TEST(ComputationToDbTest, SuccessComputationResultWriterSchemaTest)
     fs::create_directories("/db/result/" + job_uuid);
 
     auto writer = qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 2, 3);
-    writer.emplace(data);
+    writer.emplace(schema);
     writer.write();
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/schema_0");
