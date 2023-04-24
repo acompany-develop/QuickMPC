@@ -55,7 +55,7 @@ public:
         auto computationResultWriter =
             qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 0, results.size());
         computationResultWriter.emplace(results);
-        computationResultWriter.write();
+        computationResultWriter.completed();
     }
 };
 }  // namespace qmpc::Job

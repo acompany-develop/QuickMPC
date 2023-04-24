@@ -252,7 +252,7 @@ TEST(ComputationToDbTest, SuccessComputationResultWriterArrayTest)
 
     auto writer = qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 0, 3);
     writer.emplace(data);
-    writer.write();
+    writer.completed();
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/dim1_0");
     std::string read_data;
@@ -274,7 +274,7 @@ TEST(ComputationToDbTest, SuccessComputationResultWriter2dimTest)
 
     auto writer = qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 1, 2);
     writer.emplace(data);
-    writer.write();
+    writer.completed();
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/dim2_0");
     std::string read_data;
@@ -301,7 +301,7 @@ TEST(ComputationToDbTest, SuccessComputationResultWriterSchemaTest)
 
     auto writer = qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 2, 3);
     writer.emplace(schema);
-    writer.write();
+    writer.completed();
 
     auto ifs = std::ifstream("/db/result/" + job_uuid + "/schema_0");
     std::string read_data;
@@ -326,7 +326,7 @@ TEST(ComputationToDbTest, SuccessComputationResultWriterArrayPieceTest)
 
     auto writer = qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 1, 3, 4);
     writer.emplace(data);
-    writer.write();
+    writer.completed();
 
     std::vector<std::string> true_result = {R"(["12"])", R"(["15"])", R"(["21"])"};
     for (size_t piece_id = 0; piece_id < true_result.size(); ++piece_id)
@@ -354,7 +354,7 @@ TEST(ComputationToDbTest, SuccessComputationResultWriterCompletedTest)
 
     auto writer = qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 1, 3);
     writer.emplace(data);
-    writer.write();
+    writer.completed();
 
     auto exist = fs::exists("/db/result/" + job_uuid + "/completed");
     EXPECT_TRUE(exist);
@@ -380,7 +380,7 @@ TEST(ComputationToDbTest, SuccessTableWriteTest)
     {
         writer.emplace(row);
     }
-    writer.write();
+    writer.completed();
 
     auto ifs = std::ifstream("/db/share/" + data_id + "/0");
     std::string data;
@@ -410,7 +410,7 @@ TEST(ComputationToDbTest, SuccessTableWritePieceTest)
     {
         writer.emplace(row);
     }
-    writer.write();
+    writer.completed();
 
     std::vector<std::string> true_data = {
         R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"

@@ -56,7 +56,7 @@ ComputationResultWriter::ComputationResultWriter(
 {
 }
 
-void ComputationResultWriter::write(bool fin)
+void ComputationResultWriter::write()
 {
     nlohmann::json piece_data_json = {
         {"job_uuid", job_uuid},
@@ -68,11 +68,6 @@ void ComputationResultWriter::write(bool fin)
     ++piece_id;
     current_size = 0;
     piece_data.clear();
-
-    if (fin)
-    {
-        Client::getInstance()->updateJobCompleted(job_uuid);
-    }
 }
 
 void ComputationResultWriter::emplace(const std::string &s)
@@ -80,7 +75,7 @@ void ComputationResultWriter::emplace(const std::string &s)
     int size = s.size();
     if (current_size + size >= piece_size)
     {
-        write(false);
+        write();
     }
     piece_data.emplace_back(s);
     current_size += size;
@@ -89,6 +84,11 @@ void ComputationResultWriter::emplace(const SchemaType &s)
 {
     auto json = convertSchemaToJson(s);
     emplace(json.dump());
+}
+void ComputationResultWriter::completed()
+{
+    write();
+    Client::getInstance()->updateJobCompleted(job_uuid);
 }
 
 /************ TableWriter ************/

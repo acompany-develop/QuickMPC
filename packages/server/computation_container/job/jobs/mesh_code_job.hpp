@@ -108,7 +108,7 @@ public:
         auto computationResultWriter =
             qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 1, column_number);
         computationResultWriter.emplace(results);
-        computationResultWriter.write();
+        computationResultWriter.completed();
     }
 };
 }  // namespace qmpc::Job

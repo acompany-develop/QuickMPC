@@ -50,13 +50,13 @@ public:
         {
             computationResultWriterTable.emplace(removeIdColumn(arg, row));
         }
-        computationResultWriterTable.write();
+        computationResultWriterTable.completed();
 
         // Schemaを保存
         auto computationResultWriterSchema =
             qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 2, column_number);
         computationResultWriterSchema.emplace(new_schemas);
-        computationResultWriterSchema.write();
+        computationResultWriterSchema.completed();
     }
 };
 }  // namespace qmpc::Job

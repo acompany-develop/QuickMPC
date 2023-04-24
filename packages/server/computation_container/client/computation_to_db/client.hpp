@@ -66,6 +66,8 @@ class ComputationResultWriter
     const int column_number;
     const int piece_size;
 
+    void write();
+
 public:
     ComputationResultWriter(const std::string &, int, int, int piece_size = 1000000);
 
@@ -80,8 +82,7 @@ public:
     }
     void emplace(const std::string &);
     void emplace(const SchemaType &);
-
-    void write(bool fin = true);
+    void completed();
 };
 
 // TableWriterとComputationResultWriterは本質的には同じことをしているが，
