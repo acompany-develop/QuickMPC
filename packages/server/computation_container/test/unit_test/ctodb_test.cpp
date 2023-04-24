@@ -380,7 +380,7 @@ TEST(ComputationToDbTest, SuccessTableWriteTest)
     {
         writer.emplace(row);
     }
-    writer.completed();
+    writer.write();
 
     auto ifs = std::ifstream("/db/share/" + data_id + "/0");
     std::string data;
@@ -410,7 +410,7 @@ TEST(ComputationToDbTest, SuccessTableWritePieceTest)
     {
         writer.emplace(row);
     }
-    writer.completed();
+    writer.write();
 
     std::vector<std::string> true_data = {
         R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
