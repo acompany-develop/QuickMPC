@@ -43,12 +43,20 @@ public:
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto column_number = new_schemas.size();
 
-        // argを束縛した関数を生成する
-        auto f = std::bind(removeIdColumn<std::vector<std::string>>, arg, std::placeholders::_1);
-        // tableの保存
-        db_client->writeComputationResult(job_uuid, table, 1, column_number, f);
-        // schemaの保存
-        db_client->writeComputationResult(job_uuid, new_schemas, 2, column_number);
+        // ID列を削除してTableを保存
+        auto computationResultWriterTable =
+            qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 1, column_number);
+        for (const auto &row : table)
+        {
+            computationResultWriterTable.emplace(removeIdColumn(arg, row));
+        }
+        computationResultWriterTable.completed();
+
+        // Schemaを保存
+        auto computationResultWriterSchema =
+            qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 2, column_number);
+        computationResultWriterSchema.emplace(new_schemas);
+        computationResultWriterSchema.completed();
     }
 };
 }  // namespace qmpc::Job

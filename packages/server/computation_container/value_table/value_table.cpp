@@ -34,8 +34,9 @@ RowType TableIterator::operator*()
 {
     if (!itr)
     {
-        // TODO: QMPCのerror logを使う
-        throw std::runtime_error("");
+        qmpc::Log::throw_with_trace(
+            std::range_error("The specified row is out of range of the table data.")
+        );
     }
     return *(itr.value());
 }
@@ -43,8 +44,9 @@ TableIterator &TableIterator::operator++()
 {
     if (!itr || !piece_table)
     {
-        // TODO: QMPCのerror logを使う
-        throw std::runtime_error("");
+        qmpc::Log::throw_with_trace(
+            std::range_error("The specified row is out of range of the table data.")
+        );
     }
 
     ++itr.value();

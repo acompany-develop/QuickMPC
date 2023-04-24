@@ -12,12 +12,12 @@
 #include <boost/range/adaptor/indexed.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 
-#include "client/computation_to_db/join_table.hpp"
 #include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
 #include "job_parameter.hpp"
 #include "job_status.hpp"
 #include "logging/logger.hpp"
 #include "share/share.hpp"
+#include "value_table/join_table.hpp"
 
 namespace qmpc::Job
 {

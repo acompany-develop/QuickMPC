@@ -8,7 +8,7 @@ cc_library(
         "//computation:computation",
         "//share:share",
         "//client/computation_to_db:client",
-        "//client/computation_to_db:jointable",
+        "//value_table:jointable",
         "@proto//manage_to_computation_container:manage_to_computation_cc_grpc",
         "//logging:log"
     ],
