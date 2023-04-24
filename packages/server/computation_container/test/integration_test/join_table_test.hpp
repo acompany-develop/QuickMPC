@@ -4,7 +4,7 @@
 
 #include "client/computation_to_db/client.hpp"
 #include "gtest/gtest.h"
-#include "job/table_data/join_table.hpp"
+#include "value_table/join_table.hpp"
 namespace fs = std::experimental::filesystem;
 
 using Schema = std::vector<qmpc::ComputationToDb::SchemaType>;

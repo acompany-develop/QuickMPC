@@ -139,7 +139,7 @@ cc_test(
     copts = ["-Iexternal/gtest/include"],
     deps = [
         "@gtest//:main",
-        "//job/table_data:valuetable",
+        "//value_table:valuetable",
     ],
     linkopts = [
         "-lstdc++fs"

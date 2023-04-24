@@ -73,7 +73,7 @@ cc_library(
     ],
     deps = [
         "@gtest//:main",
-        "//job/table_data:jointable",
+        "//value_table:jointable",
     ],
     visibility = ["//visibility:public"],
 )

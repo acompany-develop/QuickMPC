@@ -1,7 +1,7 @@
 #pragma once
 
 #include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
-#include "job/table_data/value_table.hpp"
+#include "value_table/value_table.hpp"
 
 namespace qmpc::ComputationToDb
 {

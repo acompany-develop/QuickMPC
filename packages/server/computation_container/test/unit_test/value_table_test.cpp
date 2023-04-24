@@ -2,7 +2,7 @@
 #include <fstream>
 
 #include "gtest/gtest.h"
-#include "job/table_data/value_table.hpp"
+#include "value_table/value_table.hpp"
 
 namespace fs = std::experimental::filesystem;
 

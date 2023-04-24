@@ -14,7 +14,7 @@ cc_library(
         "//job:progressManager",
         "//logging:log",
         "//client/computation_to_db:client",
-        "//job/table_data:valuetable",
+        "//value_table:valuetable",
     ],
     visibility = ["//visibility:public"],
 )

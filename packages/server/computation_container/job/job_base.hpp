@@ -13,11 +13,11 @@
 #include <boost/range/adaptor/transformed.hpp>
 
 #include "external/proto/manage_to_computation_container/manage_to_computation.grpc.pb.h"
-#include "job/table_data/join_table.hpp"
 #include "job_parameter.hpp"
 #include "job_status.hpp"
 #include "logging/logger.hpp"
 #include "share/share.hpp"
+#include "value_table/join_table.hpp"
 
 namespace qmpc::Job
 {
