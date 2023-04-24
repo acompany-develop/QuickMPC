@@ -31,9 +31,6 @@ services:
       - printenv && ./computation_container_test
     env_file:
       - ../config/computation_container/compute1/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.20
     expose:
       - 51020
       - 50010
@@ -67,9 +64,6 @@ services:
       - printenv && ./computation_container_test
     env_file:
       - ../config/computation_container/compute2/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.20
     expose:
       - 51020
       - 50010
@@ -103,9 +97,6 @@ services:
       - printenv && ./computation_container_test
     env_file:
       - ../config/computation_container/compute3/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.20
     expose:
       - 51020
       - 50010
@@ -138,9 +129,6 @@ services:
       - printenv && go test ./integration_test/... -v -cover
     env_file:
       - ../config/manage_container/manage1/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.10
     expose:
       - 50011
       - 51011
@@ -172,9 +160,6 @@ services:
       - printenv && go test ./integration_test/... -v -cover
     env_file:
       - ../config/manage_container/manage2/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.10
     expose:
       - 50011
       - 51011
@@ -206,9 +191,6 @@ services:
       - printenv && go test ./integration_test/... -v -cover
     env_file:
       - ../config/manage_container/manage3/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.10
     expose:
       - 50011
       - 51011

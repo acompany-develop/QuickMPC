@@ -85,7 +85,7 @@ static_resources:
             - endpoint:
                 address:
                   socket_address:
-                    address: 10.0.1.10
+                    address: manage_container1
                     port_value: 50011
   - name: manage_to_manage_service
     connect_timeout: 1000s  # クラスター内のホストへのネットワーク接続のタイムアウト
@@ -103,5 +103,5 @@ static_resources:
             - endpoint:
                 address:
                   socket_address:
-                    address: 10.0.1.10
+                    address: manage_container1
                     port_value: 51011

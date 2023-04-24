@@ -110,7 +110,6 @@
 9. コンテナを起動する <br>
     以下のコマンドでコンテナを起動します。
     ```
-    make upnet
     make upd
     ```
 10. GCPのネットワーク設定で{variable.tfで設定したinstance_name}-vpc-{0,1}ネットワークのファイアウォール設定を変更する. <br>

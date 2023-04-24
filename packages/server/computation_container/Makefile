@@ -1,30 +1,18 @@
 t     = cc
 
-NETWORK_NAME = shared-network
-NETWORK_GATEWAY = 10.0.0.1
-NETWORK_SUBNET = 10.0.0.0/16
-
-# docker-composeを束ねるネットワークの作成
-upnet:
-	@if [ -z "`docker network ls | grep $(NETWORK_NAME)`" ]; then docker network create --gateway $(NETWORK_GATEWAY) --subnet $(NETWORK_SUBNET) $(NETWORK_NAME); fi
-
-# docker-composeを束ねるネットワークの削除
-downnet:
-	docker network rm $(NETWORK_NAME)
-
-build: upnet
+build:
 	docker-compose build
 
-upd: upnet
+upd:
 	docker-compose up -d
 
-upd-build: upnet
+upd-build:
 	docker-compose up -d --build
 
-up: upnet
+up:
 	docker-compose up
 
-up-build: upnet
+up-build:
 	docker-compose up --build
 
 down:

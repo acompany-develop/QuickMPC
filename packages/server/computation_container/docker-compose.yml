@@ -41,10 +41,3 @@ services:
         target: /db
     env_file:
       - ../../../config/computation_container/compute1/.src.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.120
-
-networks:
-  shared-network:
-    external: true

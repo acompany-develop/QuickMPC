@@ -6,6 +6,3 @@ volumes:
   sharedb1: {}
   sharedb2: {}
   sharedb3: {}
-networks:
-  shared-network:
-    external: true
