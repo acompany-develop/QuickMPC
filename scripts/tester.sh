@@ -90,7 +90,7 @@ main() {
                 return $tmp
             fi
         fi
-        run
+        PYPI=$PYPI run
         tmp=$?
         if [ $tmp -gt 0 ]; then
             echo "runで失敗"

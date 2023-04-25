@@ -240,5 +240,5 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - pip list && pytest src/tests -s -v -log-cli-level=DEBUG
+      - if [[ "$PYPI" != "default" ]]; then pip install quickmpc==$PYPI; fi && pip list && pytest src/tests -s -v -log-cli-level=DEBUG
     network_mode: host

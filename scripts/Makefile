@@ -15,6 +15,9 @@ p =
 # datadog-agentを有効化する
 # ex. make test dd=1 -> datadogコンテナが起動する
 dd = 0
+# quickmpcをpypiから持ってきてテストを行う(libclient限定)
+# ex. make test t=./libclient pypi=0.3.4 -> pypiからv0.3.4を持ってきてテストを実行する
+pypi = default
 # tester.sh, debugger.shで利用できるようにexportする
 export IS_ENABLE_DATADOG=$(dd)
 # docker-composeの読み込み先を指定
@@ -27,7 +30,7 @@ test:
 	# tで指定されたパス以下のtest.shを全て探してきて実行する
 	echo -n "" > result
 	find $(t) -type f -name "$(p)*test.sh"
-	find $(t) -type f -name "$(p)*test.sh" | xargs -t -I{} bash tester.sh {} $m &&\
+	find $(t) -type f -name "$(p)*test.sh" | PYPI=${pypi} xargs -t -I{} bash tester.sh {} $m &&\
 	test ! -s result && exit 1;\
 	EXIT_CODE=$$(awk '{s+=$$1} END {print s}' result) &&\
 	if [ $${EXIT_CODE} -ne 0 ]; then echo >&2 "command exited with $${EXIT_CODE}" && exit $${EXIT_CODE}; fi;
