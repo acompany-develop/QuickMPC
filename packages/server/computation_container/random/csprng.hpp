@@ -15,6 +15,7 @@
 #include <string>
 #include <thread>
 #include <vector>
+#include "random/csprng_interface.hpp"
 
 namespace Utility
 {

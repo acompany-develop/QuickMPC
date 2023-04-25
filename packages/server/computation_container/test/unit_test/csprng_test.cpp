@@ -159,3 +159,23 @@ TEST(CsprngTest, HowUse)
     11867235327943535202
     */
 }
+
+TEST(csprngtest, interface)
+{
+    qmpc::random::sodium_random random;
+    std::uniform_int_distribution<> dist(0, 9);
+    for (int i = 0; i < 10; ++i)
+    {
+        std::cout << dist(random) << std::endl;
+    }
+}
+
+class csprng_test : qmpc::random::csprng_interface<csprng_test>
+{
+public:
+    using result_type = unsigned int;
+    inline static constexpr result_type min_value = std::numeric_limits<result_type>::min();
+    inline static constexpr result_type max_value = std::numeric_limits<result_type>::max();
+
+    auto gen() { return 10; }
+};

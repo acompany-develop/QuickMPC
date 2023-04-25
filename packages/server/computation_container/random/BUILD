@@ -21,6 +21,7 @@ cc_library(
     ],
     hdrs = [
         "csprng.hpp",
+        "csprng_interface.hpp"
     ],
     deps = [
         "@libsodium//:sodium",
