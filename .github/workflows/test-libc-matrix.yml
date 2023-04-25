@@ -1,0 +1,64 @@
+name: Libclient-py backward compatibility test
+on:
+  push:
+    tags:
+      - "[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  set_value:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      # TODO: Remove minor_version from environment variable if Major is incremented
+      - id: matrix
+        run: |
+          VERSION=$(echo ${{ github.ref }} | sed -e "s#refs/tags/##g")
+          major_version=$(echo ${VERSION} | cut -d'.' -f1)
+          minor_version=$(echo ${VERSION} | cut -d'.' -f2)
+          matrix=$(curl -s https://pypi.org/pypi/quickmpc/json | jq -r '.releases | keys | .[]' | grep "^${major_version}\.${minor_version}" | jq -R -s 'split("\n") | .[:-1]')
+          echo "matrix=$(echo $matrix | jq -c .)" >> $GITHUB_OUTPUT
+  exec_test:
+    # needs: set_value
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ${{ fromJson(needs.set_value.outputs.matrix) }}
+    steps:
+      - name: libc_matrix_test
+        run: |
+          echo ${{ matrix.version }}
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update GCP service account JSON
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
+        env:
+          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: checkout scripts/libclinet for ${{ matrix.version }} version
+        run: git checkout ${{ matrix.version }} -- libclient/src && git checkout ${{ matrix.version }} -- libclient/data
+        working-directory: ./scripts
+
+      - name: Build images and run libclient
+        run: make test t=./libclient m=build p=medium
+        working-directory: ./scripts
+
+      - name: Run bazel test in libclient
+        run: make test t=./libclient m=run p=medium pypi=${{ matrix.version }}
+        working-directory: ./scripts
