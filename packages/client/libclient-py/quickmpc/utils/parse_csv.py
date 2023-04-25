@@ -2,7 +2,7 @@ import csv
 import logging
 from dataclasses import dataclass
 from hashlib import sha512
-from typing import Dict, List, Optional, Sequence, Tuple, Union
+from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -123,8 +123,7 @@ def find_types(schema: List[str],
                matching_column: Optional[int] = None
                ) -> List[ShareValueTypeEnum.ValueType]:
     # transpose to get column oriented list
-    transposed: List[List[str]] = np.array(
-        data, dtype=str).transpose().tolist()
+    transposed: Iterable[List[str]] = map(list, zip(*data))
     return [find_type(sch, col, idx == matching_column)
             for idx, (sch, col) in enumerate(zip(schema, transposed), start=1)]
 

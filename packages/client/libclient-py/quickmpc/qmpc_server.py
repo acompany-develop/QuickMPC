@@ -245,25 +245,24 @@ class QMPCServer:
         data_id: str = hashlib.sha256(
             str(sorted_secrets).encode() + struct.pack('d', time.time())
         ).hexdigest()
-        shares = [Share.sharize(s, self.__party_size)
-                  for s in tqdm.tqdm(pieces, desc='sharize')]
-        sent_at = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
         # リクエストパラメータを設定して非同期にリクエスト送信
+        sent_at = str(datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+        futures: list = []
         with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(self.__retry,
-                                       stub.SendShares,
-                                       SendSharesRequest(
-                                           data_id=data_id,
-                                           shares=json.dumps(s),
-                                           schema=typed_schema,
-                                           piece_id=piece_id,
-                                           sent_at=sent_at,
-                                           matching_column=matching_column,
-                                           token=self.token))
-                       for piece_id, share_piece in enumerate(shares)
-                       for stub, s in zip(self.__client_stubs, share_piece)
-                       ]
+            for piece_id, p in enumerate(tqdm.tqdm(pieces, desc='sharize')):
+                shares = Share.sharize(p, self.__party_size)
+                for stub, s in zip(self.__client_stubs, shares):
+                    req = SendSharesRequest(data_id=data_id,
+                                            shares=json.dumps(s),
+                                            schema=typed_schema,
+                                            piece_id=piece_id,
+                                            sent_at=sent_at,
+                                            matching_column=matching_column,
+                                            token=self.token)
+                    futures.append(executor.submit(self.__retry,
+                                                   stub.SendShares,
+                                                   req))
         is_ok, _ = QMPCServer.__futures_result(futures)
         return {"is_ok": is_ok, "data_id": data_id}
 
