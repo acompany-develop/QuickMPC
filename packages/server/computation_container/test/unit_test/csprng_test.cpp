@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include <iomanip>
 #include <memory>
 #include <set>
 
@@ -163,19 +164,45 @@ TEST(CsprngTest, HowUse)
 TEST(csprngtest, interface)
 {
     qmpc::random::sodium_random random;
-    std::uniform_int_distribution<> dist(0, 9);
+    std::uniform_int_distribution<unsigned long long> dist(0, 1000000);
     for (int i = 0; i < 10; ++i)
     {
         std::cout << dist(random) << std::endl;
     }
 }
 
-class csprng_test : qmpc::random::csprng_interface<csprng_test>
+TEST(csprngtest, interfaceDefault)
+{
+    using namespace std;
+    qmpc::random::sodium_random random;
+    std::uniform_int_distribution<unsigned long long> dist(0, 10'000'000'000'000);
+    for (int i = 0; i < 10; ++i)
+    {
+        std::cout << dist(random) << std::endl;
+    }
+
+    std::uniform_real_distribution<double> dist_d(0.0, 100000.0);
+    for (int i = 0; i < 10; ++i)
+    {
+        std::cout << fixed;
+        std::cout << std::setprecision(10);
+        std::cout << dist_d(random) << std::endl;
+    }
+    cout << resetiosflags(ios_base::floatfield);
+}
+class csprng_test : public qmpc::random::csprng_interface<csprng_test>
 {
 public:
     using result_type = unsigned int;
-    inline static constexpr result_type min_value = std::numeric_limits<result_type>::min();
-    inline static constexpr result_type max_value = std::numeric_limits<result_type>::max();
-
-    auto gen() { return 10; }
+    auto generate() { return 10; }
 };
+
+TEST(csprngtest, constvalue)
+{
+    csprng_test random;
+    std::uniform_int_distribution<> dist(0, 1000000);
+    for (int i = 0; i < 10; ++i)
+    {
+        std::cout << dist(random) << std::endl;
+    }
+}
