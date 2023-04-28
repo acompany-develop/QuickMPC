@@ -163,11 +163,39 @@ TEST(CsprngTest, HowUse)
 
 TEST(csprngtest, interface)
 {
+    using namespace std;
     qmpc::random::sodium_random random;
-    std::uniform_int_distribution<unsigned long long> dist(0, 1000000);
-    for (int i = 0; i < 10; ++i)
+    std::uniform_int_distribution<unsigned long long> dist1(0, 1000000);
+    std::vector<qmpc::random::sodium_random::result_type> vec;
+    for (int i = 0; i < 1'000; ++i)
     {
-        std::cout << dist(random) << std::endl;
+        vec.emplace_back(dist1(random));
+    }
+
+    std::uniform_int_distribution<> dist(0, 10);
+    for (int i = 0; i < 50; ++i)
+    {
+        std::cout << "self clamp  :" << dist(random) << std::endl;
+    }
+
+    for (int i = 0; i < 50; ++i)
+    {
+        std::cout << "clamp " << random.clamp<unsigned int>(0, 10) << std::endl;
+    }
+    qmpc::random::default_random random_d;
+    for (int i = 0; i < 50; ++i)
+    {
+        std::cout << std::fixed;
+        std::cout << std::setprecision(10);
+        std::cout << "clamp_d " << random_d.clamp<double>(0, 10) << std::endl;
+    }
+
+    std::cout << resetiosflags(ios_base::floatfield);
+
+    std::random_device rd;
+    for (int i = 0; i < 50; ++i)
+    {
+        std::cout << "random_device : " << dist(rd) << std::endl;
     }
 }
 

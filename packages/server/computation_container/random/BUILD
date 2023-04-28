@@ -29,3 +29,15 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
+
+cc_library(
+    name = "csprng_interface",
+    hdrs = [
+        "csprng_interface.hpp",
+    ],
+    deps = [
+        "@libsodium//:sodium",
+        "//logging:log",
+    ],
+    visibility = ["//visibility:public"],
+)
