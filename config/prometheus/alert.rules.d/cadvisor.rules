@@ -1,0 +1,19 @@
+groups:
+- name: cadvisor
+  rules:
+  - alert: warn_cpu_utilization
+    expr: 100 * (rate(container_cpu_usage_seconds_total{name=~"manage.*|computation.*|beaver.*|grafana|alertmanager|prometheus|cadvisor"}[1m])/ on(node) group_left() machine_cpu_cores) > 60
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "CPU Utilization > 60% for 1 minute at instance {{ $labels.name }}"
+      description: "The average CPU Utilization for instance {{ $labels.name }} in the last 5 minutes was greater than 60%."
+  - alert: fatal_cpu_utilization
+    expr: 100 * (rate(container_cpu_usage_seconds_total{name=~"manage.*|computation.*|beaver.*|grafana|alertmanager|prometheus|cadvisor"}[1m])/ on(node) group_left() machine_cpu_cores) > 90
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "CPU Utilization > 90% for 1 minute for instance {{ $labels.name }}"
+      description: "The average CPU Utilization for instance {{ $labels.name }} in the last 5 minutes was greater than 90%."

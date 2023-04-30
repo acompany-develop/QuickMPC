@@ -21,7 +21,9 @@ RUN apt-get update && \
   vim \
   cron \
   netcat \
-  cmake
+  cmake \
+  stress-ng \
+  unzip
 
 
 ENV PATH $PATH:/root/go/bin
@@ -30,6 +32,12 @@ ENV PATH $PATH:/usr/local/go/bin
 # Install go
 RUN wget https://go.dev/dl/go1.18.6.linux-amd64.tar.gz && \
   tar -C /usr/local -xzf go1.18.6.linux-amd64.tar.gz
+
+# Install node exporter
+RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz && \
+  tar -zxvf node_exporter-1.1.2.linux-amd64.tar.gz && \
+  mv node_exporter-1.1.2.linux-amd64/node_exporter /usr/local/bin/prometheus-node-exporter && \
+  rm -f node_exporter-1.1.2.linux-amd64.tar.gz
 
 # grpcサーバのhealthcheckをするためのツールをインストール
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.16 && \

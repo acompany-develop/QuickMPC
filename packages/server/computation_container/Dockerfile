@@ -26,7 +26,8 @@ RUN apt-get update && \
     iputils-ping \
     net-tools \
     dnsutils \
-    gdb
+    gdb \
+    stress-ng
 
 # Install cmake
 RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.17.0/cmake-3.17.0-Linux-x86_64.sh && \
@@ -56,6 +57,12 @@ RUN cd / && wget https://github.com/gabime/spdlog/archive/refs/tags/v1.9.2.tar.g
 RUN GRPC_HEALTH_PROBE_VERSION=v0.4.16 && \
     wget -qO/bin/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
     chmod +x /bin/grpc_health_probe
+
+# Install node exporter
+RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.1.2/node_exporter-1.1.2.linux-amd64.tar.gz && \
+    tar -zxvf node_exporter-1.1.2.linux-amd64.tar.gz && \
+    mv node_exporter-1.1.2.linux-amd64/node_exporter /usr/local/bin/prometheus-node-exporter && \
+    rm -f node_exporter-1.1.2.linux-amd64.tar.gz
 
 # Create directory to save core dump file
 RUN mkdir -p /tmp/cores

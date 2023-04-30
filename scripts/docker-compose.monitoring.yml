@@ -1,0 +1,93 @@
+# require {docker-compose.core.yml}
+version: '3.8'
+services:
+  prometheus:
+    container_name: prometheus
+    image: bitnami/prometheus:2.42.0-debian-11-r13
+    volumes:
+      - ../config/prometheus:/etc/prometheus
+    command: "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - 9090:9090
+    restart: always
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.22
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-pipeline-stages: |
+          - labels:
+              level:
+  grafana:
+    container_name: grafana
+    image: ghcr.io/acompany-develop/grafana:v1.0.0
+    build:
+      context: ../
+      dockerfile: packages/server/monitoring/grafana/Dockerfile
+      cache_from:
+        - type=registry,ref=ghcr.io/acompany-develop/grafana:v1.0.0
+    ports:
+      - 3000:3000
+    restart: always
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.23
+    logging:
+      driver: loki
+      options:
+        loki-url: http://loki:3100/loki/api/v1/push
+    depends_on:
+      prometheus:
+        condition: service_started
+      alertmanager:
+        condition: service_started
+      cadvisor:
+        condition: service_started
+      loki:
+        condition: service_started
+  alertmanager:
+    container_name: alertmanager
+    image: bitnami/alertmanager:0.25.0-debian-11-r29
+    volumes:
+      - ../config/alertmanager:/etc/alertmanager
+    command: "--config.file=/etc/alertmanager/config.yml"
+    ports:
+      - 9093:9093
+    restart: always
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.24
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+  cadvisor:
+    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:latest
+    ports:
+      - 8088:8080
+    volumes:
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /var/run/docker.sock:/var/run/docker.sock:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
+    restart: always
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.25
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+  loki:
+    container_name: loki
+    image: grafana/loki:1.5.0
+    ports:
+      - 3100:3100
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      shared-network:
+        ipv4_address: 10.0.2.26

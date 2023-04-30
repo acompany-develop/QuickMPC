@@ -30,3 +30,4 @@ __pycache__
 !**/db/**/.gitkeep
 
 scripts/.env
+config/alertmanager/config.yml

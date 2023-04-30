@@ -1,0 +1,42 @@
+apiVersion: 1
+
+providers:
+  - name: 'Node Exporter Full'
+    folder: 'Service'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/node-exporter-full.json
+      foldersFromFilesStructure: false
+
+  - name: 'Cadvisor exporter'
+    folder: 'Service'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/cadvisor-exporter.json
+      foldersFromFilesStructure: false
+
+  - name: 'Logging Dashboard via Loki'
+    folder: 'Service'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/logging-universal-dashboard.json
+      foldersFromFilesStructure: false
+
+  - name: 'Loki Dashboard quick search'
+    folder: 'Service'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards/loki-dashboard-quick-search.json
+      foldersFromFilesStructure: false
