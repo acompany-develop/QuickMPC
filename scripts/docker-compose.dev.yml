@@ -143,9 +143,6 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.20
     expose:
       - 51020
       - 50010
@@ -186,9 +183,6 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.20
     expose:
       - 51020
       - 50010
@@ -229,9 +223,6 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.20
     expose:
       - 51020
       - 50010
@@ -330,9 +321,6 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.10
     expose:
       - 50011
       - 51011
@@ -373,9 +361,6 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.10
     expose:
       - 50011
       - 51011
@@ -416,9 +401,6 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.10
     expose:
       - 50011
       - 51011
@@ -454,9 +436,6 @@ services:
       - printenv && ./manage_container
     env_file:
       - ../config/manage_container/manage1/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.1.10
     expose:
       - 50011
       - 51011
@@ -493,9 +472,6 @@ services:
       - printenv && ./manage_container
     env_file:
       - ../config/manage_container/manage2/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.10
     expose:
       - 50011
       - 51011
@@ -532,9 +508,6 @@ services:
       - printenv && ./manage_container
     env_file:
       - ../config/manage_container/manage3/.env
-    networks:
-      shared-network:
-        ipv4_address: 10.0.3.10
     expose:
       - 50011
       - 51011

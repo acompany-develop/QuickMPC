@@ -10,9 +10,6 @@ services:
     ports:
       - 9090:9090
     restart: always
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.22
     logging:
       driver: loki
       options:
@@ -31,9 +28,6 @@ services:
     ports:
       - 3000:3000
     restart: always
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.23
     logging:
       driver: loki
       options:
@@ -56,9 +50,6 @@ services:
     ports:
       - 9093:9093
     restart: always
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.24
     logging:
       driver: loki
       options:
@@ -75,9 +66,6 @@ services:
     - /sys:/sys:ro
     - /var/lib/docker/:/var/lib/docker:ro
     restart: always
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.25
     logging:
       driver: loki
       options:
@@ -88,6 +76,3 @@ services:
     ports:
       - 3100:3100
     command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      shared-network:
-        ipv4_address: 10.0.2.26
