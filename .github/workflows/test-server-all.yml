@@ -105,6 +105,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install Docker plugin
+        run: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+
       # Setup config for using GCS as bazel remote cache
       - name: Update GCP service account JSON
         run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
@@ -135,6 +138,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Install Docker plugin
+        run: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+
       - name: Build images and run manage_container
         run: make test t=./manage_container m=build p=medium
         working-directory: ./scripts
@@ -153,6 +159,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
           submodules: true
+
+      - name: Install Docker plugin
+        run: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 
       - name: Update GCP service account JSON
         run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
@@ -186,6 +195,9 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
           submodules: true
+
+      - name: Install Docker plugin
+        run: docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
 
       - name: Update GCP service account JSON
         run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
