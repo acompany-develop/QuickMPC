@@ -410,15 +410,15 @@ jobs:
   # https://tech.griphone.co.jp/2021/12/18/fast-docker-compose-buildx-github-actions/
   # cache が毎回追加されるので過去のを消す作業が必要
   # 古い issue だから今は直っているのかもしれないが分からず
-  Move_cache:
-    runs-on: ubuntu-latest
-    needs:
-      [
-        small_test,
-        medium_test,
-      ]
-    steps:
-      - name: Clear and move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache /tmp/.buildx-cache
+  # Move_cache:
+  #   runs-on: ubuntu-latest
+  #   needs:
+  #     [
+  #       small_test,
+  #       medium_test,
+  #     ]
+  #   steps:
+  #     - name: Clear and move cache
+  #       run: |
+  #         rm -rf /tmp/.buildx-cache
+  #         mv /tmp/.buildx-cache /tmp/.buildx-cache
