@@ -1,5 +1,6 @@
 #pragma once
 #include <sodium.h>
+#include <bitset>
 #include <limits>
 #include <random>
 #include "logging/logger.hpp"
@@ -25,17 +26,7 @@ public:
      *
      * @return result_type型の乱数
      */
-    auto operator()()
-    {
-        std::seed_seq seed;
-        return this->operator()(seed);
-    }
-    auto operator()(const std::seed_seq& seed) { return static_cast<PRNG*>(this)->generate(); }
-    auto operator()(size_t n)
-    {
-        std::seed_seq seed;
-        return this->operator()(n, seed);
-    }
+    auto operator()() { return static_cast<PRNG*>(this)->generate(); }
     /**
      * @brief 乱数ベクターを返す関数
      *
@@ -43,10 +34,7 @@ public:
      * @param seed 乱数生成用シード
      * @return value_type型のvectorを返す関数へのフック
      */
-    auto operator()(size_t n, const std::seed_seq& seed)
-    {
-        return static_cast<PRNG*>(this)->generate(n);
-    }
+    auto operator()(size_t n) { return static_cast<PRNG*>(this)->generate(n); }
     template <typename T>
     using value_type = typename T::result_type;
     /**
@@ -77,6 +65,7 @@ public:
 class sodium_random : public csprng_interface<sodium_random>
 {
 public:
+    using result_type = unsigned int;
     sodium_random()
     {
         if (sodium_init() == -1)
@@ -86,20 +75,25 @@ public:
             );
         };
     }
-    using result_type = unsigned int;
     auto generate()
     {
-        result_type data = randombytes_random();
+        result_type ret = randombytes_random();
+        return ret;
+    }
+    auto generate(const size_t size)
+    {
+        std::vector<result_type> data(size);
+
+        // TODO: remove
+        std::array<unsigned char, randombytes_SEEDBYTES> seed;
+        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
+        randombytes_buf_deterministic(data.data(), size * 4, seed.data());
+
+        // TODO: replace this code.
+        // randombytes_buf(data.data(), size);
+
         return data;
     }
-    auto generate(const size_t size, const std::seed_seq& seed) { return 0; }
-};
-
-class default_random : public csprng_interface<default_random>
-{
-public:
-    using result_type = unsigned int;
-    auto generate() const { return std::random_device()(); }
 };
 
 }  // namespace qmpc::random

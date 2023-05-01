@@ -171,34 +171,20 @@ TEST(csprngtest, interface)
     {
         vec.emplace_back(dist1(random));
     }
-
-    std::uniform_int_distribution<> dist(0, 10);
-    for (int i = 0; i < 50; ++i)
-    {
-        std::cout << "self clamp  :" << dist(random) << std::endl;
-    }
-
     for (int i = 0; i < 50; ++i)
     {
         std::cout << "clamp " << random.clamp<unsigned int>(0, 10) << std::endl;
     }
-    qmpc::random::default_random random_d;
-    for (int i = 0; i < 50; ++i)
-    {
-        std::cout << std::fixed;
-        std::cout << std::setprecision(10);
-        std::cout << "clamp_d " << random_d.clamp<double>(0, 10) << std::endl;
-    }
 
     std::cout << resetiosflags(ios_base::floatfield);
 
-    std::random_device rd;
-    for (int i = 0; i < 50; ++i)
+    auto vec1 = random(5);
+    std::cout << "vec1 is " << vec1.size() << std::endl;
+    for (auto&& a : vec1)
     {
-        std::cout << "random_device : " << dist(rd) << std::endl;
+        std::cout << "random vec is " << a << std::endl;
     }
 }
-
 TEST(csprngtest, interfaceDefault)
 {
     using namespace std;
@@ -218,19 +204,68 @@ TEST(csprngtest, interfaceDefault)
     }
     cout << resetiosflags(ios_base::floatfield);
 }
-class csprng_test : public qmpc::random::csprng_interface<csprng_test>
+class csprng_random_test : public qmpc::random::csprng_interface<csprng_random_test>
 {
+    std::array<unsigned char, randombytes_SEEDBYTES> seed;
+
 public:
     using result_type = unsigned int;
-    auto generate() { return 10; }
+    csprng_random_test()
+    {
+        if (sodium_init() == -1)
+        {
+            qmpc::Log::throw_with_trace(
+                std::runtime_error("RandomError: There is a serious lack of entropy.")
+            );
+        };
+    }
+    csprng_random_test(const std::array<unsigned char, randombytes_SEEDBYTES>& seed)
+    {
+        if (sodium_init() == -1)
+        {
+            qmpc::Log::throw_with_trace(
+                std::runtime_error("RandomError: There is a serious lack of entropy.")
+            );
+        };
+
+        this->seed = seed;
+    }
+    auto generate()
+    {
+        result_type ret{};
+        // TODO: remove
+        randombytes_buf_deterministic(&ret, sizeof(result_type), seed.data());
+
+        return ret;
+    }
+    auto generate(const size_t size)
+    {
+        std::vector<result_type> data(size);
+
+        // TODO: remove
+        randombytes_buf_deterministic(data.data(), sizeof(result_type) * size, seed.data());
+
+        // TODO: replace this code.
+        // randombytes_buf(data.data(), size);
+
+        return data;
+    }
 };
 
 TEST(csprngtest, constvalue)
 {
-    csprng_test random;
-    std::uniform_int_distribution<> dist(0, 1000000);
+    std::array<unsigned char, randombytes_SEEDBYTES> seed = {"abcdefghijklmn"};
+    csprng_random_test random(seed);
+    auto vec = random(10);
+    auto vec2 = random(10);
     for (int i = 0; i < 10; ++i)
     {
-        std::cout << dist(random) << std::endl;
+        std::cout << "deterministic first is " << vec[i] << " second " << vec2[i] << std::endl;
     }
+
+    std::cout << "clamp " << random.clamp<unsigned int>(0, 10) << std::endl;
+    std::cout << "clamp " << random.clamp<unsigned int>(0, 10) << std::endl;
+
+    std::cout << "clamp double " << random.clamp<double>(0, 10) << std::endl;
+    std::cout << "clamp " << random.clamp<double>(0, 10) << std::endl;
 }
