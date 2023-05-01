@@ -67,8 +67,8 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=small_cc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=small_cc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache
           target: small
 
       - name: Run bazel test in computation_container
@@ -100,8 +100,8 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache
           target: small
 
       - name: Run Go test in manage_container
@@ -133,8 +133,8 @@ jobs:
           context: ./
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache
           target: small
 
       - name: Run test in beaver_triple_service
@@ -188,8 +188,8 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Run bazel test in computation_container
@@ -220,8 +220,8 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Run bazel test in manage_container
@@ -270,8 +270,8 @@ jobs:
           context: ./
           file: ./scripts/libclient/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Build and push mc
@@ -281,8 +281,8 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Build and push cc
@@ -292,8 +292,8 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Run bazel test in libclient
@@ -351,8 +351,8 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Build and push mc
@@ -362,8 +362,8 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from:  type=local,scope=medium_mc,src=/tmp/.buildx-cache-new
-          cache-to:    type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
+          cache-from:  type=local,scope=medium_mc,src=/tmp/.buildx-cache
+          cache-to:    type=local,scope=medium_mc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Build and push bts
@@ -373,8 +373,8 @@ jobs:
           context: ./
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_bts,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_bts,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_bts,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_bts,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Build and push libc
@@ -384,8 +384,8 @@ jobs:
           context: ./
           file: ./scripts/libclient/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache-new
-          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
           target: medium
 
       - name: Run container test
@@ -421,4 +421,4 @@ jobs:
       - name: Clear and move cache
         run: |
           rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          mv /tmp/.buildx-cache /tmp/.buildx-cache
