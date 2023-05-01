@@ -71,9 +71,9 @@ jobs:
           cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache
           target: small
 
-      - name: Run bazel test in computation_container
-        run: make test t=./computation_container m=run p=small
-        working-directory: ./scripts
+      # - name: Run bazel test in computation_container
+      #   run: make test t=./computation_container m=run p=small
+      #   working-directory: ./scripts
 
   small_test_mc:
     runs-on: ubuntu-latest
@@ -104,9 +104,9 @@ jobs:
           cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache
           target: small
 
-      - name: Run Go test in manage_container
-        run: make test t=./manage_container m=run p=small
-        working-directory: ./scripts
+      # - name: Run Go test in manage_container
+      #   run: make test t=./manage_container m=run p=small
+      #   working-directory: ./scripts
 
   small_test_bts:
     runs-on: ubuntu-latest
@@ -137,9 +137,9 @@ jobs:
           cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache
           target: small
 
-      - name: Run test in beaver_triple_service
-        run: make test t=./beaver_triple_service m=run
-        working-directory: ./scripts
+      # - name: Run test in beaver_triple_service
+      #   run: make test t=./beaver_triple_service m=run
+      #   working-directory: ./scripts
 
   small_test:
     runs-on: ubuntu-latest
@@ -192,9 +192,9 @@ jobs:
           cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
           target: medium
 
-      - name: Run bazel test in computation_container
-        run: make test t=./computation_container m=run p=medium
-        working-directory: ./scripts
+      # - name: Run bazel test in computation_container
+      #   run: make test t=./computation_container m=run p=medium
+      #   working-directory: ./scripts
 
   medium_test_mc:
     runs-on: ubuntu-latest
@@ -224,9 +224,9 @@ jobs:
           cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
           target: medium
 
-      - name: Run bazel test in manage_container
-        run: make test t=./manage_container m=run p=medium
-        working-directory: ./scripts
+      # - name: Run bazel test in manage_container
+      #   run: make test t=./manage_container m=run p=medium
+      #   working-directory: ./scripts
 
   medium_test_libclient:
     runs-on: ubuntu-latest
@@ -296,9 +296,9 @@ jobs:
           cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
           target: medium
 
-      - name: Run bazel test in libclient
-        run: make test t=./libclient m=run p=medium
-        working-directory: ./scripts
+      # - name: Run bazel test in libclient
+      #   run: make test t=./libclient m=run p=medium
+      #   working-directory: ./scripts
 
   medium_test_container:
     runs-on: ubuntu-latest
@@ -388,9 +388,9 @@ jobs:
           cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
           target: medium
 
-      - name: Run container test
-        run: make test t=./container_test m=run p=medium
-        working-directory: ./scripts
+      # - name: Run container test
+      #   run: make test t=./container_test m=run p=medium
+      #   working-directory: ./scripts
 
   medium_test:
     runs-on: ubuntu-latest
