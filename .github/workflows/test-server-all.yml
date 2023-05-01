@@ -69,8 +69,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=small_cc, src =/tmp/.buildx-cache
-          cache-to:   type=local, scope=small_cc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=small_cc, src =/tmp/.buildx-cache
+          cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache-new
           target: small
 
       - name: Run bazel test in computation_container
@@ -104,8 +104,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=small_mc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=small_mc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache-new
           target: small
 
       - name: Run Go test in manage_container
@@ -139,8 +139,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=small_bts, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=small_bts, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache-new
           target: small
 
       - name: Run test in beaver_triple_service
@@ -196,8 +196,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_cc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_cc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Run bazel test in computation_container
@@ -230,8 +230,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_mc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_mc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Run bazel test in manage_container
@@ -282,8 +282,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_libc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_libc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Build and push mc
@@ -295,8 +295,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_mc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_mc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Build and push cc
@@ -308,8 +308,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_cc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_cc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Run bazel test in libclient
@@ -365,8 +365,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_cc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_cc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Build and push mc
@@ -378,8 +378,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from:  type=local, scope=medium_mc, src= /tmp/.buildx-cache
-          cache-to:    type=local, scope=medium_mc, dest=/tmp/.buildx-cache-new
+          cache-from:  type=local,scope=medium_mc,src=/tmp/.buildx-cache
+          cache-to:    type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Build and push bts
@@ -391,8 +391,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_bts, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_bts, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_bts,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_bts,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Build and push libc
@@ -404,8 +404,8 @@ jobs:
           builder: ${{ steps.buildx.outputs.name }}
           push: true
           tags: hoge
-          cache-from: type=local, scope=medium_libc, src= /tmp/.buildx-cache
-          cache-to:   type=local, scope=medium_libc, dest=/tmp/.buildx-cache-new
+          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-new
           target: medium
 
       - name: Run container test
