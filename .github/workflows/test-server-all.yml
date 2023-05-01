@@ -67,9 +67,7 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
-          cache-from: type=local,scope=small_cc, src =/tmp/.buildx-cache
+          cache-from: type=local,scope=small_cc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache-new
           target: small
 
@@ -102,8 +100,6 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache-new
           target: small
@@ -137,8 +133,6 @@ jobs:
           context: ./
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache
           cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache-new
           target: small
@@ -194,8 +188,6 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
           target: medium
@@ -228,8 +220,6 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
           target: medium
@@ -280,8 +270,6 @@ jobs:
           context: ./
           file: ./scripts/libclient/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-new
           target: medium
@@ -293,8 +281,6 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
           target: medium
@@ -306,8 +292,6 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
           target: medium
@@ -363,8 +347,6 @@ jobs:
           context: ./
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-new
           target: medium
@@ -376,8 +358,6 @@ jobs:
           context: ./
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from:  type=local,scope=medium_mc,src=/tmp/.buildx-cache
           cache-to:    type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
           target: medium
@@ -389,8 +369,6 @@ jobs:
           context: ./
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_bts,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_bts,dest=/tmp/.buildx-cache-new
           target: medium
@@ -402,8 +380,6 @@ jobs:
           context: ./
           file: ./scripts/libclient/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
-          push: true
-          tags: hoge
           cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-new
           target: medium
