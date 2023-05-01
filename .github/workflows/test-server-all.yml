@@ -120,7 +120,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/beaver_triple_container/**') }}
+          key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/beaver_triple_server/**') }}
 
       - name: Set up Docker buildx
         id: buildx
