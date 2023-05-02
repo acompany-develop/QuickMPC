@@ -8,6 +8,37 @@
 #include "logging/logger.hpp"
 #include "random/csprng.hpp"
 
+class csprng_const_test : public qmpc::random::sodium_random
+{
+public:
+    std::array<unsigned char, randombytes_SEEDBYTES> make_seed() override
+    {
+        std::array<unsigned char, randombytes_SEEDBYTES> seed = {"abcdefghijklmnvugyd"};
+        return seed;
+    }
+};
+
+class norandom_test : public qmpc::random::csprng_interface<norandom_test>
+{
+public:
+    using result_type = unsigned int;
+    inline static constexpr result_type C = 5;
+    auto generate()
+    {
+        result_type ret = C;
+        return ret;
+    }
+    auto generate(const size_t size)
+    {
+        std::vector<result_type> data(size);
+        for (int i = 0; i < size; ++i)
+        {
+            data[i] = C;
+        }
+        return data;
+    }
+};
+
 TEST(CsprngTest, GetRand)
 {
     const std::uint32_t byteSize = 8;  // 8byte = 64bit
@@ -171,10 +202,6 @@ TEST(csprngtest, interface)
     {
         vec.emplace_back(dist1(random));
     }
-    for (int i = 0; i < 50; ++i)
-    {
-        std::cout << "clamp " << random.clamp<unsigned int>(0, 10) << std::endl;
-    }
 
     std::cout << resetiosflags(ios_base::floatfield);
 
@@ -204,63 +231,15 @@ TEST(csprngtest, interfaceDefault)
     }
     cout << resetiosflags(ios_base::floatfield);
 }
-class csprng_random_test : public qmpc::random::csprng_interface<csprng_random_test>
-{
-    std::array<unsigned char, randombytes_SEEDBYTES> seed;
-
-public:
-    using result_type = unsigned int;
-    csprng_random_test()
-    {
-        if (sodium_init() == -1)
-        {
-            qmpc::Log::throw_with_trace(
-                std::runtime_error("RandomError: There is a serious lack of entropy.")
-            );
-        };
-    }
-    csprng_random_test(const std::array<unsigned char, randombytes_SEEDBYTES>& seed)
-    {
-        if (sodium_init() == -1)
-        {
-            qmpc::Log::throw_with_trace(
-                std::runtime_error("RandomError: There is a serious lack of entropy.")
-            );
-        };
-
-        this->seed = seed;
-    }
-    auto generate()
-    {
-        result_type ret{};
-        // TODO: remove
-        randombytes_buf_deterministic(&ret, sizeof(result_type), seed.data());
-
-        return ret;
-    }
-    auto generate(const size_t size)
-    {
-        std::vector<result_type> data(size);
-
-        // TODO: remove
-        randombytes_buf_deterministic(data.data(), sizeof(result_type) * size, seed.data());
-
-        // TODO: replace this code.
-        // randombytes_buf(data.data(), size);
-
-        return data;
-    }
-};
 
 TEST(csprngtest, constvalue)
 {
-    std::array<unsigned char, randombytes_SEEDBYTES> seed = {"abcdefghijklmn"};
-    csprng_random_test random(seed);
+    csprng_const_test random;
     auto vec = random(10);
     auto vec2 = random(10);
     for (int i = 0; i < 10; ++i)
     {
-        std::cout << "deterministic first is " << vec[i] << " second " << vec2[i] << std::endl;
+        ASSERT_EQ(vec[i], vec2[i]);
     }
 
     std::cout << "clamp " << random.clamp<unsigned int>(0, 10) << std::endl;
@@ -268,4 +247,37 @@ TEST(csprngtest, constvalue)
 
     std::cout << "clamp double " << random.clamp<double>(0, 10) << std::endl;
     std::cout << "clamp " << random.clamp<double>(0, 10) << std::endl;
+
+    qmpc::random::sodium_random sodium;
+
+    auto vec3 = sodium(10);
+    auto vec4 = sodium(10);
+    for (int i = 0; i < 10; ++i)
+    {
+        std::cout << "vec sodium 1 " << vec3[i] << " " << vec4[i] << std::endl;
+    }
+}
+
+TEST(csprngtest, norandom)
+{
+    norandom_test random;
+
+    auto ret = random();
+    auto ret2 = random();
+    ASSERT_EQ(ret, ret2);
+    ASSERT_EQ(ret, norandom_test::C);
+
+    auto vec = random(10);
+    auto vec2 = random(10);
+    for (int i = 0; i < 10; ++i)
+    {
+        ASSERT_EQ(vec[i], norandom_test::C);
+        ASSERT_EQ(vec2[i], norandom_test::C);
+    }
+
+    auto clam = random.clamp<int64_t>(0, 1'000'000'000);
+    auto clam2 = random.clamp<int64_t>(0, 1'000'000'000);
+    std::cout << "clamp is " << clam << std::endl;
+
+    ASSERT_EQ(clam, clam2);
 }

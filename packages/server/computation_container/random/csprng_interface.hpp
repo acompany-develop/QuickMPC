@@ -64,6 +64,8 @@ public:
 
 class sodium_random : public csprng_interface<sodium_random>
 {
+    std::array<unsigned char, randombytes_SEEDBYTES> seed;
+
 public:
     using result_type = unsigned int;
     sodium_random()
@@ -77,22 +79,29 @@ public:
     }
     auto generate()
     {
-        result_type ret = randombytes_random();
+        result_type ret;
+        seed = make_seed();
+        randombytes_buf_deterministic(&ret, sizeof(result_type), seed.data());
+        // ret = randombytes_random();
         return ret;
     }
     auto generate(const size_t size)
     {
         std::vector<result_type> data(size);
-
+        seed = make_seed();
         // TODO: remove
-        std::array<unsigned char, randombytes_SEEDBYTES> seed;
-        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
         randombytes_buf_deterministic(data.data(), size * 4, seed.data());
 
         // TODO: replace this code.
         // randombytes_buf(data.data(), size);
 
         return data;
+    }
+    virtual std::array<unsigned char, randombytes_SEEDBYTES> make_seed()
+    {
+        std::array<unsigned char, randombytes_SEEDBYTES> seed;
+        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
+        return seed;
     }
 };
 
