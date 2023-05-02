@@ -76,11 +76,21 @@ public:
                 std::runtime_error("RandomError: There is a serious lack of entropy.")
             );
         };
+
+        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
+    }
+    sodium_random(const std::array<unsigned char, randombytes_SEEDBYTES>& seed) : seed(seed)
+    {
+        if (sodium_init() == -1)
+        {
+            qmpc::Log::throw_with_trace(
+                std::runtime_error("RandomError: There is a serious lack of entropy.")
+            );
+        };
     }
     auto generate()
     {
         result_type ret;
-        seed = make_seed();
         randombytes_buf_deterministic(&ret, sizeof(result_type), seed.data());
         // ret = randombytes_random();
         return ret;
@@ -88,7 +98,6 @@ public:
     auto generate(const size_t size)
     {
         std::vector<result_type> data(size);
-        seed = make_seed();
         // TODO: remove
         randombytes_buf_deterministic(data.data(), size * 4, seed.data());
 
@@ -96,12 +105,6 @@ public:
         // randombytes_buf(data.data(), size);
 
         return data;
-    }
-    virtual std::array<unsigned char, randombytes_SEEDBYTES> make_seed()
-    {
-        std::array<unsigned char, randombytes_SEEDBYTES> seed;
-        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
-        return seed;
     }
 };
 
