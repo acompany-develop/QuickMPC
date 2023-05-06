@@ -21,5 +21,5 @@ run() {
 # runの後に実行されるteardown処理を記述する関数
 # INFO: runの後に副作用を残さないように初期化を行う
 teardown() {
-    COMPOSE_HTTP_TIMEOUT=500 docker-compose $COMPOSE_FILES_OPT down -v
+    COMPOSE_HTTP_TIMEOUT=1200 docker-compose $COMPOSE_FILES_OPT down -v
 }
