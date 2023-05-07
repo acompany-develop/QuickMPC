@@ -31,9 +31,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_bts_envoy:
     image: envoyproxy/envoy:v1.17.1
     volumes:
@@ -53,9 +53,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_cc_envoy1:
     container_name: compute_envoy_container1
     image: envoyproxy/envoy:v1.17.1
@@ -75,9 +75,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_cc_envoy2:
     container_name: compute_envoy_container2
     image: envoyproxy/envoy:v1.17.1
@@ -97,9 +97,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_cc_envoy3:
     container_name: compute_envoy_container3
     image: envoyproxy/envoy:v1.17.1
@@ -119,9 +119,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_cc1:
     container_name: computation_container1
     image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
@@ -158,9 +158,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
     expose:
       - 51020
       - 50010
@@ -201,9 +201,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
     expose:
       - 51020
       - 50010
@@ -244,9 +244,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
     expose:
       - 51020
       - 50010
@@ -268,6 +268,13 @@ services:
     ports:
       - 0.0.0.0:50001:50000
     tty: true
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_mc_envoy2:
     container_name: manage_envoy_container2
     image: envoyproxy/envoy:v1.17.1
@@ -285,6 +292,13 @@ services:
     ports:
       - 0.0.0.0:50002:50000
     tty: true
+    logging:
+      driver: loki
+      options:
+        loki-url: http://localhost:3100/loki/api/v1/push
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_mc_envoy3:
     container_name: manage_envoy_container3
     image: envoyproxy/envoy:v1.17.1
@@ -306,9 +320,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   dev_mc1:
     container_name: manage_container1
     image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
@@ -348,9 +362,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
     expose:
       - 50011
       - 51011
@@ -391,9 +405,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
     expose:
       - 50011
       - 51011
@@ -434,9 +448,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
     expose:
       - 50011
       - 51011

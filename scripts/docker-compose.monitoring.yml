@@ -14,9 +14,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   grafana:
     container_name: grafana
     image: ghcr.io/acompany-develop/grafana:v1.0.0
@@ -54,9 +54,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   cadvisor:
     container_name: cadvisor
     image: gcr.io/cadvisor/cadvisor:latest
@@ -73,9 +73,9 @@ services:
       driver: loki
       options:
         loki-url: http://localhost:3100/loki/api/v1/push
-        loki-timeout: 1s
-        loki-max-backoff: 800ms
-        loki-retries: 2
+        loki-timeout: "1s"
+        loki-max-backoff: "20s"
+        loki-retries: "5"
   loki:
     container_name: loki
     image: grafana/loki:1.5.0
