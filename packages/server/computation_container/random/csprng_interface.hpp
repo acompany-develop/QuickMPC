@@ -35,39 +35,19 @@ public:
      * @return value_type型のvectorを返す関数へのフック
      */
     auto operator()(size_t n) { return static_cast<PRNG*>(this)->generate(n); }
-    template <typename T>
-    using value_type = typename T::result_type;
-    /**
-     * @brief 上限と下限を指定する
-     *
-     * @param min 下限
-     * @param max 上限
-     * @return 範囲内の乱数生成
-     */
-    template <typename Result, typename T = PRNG>
-    auto clamp(value_type<T> min, value_type<T> max)
-    {
-        // integral
-        if constexpr (std::is_integral_v<Result>)
-        {
-            std::uniform_int_distribution<Result> dist(min, max);
-            return dist(*static_cast<PRNG*>(this));
-        }
-        // float
-        else
-        {
-            std::uniform_real_distribution<Result> dist(min, max);
-            return dist(*static_cast<PRNG*>(this));
-        }
-    }
 };
 
 class sodium_random : public csprng_interface<sodium_random>
 {
-    std::array<unsigned char, randombytes_SEEDBYTES> seed;
-
 public:
     using result_type = unsigned int;
+    using seed_type = std::array<unsigned char, randombytes_SEEDBYTES>;
+    static std::array<unsigned char, randombytes_SEEDBYTES> make_seed()
+    {
+        std::array<unsigned char, randombytes_SEEDBYTES> seed;
+        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
+        return seed;
+    }
     sodium_random()
     {
         if (sodium_init() == -1)
@@ -99,13 +79,16 @@ public:
     {
         std::vector<result_type> data(size);
         // TODO: remove
-        randombytes_buf_deterministic(data.data(), size * 4, seed.data());
+        randombytes_buf_deterministic(data.data(), sizeof(result_type) * size, seed.data());
 
         // TODO: replace this code.
         // randombytes_buf(data.data(), size);
 
         return data;
     }
+
+private:
+    seed_type seed;
 };
 
 }  // namespace qmpc::random

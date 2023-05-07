@@ -5,6 +5,7 @@ cc_library(
     ],
     hdrs = [
         "random.hpp",
+        "csprng_interface.hpp"
     ],
     deps = [
         "//random:csprng",

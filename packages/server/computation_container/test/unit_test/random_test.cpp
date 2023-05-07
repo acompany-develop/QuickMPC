@@ -34,3 +34,5 @@ TEST(RandomTest, getRandMinMaxTest)
         EXPECT_LE(rnd_fp, 10);
     }
 }
+
+TEST(RandomTest, newRandomTest) { random_csprng<qmpc::random::sodium_random> random; }
