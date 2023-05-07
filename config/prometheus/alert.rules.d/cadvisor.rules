@@ -1,6 +1,13 @@
 groups:
 - name: cadvisor
   rules:
+  - alert: container_down
+    expr: time() - container_last_seen > 30
+    labels:
+      severity: critical
+    annotations:
+      summary: "Instance {{ $labels.name }} down"
+      description: "{{ $labels.name }} has been down for more than 30 seconds."
   - alert: warn_cpu_utilization
     expr: 100 * (rate(container_cpu_usage_seconds_total{name=~"manage.*|computation.*|beaver.*|grafana|alertmanager|prometheus|cadvisor"}[1m])/ on(node) group_left() machine_cpu_cores) > 60
     for: 1m
