@@ -390,7 +390,19 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: image_dev_bts | image_dev_cc | image_dev_mc
+          name: image_dev_bts
+          path: /tmp
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: image_dev_cc
+          path: /tmp
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: image_dev_mc
           path: /tmp
 
       - name: Load image
@@ -446,7 +458,19 @@ jobs:
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
-          name: image_dev_bts | image_dev_cc | image_dev_mc
+          name: image_dev_bts
+          path: /tmp
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: image_dev_cc
+          path: /tmp
+
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: image_dev_mc
           path: /tmp
 
       - name: Load image
