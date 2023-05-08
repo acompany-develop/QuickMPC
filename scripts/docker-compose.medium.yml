@@ -8,12 +8,12 @@ services:
         condition: service_healthy
       dev_cc_envoy1:
         condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
+    image: drogskol
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
+      #cache_from:
+      #  - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
       target: medium
     volumes:
       - target: /QuickMPC/config
@@ -41,12 +41,12 @@ services:
         condition: service_healthy
       dev_cc_envoy2:
         condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
+    image: drogskol
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
       target: medium
     volumes:
       - target: /QuickMPC/config
@@ -74,12 +74,12 @@ services:
         condition: service_healthy
       dev_cc_envoy3:
         condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
+    image: drogskol
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-medium
       target: medium
     volumes:
       - target: /QuickMPC/config

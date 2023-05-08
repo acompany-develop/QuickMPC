@@ -220,7 +220,7 @@ jobs:
           cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
           target: medium
-          load: true
+          tags: drogskol
 
       - name: Run bazel test in computation_container
         run: make test t=./computation_container m=run p=medium
