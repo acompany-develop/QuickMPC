@@ -35,4 +35,4 @@ TEST(RandomTest, getRandMinMaxTest)
     }
 }
 
-TEST(RandomTest, newRandomTest) { random_csprng<qmpc::random::sodium_random> random; }
+TEST(RandomTest, newRandomTest) { random_csprng<qmpc::random::sodium_random<>> random; }

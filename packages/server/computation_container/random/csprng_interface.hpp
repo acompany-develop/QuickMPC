@@ -37,29 +37,28 @@ public:
     auto operator()(size_t n) { return static_cast<PRNG*>(this)->generate(n); }
 };
 
-class sodium_random : public csprng_interface<sodium_random>
+class default_seed : public csprng_interface<default_seed>
+{
+public:
+    using result_type = unsigned char;
+    auto generate()
+    {
+        std::random_device rd;
+        return static_cast<result_type>(rd());
+    }
+    auto generate(size_t n)
+    {
+        std::vector<unsigned char> seed(n);
+        syscall(SYS_getrandom, seed.data(), n, 1);
+        return seed;
+    }
+};
+template <typename SEED_TYPE = default_seed>
+class sodium_random : public csprng_interface<sodium_random<SEED_TYPE>>
 {
 public:
     using result_type = unsigned int;
-    using seed_type = std::array<unsigned char, randombytes_SEEDBYTES>;
-    static std::array<unsigned char, randombytes_SEEDBYTES> make_seed()
-    {
-        std::array<unsigned char, randombytes_SEEDBYTES> seed;
-        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
-        return seed;
-    }
     sodium_random()
-    {
-        if (sodium_init() == -1)
-        {
-            qmpc::Log::throw_with_trace(
-                std::runtime_error("RandomError: There is a serious lack of entropy.")
-            );
-        };
-
-        syscall(SYS_getrandom, seed.data(), randombytes_SEEDBYTES, 1);
-    }
-    sodium_random(const std::array<unsigned char, randombytes_SEEDBYTES>& seed) : seed(seed)
     {
         if (sodium_init() == -1)
         {
@@ -71,13 +70,15 @@ public:
     auto generate()
     {
         result_type ret;
-        randombytes_buf_deterministic(&ret, sizeof(result_type), seed.data());
+        auto seed = seed_generator();
+        randombytes_buf_deterministic(&ret, sizeof(result_type), &seed);
         // ret = randombytes_random();
         return ret;
     }
-    auto generate(const size_t size)
+    auto generate(size_t size)
     {
         std::vector<result_type> data(size);
+        auto seed = seed_generator(randombytes_SEEDBYTES);
         // TODO: remove
         randombytes_buf_deterministic(data.data(), sizeof(result_type) * size, seed.data());
 
@@ -88,7 +89,7 @@ public:
     }
 
 private:
-    seed_type seed;
+    SEED_TYPE seed_generator;
 };
 
 }  // namespace qmpc::random

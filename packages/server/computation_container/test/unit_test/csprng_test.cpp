@@ -29,6 +29,19 @@ public:
     }
 };
 
+template <int CONST_VALUE>
+class const_seed : public qmpc::random::csprng_interface<const_seed<CONST_VALUE>>
+{
+public:
+    using result_type = unsigned char;
+    inline static constexpr result_type C = CONST_VALUE;
+    auto generate() { return static_cast<result_type>(C); }
+    auto generate(size_t n)
+    {
+        std::vector<unsigned char> seed(n, static_cast<result_type>(C));
+        return seed;
+    }
+};
 TEST(CsprngTest, GetRand)
 {
     const std::uint32_t byteSize = 8;  // 8byte = 64bit
@@ -217,19 +230,17 @@ TEST(csprngtest, constvalue)
 {
     std::array<unsigned char, randombytes_SEEDBYTES> seed = {"abcdefghijklmnvugyd"};
 
-    qmpc::random::sodium_random random(seed);
+    qmpc::random::sodium_random<const_seed<5>> random;
     auto vec = random(10);
     auto vec2 = random(10);
     for (int i = 0; i < 10; ++i)
     {
         ASSERT_EQ(vec[i], vec2[i]);
     }
-    std::array<unsigned char, randombytes_SEEDBYTES> seed2 = {"abcdefghijklmnvugyd-"};
+    qmpc::random::sodium_random<const_seed<6>> sodium2;
 
-    qmpc::random::sodium_random sodium(seed2);
-
-    auto vec3 = sodium(10);
-    auto vec4 = sodium(10);
+    auto vec3 = sodium2(10);
+    auto vec4 = sodium2(10);
     for (int i = 0; i < 10; ++i)
     {
         ASSERT_EQ(vec3[i], vec4[i]);

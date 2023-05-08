@@ -53,8 +53,7 @@ class random_csprng
     CSPRNG prng;
 
 public:
-    random_csprng() : prng(CSPRNG::make_seed()) {}
-    random_csprng(const typename CSPRNG::seed_type &seed) : prng(seed) {}
+    random_csprng() : prng() {}
     /**
      * @brief 上限と下限を指定する
      *
