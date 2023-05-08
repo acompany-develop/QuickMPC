@@ -243,7 +243,7 @@ jobs:
           name: image_dev_bts
           path: /tmp
 
-      -name: Load image
+      - name: Load image
         run: docker load --input /tmp/myimage.tar
 
       - name: Run bazel test in computation_container
