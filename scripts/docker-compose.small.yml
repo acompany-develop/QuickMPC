@@ -3,12 +3,13 @@ version: '3.3'
 services:
   small_bts:
     container_name: beaver_triple_service
-    image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
+    # image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
+    image: tags_small_bts
     build:
       context: ../
       dockerfile: packages/server/beaver_triple_service/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-small
       target: small
     volumes:
       - target: /QuickMPC/config
@@ -25,12 +26,13 @@ services:
   # TODO(#36): improve performance
   small_cc:
     container_name: computation_container1
-    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
+    # image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
+    image: tags_small_cc
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-small
       target: small_tmp
     volumes:
       - target: /db/share
@@ -42,12 +44,13 @@ services:
     tty: true
   small_mc:
     container_name: manage_container1
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
+    # image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
+    image: tags_small_mc
     build:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-small
       target: small
     volumes:
       - target: /db/share
