@@ -10,6 +10,7 @@ on:
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
+  KEY_SMALL_CC: ${{ runner.os }}-small-${{ hashFiles('./packages/server/computation_container/**') }}
 
 jobs:
   lint:
@@ -29,6 +30,34 @@ jobs:
         run: |
           cd ${{ github.workspace }}/packages/server/
           make check
+
+  # build-small_cc:
+  #   runs-on: ubunts-latest
+  #   needs: [lint]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: $KEY_SMALL_CC
+
+  #     - name: Set up Docker buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
+
+  #     - name: Build and push
+  #       id: docker_build
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/computation_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=small_cc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache
+  #         target: small
 
   small_test_cc:
     runs-on: ubuntu-latest
@@ -70,355 +99,356 @@ jobs:
           cache-from: type=local,scope=small_cc,src=/tmp/.buildx-cache
           cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache
           target: small
+          load: true
 
       - name: Run bazel test in computation_container
         run: make test t=./computation_container m=run p=small
         working-directory: ./scripts
 
-  small_test_mc:
-    runs-on: ubuntu-latest
-    needs: [lint]
+  # small_test_mc:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint]
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/manage_container/**') }}
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/manage_container/**') }}
 
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/manage_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache
-          target: small
+  #     - name: Build and push
+  #       id: docker_build
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/manage_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache
+  #         target: small
 
-      - name: Run Go test in manage_container
-        run: make test t=./manage_container m=run p=small
-        working-directory: ./scripts
+  #     - name: Run Go test in manage_container
+  #       run: make test t=./manage_container m=run p=small
+  #       working-directory: ./scripts
 
-  small_test_bts:
-    runs-on: ubuntu-latest
-    needs: [lint]
+  # small_test_bts:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint]
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/beaver_triple_service/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache
-          target: small
+  #     - name: Build and push
+  #       id: docker_build
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/beaver_triple_service/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache
+  #         target: small
 
-      - name: Run test in beaver_triple_service
-        run: make test t=./beaver_triple_service m=run
-        working-directory: ./scripts
+  #     - name: Run test in beaver_triple_service
+  #       run: make test t=./beaver_triple_service m=run
+  #       working-directory: ./scripts
 
-  small_test:
-    runs-on: ubuntu-latest
-    needs: [lint, small_test_cc, small_test_mc, small_test_bts]
+  # small_test:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint, small_test_cc, small_test_mc, small_test_bts]
 
-    steps:
-      - name: Merge All small_test
-        run: echo "ok"
+  #   steps:
+  #     - name: Merge All small_test
+  #       run: echo "ok"
 
-  medium_test_cc:
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # medium_test_cc:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      # Setup config for using GCS as bazel remote cache
-      - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
-        env:
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+  #     # Setup config for using GCS as bazel remote cache
+  #     - name: Update GCP service account JSON
+  #       run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
+  #       env:
+  #         CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
-      - name: Update .bazelrc for using remote cache
-        run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-        env:
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+  #     - name: Update .bazelrc for using remote cache
+  #       run: |
+  #         eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+  #       env:
+  #         BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+  #     - name: Log into registry
+  #       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-medium-${{ hashFiles('./packages/server/computation_container/**') }}
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: ${{ runner.os }}-medium-${{ hashFiles('./packages/server/computation_container/**') }}
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/computation_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push
+  #       id: docker_build
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/computation_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Run bazel test in computation_container
-        run: make test t=./computation_container m=run p=medium
-        working-directory: ./scripts
+  #     - name: Run bazel test in computation_container
+  #       run: make test t=./computation_container m=run p=medium
+  #       working-directory: ./scripts
 
-  medium_test_mc:
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+  # medium_test_mc:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-medium-${{ hashFiles('./packages/server/manage_container/**') }}
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: ${{ runner.os }}-medium-${{ hashFiles('./packages/server/manage_container/**') }}
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/manage_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push
+  #       id: docker_build
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/manage_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Run bazel test in manage_container
-        run: make test t=./manage_container m=run p=medium
-        working-directory: ./scripts
+  #     - name: Run bazel test in manage_container
+  #       run: make test t=./manage_container m=run p=medium
+  #       working-directory: ./scripts
 
-  medium_test_libclient:
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
-          submodules: true
+  # medium_test_libclient:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #         token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+  #         submodules: true
 
-      - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
-        env:
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+  #     - name: Update GCP service account JSON
+  #       run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
+  #       env:
+  #         CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
-      - name: Update .bazelrc for using remote cache
-        run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-        env:
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+  #     - name: Update .bazelrc for using remote cache
+  #       run: |
+  #         eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+  #       env:
+  #         BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+  #     - name: Log into registry
+  #       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-medium-${{ hashFiles('./packages/**') }}
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: ${{ runner.os }}-medium-${{ hashFiles('./packages/**') }}
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Build and push cc
-        id: docker_build_cc
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/computation_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push cc
+  #       id: docker_build_cc
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/computation_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Build and push libc
-        id: docker_build_libc
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./scripts/libclient/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push libc
+  #       id: docker_build_libc
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./scripts/libclient/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Build and push mc
-        id: docker_build_mc
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/manage_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push mc
+  #       id: docker_build_mc
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/manage_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Run bazel test in libclient
-        run: make test t=./libclient m=run p=medium
-        working-directory: ./scripts
+  #     - name: Run bazel test in libclient
+  #       run: make test t=./libclient m=run p=medium
+  #       working-directory: ./scripts
 
-  medium_test_container:
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
-          submodules: true
+  # medium_test_container:
+  #   runs-on: ubuntu-latest
+  #   needs: [lint]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         fetch-depth: 0
+  #         token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+  #         submodules: true
 
-      - name: Update GCP service account JSON
-        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
-        env:
-          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+  #     - name: Update GCP service account JSON
+  #       run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
+  #       env:
+  #         CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
 
-      - name: Update .bazelrc for using remote cache
-        run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-        env:
-          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+  #     - name: Update .bazelrc for using remote cache
+  #       run: |
+  #         eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+  #       env:
+  #         BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+  #     - name: Log into registry
+  #       run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
+  #     - name: Set up Python 3.7
+  #       uses: actions/setup-python@v2
+  #       with:
+  #         python-version: 3.7
 
-      - name: Install pipenv
-        run: pip install pipenv
-        working-directory: ./scripts
+  #     - name: Install pipenv
+  #       run: pip install pipenv
+  #       working-directory: ./scripts
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-medium-${{ hashFiles('./packages/**') }}
+  #     - name: Cache Docker layers
+  #       uses: actions/cache@v3
+  #       with:
+  #         path: /tmp/.buildx-cache
+  #         key: ${{ runner.os }}-medium-${{ hashFiles('./packages/**') }}
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker buildx
+  #       id: buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Build and push cc
-        id: docker_build_cc
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/computation_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push cc
+  #       id: docker_build_cc
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/computation_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Build and push mc
-        id: docker_build_mc
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/manage_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push mc
+  #       id: docker_build_mc
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/manage_container/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Build and push bts
-        id: docker_build_bts
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./packages/server/beaver_triple_service/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_bts,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_bts,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push bts
+  #       id: docker_build_bts
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./packages/server/beaver_triple_service/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_bts,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_bts,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Build and push libc
-        id: docker_build_libc
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./scripts/libclient/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
-          target: medium
+  #     - name: Build and push libc
+  #       id: docker_build_libc
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: ./
+  #         file: ./scripts/libclient/Dockerfile
+  #         builder: ${{ steps.buildx.outputs.name }}
+  #         cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
+  #         cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
+  #         target: medium
 
-      - name: Run container test
-        run: make test t=./container_test m=run p=medium
-        working-directory: ./scripts
+  #     - name: Run container test
+  #       run: make test t=./container_test m=run p=medium
+  #       working-directory: ./scripts
 
-  medium_test:
-    runs-on: ubuntu-latest
-    needs:
-      [
-        lint,
-        medium_test_cc,
-        medium_test_mc,
-        medium_test_libclient,
-        medium_test_container,
-      ]
-
-    steps:
-      - name: Merge All medium_test
-        run: echo "ok"
-
-  # https://tech.griphone.co.jp/2021/12/18/fast-docker-compose-buildx-github-actions/
-  # cache が毎回追加されるので過去のを消す作業が必要
-  # 古い issue だから今は直っているのかもしれないが分からず
-  # Move_cache:
+  # medium_test:
   #   runs-on: ubuntu-latest
   #   needs:
   #     [
-  #       small_test,
-  #       medium_test,
+  #       lint,
+  #       medium_test_cc,
+  #       medium_test_mc,
+  #       medium_test_libclient,
+  #       medium_test_container,
   #     ]
+
   #   steps:
-  #     - name: Clear and move cache
-  #       run: |
-  #         rm -rf /tmp/.buildx-cache
-  #         mv /tmp/.buildx-cache /tmp/.buildx-cache
+  #     - name: Merge All medium_test
+  #       run: echo "ok"
+
+  # # https://tech.griphone.co.jp/2021/12/18/fast-docker-compose-buildx-github-actions/
+  # # cache が毎回追加されるので過去のを消す作業が必要
+  # # 古い issue だから今は直っているのかもしれないが分からず
+  # # Move_cache:
+  # #   runs-on: ubuntu-latest
+  # #   needs:
+  # #     [
+  # #       small_test,
+  # #       medium_test,
+  # #     ]
+  # #   steps:
+  # #     - name: Clear and move cache
+  # #       run: |
+  # #         rm -rf /tmp/.buildx-cache
+  # #         mv /tmp/.buildx-cache /tmp/.buildx-cache
