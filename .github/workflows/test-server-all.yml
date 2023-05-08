@@ -10,7 +10,7 @@ on:
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
-  KEY_SMALL_CC: ${{ runner.os }}-small-${{ hashFiles('./packages/server/computation_container/**') }}
+  KEY_SMALL_CC: small-${{ hashFiles('./packages/server/computation_container/**') }}
 
 jobs:
   lint:
