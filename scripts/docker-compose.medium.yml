@@ -106,12 +106,13 @@ services:
     depends_on:
       dev_mc_envoy1:
         condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+    # image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+    image: tags_medium_mc
     build:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
       target: medium
     volumes:
       - target: /QuickMPC/config
@@ -137,12 +138,13 @@ services:
     depends_on:
       dev_mc_envoy2:
         condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+    # image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+    image: tags_medium_mc
     build:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
       target: medium
     volumes:
       - target: /QuickMPC/config
@@ -168,12 +170,13 @@ services:
     depends_on:
       dev_mc_envoy3:
         condition: service_started
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+    # image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+    image: tags_medium_mc
     build:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-medium
       target: medium
     volumes:
       - target: /QuickMPC/config
@@ -223,12 +226,13 @@ services:
         condition: service_started
       dev_bts:
         condition: service_healthy
-    image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
+    # image: ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
+    image: tags_medium_libc
     build:
       context: ../
       dockerfile: scripts/libclient/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-libc:test-libc-medium
       target: medium
     volumes:
       - target: /libclient/data

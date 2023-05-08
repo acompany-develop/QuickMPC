@@ -3,12 +3,13 @@ version: '3.3'
 services:
   dev_bts:
     container_name: beaver_triple_service
-    image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
+    # image: ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
+    image: tags_dev_bts
     build:
       context: ../
       dockerfile: packages/server/beaver_triple_service/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-bts:test-bts-dev
       target: dev
     command:
       - /bin/bash
