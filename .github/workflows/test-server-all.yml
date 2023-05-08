@@ -361,7 +361,6 @@ jobs:
     needs:
       [
         lint,
-        build_dev_bts,
         build_dev_cc,
         build_dev_mc,
       ]
@@ -387,11 +386,28 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Download artifact
-        uses: actions/download-artifact@v3
+      - name: Cache Docker layers
+        uses: actions/cache@v3
         with:
-          name: image_dev_bts
-          path: /tmp
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-medium-${{ hashFiles('./packages/packages/client/libclient-py/**') }}
+
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./scripts/libclient/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache
+          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache
+          target: medium
+          tags: tags_medium_libc
+          load: true
 
       - name: Download artifact
         uses: actions/download-artifact@v3
@@ -407,7 +423,6 @@ jobs:
 
       - name: Load image
         run: |
-          docker load --input /tmp/dev_bts.tar
           docker load --input /tmp/dev_cc.tar
           docker load --input /tmp/dev_mc.tar
 
