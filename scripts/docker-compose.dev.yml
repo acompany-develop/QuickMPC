@@ -90,12 +90,13 @@ services:
     tty: true
   dev_cc1:
     container_name: computation_container1
-    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    # image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    image: tags_dev_cc
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
       target: dev
     volumes:
       - target: /QuickMPC/config
@@ -126,12 +127,13 @@ services:
     tty: true
   dev_cc2:
     container_name: computation_container2
-    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    # image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    image: tags_dev_cc
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
       target: dev
     volumes:
       - target: /QuickMPC/config
@@ -162,12 +164,13 @@ services:
     tty: true
   dev_cc3:
     container_name: computation_container3
-    image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    # image: ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+    image: tags_dev_cc
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-cc:test-cc-dev
       target: dev
     volumes:
       - target: /QuickMPC/config
@@ -249,12 +252,13 @@ services:
     tty: true
   dev_mc1:
     container_name: manage_container1
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    # image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    image: tags_dev_mc
     build:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
       target: dev
     volumes:
       - target: /QuickMPC/config
@@ -288,12 +292,13 @@ services:
     tty: true
   dev_mc2:
     container_name: manage_container2
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    # image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    image: tags_dev_mc
     build:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
       target: dev
     volumes:
       - target: /QuickMPC/config
@@ -324,12 +329,13 @@ services:
     tty: true
   dev_mc3:
     container_name: manage_container3
-    image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    # image: ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+    image: tags_dev_mc
     build:
       context: ../
       dockerfile: packages/server/manage_container/Dockerfile
-      cache_from:
-        - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
+      # cache_from:
+      #   - type=registry,ref=ghcr.io/acompany-develop/quickmpc-mc:test-mc-dev
       target: dev
     volumes:
       - target: /QuickMPC/config
