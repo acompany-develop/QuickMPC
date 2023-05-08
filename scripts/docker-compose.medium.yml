@@ -8,7 +8,7 @@ services:
         condition: service_healthy
       dev_cc_envoy1:
         condition: service_started
-    image: drogskol
+    image: tags_medium_cc
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
@@ -41,7 +41,7 @@ services:
         condition: service_healthy
       dev_cc_envoy2:
         condition: service_started
-    image: drogskol
+    image: tags_medium_cc
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
@@ -74,7 +74,7 @@ services:
         condition: service_healthy
       dev_cc_envoy3:
         condition: service_started
-    image: drogskol
+    image: tags_medium_cc
     build:
       context: ../
       dockerfile: packages/server/computation_container/Dockerfile
