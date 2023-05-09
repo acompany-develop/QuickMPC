@@ -195,7 +195,7 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Cache Docker layers
+      - name: Cache Docker layers cc
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache-cc
@@ -219,9 +219,36 @@ jobs:
           tags: tags_medium_cc
           load: true
 
+      - name: Cache Docker layers bts
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache-bts
+          key: ${{ runner.os }}-dev_bts-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+          restore-key: ${{ runner.os }}-dev_bts-
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./packages/server/beaver_triple_service/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,scope=dev_bts,src=/tmp/.buildx-cache-bts
+          cache-to: type=local,scope=dev_bts,dest=/tmp/.buildx-cache-bts-new
+          target: dev
+          tags: tags_dev_bts
+          load: true
+
       - name: Run bazel test in computation_container
         run: make test t=./computation_container m=run p=medium
         working-directory: ./scripts
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache-cc
+          mv /tmp/.buildx-cache-cc-new /tmp/.buildx-cache-cc
+          rm -rf /tmp/.buildx-cache-bts
+          mv /tmp/.buildx-cache-bts-new /tmp/.buildx-cache-bts
 
   medium_test_mc:
     runs-on: ubuntu-latest
