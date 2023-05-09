@@ -1,6 +1,5 @@
 # BTS
 QuickMPCで使われるTripleを生成するサービス
-
 ## ローカルでの起動方法
 `packages/server/beaver_triple_service/`で以下のコマンドを実行
 ```sh
