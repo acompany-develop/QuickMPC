@@ -195,9 +195,29 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Build images and run computation_container
-        run: make test t=./computation_container m=build p=medium
-        working-directory: ./scripts
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache-cc
+          key: ${{ runner.os }}-medium_cc-${{ hashFiles('./packages/server/computation_container/**') }}
+          restore-key: ${{ runner.os }}-medium_cc-
+
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./packages/server/computation_container/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache-cc
+          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-cc-new
+          target: medium
+          tags: tags_medium_cc
+          load: true
 
       - name: Run bazel test in computation_container
         run: make test t=./computation_container m=run p=medium
