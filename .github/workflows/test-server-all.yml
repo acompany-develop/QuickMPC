@@ -413,6 +413,10 @@ jobs:
         with:
           python-version: 3.7
 
+      - name: Install pipenv
+        run: pip install pipenv
+        working-directory: ./scripts
+
       - name: Set up Docker buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
