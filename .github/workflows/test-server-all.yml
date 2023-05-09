@@ -54,7 +54,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/computation_container/**') }}
+          key: ${{ runner.os }}-small_cc-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-small_cc-
 
       - name: Set up Docker buildx
         id: buildx
@@ -68,7 +69,7 @@ jobs:
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=small_cc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache-new
           target: small
           tags: tags_small_cc
           load: true
@@ -76,6 +77,11 @@ jobs:
       - name: Run bazel test in computation_container
         run: make test t=./computation_container m=run p=small
         working-directory: ./scripts
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   small_test_mc:
     runs-on: ubuntu-latest
@@ -89,7 +95,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/manage_container/**') }}
+          key: ${{ runner.os }}-small_mc-${{ github.sha }}
+          restore-key: ${{ runner.os }}-small_mc-
 
       - name: Set up Docker buildx
         id: buildx
@@ -103,7 +110,7 @@ jobs:
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache-new
           target: small
           tags: tags_small_mc
           load: true
@@ -111,6 +118,11 @@ jobs:
       - name: Run Go test in manage_container
         run: make test t=./manage_container m=run p=small
         working-directory: ./scripts
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   small_test_bts:
     runs-on: ubuntu-latest
