@@ -95,7 +95,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-small_mc-${{ hashFiles('./packages/server/manage_container/**') }}
-          restore-key: ${{ runner.os }}-small_mc-
+          restore-keys: ${{ runner.os }}-small_mc-
 
       - name: Set up Docker buildx
         id: buildx
@@ -135,7 +135,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-small_bts-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          restore-key:
+          restore-keys: ${{ runner.os }}-small_bts-
 
       - name: Set up Docker buildx
         id: buildx
@@ -201,7 +201,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-cc
           key: ${{ runner.os }}-medium_cc-${{ hashFiles('./packages/server/computation_container/**') }}
-          restore-key: ${{ runner.os }}-medium_cc-
+          restore-keys: ${{ runner.os }}-medium_cc-
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -220,7 +220,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-bts
           key: ${{ runner.os }}-dev_bts-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          restore-key: ${{ runner.os }}-dev_bts-
+          restore-keys: ${{ runner.os }}-dev_bts-
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -257,7 +257,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-medium_mc-${{ hashFiles('./packages/server/manage_container/**') }}
-          restore-key: ${{ runner.os }}-medium_mc-
+          restore-keys: ${{ runner.os }}-medium_mc-
 
       - name: Set up Docker buildx
         id: buildx
@@ -318,7 +318,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-libc
           key: ${{ runner.os }}-medium_libc-${{ hashFiles('./packages/packages/client/libclient-py/**') }}
-          restore-key: ${{ runner.os }}-medium_libc-
+          restore-keys: ${{ runner.os }}-medium_libc-
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -337,7 +337,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-cc
           key: ${{ runner.os }}-dev_cc-${{ hashFiles('./packages/server/computation_container/**') }}
-          restore-key: ${{ runner.os }}-dev_cc-
+          restore-keys: ${{ runner.os }}-dev_cc-
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -356,7 +356,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-mc
           key: ${{ runner.os }}-dev_mc-${{ hashFiles('./packages/server/manage_container/**') }}
-          restore-key: ${{ runner.os }}-dev_mc-
+          restore-keys: ${{ runner.os }}-dev_mc-
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -422,7 +422,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-libc
           key: ${{ runner.os }}-dev_bts-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          restore-key: ${{ runner.os }}-dev_bts-
+          restore-keys: ${{ runner.os }}-dev_bts-
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -441,7 +441,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-cc
           key: ${{ runner.os }}-dev_cc-${{ hashFiles('./packages/server/computation_container/**') }}
-          restore-key: ${{ runner.os }}-dev_cc-
+          restore-keys: ${{ runner.os }}-dev_cc-
 
       - name: Build and push
         uses: docker/build-push-action@v3
@@ -460,7 +460,7 @@ jobs:
         with:
           path: /tmp/.buildx-cache-mc
           key: ${{ runner.os }}-dev_mc-${{ hashFiles('./packages/server/manage_container/**') }}
-          restore-key: ${{ runner.os }}-dev_mc-
+          restore-keys: ${{ runner.os }}-dev_mc-
 
       - name: Build and push
         uses: docker/build-push-action@v3
