@@ -317,7 +317,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache-libc
-          key: ${{ runner.os }}-medium_libc-${{ hashFiles('./packages/packages/client/libclient-py/**') }}
+          key: ${{ runner.os }}-medium_libc-${{ hashFiles('./packages/client/libclient-py/**') }}
           restore-keys: ${{ runner.os }}-medium_libc-
 
       - name: Build and push
