@@ -70,8 +70,8 @@ public:
     auto generate()
     {
         result_type ret;
-        auto seed = seed_generator();
-        randombytes_buf_deterministic(&ret, sizeof(result_type), &seed);
+        auto seed = seed_generator(randombytes_SEEDBYTES);
+        randombytes_buf_deterministic(&ret, sizeof(result_type), seed.data());
         // ret = randombytes_random();
         return ret;
     }

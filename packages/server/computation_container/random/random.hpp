@@ -62,7 +62,10 @@ public:
      * @return 範囲内の乱数生成
      */
     template <typename Result>
-    auto operator()(Result min, Result max)
+    auto get(
+        Result min = std::numeric_limits<Result>::min(),
+        Result max = std::numeric_limits<Result>::max()
+    )
     {
         // integral
         if constexpr (std::is_integral_v<Result>)
@@ -79,10 +82,17 @@ public:
     }
 
     template <typename Result>
-    auto make_array(size_t size, Result min, Result max)
+    auto make_array(
+        size_t size,
+        Result min = std::numeric_limits<Result>::min(),
+        Result max = std::numeric_limits<Result>::max()
+    )
     {
         std::vector<Result> ret(size);
-        std::generate(ret.begin(), ret.end(), this->operator()(min, max));
+        for (auto &a : ret)
+        {
+            a = this->get<Result>(min, max);
+        }
         return ret;
     }
 };

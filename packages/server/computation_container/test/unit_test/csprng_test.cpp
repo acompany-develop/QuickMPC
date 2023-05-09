@@ -228,9 +228,9 @@ TEST(csprngtest, interfaceDefaultUse)
 
 TEST(csprngtest, constvalue)
 {
-    std::array<unsigned char, randombytes_SEEDBYTES> seed = {"abcdefghijklmnvugyd"};
-
     qmpc::random::sodium_random<const_seed<5>> random;
+
+    ASSERT_EQ(random(), random());
     auto vec = random(10);
     auto vec2 = random(10);
     for (int i = 0; i < 10; ++i)
