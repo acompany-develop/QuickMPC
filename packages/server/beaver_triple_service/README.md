@@ -128,7 +128,6 @@ docker run --rm \
   --output /tmp
 ```
 
-
 `--output` で指定したPATH直下にクライアント向けの`client.<name>.env` というファイル形式の設定ファイルが以下の形式で生成される．
 ```env
 BTS_TOKEN=...
