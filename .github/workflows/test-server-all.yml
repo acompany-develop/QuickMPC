@@ -315,13 +315,82 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Build images and run libclient
-        run: make test t=./libclient m=build p=medium
-        working-directory: ./scripts
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache-libc
+          key: ${{ runner.os }}-medium_libc-${{ hashFiles('./packages/packages/client/libclient-py/**') }}
+          restore-key: ${{ runner.os }}-medium_libc-
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./scripts/libclient/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache-libc
+          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-libc-new
+          target: medium
+          tags: tags_medium_libc
+          load: true
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache-cc
+          key: ${{ runner.os }}-dev_cc-${{ hashFiles('./packages/server/computation_container/**') }}
+          restore-key: ${{ runner.os }}-dev_cc-
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./packages/server/computation_container/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,scope=dev_cc,src=/tmp/.buildx-cache-cc
+          cache-to: type=local,scope=dev_cc,dest=/tmp/.buildx-cache-cc-new
+          target: dev
+          tags: tags_dev_cc
+          load: true
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache-mc
+          key: ${{ runner.os }}-dev_mc-${{ hashFiles('./packages/server/manage_container/**') }}
+          restore-key: ${{ runner.os }}-dev_mc-
+
+      - name: Build and push
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./packages/server/manage_container/Dockerfile
+          builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,scope=dev_mc,src=/tmp/.buildx-cache-mc
+          cache-to: type=local,scope=dev_mc,dest=/tmp/.buildx-cache-mc-new
+          target: dev
+          tags: tags_dev_mc
+          load: true
 
       - name: Run bazel test in libclient
         run: make test t=./libclient m=run p=medium
         working-directory: ./scripts
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache-libc
+          mv /tmp/.buildx-cache-libc-new /tmp/.buildx-cache-libc
+          rm -rf /tmp/.buildx-cache-cc
+          mv /tmp/.buildx-cache-cc-new /tmp/.buildx-cache-cc
+          rm -rf /tmp/.buildx-cache-mc
+          mv /tmp/.buildx-cache-mc-new /tmp/.buildx-cache-mc
 
   medium_test_container:
     runs-on: ubuntu-latest
