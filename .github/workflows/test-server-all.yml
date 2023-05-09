@@ -195,16 +195,16 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
       - name: Cache Docker layers cc
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache-cc
           key: ${{ runner.os }}-medium_cc-${{ hashFiles('./packages/server/computation_container/**') }}
           restore-key: ${{ runner.os }}-medium_cc-
-
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
 
       - name: Build and push
         id: docker_build
