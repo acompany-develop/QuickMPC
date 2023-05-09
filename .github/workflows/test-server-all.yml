@@ -424,7 +424,7 @@ jobs:
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
-          path: /tmp/.buildx-cache-libc
+          path: /tmp/.buildx-cache-bts
           key: ${{ runner.os }}-dev_bts-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
           restore-keys: ${{ runner.os }}-dev_bts-
 
