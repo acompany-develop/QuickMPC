@@ -54,7 +54,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small_cc-${{ github.sha }}
+          key: ${{ runner.os }}-small_cc-${{ hashFiles('./packages/server/computation_container/**') }}
           restore-keys: ${{ runner.os }}-small_cc-
 
       - name: Set up Docker buildx
@@ -95,7 +95,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small_mc-${{ github.sha }}
+          key: ${{ runner.os }}-small_mc-${{ hashFiles('./packages/server/manage_container/**') }}
           restore-key: ${{ runner.os }}-small_mc-
 
       - name: Set up Docker buildx
@@ -136,7 +136,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-small-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+          key: ${{ runner.os }}-small_bts-${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+          restore-key:
 
       - name: Set up Docker buildx
         id: buildx
@@ -150,7 +151,7 @@ jobs:
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache
+          cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache-new
           target: small
           tags: tags_small_bts
           load: true
@@ -158,6 +159,11 @@ jobs:
       - name: Run test in beaver_triple_service
         run: make test t=./beaver_triple_service m=run
         working-directory: ./scripts
+
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   small_test:
     runs-on: ubuntu-latest
