@@ -31,7 +31,6 @@ public:
      * @brief 乱数ベクターを返す関数
      *
      * @param n サイズ
-     * @param seed 乱数生成用シード
      * @return value_type型のvectorを返す関数へのフック
      */
     auto operator()(size_t n) { return static_cast<PRNG*>(this)->generate(n); }
