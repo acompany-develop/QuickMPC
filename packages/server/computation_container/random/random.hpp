@@ -82,7 +82,7 @@ public:
     }
 
     template <typename Result>
-    auto make_array(
+    auto get_array(
         size_t size,
         Result min = std::numeric_limits<Result>::min(),
         Result max = std::numeric_limits<Result>::max()

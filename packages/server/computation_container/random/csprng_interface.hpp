@@ -78,12 +78,7 @@ public:
     {
         std::vector<result_type> data(size);
         auto seed = seed_generator(randombytes_SEEDBYTES);
-        // TODO: remove
         randombytes_buf_deterministic(data.data(), sizeof(result_type) * size, seed.data());
-
-        // TODO: replace this code.
-        // randombytes_buf(data.data(), size);
-
         return data;
     }
 

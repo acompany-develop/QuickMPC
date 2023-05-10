@@ -85,7 +85,7 @@ TEST(RandomTest, newRandomTest)
     }
     std::cout << "random set 1'000'000 /" << s.size() << std::endl;
 
-    auto vec = random.make_array<unsigned long long>(1'000'000);
+    auto vec = random.get_array<unsigned long long>(1'000'000);
     std::set<unsigned long long> s2;
     for (auto& a : vec)
     {

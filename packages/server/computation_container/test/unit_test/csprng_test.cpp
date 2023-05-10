@@ -195,35 +195,27 @@ TEST(CsprngTest, HowUse)
     */
 }
 
-TEST(csprngtest, interface)
-{
-    using namespace std;
-    qmpc::random::sodium_random random;
-    auto vec1 = random(5);
-    for (auto&& a : vec1)
-    {
-        std::cout << "random vec is " << a << std::endl;
-    }
-}
 TEST(csprngtest, interfaceDefaultUse)
 {
     using namespace std;
-    std::uniform_int_distribution<unsigned long long> dist(0, 10'000'000'000'000);
+    unsigned long long ma = std::numeric_limits<unsigned long long>::max();
+    std::uniform_int_distribution<unsigned long long> dist(0, ma);
     for (int i = 0; i < 10; ++i)
     {
         qmpc::random::sodium_random random;
-        std::cout << dist(random) << std::endl;
+        auto value = dist(random);
+        EXPECT_GE(value, 0);
+        EXPECT_LE(value, ma);
     }
-
-    std::uniform_real_distribution<double> dist_d(0.0, 100000.0);
+    double dma = std::numeric_limits<double>::max();
+    std::uniform_real_distribution<double> dist_d(0.0, dma);
     for (int i = 0; i < 10; ++i)
     {
         qmpc::random::sodium_random random;
-        std::cout << fixed;
-        std::cout << std::setprecision(10);
-        std::cout << dist_d(random) << std::endl;
+        auto value = dist_d(random);
+        EXPECT_GE(value, 0);
+        EXPECT_LE(value, dma);
     }
-    cout << resetiosflags(ios_base::floatfield);
 }
 
 TEST(csprngtest, constvalue)
