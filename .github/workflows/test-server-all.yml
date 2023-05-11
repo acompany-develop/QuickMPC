@@ -37,6 +37,10 @@ jobs:
       change_file_names: ${{ steps.output_step.outputs.file_names}}
 
     steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Get changed files
         id: get_changed-files
         uses: tj-actions/changed-files@v35
