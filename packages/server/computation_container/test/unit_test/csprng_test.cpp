@@ -8,39 +8,17 @@
 #include "logging/logger.hpp"
 #include "random/csprng.hpp"
 
-class norandom_test : public qmpc::random::csprng_interface<norandom_test>
+class test_sodium_seed
 {
 public:
-    using result_type = unsigned int;
-    inline static constexpr result_type C = 5;
-    auto generate()
-    {
-        result_type ret = C;
-        return ret;
-    }
-    auto generate(const size_t size)
-    {
-        std::vector<result_type> data(size);
-        for (int i = 0; i < size; ++i)
-        {
-            data[i] = C;
-        }
-        return data;
-    }
-};
+    using seed_type = std::array<unsigned char, randombytes_SEEDBYTES>;
+    test_sodium_seed() {}
+    test_sodium_seed(const seed_type& const_seed) {}
+    seed_type operator()() { return seed; }
+    void set_seed(const seed_type& seed) { this->seed = seed; }
 
-template <int CONST_VALUE>
-class const_seed : public qmpc::random::csprng_interface<const_seed<CONST_VALUE>>
-{
-public:
-    using result_type = unsigned char;
-    inline static constexpr result_type C = CONST_VALUE;
-    auto generate() { return static_cast<result_type>(C); }
-    auto generate(size_t n)
-    {
-        std::vector<unsigned char> seed(n, static_cast<result_type>(C));
-        return seed;
-    }
+private:
+    seed_type seed = {"abcdefgh"};
 };
 TEST(CsprngTest, GetRand)
 {
@@ -195,65 +173,34 @@ TEST(CsprngTest, HowUse)
     */
 }
 
-TEST(csprngtest, interfaceDefaultUse)
-{
-    using namespace std;
-    unsigned long long ma = std::numeric_limits<unsigned long long>::max();
-    std::uniform_int_distribution<unsigned long long> dist(0, ma);
-    for (int i = 0; i < 10; ++i)
-    {
-        qmpc::random::sodium_random random;
-        auto value = dist(random);
-        EXPECT_GE(value, 0);
-        EXPECT_LE(value, ma);
-    }
-    double dma = std::numeric_limits<double>::max();
-    std::uniform_real_distribution<double> dist_d(0.0, dma);
-    for (int i = 0; i < 10; ++i)
-    {
-        qmpc::random::sodium_random random;
-        auto value = dist_d(random);
-        EXPECT_GE(value, 0);
-        EXPECT_LE(value, dma);
-    }
-}
-
 TEST(csprngtest, constvalue)
 {
-    qmpc::random::sodium_random<const_seed<5>> random;
+    qmpc::random::sodium_random<test_sodium_seed> const_sodium;
+    qmpc::random::sodium_random<test_sodium_seed> const_sodium2;
+    auto rand1 = const_sodium();
+    auto rand2 = const_sodium2();
+    std::cout << "test sodium value is " << rand1 << std::endl;
+    ASSERT_EQ(rand1, rand2);
 
-    ASSERT_EQ(random(), random());
-    auto vec = random(10);
-    auto vec2 = random(10);
+    auto vec1 = const_sodium(10);
+    auto vec2 = const_sodium2(10);
     for (int i = 0; i < 10; ++i)
     {
-        ASSERT_EQ(vec[i], vec2[i]);
+        ASSERT_EQ(vec1[i], vec2[i]);
+        std::cout << "test sodium1 value " << i << " " << vec1[i] << std::endl;
     }
-    qmpc::random::sodium_random<const_seed<6>> sodium2;
+    test_sodium_seed test;
+    test_sodium_seed::seed_type seed = {"bcdfghij"};
+    test.set_seed(seed);
+    qmpc::random::sodium_random<test_sodium_seed> const_sodium3(test);
+    auto rand3 = const_sodium3();
 
-    auto vec3 = sodium2(10);
-    auto vec4 = sodium2(10);
+    std::cout << "test sodium value is " << rand3 << std::endl;
+
+    auto vec3 = const_sodium3(10);
     for (int i = 0; i < 10; ++i)
     {
-        ASSERT_EQ(vec3[i], vec4[i]);
-        ASSERT_NE(vec3[i], vec[i]);
-    }
-}
-
-TEST(csprngtest, norandom)
-{
-    norandom_test random;
-
-    auto ret = random();
-    auto ret2 = random();
-    ASSERT_EQ(ret, ret2);
-    ASSERT_EQ(ret, norandom_test::C);
-
-    auto vec = random(10);
-    auto vec2 = random(10);
-    for (int i = 0; i < 10; ++i)
-    {
-        ASSERT_EQ(vec[i], norandom_test::C);
-        ASSERT_EQ(vec2[i], norandom_test::C);
+        ASSERT_NE(vec1[i], vec3[i]);
+        std::cout << "test sodium3 value " << i << " " << vec3[i] << std::endl;
     }
 }
