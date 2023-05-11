@@ -68,7 +68,7 @@ jobs:
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=small_cc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_cc,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,mode=max,scope=small_cc,dest=/tmp/.buildx-cache-new
           target: small
           tags: tags_small_cc
           load: true
@@ -108,7 +108,7 @@ jobs:
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=small_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_mc,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,mode=max,scope=small_mc,dest=/tmp/.buildx-cache-new
           target: small
           tags: tags_small_mc
           load: true
@@ -148,7 +148,7 @@ jobs:
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=small_bts,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=small_bts,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,mode=max,scope=small_bts,dest=/tmp/.buildx-cache-new
           target: small
           tags: tags_small_bts
           load: true
@@ -210,7 +210,7 @@ jobs:
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=medium_cc,src=/tmp/.buildx-cache-cc
-          cache-to: type=local,scope=medium_cc,dest=/tmp/.buildx-cache-cc-new
+          cache-to: type=local,mode=max,scope=medium_cc,dest=/tmp/.buildx-cache-cc-new
           target: medium
           tags: tags_medium_cc
           load: true
@@ -229,7 +229,7 @@ jobs:
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=dev_bts,src=/tmp/.buildx-cache-bts
-          cache-to: type=local,scope=dev_bts,dest=/tmp/.buildx-cache-bts-new
+          cache-to: type=local,mode=max,scope=dev_bts,dest=/tmp/.buildx-cache-bts-new
           target: dev
           tags: tags_dev_bts
           load: true
@@ -270,7 +270,7 @@ jobs:
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,scope=medium_mc,dest=/tmp/.buildx-cache-new
+          cache-to: type=local,mode=max,scope=medium_mc,dest=/tmp/.buildx-cache-new
           target: medium
           tags: tags_medium_mc
           load: true
@@ -327,7 +327,7 @@ jobs:
           file: ./scripts/libclient/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=medium_libc,src=/tmp/.buildx-cache-libc
-          cache-to: type=local,scope=medium_libc,dest=/tmp/.buildx-cache-libc-new
+          cache-to: type=local,mode=max,scope=medium_libc,dest=/tmp/.buildx-cache-libc-new
           target: medium
           tags: tags_medium_libc
           load: true
@@ -346,7 +346,7 @@ jobs:
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=dev_cc,src=/tmp/.buildx-cache-cc
-          cache-to: type=local,scope=dev_cc,dest=/tmp/.buildx-cache-cc-new
+          cache-to: type=local,mode=max,scope=dev_cc,dest=/tmp/.buildx-cache-cc-new
           target: dev
           tags: tags_dev_cc
           load: true
@@ -365,7 +365,7 @@ jobs:
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=dev_mc,src=/tmp/.buildx-cache-mc
-          cache-to: type=local,scope=dev_mc,dest=/tmp/.buildx-cache-mc-new
+          cache-to: type=local,mode=max,scope=dev_mc,dest=/tmp/.buildx-cache-mc-new
           target: dev
           tags: tags_dev_mc
           load: true
@@ -435,7 +435,7 @@ jobs:
           file: ./packages/server/beaver_triple_service/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=dev_bts,src=/tmp/.buildx-cache-bts
-          cache-to: type=local,scope=dev_bts,dest=/tmp/.buildx-cache-bts-new
+          cache-to: type=local,mode=max,scope=dev_bts,dest=/tmp/.buildx-cache-bts-new
           target: dev
           tags: tags_dev_bts
           load: true
@@ -454,7 +454,7 @@ jobs:
           file: ./packages/server/computation_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=dev_cc,src=/tmp/.buildx-cache-cc
-          cache-to: type=local,scope=dev_cc,dest=/tmp/.buildx-cache-cc-new
+          cache-to: type=local,mode=max,scope=dev_cc,dest=/tmp/.buildx-cache-cc-new
           target: dev
           tags: tags_dev_cc
           load: true
@@ -473,7 +473,7 @@ jobs:
           file: ./packages/server/manage_container/Dockerfile
           builder: ${{ steps.buildx.outputs.name }}
           cache-from: type=local,scope=dev_mc,src=/tmp/.buildx-cache-mc
-          cache-to: type=local,scope=dev_mc,dest=/tmp/.buildx-cache-mc-new
+          cache-to: type=local,mode=max,scope=dev_mc,dest=/tmp/.buildx-cache-mc-new
           target: dev
           tags: tags_dev_mc
           load: true
