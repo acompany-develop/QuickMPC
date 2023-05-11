@@ -40,11 +40,6 @@ class default_seed : public csprng_interface<default_seed>
 {
 public:
     using result_type = unsigned char;
-    auto generate()
-    {
-        std::random_device rd;
-        return static_cast<result_type>(rd());
-    }
     auto generate(size_t n)
     {
         std::vector<unsigned char> seed(n);
@@ -66,14 +61,7 @@ public:
             );
         };
     }
-    auto generate()
-    {
-        result_type ret;
-        auto seed = seed_generator(randombytes_SEEDBYTES);
-        randombytes_buf_deterministic(&ret, sizeof(result_type), seed.data());
-        // ret = randombytes_random();
-        return ret;
-    }
+
     auto generate(size_t size)
     {
         std::vector<result_type> data(size);
@@ -81,6 +69,7 @@ public:
         randombytes_buf_deterministic(data.data(), sizeof(result_type) * size, seed.data());
         return data;
     }
+    auto generate() { return generate(1)[0]; }
 
 private:
     SEED_TYPE seed_generator;
