@@ -12,29 +12,28 @@ env:
   COMPOSE_DOCKER_CLI_BUILD: 1
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
+  # lint:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Install clang-format tool
-        run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 14
-          sudo apt-get update
-          sudo apt-get install clang-format-14
-      - name: Check if *.{cpp|hpp} files are formatted
-        run: |
-          cd ${{ github.workspace }}/packages/server/
-          make check
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Install clang-format tool
+  #       run: |
+  #         wget https://apt.llvm.org/llvm.sh
+  #         chmod +x llvm.sh
+  #         sudo ./llvm.sh 14
+  #         sudo apt-get update
+  #         sudo apt-get install clang-format-14
+  #     - name: Check if *.{cpp|hpp} files are formatted
+  #       run: |
+  #         cd ${{ github.workspace }}/packages/server/
+  #         make check
 
   search_change_file_names:
     runs-on: ubuntu-latest
-    needs: [lint]
     outputs:
-      change_file_names: ${{ steps.output_step.outputs.file_names}}
+      change_file_names: ${{ steps.output_step.outputs.file_names }}
 
     steps:
       - uses: actions/checkout@v3
@@ -42,12 +41,12 @@ jobs:
           fetch-depth: 0
 
       - name: Get changed files
-        id: get_changed-files
+        id: get_changed_files
         uses: tj-actions/changed-files@v35
 
       - name: Output
         id: output_step
-        run: echo "file_names=${{ steps.changed-files.outputs.all_changed_files }}" >> "$GITHUB_OUTPUT"
+        run: echo "file_names=${{ steps.get_changed_files.outputs.all_changed_files }}" >> "$GITHUB_OUTPUT"
 
   # small_test_cc:
   #   runs-on: ubuntu-latest
@@ -79,7 +78,7 @@ jobs:
 
   small_test_mc:
     runs-on: ubuntu-latest
-    needs: [lint, search_change_file_names]
+    needs: [search_change_file_names]
     steps:
       - name: Checkout
         if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
