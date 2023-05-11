@@ -95,6 +95,9 @@ jobs:
         run: make test t=./manage_container m=run p=small
         working-directory: ./scripts
 
+      - name: Echo
+        run: echo "${{needs.search_change_file_names.outputs.change_file_names}}"
+
   # small_test_bts:
   #   runs-on: ubuntu-latest
   #   needs: [lint]
