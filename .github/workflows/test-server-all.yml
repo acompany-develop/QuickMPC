@@ -41,7 +41,7 @@ jobs:
         id: get_changed-files
         uses: tj-actions/changed-files@v35
 
-      -name:
+      - name: Output
         id: output_step
         run: echo "file_names=${{ steps.changed-files.outputs.all_changed_files }}" >> "$GITHUB_OUTPUT"
 
