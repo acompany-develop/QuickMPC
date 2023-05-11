@@ -95,7 +95,7 @@ jobs:
       #   working-directory: ./scripts
 
       - name: hoge
-        if: contains("${{needs.search_change_file_names.outputs.change_file_names}}", "manage_container")
+        if: contains('${{needs.search_change_file_names.outputs.change_file_names}}', 'manage_container')
         run: echo "Hello World!"
 
       - name: Echo
