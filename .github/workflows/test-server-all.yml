@@ -81,7 +81,7 @@ jobs:
     needs: [search_change_file_names]
     steps:
       - name: Checkout
-        if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
+        if: contains("${{needs.search_change_file_names.outputs.change_file_names}}", "manage_container")
         uses: actions/checkout@v2
 
       # - name: Build images and run manage_container
