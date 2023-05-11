@@ -262,7 +262,7 @@ jobs:
           pipenv run pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
-  medium_test_container_down:
+  medium_test_container_down_test_failed_send_share_with_down:
     runs-on: ubuntu-latest
     needs: [lint]
     steps:
@@ -302,7 +302,93 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_down_request.py::test_failed_send_share_with_down -s -v -log-cli-level=DEBUG
+        working-directory: ./scripts/container_test
+
+  medium_test_container_down_test_failed_execute_computation_with_down:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update GCP service account JSON
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
+        env:
+          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Build container test images
+        run: |
+          pip install pipenv
+          make test t=./container_test m=build p=medium
+        working-directory: ./scripts
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -s -v -log-cli-level=DEBUG
+        working-directory: ./scripts/container_test
+
+  medium_test_container_down_test_failed_get_computation_result_with_down:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update GCP service account JSON
+        run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
+        env:
+          CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      - name: Build container test images
+        run: |
+          pip install pipenv
+          make test t=./container_test m=build p=medium
+        working-directory: ./scripts
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_down_request.py::test_failed_get_computation_result_with_down -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test:
