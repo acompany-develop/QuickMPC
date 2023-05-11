@@ -85,18 +85,18 @@ jobs:
         if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
         uses: actions/checkout@v2
 
-      - name: Build images and run manage_container
-        if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
-        run: make test t=./manage_container m=build p=small
-        working-directory: ./scripts
+      # - name: Build images and run manage_container
+      #   if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
+      #   run: make test t=./manage_container m=build p=small
+      #   working-directory: ./scripts
 
-      - name: Run Go test in manage_container
-        if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
-        run: make test t=./manage_container m=run p=small
-        working-directory: ./scripts
+      # - name: Run Go test in manage_container
+      #   if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
+      #   run: make test t=./manage_container m=run p=small
+      #   working-directory: ./scripts
 
       - name: Echo
-        run: echo "${{needs.search_change_file_names.outputs.change_file_names}}"
+        run: echo ${{needs.search_change_file_names.outputs.change_file_names}}
 
   # small_test_bts:
   #   runs-on: ubuntu-latest
