@@ -80,26 +80,19 @@ jobs:
     runs-on: ubuntu-latest
     needs: [search_change_file_names]
     steps:
-      # - name: Checkout
-      #   if: contains("${{needs.search_change_file_names.outputs.change_file_names}}", "manage_container")
-      #   uses: actions/checkout@v2
-
-      # - name: Build images and run manage_container
-      #   if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
-      #   run: make test t=./manage_container m=build p=small
-      #   working-directory: ./scripts
-
-      # - name: Run Go test in manage_container
-      #   if: contains(${{needs.search_change_file_names.outputs.change_file_names}}, "manage_container")
-      #   run: make test t=./manage_container m=run p=small
-      #   working-directory: ./scripts
-
-      - name: hoge
+      - name: Checkout
         if: contains( needs.search_change_file_names.outputs.change_file_names, 'manage_container')
-        run: echo "Hello World!"
+        uses: actions/checkout@v2
 
-      - name: Echo
-        run: echo ${{needs.search_change_file_names.outputs.change_file_names}}
+      - name: Build images and run manage_container
+        if: contains( needs.search_change_file_names.outputs.change_file_names, 'manage_container')
+        run: make test t=./manage_container m=build p=small
+        working-directory: ./scripts
+
+      - name: Run Go test in manage_container
+        if: contains( needs.search_change_file_names.outputs.change_file_names, 'manage_container')
+        run: make test t=./manage_container m=run p=small
+        working-directory: ./scripts
 
   # small_test_bts:
   #   runs-on: ubuntu-latest
