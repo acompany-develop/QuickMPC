@@ -59,6 +59,7 @@ jobs:
         with:
           container-name: "small_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
+          dockerfile-path: ./packages/server/computation_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "small"
 
@@ -83,6 +84,7 @@ jobs:
         with:
           container-name: "small_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+          dockerfile-path: ./packages/server/manage_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "small"
 
@@ -107,6 +109,7 @@ jobs:
         with:
           container-name: "small_bts"
           cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "small"
 
@@ -153,6 +156,7 @@ jobs:
         with:
           container-name: "medium_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
+          dockerfile-path: ./packages/server/computation_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "medium"
 
@@ -161,6 +165,7 @@ jobs:
         with:
           container-name: "dev_bts"
           cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
@@ -184,6 +189,7 @@ jobs:
         with:
           container-name: "medium_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+          dockerfile-path: ./packages/server/manage_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "medium"
 
@@ -225,6 +231,7 @@ jobs:
         with:
           container-name: "medium_libc"
           cache-key: ${{ hashFiles('./packages/client/libclient-py/**') }}
+          dockerfile-path: ./scripts/libclient/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "medium"
 
@@ -233,6 +240,7 @@ jobs:
         with:
           container-name: "dev_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
+          dockerfile-path: ./packages/server/computation_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
@@ -241,6 +249,7 @@ jobs:
         with:
           container-name: "dev_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+          dockerfile-path: ./packages/server/manage_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
@@ -291,6 +300,7 @@ jobs:
         with:
           container-name: "dev_bts"
           cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+          dockerfile-path: ../packages/server/beaver_triple_service/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
@@ -299,6 +309,7 @@ jobs:
         with:
           container-name: "dev_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
+          dockerfile-path: ./packages/server/computation_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
@@ -307,6 +318,7 @@ jobs:
         with:
           container-name: "dev_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+          dockerfile-path: ./packages/server/manage_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 

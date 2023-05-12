@@ -7,6 +7,10 @@ inputs:
     description: "key for actions/cache"
     required: true
 
+  dockerfile-path:
+    description: "path to dockerfile"
+    required: true
+
   builder-name:
     description: "buildx.outputs.name"
     required: true
@@ -29,7 +33,7 @@ runs:
       uses: docker/build-push-action@v3
       with:
         context: ./
-        file: ./packages/server/manage_container/Dockerfile
+        file: ${{ inputs.dockerfile-path }}
         builder: ${{ steps.buildx.outputs.name }}
         cache-from: type=local,scope=${{ inputs.container-name }},src=/tmp/.buildx-cache-${{ inputs.container-name }}
         cache-to: type=local,mode=max,scope=${{ inputs.container-name }},dest=/tmp/.buildx-cache-${{ inputs.container-name }}-new
