@@ -326,7 +326,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
   medium_test_container_restart:
@@ -398,7 +398,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_restart_request.py -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_send_share_with_down:
@@ -470,7 +470,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_send_share_with_down -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_down_request.py::test_failed_send_share_with_down -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_execute_computation_with_down_0:
@@ -542,7 +542,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container0] -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container0] -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_execute_computation_with_down_1:
@@ -614,7 +614,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container1] -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container1] -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_get_computation_result_with_down:
@@ -686,7 +686,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_get_computation_result_with_down -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_down_request.py::test_failed_get_computation_result_with_down -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
   medium_test:
