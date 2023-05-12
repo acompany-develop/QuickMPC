@@ -1,6 +1,5 @@
 # BTS
 QuickMPCで使われるTripleを生成するサービス
-
 ## ローカルでの起動方法
 `packages/server/beaver_triple_service/`で以下のコマンドを実行
 ```sh
@@ -127,7 +126,6 @@ docker run --rm \
   --file /tmp/sample.yaml \
   --output /tmp
 ```
-
 
 `--output` で指定したPATH直下にクライアント向けの`client.<name>.env` というファイル形式の設定ファイルが以下の形式で生成される．
 ```env
