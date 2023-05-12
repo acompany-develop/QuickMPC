@@ -19,7 +19,7 @@ def test_failed_send_share_with_down(down_container):
     down_container.down()
     res = send_share()
 
-    Containers.down_all()
+    # Containers.down_all()
     assert not res["is_ok"]
 
 
@@ -42,7 +42,7 @@ def test_failed_execute_computation_with_down(down_container):
     down_container.down()
     res = execute_computation(data_id1, data_id2)
 
-    Containers.down_all()
+    # Containers.down_all()
     assert not res["is_ok"]
 
 
@@ -63,5 +63,5 @@ def test_failed_get_computation_result_with_down(down_container):
     down_container.down()
     res = get_computation_result(job_uuid1)
 
-    Containers.down_all()
+    # Containers.down_all()
     assert not res["is_ok"]
