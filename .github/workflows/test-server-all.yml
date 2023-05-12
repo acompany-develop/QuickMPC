@@ -147,10 +147,10 @@ jobs:
 
       - uses: ./.github/actions/build_images_with_cache
         with:
-          container-name: "medium_mc"
+          container-name: "medium_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
           builder-name: ${{ steps.buildx.outputs.name }}
-          target: "medium_mc"
+          target: "medium_cc"
 
       - uses: ./.github/actions/build_images_with_cache
         with:
