@@ -316,15 +316,6 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Install pipenv
-        run: pip install pipenv
-        working-directory: ./scripts
-
       - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
