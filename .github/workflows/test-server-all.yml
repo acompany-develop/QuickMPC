@@ -61,7 +61,7 @@ jobs:
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
           dockerfile-path: ./packages/server/computation_container/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
-          target: "small"
+          target: "small_tmp"
 
       - name: Run bazel test in computation_container
         run: make test t=./computation_container m=run p=small
