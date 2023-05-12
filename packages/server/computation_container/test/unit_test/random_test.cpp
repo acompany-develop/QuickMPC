@@ -75,18 +75,18 @@ TEST(RandomTest, newRandomTest)
     random_csprng<qmpc::random::sodium_random<>> random;
     for (int i = 0; i < 100; ++i)
     {
-        auto value = random.get<int>(0, 1'000'000);
-        EXPECT_GE(value, 0);
-        EXPECT_LE(value, 1'000'000);
+        auto value = random.get<unsigned int>(0, 1'000'000);
+        EXPECT_GE(value, 0u);
+        EXPECT_LE(value, 1'000'000u);
     }
     for (int i = 0; i < 100; ++i)
     {
         auto value = random.get<unsigned long long>(0, 1'000'000'000);
-        EXPECT_GE(value, 0);
-        EXPECT_LE(value, 1'000'000'000);
+        EXPECT_GE(value, 0ull);
+        EXPECT_LE(value, 1'000'000'000ull);
     }
 }
-TEST(RandomTest, constCSprng)
+TEST(RandomTest, constRandom)
 {
     random_csprng<qmpc::random::sodium_random<const_seed<50>>> random;
 
@@ -96,5 +96,23 @@ TEST(RandomTest, constCSprng)
         auto tmp1 = random.get<int>(0, 100);
         auto tmp2 = random2.get<int>(0, 100);
         ASSERT_EQ(tmp1, tmp2);
+    }
+}
+
+TEST(RandomTest, constArrayRandom)
+{
+    random_csprng<qmpc::random::sodium_random<const_seed<50>>> random;
+
+    random_csprng<qmpc::random::sodium_random<const_seed<50>>> random2;
+    int mi = 0;
+    int ma = 1000000;
+    auto tmp1 = random.get_array<int>(0, ma);
+    auto tmp2 = random2.get_array<int>(0, ma);
+
+    for (int i = 0; i < tmp1.size(); ++i)
+    {
+        ASSERT_EQ(tmp1[i], tmp2[i]);
+        ASSERT_GE(tmp1[i], mi);
+        ASSERT_LE(tmp1[i], ma);
     }
 }
