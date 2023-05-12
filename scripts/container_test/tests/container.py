@@ -21,6 +21,9 @@ class Containers:
     __healthcheck_interval: ClassVar[int] = 3
     __healthcheck_num: ClassVar[int] = 10
 
+    def debug_container_name(self) -> None:
+        print("drog", self.__service_names, "skol")
+
     @staticmethod
     def __container_id(service_name: str) -> str:
         command = f"docker-compose {compose_files_opt} ps -q {service_name}"

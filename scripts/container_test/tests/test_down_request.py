@@ -34,6 +34,8 @@ def test_failed_execute_computation_with_down(down_container):
     Containers.down_all()
     all_containers().up()
 
+    down_container.debug_container_name()
+
     # コンテナを落とす前にsend_shareしておく
     data_id1: str = data_id()
     data_id2: str = data_id()
