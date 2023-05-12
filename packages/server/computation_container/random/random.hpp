@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "csprng_interface.hpp"
 #include "fixed_point/fixed_point.hpp"
 
 class RandGenerator
@@ -41,6 +42,56 @@ public:
         for (int i = 0; i < n; i++)
         {
             ret.emplace_back(getRand<T>(min_val, max_val));
+        }
+        return ret;
+    }
+};
+
+template <typename CSPRNG>
+class random_csprng
+{
+    CSPRNG prng;
+
+public:
+    random_csprng() : prng() {}
+    /**
+     * @brief 上限と下限を指定する
+     *
+     * @param min 下限
+     * @param max 上限
+     * @return 範囲内の乱数生成
+     */
+    template <typename Result>
+    auto get(
+        Result min = std::numeric_limits<Result>::min(),
+        Result max = std::numeric_limits<Result>::max()
+    )
+    {
+        // integral
+        if constexpr (std::is_integral_v<Result>)
+        {
+            std::uniform_int_distribution<Result> dist(min, max);
+            return dist(prng);
+        }
+        // float
+        else
+        {
+            std::uniform_real_distribution<Result> dist(min, max);
+            return dist(prng);
+        }
+    }
+
+    template <typename Result>
+    auto get_array(
+        size_t size,
+        Result min = std::numeric_limits<Result>::min(),
+        Result max = std::numeric_limits<Result>::max()
+    )
+    {
+        std::vector<Result> ret(size);
+        for (auto &a : ret)
+        {
+            a = this->get<Result>(min, max);
         }
         return ret;
     }

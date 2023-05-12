@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include <iomanip>
 #include <memory>
 #include <set>
 
@@ -7,6 +8,40 @@
 #include "logging/logger.hpp"
 #include "random/csprng.hpp"
 
+class norandom_test : public qmpc::random::csprng_interface<norandom_test>
+{
+public:
+    using result_type = unsigned int;
+    inline static constexpr result_type C = 5;
+    auto generate()
+    {
+        result_type ret = C;
+        return ret;
+    }
+    auto generate(const size_t size)
+    {
+        std::vector<result_type> data(size);
+        for (int i = 0; i < size; ++i)
+        {
+            data[i] = C;
+        }
+        return data;
+    }
+};
+
+template <int CONST_VALUE>
+class const_seed : public qmpc::random::csprng_interface<const_seed<CONST_VALUE>>
+{
+public:
+    using result_type = unsigned char;
+    inline static constexpr result_type C = CONST_VALUE;
+    auto generate() { return static_cast<result_type>(C); }
+    auto generate(size_t n)
+    {
+        std::vector<unsigned char> seed(n, static_cast<result_type>(C));
+        return seed;
+    }
+};
 TEST(CsprngTest, GetRand)
 {
     const std::uint32_t byteSize = 8;  // 8byte = 64bit
@@ -158,4 +193,67 @@ TEST(CsprngTest, HowUse)
     [dec] ull
     11867235327943535202
     */
+}
+
+TEST(csprngtest, interfaceDefaultUse)
+{
+    using namespace std;
+    unsigned long long ma = std::numeric_limits<unsigned long long>::max();
+    std::uniform_int_distribution<unsigned long long> dist(0, ma);
+    for (int i = 0; i < 10; ++i)
+    {
+        qmpc::random::sodium_random random;
+        auto value = dist(random);
+        EXPECT_GE(value, 0);
+        EXPECT_LE(value, ma);
+    }
+    double dma = std::numeric_limits<double>::max();
+    std::uniform_real_distribution<double> dist_d(0.0, dma);
+    for (int i = 0; i < 10; ++i)
+    {
+        qmpc::random::sodium_random random;
+        auto value = dist_d(random);
+        EXPECT_GE(value, 0);
+        EXPECT_LE(value, dma);
+    }
+}
+
+TEST(csprngtest, constvalue)
+{
+    qmpc::random::sodium_random<const_seed<5>> random;
+
+    ASSERT_EQ(random(), random());
+    auto vec = random(10);
+    auto vec2 = random(10);
+    for (int i = 0; i < 10; ++i)
+    {
+        ASSERT_EQ(vec[i], vec2[i]);
+    }
+    qmpc::random::sodium_random<const_seed<6>> sodium2;
+
+    auto vec3 = sodium2(10);
+    auto vec4 = sodium2(10);
+    for (int i = 0; i < 10; ++i)
+    {
+        ASSERT_EQ(vec3[i], vec4[i]);
+        ASSERT_NE(vec3[i], vec[i]);
+    }
+}
+
+TEST(csprngtest, norandom)
+{
+    norandom_test random;
+
+    auto ret = random();
+    auto ret2 = random();
+    ASSERT_EQ(ret, ret2);
+    ASSERT_EQ(ret, norandom_test::C);
+
+    auto vec = random(10);
+    auto vec2 = random(10);
+    for (int i = 0; i < 10; ++i)
+    {
+        ASSERT_EQ(vec[i], norandom_test::C);
+        ASSERT_EQ(vec2[i], norandom_test::C);
+    }
 }
