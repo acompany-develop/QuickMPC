@@ -252,37 +252,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Cache Docker layers
-        uses: actions/cache@v3
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-medium_mc-${{ hashFiles('./packages/server/manage_container/**') }}
-          restore-keys: ${{ runner.os }}-medium_mc-
-
       - name: Set up Docker buildx
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
-        uses: docker/build-push-action@v3
+      - uses: ./.github/actions/build_images_with_cache
         with:
-          context: ./
-          file: ./packages/server/manage_container/Dockerfile
-          builder: ${{ steps.buildx.outputs.name }}
-          cache-from: type=local,scope=medium_mc,src=/tmp/.buildx-cache
-          cache-to: type=local,mode=max,scope=medium_mc,dest=/tmp/.buildx-cache-new
-          target: medium
-          tags: tags_medium_mc
-          load: true
+          container-name: "medium_mc"
+          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+          builder-name: ${{ steps.buildx.outputs.name }}
+          target: "medium"
 
       - name: Run bazel test in manage_container
         run: make test t=./manage_container m=run p=medium
         working-directory: ./scripts
-
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   medium_test_libclient:
     runs-on: ubuntu-latest
