@@ -300,7 +300,7 @@ jobs:
         with:
           container-name: "dev_bts"
           cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          dockerfile-path: ../packages/server/beaver_triple_service/Dockerfile
+          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
