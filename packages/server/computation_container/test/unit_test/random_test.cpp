@@ -73,32 +73,25 @@ public:
 TEST(RandomTest, newRandomTest)
 {
     random_csprng<qmpc::random::sodium_random<>> random;
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 100; ++i)
     {
-        std::cout << "new random value is " << random.get<int>(0, 100) << std::endl;
+        auto value = random.get<int>(0, 1'000'000);
+        EXPECT_GE(value, 0);
+        EXPECT_LE(value, 1'000'000);
     }
-
-    std::set<unsigned long long> s;
-    for (int i = 0; i < 1'000'000; ++i)
+    for (int i = 0; i < 100; ++i)
     {
-        s.insert(random.get<unsigned long long>());
+        auto value = random.get<unsigned long long>(0, 1'000'000'000);
+        EXPECT_GE(value, 0);
+        EXPECT_LE(value, 1'000'000'000);
     }
-    std::cout << "random set 1'000'000 /" << s.size() << std::endl;
-
-    auto vec = random.get_array<unsigned long long>(1'000'000);
-    std::set<unsigned long long> s2;
-    for (auto& a : vec)
-    {
-        s2.insert(a);
-    }
-    std::cout << "random set 1'000'000 / " << s2.size() << std::endl;
 }
 TEST(RandomTest, constCSprng)
 {
     random_csprng<qmpc::random::sodium_random<const_seed<50>>> random;
 
     random_csprng<qmpc::random::sodium_random<const_seed<50>>> random2;
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10000; ++i)
     {
         auto tmp1 = random.get<int>(0, 100);
         auto tmp2 = random.get<int>(0, 100);

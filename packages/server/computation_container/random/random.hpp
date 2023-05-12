@@ -47,11 +47,6 @@ public:
     }
 };
 
-template <typename Random>
-struct random_interface
-{
-public:
-};
 template <typename CSPRNG>
 class random_csprng
 {
