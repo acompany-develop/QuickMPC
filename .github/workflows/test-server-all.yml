@@ -54,7 +54,8 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build cc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "small_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
@@ -77,7 +78,8 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build mc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "small_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
@@ -100,7 +102,8 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build bts with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "small_bts"
           cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
@@ -145,14 +148,16 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build cc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "medium_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "medium"
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build bts with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "dev_bts"
           cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
@@ -174,7 +179,8 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build mc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "medium_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
@@ -214,21 +220,24 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build libc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "medium_libc"
           cache-key: ${{ hashFiles('./packages/client/libclient-py/**') }}
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "medium"
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build cc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "dev_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build mc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "dev_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
@@ -277,21 +286,24 @@ jobs:
         id: buildx
         uses: docker/setup-buildx-action@v2
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build bts with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "dev_bts"
           cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build cc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "dev_cc"
           cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
           builder-name: ${{ steps.buildx.outputs.name }}
           target: "dev"
 
-      - uses: ./.github/actions/build_images_with_cache
+      - name: Build mc with cache
+        uses: ./.github/actions/build_images_with_cache
         with:
           container-name: "dev_mc"
           cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
