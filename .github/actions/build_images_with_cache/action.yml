@@ -38,6 +38,7 @@ runs:
         load: true
 
     - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache-${{ inputs.container-name }}
-          mv /tmp/.buildx-cache-${{ inputs.container-name }}-new /tmp/.buildx-cache-${{ inputs.container-name }}
+      shell: bash
+      run: |
+        rm -rf /tmp/.buildx-cache-${{ inputs.container-name }}
+        mv /tmp/.buildx-cache-${{ inputs.container-name }}-new /tmp/.buildx-cache-${{ inputs.container-name }}
