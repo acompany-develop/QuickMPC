@@ -94,7 +94,7 @@ TEST(RandomTest, constCSprng)
     for (int i = 0; i < 10000; ++i)
     {
         auto tmp1 = random.get<int>(0, 100);
-        auto tmp2 = random.get<int>(0, 100);
+        auto tmp2 = random2.get<int>(0, 100);
         ASSERT_EQ(tmp1, tmp2);
     }
 }
