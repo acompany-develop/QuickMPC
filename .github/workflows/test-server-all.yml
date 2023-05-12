@@ -282,45 +282,7 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Install pipenv
-        run: pip install pipenv
-        working-directory: ./scripts
-
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build bts with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_bts"
-          cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build cc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_cc"
-          cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
-          dockerfile-path: ./packages/server/computation_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build mc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_mc"
-          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
-          dockerfile-path: ./packages/server/manage_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
+      - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
         run: |
@@ -363,36 +325,7 @@ jobs:
         run: pip install pipenv
         working-directory: ./scripts
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build bts with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_bts"
-          cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build cc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_cc"
-          cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
-          dockerfile-path: ./packages/server/computation_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build mc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_mc"
-          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
-          dockerfile-path: ./packages/server/manage_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
+      - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
         run: |
@@ -426,45 +359,7 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Install pipenv
-        run: pip install pipenv
-        working-directory: ./scripts
-
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build bts with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_bts"
-          cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build cc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_cc"
-          cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
-          dockerfile-path: ./packages/server/computation_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build mc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_mc"
-          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
-          dockerfile-path: ./packages/server/manage_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
+      - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
         run: |
@@ -498,45 +393,7 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Install pipenv
-        run: pip install pipenv
-        working-directory: ./scripts
-
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build bts with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_bts"
-          cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build cc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_cc"
-          cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
-          dockerfile-path: ./packages/server/computation_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build mc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_mc"
-          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
-          dockerfile-path: ./packages/server/manage_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
+      - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
         run: |
@@ -570,45 +427,7 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Install pipenv
-        run: pip install pipenv
-        working-directory: ./scripts
-
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build bts with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_bts"
-          cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build cc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_cc"
-          cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
-          dockerfile-path: ./packages/server/computation_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build mc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_mc"
-          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
-          dockerfile-path: ./packages/server/manage_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
+      - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
         run: |
@@ -642,45 +461,7 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Python 3.7
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.7
-
-      - name: Install pipenv
-        run: pip install pipenv
-        working-directory: ./scripts
-
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build bts with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_bts"
-          cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
-          dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build cc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_cc"
-          cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
-          dockerfile-path: ./packages/server/computation_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build mc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_mc"
-          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
-          dockerfile-path: ./packages/server/manage_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
+      - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
         run: |
