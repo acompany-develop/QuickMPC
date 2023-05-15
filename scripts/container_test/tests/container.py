@@ -57,7 +57,7 @@ class Containers:
 
     def down(self) -> None:
         sn_str = " ".join(self.__service_names)
-        command = f"docker-compose {compose_files_opt} rm -fsv {sn_str}"
+        command = f"docker-compose {compose_files_opt} stop {sn_str}"
         subprocess.run([command], shell=True)
 
     def restart(self) -> None:
