@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  PORT: "50020"
+  WITH_ENVOY: "true"
+kind: ConfigMap
+metadata:
+  creationTimestamp:
+  labels:
+    io.kompose.service: beaver-triple-service-config-others-beaver-triple-service--env
+  name: config-others-beaver-triple-service--env

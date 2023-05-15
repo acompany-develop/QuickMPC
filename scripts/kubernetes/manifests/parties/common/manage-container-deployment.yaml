@@ -1,0 +1,108 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.image-pull-secret: registry-credential
+    kompose.volume.type: persistentVolumeClaim
+  creationTimestamp:
+  labels:
+    io.kompose.service: manage-container
+  name: manage-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: manage-container
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.image-pull-secret: registry-credential
+        kompose.volume.type: persistentVolumeClaim
+      creationTimestamp:
+      labels:
+        io.kompose.network/1-default: "true"
+        io.kompose.service: manage-container
+    spec:
+      containers:
+      - args:
+        - /bin/bash
+        - -c
+        - printenv && ./manage_container
+        env:
+        - name: ALLOWEDORIGIN
+          valueFrom:
+            configMapKeyRef:
+              key: ALLOWEDORIGIN
+              name: config-manage-container--env
+        - name: BTS_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: BTS_TOKEN
+              name: config-others-jwt-envs-client-jwt-env
+        - name: COMPUTATION
+          valueFrom:
+            configMapKeyRef:
+              key: COMPUTATION
+              name: config-manage-container--env
+        - name: MANAGE
+          valueFrom:
+            configMapKeyRef:
+              key: MANAGE
+              name: config-manage-container--env
+        - name: N_PARTIES
+          valueFrom:
+            configMapKeyRef:
+              key: N_PARTIES
+              name: config-manage-container--env
+        - name: PARTY_ID
+          valueFrom:
+            configMapKeyRef:
+              key: PARTY_ID
+              name: config-manage-container--env
+        - name: PARTY_LIST1
+          valueFrom:
+            configMapKeyRef:
+              key: PARTY_LIST1
+              name: config-manage-container--env
+        - name: PARTY_LIST2
+          valueFrom:
+            configMapKeyRef:
+              key: PARTY_LIST2
+              name: config-manage-container--env
+        image: ghcr.io/acompany-develop/quickmpc-mc:20230302
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - |-
+              /bin/grpc_health_probe -addr=:50011 && \
+              /bin/grpc_health_probe -addr=:51011
+          periodSeconds: 3
+          timeoutSeconds: 5
+        name: manage-container
+        ports:
+        - containerPort: 50011
+        - containerPort: 51011
+        resources: {}
+        tty: true
+        volumeMounts:
+        - mountPath: /QuickMPC/config
+          name: manage-container-claim0
+        - mountPath: /db/share
+          name: sharedb
+        - mountPath: /db/result
+          name: resultdb
+      imagePullSecrets:
+      - name: registry-credential
+      restartPolicy: Always
+      volumes:
+      - name: sharedb
+        persistentVolumeClaim:
+          claimName: sharedb
+      - name: resultdb
+        persistentVolumeClaim:
+          claimName: resultdb
+status: {}

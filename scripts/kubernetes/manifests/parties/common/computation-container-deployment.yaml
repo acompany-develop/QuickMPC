@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.image-pull-secret: registry-credential
+    kompose.volume.type: persistentVolumeClaim
+  creationTimestamp:
+  labels:
+    io.kompose.service: computation-container
+  name: computation-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: computation-container
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.image-pull-secret: registry-credential
+        kompose.volume.type: persistentVolumeClaim
+      creationTimestamp:
+      labels:
+        io.kompose.network/1-default: "true"
+        io.kompose.service: computation-container
+    spec:
+      containers:
+      - args:
+        - /bin/bash
+        - -c
+        - printenv && ./bazel-bin/computation_container
+        env:
+        - name: BTS_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: BTS_TOKEN
+              name: config-others-jwt-envs-client-jwt-env
+        - name: CC_TO_BTS
+          valueFrom:
+            configMapKeyRef:
+              key: CC_TO_BTS
+              name: config-computation-container--env
+        - name: MC_TO_CC
+          valueFrom:
+            configMapKeyRef:
+              key: MC_TO_CC
+              name: config-computation-container--env
+        - name: N_PARTIES
+          valueFrom:
+            configMapKeyRef:
+              key: N_PARTIES
+              name: config-computation-container--env
+        - name: PARTY_ID
+          valueFrom:
+            configMapKeyRef:
+              key: PARTY_ID
+              name: config-computation-container--env
+        - name: PARTY_LIST1
+          valueFrom:
+            configMapKeyRef:
+              key: PARTY_LIST1
+              name: config-computation-container--env
+        - name: PARTY_LIST2
+          valueFrom:
+            configMapKeyRef:
+              key: PARTY_LIST2
+              name: config-computation-container--env
+        - name: PORT_FOR_JOB
+          valueFrom:
+            configMapKeyRef:
+              key: PORT_FOR_JOB
+              name: config-computation-container--env
+        - name: SP_ID
+          valueFrom:
+            configMapKeyRef:
+              key: SP_ID
+              name: config-computation-container--env
+        image: ghcr.io/acompany-develop/quickmpc-cc:20230302
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - |-
+              /bin/grpc_health_probe -addr=:50010 && \
+              /bin/grpc_health_probe -addr=:50020 && \
+              /bin/grpc_health_probe -addr=:31020
+          periodSeconds: 3
+          timeoutSeconds: 5
+        name: computation-container
+        ports:
+        - containerPort: 31020
+        - containerPort: 50010
+        - containerPort: 50020
+        resources: {}
+        tty: true
+        volumeMounts:
+        - mountPath: /db/share
+          name: sharedb
+        - mountPath: /db/result
+          name: resultdb
+      imagePullSecrets:
+      - name: registry-credential
+      restartPolicy: Always
+      volumes:
+      - name: sharedb
+        persistentVolumeClaim:
+          claimName: sharedb
+      - name: resultdb
+        persistentVolumeClaim:
+          claimName: resultdb
+status: {}

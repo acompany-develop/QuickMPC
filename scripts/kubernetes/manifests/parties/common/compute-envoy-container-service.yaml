@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.service.type: nodeport
+  creationTimestamp:
+  labels:
+    io.kompose.service: compute-envoy-container
+  name: compute-envoy-container
+spec:
+  ports:
+  - name: "50020"
+    port: 50020
+    targetPort: 50020
+  - name: "31020"
+    port: 31020
+    targetPort: 31020
+  selector:
+    io.kompose.service: compute-envoy-container
+  type: NodePort
+status:
+  loadBalancer: {}

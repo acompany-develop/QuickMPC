@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  ALLOWEDORIGIN: http://localhost:8080
+  COMPUTATION: http://computation-container:50010
+  MANAGE: http://localhost:50011
+  N_PARTIES: "2"
+  PARTY_ID: "2"
+  PARTY_LIST1: http://172.22.0.2:30010
+  PARTY_LIST2: http://0.0.0.0:51011
+kind: ConfigMap
+metadata:
+  creationTimestamp:
+  labels:
+    io.kompose.service: manage-container-config-parties-2-manage-container--env
+  name: config-manage-container--env

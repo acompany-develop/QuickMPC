@@ -1,0 +1,16 @@
+apiVersion: v1
+data:
+  CC_TO_BTS: http://172.22.0.6:31020
+  MC_TO_CC: http://0.0.0.0:50010
+  N_PARTIES: "2"
+  PARTY_ID: "2"
+  PARTY_LIST1: http://172.22.0.2:30020
+  PARTY_LIST2: http://0.0.0.0:50020
+  PORT_FOR_JOB: "31020"
+  SP_ID: "1"
+kind: ConfigMap
+metadata:
+  creationTimestamp:
+  labels:
+    io.kompose.service: computation-container-config-parties-2-computation-container--env
+  name: config-computation-container--env
