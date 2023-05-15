@@ -18,4 +18,3 @@ def test_up(container):
     # コンテナ単体で起動してhealthcheckが通るかtest
     Containers.down_all()
     container.up()
-    # Containers.down_all()
