@@ -215,9 +215,6 @@ jobs:
           tags: tags_medium_cc
           load: true
 
-      - name: analyze
-        run: bazel analyze-profile ./tmp/drogskol
-
       # - name: Cache Docker layers bts
       #   uses: actions/cache@v3
       #   with:
