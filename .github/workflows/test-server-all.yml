@@ -215,7 +215,7 @@ jobs:
           tags: tags_medium_cc
           load: true
 
-      - run: bazel analyze-profile ./profile.json
+      # - run: bazel analyze-profile ./profile.json
 
       # - name: Cache Docker layers bts
       #   uses: actions/cache@v3
