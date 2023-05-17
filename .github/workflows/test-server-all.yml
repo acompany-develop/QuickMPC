@@ -171,7 +171,7 @@ jobs:
   #       run: echo "ok"
 
   medium_test_cc:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [lint]
     steps:
       - name: Checkout
