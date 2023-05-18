@@ -84,10 +84,8 @@ RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
 
 FROM builder_base as builder_debug
 # 実行ファイル生成
-# RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
-#     bazel build //:all --config=debug --profile=./profile.json
 RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
-    bazel build //:all --profile=./profile.json
+    bazel build //:all --config=debug --profile=./profile.json
 RUN bazel analyze-profile ./profile.json --dump=raw
 RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
     bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
