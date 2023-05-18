@@ -38,8 +38,8 @@ RUN wget -q -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download
     wget https://bazel.build/bazel-release.pub.gpg && \
     apt-key add bazel-release.pub.gpg && \
     apt-get update && \
-    apt-get -y install bazel-6.2.0 && \
-    ln -s /usr/bin/bazel-6.2.0 /usr/bin/bazel
+    apt-get -y install bazel-5.0.0 && \
+    ln -s /usr/bin/bazel-5.0.0 /usr/bin/bazel
 
 # Install libsodium
 RUN cd / && git clone https://github.com/jedisct1/libsodium --branch stable && \
@@ -83,10 +83,11 @@ RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
     bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
 
 FROM builder_base as builder_debug
-# 実行ファイル生成
+## 実行ファイル生成
 RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
     bazel build //:all --config=debug --profile=./profile.json
-RUN bazel analyze-profile ./profile.json --html=./profile2.html
+RUN cat ./profile.json
+RUN bazel analyze-profile ./profile.json
 RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
     bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
 
