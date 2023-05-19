@@ -28,9 +28,8 @@ CC_TO_BTS=http://%s:54000
 PORT_FOR_JOB=51020
 PARTY_LIST1=http://%s:50020
 PARTY_LIST2=http://%s:50020
-BTS_TOKEN=%s
 GETSHARE_TIME_LIMIT=50
-' "${party_num}" "${bts_ip}" "${party1_ip}" "${party2_ip}" "${token}"  > $CC_PATH/.env
+' "${party_num}" "${bts_ip}" "${party1_ip}" "${party2_ip}" > $CC_PATH/.env
 
     ## MCのconfig作成
     allowedOrigin=""
