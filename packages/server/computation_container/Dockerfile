@@ -66,7 +66,7 @@ FROM base as src
 COPY ./.vscode/settings.json /QuickMPC/.vscode/
 
 FROM base as builder_base
-COPY grpc/ /QuickMPC
+COPY grpc/ /grpc
 COPY packages/server/computation_container/ /QuickMPC
 # github actionsで使用されているdockerがCOPYを2連続で行うとたまにエラーが出る問題を抱えている
 # その問題を回避するために、COPYの間にRun trueを挟んでいる
