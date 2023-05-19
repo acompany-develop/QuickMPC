@@ -21,3 +21,5 @@ sudo chmod +x /usr/local/bin/docker-compose
 sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 ## start container
 export DOCKER_BUILDKIT=1
+sudo groupadd docker
+sudo usermod -aG docker $USER
