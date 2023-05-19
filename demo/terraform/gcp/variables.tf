@@ -52,3 +52,7 @@ variable "key_name" {
 variable "gce_ssh_user" {
   default = "ubuntu"
 }
+
+variable "docker_image_tag" {
+  default = "0.3.8"
+}
