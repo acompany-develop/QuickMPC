@@ -13,6 +13,3 @@ def Proto_repositories():
                 "https://github.com/bazelbuild/rules_proto/archive/refs/tags/4.0.0-3.19.2.tar.gz",
             ],
         )
-
-    if not native.existin_rule("com_github_grpc_grpc"):
-        load("@grpc//:WORKSPACE", "com_github_grpc_grpc")
