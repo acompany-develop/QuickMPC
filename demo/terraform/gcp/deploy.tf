@@ -71,44 +71,36 @@ resource "null_resource" "create_jwt" {
 # ---------------------------
 # get jwt
 # ---------------------------
-# resource "null_resource" "get_jwt" {
-#     count        = local.party_num
-#     provisioner "local-exec" {
-#         command = "scp -i ${local_file.private_key_pem.filename} ${var.gce_ssh_user}@${local.ip3}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client${count.index}.sample.env ./"
-#         interpreter = ["bash", "-c"]
-#     }
-#     depends_on = [null_resource.create_jwt]
-# }
-#
-# # ---------------------------
-# # sent jwt
-# # ---------------------------
-# resource "null_resource" "sent_jwt_to_1" {
-#     count        = local.party_num
-#     provisioner "local-exec" {
-#         command = "scp -i ${local_file.private_key_pem.filename} ./client0.sample.env ${var.gce_ssh_user}@${local.ip1}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client.sample.env"
-#         interpreter = ["bash", "-c"]
-#     }
-#     depends_on = [null_resource.get_jwt]
-# }
-#
-# resource "null_resource" "sent_jwt_to_2" {
-#     count        = local.party_num
-#     provisioner "local-exec" {
-#         command = "scp -i ${local_file.private_key_pem.filename} ./client1.sample.env ${var.gce_ssh_user}@${local.ip2}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client.sample.env"
-#         interpreter = ["bash", "-c"]
-#     }
-#     # depends_on = [null_resource.get_jwt]
-# }
+resource "null_resource" "get_jwt" {
+    count        = local.party_num
+    provisioner "local-exec" {
+        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ${var.gce_ssh_user}@${local.ip3}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client${count.index}.sample.env ./client${count.index}.sample.env"
+        interpreter = ["bash", "-c"]
+    }
+    depends_on = [null_resource.create_jwt]
+}
+
+# ---------------------------
+# sent jwt
+# ---------------------------
+resource "null_resource" "sent_jwt_to_1" {
+    provisioner "local-exec" {
+        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ./client0.sample.env ${var.gce_ssh_user}@${local.ip1}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client.sample.env"
+        interpreter = ["bash", "-c"]
+    }
+    depends_on = [null_resource.get_jwt]
+}
+resource "null_resource" "sent_jwt_to_2" {
+    provisioner "local-exec" {
+        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ./client1.sample.env ${var.gce_ssh_user}@${local.ip2}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client.sample.env"
+        interpreter = ["bash", "-c"]
+    }
+    depends_on = [null_resource.get_jwt]
+}
 
 # ---------------------------
 # set config
 # ---------------------------
-
-# TODO jwt持ってくる
-locals {
-    jwt_list = ["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29tX3V1aWQiOiI3NjQ0OThiYy00YjExLTRiMGUtOWM5MC0yN2RiZDExYzA0OTUiLCJwYXJ0eV9pZCI6MSwicGFydHlfaW5mbyI6W3siaWQiOjEsImFkZHJlc3MiOiIzNC45Mi4yMjMuMTcxIn0seyJpZCI6MiwiYWRkcmVzcyI6IjM0LjE1MC40OS4yOCJ9XSwic3ViIjoiMGRhMjI4MWQtODc0NS00MTdlLTlhYTgtMDE5ZGY4MzVkNWExIiwiZXhwIjo5MjIzMzcxOTc0NzE5MTc4NzUyfQ.7lzisgpFfGHA9vJEvH2VdgEOm3voYvT8G8alIWxKipI","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyb29tX3V1aWQiOiJlOWI0ZDhjNi05NjUzLTRlNWYtYTQ3OC05ZjBlN2MzMmQxYzgiLCJwYXJ0eV9pZCI6MiwicGFydHlfaW5mbyI6W3siaWQiOjEsImFkZHJlc3MiOiIzNC45Mi4yMjMuMTcxIn0seyJpZCI6MiwiYWRkcmVzcyI6IjM0LjE1MC40OS4yOCJ9XSwic3ViIjoiNmVlZmNlYzUtMzk0NC00M2I4LThmZjAtNzlmNTdkMWMxYTM2IiwiZXhwIjo5MjIzMzcxOTc0NzE5MTc4NzUyfQ.p5Rn-ojOmaPg36TP6mlnf4CiQNxAjGHEtiEJifsgKog"]
-}
 
 resource "null_resource" "set_config" {
     count = local.party_num
@@ -122,11 +114,11 @@ resource "null_resource" "set_config" {
         }
 
         inline = [
-            "cd /home/ubuntu/QuickMPC && chmod 777 ./prepare_deploy.sh && ./prepare_deploy.sh ${count.index} ${local.ip1} ${local.ip2} ${local.ip3} ${var.docker_image_tag} ${local.jwt_list[count.index]}"
+            "cd /home/ubuntu/QuickMPC && chmod 777 ./prepare_deploy.sh && ./prepare_deploy.sh ${count.index} ${local.ip1} ${local.ip2} ${local.ip3} ${var.docker_image_tag}"
         ]
     }
-    # depends_on = [null_resource.deploy_bts]
-    depends_on = [null_resource.create_jwt]
+
+    depends_on = [null_resource.sent_jwt_to_1,null_resource.sent_jwt_to_2]
 }
 
 # ---------------------------
