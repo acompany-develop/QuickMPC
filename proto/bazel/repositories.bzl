@@ -14,4 +14,5 @@ def Proto_repositories():
             ],
         )
 
-    load("@grpc//:WORKSPACE", "com_github_grpc_grpc")
+    if not native.existin_rule("com_github_grpc_grpc"):
+        load("@grpc//:WORKSPACE", "com_github_grpc_grpc")
