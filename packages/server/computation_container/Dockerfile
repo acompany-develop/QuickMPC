@@ -64,9 +64,9 @@ FROM base as src
 # 開発環境のフォーマッタを統一
 # c_cpp_properties.jsonは残したいのでマウントはせず
 COPY ./.vscode/settings.json /QuickMPC/.vscode/
-COPY grpc/ /QuickMPC
 
 FROM base as builder_base
+COPY grpc/ /QuickMPC
 COPY packages/server/computation_container/ /QuickMPC
 # github actionsで使用されているdockerがCOPYを2連続で行うとたまにエラーが出る問題を抱えている
 # その問題を回避するために、COPYの間にRun trueを挟んでいる
