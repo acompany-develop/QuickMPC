@@ -14,7 +14,7 @@ resource "null_resource" "copy_file" {
 
     provisioner "file" {
         source      = "../../deploy"
-        destination = "/home/ubuntu/QuickMPC"
+        destination = "/home/${var.gce_ssh_user}/QuickMPC"
         connection {
             host        = google_compute_instance.qmpc_k8s_vm[count.index].network_interface.0.access_config.0.nat_ip
             type        = "ssh"
@@ -41,7 +41,7 @@ resource "null_resource" "setup" {
         }
 
         inline = [
-            "cd /home/ubuntu/QuickMPC",
+            "cd /home/${var.gce_ssh_user}/QuickMPC",
             "sh setup.sh",
         ]
     }
@@ -61,7 +61,7 @@ resource "null_resource" "create_jwt" {
             private_key = file("${local_file.private_key_pem.filename}")
         }
         inline = [
-            "cd /home/ubuntu/QuickMPC && chmod 777 ./prepare_deploy.sh && ./prepare_deploy.sh ${local.bts_num} ${local.ip1} ${local.ip2} ${local.ip3} ${var.docker_image_tag}"
+            "cd /home/${var.gce_ssh_user}/QuickMPC && chmod 777 ./prepare_deploy.sh && ./prepare_deploy.sh ${local.bts_num} ${local.ip1} ${local.ip2} ${local.ip3} ${var.docker_image_tag}"
         ]
     }
     depends_on = [null_resource.setup]
@@ -74,7 +74,7 @@ resource "null_resource" "create_jwt" {
 resource "null_resource" "get_jwt" {
     count        = local.party_num
     provisioner "local-exec" {
-        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ${var.gce_ssh_user}@${local.ip3}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client${count.index}.sample.env ./client${count.index}.sample.env"
+        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ${var.gce_ssh_user}@${local.ip3}:/home/${var.gce_ssh_user}/QuickMPC/config/beaver_triple_service/client${count.index}.sample.env ./client${count.index}.sample.env"
         interpreter = ["bash", "-c"]
     }
     depends_on = [null_resource.create_jwt]
@@ -85,14 +85,14 @@ resource "null_resource" "get_jwt" {
 # ---------------------------
 resource "null_resource" "sent_jwt_to_1" {
     provisioner "local-exec" {
-        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ./client0.sample.env ${var.gce_ssh_user}@${local.ip1}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client.sample.env"
+        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ./client0.sample.env ${var.gce_ssh_user}@${local.ip1}:/home/${var.gce_ssh_user}/QuickMPC/config/beaver_triple_service/client.sample.env"
         interpreter = ["bash", "-c"]
     }
     depends_on = [null_resource.get_jwt]
 }
 resource "null_resource" "sent_jwt_to_2" {
     provisioner "local-exec" {
-        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ./client1.sample.env ${var.gce_ssh_user}@${local.ip2}:/home/ubuntu/QuickMPC/config/beaver_triple_service/client.sample.env"
+        command = "scp -oStrictHostKeyChecking=no -i ${local_file.private_key_pem.filename} ./client1.sample.env ${var.gce_ssh_user}@${local.ip2}:/home/${var.gce_ssh_user}/QuickMPC/config/beaver_triple_service/client.sample.env"
         interpreter = ["bash", "-c"]
     }
     depends_on = [null_resource.get_jwt]
@@ -114,7 +114,7 @@ resource "null_resource" "set_config" {
         }
 
         inline = [
-            "cd /home/ubuntu/QuickMPC && chmod 777 ./prepare_deploy.sh && ./prepare_deploy.sh ${count.index} ${local.ip1} ${local.ip2} ${local.ip3} ${var.docker_image_tag}"
+            "cd /home/${var.gce_ssh_user}/QuickMPC && chmod 777 ./prepare_deploy.sh && ./prepare_deploy.sh ${count.index} ${local.ip1} ${local.ip2} ${local.ip3} ${var.docker_image_tag}"
         ]
     }
 
@@ -134,7 +134,7 @@ resource "null_resource" "deploy_quickmpc" {
             private_key = file("${local_file.private_key_pem.filename}")
         }
         inline = [
-            "cd /home/ubuntu/QuickMPC",
+            "cd /home/${var.gce_ssh_user}/QuickMPC",
             "make upd"
         ]
     }
