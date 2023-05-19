@@ -19,7 +19,10 @@ local_repository(
 
 load("@proto//bazel:repositories.bzl", "Proto_repositories")
 Proto_repositories()
-load("@grpc//:WORKSPACE", "com_github_grpc_grpc")
+local_repository(
+    name = "com_github_grpc_grpc",
+    path = "grpc"
+)
 load("@proto//bazel:Proto_deps.bzl", "Proto_deps")
 Proto_deps()
 load("@proto//bazel:Proto_extra_deps.bzl", "Proto_extra_deps")
