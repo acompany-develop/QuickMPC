@@ -64,6 +64,7 @@ FROM base as src
 # 開発環境のフォーマッタを統一
 # c_cpp_properties.jsonは残したいのでマウントはせず
 COPY ./.vscode/settings.json /QuickMPC/.vscode/
+COPY grpc/ /QuickMPC
 
 FROM base as builder_base
 COPY packages/server/computation_container/ /QuickMPC
