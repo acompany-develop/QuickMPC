@@ -43,6 +43,6 @@ platform(
     ],
     exec_properties = {
         "OSFamily": "Linux",
-        "container-image": "docker://gcr.io/acompany-develop/quickmpc-cc:0.3.8",
+        "container-image": "docker://ghcr.io/acompany-develop/quickmpc-cc:0.3.8",
     },
 )
