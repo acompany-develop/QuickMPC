@@ -72,8 +72,6 @@ COPY packages/server/computation_container/ /QuickMPC
 RUN true
 COPY proto/ /proto
 RUN true
-COPY grpc/ /grpc
-RUN true
 COPY packages/server/computation_container/sa.json /root/sa.json
 WORKDIR /QuickMPC
 
