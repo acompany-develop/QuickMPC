@@ -33,3 +33,16 @@ compilation_database(
     ],
     output_base = OUTPUT_BASE,
 )
+
+platform(
+    name = "docker_image_platform",
+    constraint_values = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    exec_properties = {
+        "OSFamily": "Linux",
+        "container-image": "docker://gcr.io/acompany-develop/quickmpc-cc:0.3.8",
+    },
+)
