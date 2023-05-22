@@ -1,5 +1,18 @@
 package(default_visibility = ["//visibility:public"])
 
+platform(
+    name = "docker_image_platform",
+    constraint_values = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//tools/cpp:clang",
+    ],
+    exec_properties = {
+        "OSFamily": "Linux",
+        "container-image": "docker://ghcr.io/acompany-develop/quickmpc-cc:0.3.8",
+    },
+)
+
 cc_binary(
     name = "computation_container",
     deps = [
@@ -32,17 +45,4 @@ compilation_database(
         "//:computation_container",
     ],
     output_base = OUTPUT_BASE,
-)
-
-platform(
-    name = "docker_image_platform",
-    constraint_values = [
-        "@bazel_tools//platforms:x86_64",
-        "@bazel_tools//platforms:linux",
-        "@bazel_tools//tools/cpp:clang",
-    ],
-    exec_properties = {
-        "OSFamily": "Linux",
-        "container-image": "docker://ghcr.io/acompany-develop/quickmpc-cc:0.3.8",
-    },
 )
