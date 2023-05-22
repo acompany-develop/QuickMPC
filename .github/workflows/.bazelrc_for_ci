@@ -1,6 +1,6 @@
-build --worker_max_instances=2
-build --remote_max_connections=10000
-build --disk_cache=
-build --remote_cache=https://storage.googleapis.com/${BAZEL_CACHE_BUCKET}
-build --google_credentials=/root/sa.json
+common --worker_max_instances=2
+common --remote_max_connections=10000
+common --disk_cache=
+common --remote_cache=https://storage.googleapis.com/${BAZEL_CACHE_BUCKET}
+common --google_credentials=/root/sa.json
 test --cache_test_results=no
