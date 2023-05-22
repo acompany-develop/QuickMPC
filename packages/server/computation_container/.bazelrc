@@ -5,7 +5,6 @@ build:debug --platform_suffix=-debug
 
 build --bes_results_url=https://app.buildbuddy.io/invocation/
 build --bes_backend=grpcs://remote.buildbuddy.io
-build --remote_cache=grpcs://remote.buildbuddy.io
 build --remote_timeout=3600
 build --remote_executor=grpcs://remote.buildbuddy.io
 build --remote_header=x-buildbuddy-api-key=BLXW6ElIEYoTc6UUSzwK
