@@ -10,5 +10,5 @@ build --remote_cache=grpcs://remote.buildbuddy.io
 # build --remote_executor=grpcs://remote.buildbuddy.io
 build --remote_header=x-buildbuddy-api-key=BLXW6ElIEYoTc6UUSzwK
 
-build --crosstool_top=@buildbuddy_toolchain//:toolchain
-build --extra_toolchains=@buildbuddy_toolchain//:cc_toolchain
+# build --crosstool_top=@buildbuddy_toolchain//:toolchain
+# build --extra_toolchains=@buildbuddy_toolchain//:cc_toolchain

@@ -79,7 +79,7 @@ FROM builder_base as builder
 # 実行ファイル生成
 # RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
 #     bazel build //:all --remote_instance_name=drogskol_random_string
-RUN bazel build //:all --remote_instance_name=drogskol_random_string2
+RUN bazel build //:all --remote_instance_name=drogskol_random_string3
 RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
     bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
 
