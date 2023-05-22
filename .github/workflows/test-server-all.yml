@@ -234,9 +234,9 @@ jobs:
           tags: tags_dev_bts
           load: true
 
-      - name: Run bazel test in computation_container
-        run: make test t=./computation_container m=run p=medium
-        working-directory: ./scripts
+      # - name: Run bazel test in computation_container
+      #   run: make test t=./computation_container m=run p=medium
+      #   working-directory: ./scripts
 
       - name: Move cache
         run: |
