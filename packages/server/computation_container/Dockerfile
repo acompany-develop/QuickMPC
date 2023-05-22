@@ -77,8 +77,9 @@ WORKDIR /QuickMPC
 
 FROM builder_base as builder
 # 実行ファイル生成
+RUN bazel clean --expunge --remote_executor=grpcs://remote.buildbuddy.io
 RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
-    bazel build //:all
+    bazel build //:all --remote_instance_name=drogskol_random_string
 RUN --mount=type=cache,id=default:/root/.cache,target=/root/.cache \
     bash -c 'cp /QuickMPC/bazel-bin/computation_container{,_test,_benchmark} /QuickMPC/'
 
