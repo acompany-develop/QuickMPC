@@ -5,6 +5,14 @@ create-gcp-instance:
 	terraform apply && \
 	terraform output -json > ../deploy/output.json
 
+deploy-quickmpc:
+	cd deploy && \
+	terraform init && \
+	terraform plan && \
+	terraform apply
+
 delete-gcp-instance:
-	cd gcp/ && \
-	terraform destroy
+	cd deploy/ && \
+	terraform destroy && \
+	cd ../gcp/ && \
+	terraform destroy -auto-approve
