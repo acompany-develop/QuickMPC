@@ -57,7 +57,6 @@ resource "null_resource" "prepare_deploy" {
     depends_on = [null_resource.setup]
 }
 
-# TODO
 # ---------------------------
 # get jwt
 # ---------------------------
