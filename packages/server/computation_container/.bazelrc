@@ -3,9 +3,12 @@ build --strip=never --cxxopt=-std=c++17 --cxxopt=-Wall --cxxopt=-O2 --output_fil
 build:debug --strip=never --cxxopt=-std=c++17 --cxxopt=-Wall --cxxopt=-O2 --output_filter='^//((?!(external):).)*$' --cxxopt=-g
 build:debug --platform_suffix=-debug
 
-build --bes_results_url=https://app.buildbuddy.io/invocation/
-build --bes_backend=grpcs://remote.buildbuddy.io
-build --remote_timeout=3600
-build --remote_cache=https://app.buildbuddy.io/invocation/
-build --remote_executor=grpcs://remote.buildbuddy.io
-build --remote_header=x-buildbuddy-api-key=BLXW6ElIEYoTc6UUSzwK
+common --bes_results_url=https://app.buildbuddy.io/invocation/
+common --bes_backend=grpcs://remote.buildbuddy.io
+common --remote_timeout=3600
+common --remote_cache=https://app.buildbuddy.io/invocation/
+common --remote_executor=grpcs://remote.buildbuddy.io
+common --remote_header=x-buildbuddy-api-key=BLXW6ElIEYoTc6UUSzwK
+
+build --crosstool_top=@buildbuddy_toolchain//:toolchain
+build --extra_toolchains=@buildbuddy_toolchain//:cc_toolchain
