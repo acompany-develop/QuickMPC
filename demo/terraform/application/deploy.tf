@@ -11,7 +11,7 @@ resource "null_resource" "setup" {
     count        = local.instance_count
 
     provisioner "file" {
-        source      = "../../deploy"
+        source      = "../../src"
         destination = "/home/${local.gce_ssh_user}/QuickMPC"
         connection {
             host        = local.qmpc_instance_gips[count.index]

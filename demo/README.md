@@ -34,9 +34,9 @@
     ```
     git clone https://github.com/acompany-develop/QuickMPC
     ```
-2. `QuickMPC/demo/deploy`ディレクトリに移動する
+2. `QuickMPC/demo/src`ディレクトリに移動する
     ```
-    cd QuickMPC/demo/deploy
+    cd QuickMPC/demo/src
     ```
 3. QuickMPCを立ち上げる用の環境を構築する
     以下のコマンドを実行し、Docker,docker-compose,GNU Makeをinstallします。
