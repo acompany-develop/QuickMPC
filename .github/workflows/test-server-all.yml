@@ -38,18 +38,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Setup config for using GCS as bazel remote cache
-      # - name: Update GCP service account JSON
-      #   run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
-      #   env:
-      #     CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-
-      # - name: Update .bazelrc for using remote cache
-      #   run: |
-      #     eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-      #   env:
-      #     BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
-
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -177,18 +165,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      # Setup config for using GCS as bazel remote cache
-      # - name: Update GCP service account JSON
-      #   run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
-      #   env:
-      #     CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-
-      # - name: Update .bazelrc for using remote cache
-      #   run: |
-      #     eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-      #   env:
-      #     BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
-
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
@@ -295,17 +271,6 @@ jobs:
           token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
           submodules: true
 
-      # - name: Update GCP service account JSON
-      #   run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
-      #   env:
-      #     CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-
-      # - name: Update .bazelrc for using remote cache
-      #   run: |
-      #     eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-      #   env:
-      #     BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
-
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
@@ -393,17 +358,6 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
           submodules: true
-
-      # - name: Update GCP service account JSON
-      #   run: echo ${CI_REMOTE_CACHE_JSON} | base64 --decode >> ./packages/server/computation_container/sa.json
-      #   env:
-      #     CI_REMOTE_CACHE_JSON: ${{ secrets.CI_REMOTE_CACHE_JSON }}
-
-      # - name: Update .bazelrc for using remote cache
-      #   run: |
-      #     eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-      #   env:
-      #     BAZEL_CACHE_BUCKET: ${{ secrets.BAZEL_CACHE_BUCKET }}
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
