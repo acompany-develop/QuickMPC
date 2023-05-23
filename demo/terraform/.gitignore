@@ -22,3 +22,5 @@ terraform.rc
 **/.key_pair/*
 
 gcp/json/*.json
+application/*.json
+application/client*.sample.env

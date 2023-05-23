@@ -41,17 +41,17 @@ static_resources:
           - name: envoy.filters.http.grpc_web  # gRPC-Webクライアントを準拠したgRPCサーバーにブリッジできるようにするフィルター
           - name: envoy.filters.http.cors
           - name: envoy.filters.http.router
-      transport_socket:
-        name: envoy.transport_sockets.tls
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
-          common_tls_context:
-            alpn_protocols: ["h2"]
-            tls_certificates:
-              - certificate_chain:
-                  filename: /certificate/Server.pem
-                private_key:
-                  filename: /certificate/Server.key
+      # transport_socket:
+      #   name: envoy.transport_sockets.tls
+      #   typed_config:
+      #     "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+      #     common_tls_context:
+      #       alpn_protocols: ["h2"]
+      #       tls_certificates:
+      #         - certificate_chain:
+      #             filename: /certificate/Server.pem
+      #           private_key:
+      #             filename: /certificate/Server.key
   - name: listener_1
     address:
       socket_address: { address: 0.0.0.0, port_value:  50010}  # 50010番ポートでlisten
@@ -79,17 +79,17 @@ static_resources:
                   max_grpc_timeout: 120s  # 最大許容タイムアウト, 0sは無限大
           http_filters:
           - name: envoy.filters.http.router
-      transport_socket:
-        name: envoy.transport_sockets.tls
-        typed_config:
-          "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
-          common_tls_context:
-            alpn_protocols: ["h2"]
-            tls_certificates:
-              - certificate_chain:
-                  filename: /certificate/Server.pem
-                private_key:
-                  filename: /certificate/Server.key
+      # transport_socket:
+      #   name: envoy.transport_sockets.tls
+      #   typed_config:
+      #     "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+      #     common_tls_context:
+      #       alpn_protocols: ["h2"]
+      #       tls_certificates:
+      #         - certificate_chain:
+      #             filename: /certificate/Server.pem
+      #           private_key:
+      #             filename: /certificate/Server.key
   clusters:  # リクエストがフィルタに一致するとclusterに渡される
   - name: libc_to_manage_service
     connect_timeout: 1000s  # クラスター内のホストへのネットワーク接続のタイムアウト
