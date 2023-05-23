@@ -15,7 +15,7 @@
 ### GCP環境にQuickMPCを立ち上げる場合
 1. `./terraform`ディレクトリ内の[README.md](terraform/README.md)を参照の上、GCP環境を立ち上げる
 2. dockerイメージを設定する <br>
-    この[ページ](https://github.com/acompany-develop/QuickMPC/tags)の最新のtagを[variables.tf](./terraform/deploy/vaiables.tf)の`docker_image_tag`に設定します。
+    この[ページ](https://github.com/acompany-develop/QuickMPC/tags)の最新のtagを[variables.tf](./terraform/application/vaiables.tf)の`docker_image_tag`に設定します。
     ```
     ...
     variable "docker_image_tag" {

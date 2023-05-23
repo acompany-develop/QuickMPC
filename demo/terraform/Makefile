@@ -3,16 +3,16 @@ create-gcp-instance:
 	terraform init && \
 	terraform plan && \
 	terraform apply && \
-	terraform output -json > ../deploy/output.json
+	terraform output -json > ../application/output.json
 
 deploy-quickmpc:
-	cd deploy && \
+	cd application && \
 	terraform init && \
 	terraform plan && \
 	terraform apply
 
 delete-gcp-instance:
-	cd deploy/ && \
+	cd application/ && \
 	terraform destroy && \
 	cd ../gcp/ && \
 	terraform destroy -auto-approve
