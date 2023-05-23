@@ -1,6 +1,6 @@
 locals {
   party_num = local.instance_count - 1
-  bts_num = local.instance_count - 1
+  bts_id = local.instance_count - 1
   ip_str = join(",", local.qmpc_instance_gips)
 }
 
@@ -60,7 +60,7 @@ resource "null_resource" "prepare_deploy" {
 # ---------------------------
 resource "null_resource" "get_jwt" {
     provisioner "local-exec" {
-        command = "scp -oStrictHostKeyChecking=no -i ${local.private_key_path} ${local.gce_ssh_user}@${local.qmpc_instance_gips[local.bts_num]}:/home/${local.gce_ssh_user}/QuickMPC/config/beaver_triple_service/client?*.sample.env ./"
+        command = "scp -oStrictHostKeyChecking=no -i ${local.private_key_path} ${local.gce_ssh_user}@${local.qmpc_instance_gips[local.bts_id]}:/home/${local.gce_ssh_user}/QuickMPC/config/beaver_triple_service/client?*.sample.env ./"
         interpreter = ["bash", "-c"]
     }
     depends_on = [null_resource.prepare_deploy]
