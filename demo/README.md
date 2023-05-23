@@ -54,7 +54,7 @@
     |  名前  |  説明(例)  |
     | ----  | ---- |
     |  party_num  |  0-indexでサーバの番号(サーバ1上でコマンドを実行するなら0)  |
-    |  ip_list  |  各ipをコンマ区切りで文字列にする(127.0.0.1,127.0.0.2,127.0.0.3)  |
+    |  ip_list  |  各ipをカンマ区切りで文字列にする(127.0.0.1,127.0.0.2,127.0.0.3)  |
     |  container image tag  |  containerイメージのtagを設定する(0.3.8)  |
     conrainerイメージについては、この[ページ](https://github.com/acompany-develop/QuickMPC/tags)の最新のtagを設定します。
 5. JSON Web Token(以下JWT)を他パーティに送る(サーバ3のみ) <br>
