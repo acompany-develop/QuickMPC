@@ -8,6 +8,7 @@ $ pipenv sync --dev
 ```
 
 ## unit_test
+
 ### Testing all cases
 ```console
 $ pipenv run tox
