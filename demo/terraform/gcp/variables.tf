@@ -2,7 +2,7 @@
 # Environment variables
 # ---------------------------
 variable "instance_count" {
-  # NOTE: この数値の数パーティ分だけ環境が立ち上がる
+  # NOTE: この数値の数パーティ分だけ環境が立ち上がる(btsを含めたパーティ数を記載する)
   default = 1
 }
 
