@@ -1,0 +1,48 @@
+inputs:
+  container-name:
+    description: "container name to build"
+    required: true
+
+  cache-key:
+    description: "key for actions/cache"
+    required: true
+
+  dockerfile-path:
+    description: "path to dockerfile"
+    required: true
+
+  builder-name:
+    description: "buildx.outputs.name"
+    required: true
+
+  target:
+    description: "target image"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Cache Docker layers
+      uses: actions/cache@v3
+      with:
+        path: /tmp/.buildx-cache-${{ inputs.container-name }}
+        key: ${{ runner.os }}-${{ inputs.container-name }}-${{ inputs.cache-key }}
+        restore-keys: ${{ runner.os }}-${{ inputs.container-name }}-
+
+    - name: Build and push
+      uses: docker/build-push-action@v3
+      with:
+        context: ./
+        file: ${{ inputs.dockerfile-path }}
+        builder: ${{ steps.buildx.outputs.name }}
+        cache-from: type=local,scope=${{ inputs.container-name }},src=/tmp/.buildx-cache-${{ inputs.container-name }}
+        cache-to: type=local,mode=max,scope=${{ inputs.container-name }},dest=/tmp/.buildx-cache-${{ inputs.container-name }}-new
+        target: ${{ inputs.target }}
+        tags: tags_${{ inputs.container-name }}
+        load: true
+
+    - name: Move cache
+      shell: bash
+      run: |
+        rm -rf /tmp/.buildx-cache-${{ inputs.container-name }}
+        mv /tmp/.buildx-cache-${{ inputs.container-name }}-new /tmp/.buildx-cache-${{ inputs.container-name }}

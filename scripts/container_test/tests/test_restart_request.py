@@ -19,7 +19,6 @@ def test_succes_send_share_with_restart(restart_container):
     restart_container.restart()
     res = send_share()
 
-    Containers.down_all()
     assert res["is_ok"]
 
 
@@ -42,7 +41,6 @@ def test_success_execute_computation_with_restart(restart_container):
     restart_container.restart()
     res = execute_computation(data_id1, data_id2)
 
-    Containers.down_all()
     assert res["is_ok"]
 
 
@@ -64,7 +62,6 @@ def test_success_execute_computations_with_restart(restart_container):
     restart_container.restart()
     res = execute_computation(data_id1, data_id2)
 
-    Containers.down_all()
     assert res["is_ok"]
 
 
@@ -85,7 +82,6 @@ def test_success_get_computation_result_with_restart(restart_container):
     restart_container.restart()
     res = get_computation_result(job_uuid1)
 
-    Containers.down_all()
     assert res["is_ok"]
 
 
@@ -102,5 +98,3 @@ def test_success_execute_multiple_with_restart(restart_container):
     for _ in range(3):
         job_uuid()
         restart_container.restart()
-
-    Containers.down_all()
