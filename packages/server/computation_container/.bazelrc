@@ -2,3 +2,5 @@ build --strip=never --cxxopt=-std=c++17 --cxxopt=-Wall --cxxopt=-O2 --output_fil
 
 build:debug --strip=never --cxxopt=-std=c++17 --cxxopt=-Wall --cxxopt=-O2 --output_filter='^//((?!(external):).)*$' --cxxopt=-g
 build:debug --platform_suffix=-debug
+
+build:--remote_download_minimal
