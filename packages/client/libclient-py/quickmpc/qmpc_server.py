@@ -48,8 +48,8 @@ class QMPCServer:
     __client_channels: Tuple[grpc.Channel] = field(init=False)
     __party_size: int = field(init=False)
     token: str
-    retry_num: int = 10
-    retry_wait_time: int = 5
+    retry_num: int = 1
+    retry_wait_time: int = 1
 
     def __post_init__(self, endpoints: List[str]) -> None:
         chs = [QMPCServer.__create_grpc_channel(ep) for ep in endpoints]
