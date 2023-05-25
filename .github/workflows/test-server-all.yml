@@ -269,7 +269,7 @@ jobs:
           pipenv run pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
-  medium_test_container_restart:
+  medium_test_container_restart_test_succes_send_share_with_restart:
     runs-on: ubuntu-latest
     needs: [lint]
     steps:
@@ -295,7 +295,210 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_succes_send_share_with_restart -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts/container_test
+
+  medium_test_container_restart_test_success_execute_computation_with_restart:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_container_test
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_computation_with_restart -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts/container_test
+
+  medium_test_container_restart_test_success_execute_computations_with_restart:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_container_test
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_computations_with_restart -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts/container_test
+
+  medium_test_container_restart_test_success_execute_multiple_with_restart_0:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_container_test
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container0] -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts/container_test
+
+  medium_test_container_restart_test_success_execute_multiple_with_restart_1:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_container_test
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container1] -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts/container_test
+
+  medium_test_container_restart_test_success_execute_multiple_with_restart_2:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_container_test
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container2] -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts/container_test
+
+  medium_test_container_restart_test_success_get_computation_result_with_restart:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_container_test
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_restart_request.py::test_success_get_computation_result_with_restart -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts/container_test
+
+  medium_test_container_restart_test_success_execute_multiple_with_restart:
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_container_test
+
+      - name: Run container test
+        run: |
+          pipenv sync
+          pipenv install --skip-lock ../../packages/client/libclient-py
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_send_share_with_down:
