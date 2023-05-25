@@ -61,7 +61,7 @@ jobs:
       name: Autobuild
       uses: github/codeql-action/autobuild@v2
 
-    - If: matrix.language == 'cpp'
+    - if: matrix.language == 'cpp'
       name: Build C++
       run: |
         make bootstrap
