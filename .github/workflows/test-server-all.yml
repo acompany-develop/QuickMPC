@@ -38,6 +38,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
       - name: Cache Docker layers
         uses: actions/cache@v3
         with:
@@ -165,6 +171,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
@@ -271,6 +283,12 @@ jobs:
           token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
           submodules: true
 
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
@@ -358,6 +376,12 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
           submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
 
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
