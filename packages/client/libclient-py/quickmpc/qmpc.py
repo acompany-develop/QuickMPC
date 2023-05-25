@@ -24,15 +24,17 @@ class QMPC:
     endpoints: InitVar[List[str]]
     # tokenがちゃんと使用されるようになったらデフォルト値を外す
     token: InitVar[str] = "token_demo"
+    retry_num: InitVar[int] = 10
+    retry_wait_time: InitVar[int] = 5
 
     __qmpc_server: QMPCServer = field(init=False)
     __party_size: int = field(init=False)
 
     def __post_init__(self, endpoints: List[str],
-                      token: str):
+                      token: str, retry_num: int, retry_wait_time: int):
         logger.info(f"[QuickMPC server IP]={endpoints}")
         object.__setattr__(self, "_QMPC__qmpc_server", QMPCServer(
-            endpoints, token))
+            endpoints, token, retry_num, retry_wait_time))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
     def send_share_from_csv_file(self,

@@ -57,7 +57,7 @@ qmpc: QMPC = QMPC([
     "http://localhost:50001",
     "http://localhost:50002",
     "http://localhost:50003",
-])
+], retry_num=1, retry_wait_time=1)
 
 
 def send_share() -> dict:
