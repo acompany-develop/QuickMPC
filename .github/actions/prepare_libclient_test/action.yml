@@ -1,0 +1,33 @@
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+    - name: Build libc with cache
+      uses: ./.github/actions/build_images_with_cache
+      with:
+        container-name: "medium_libc"
+        cache-key: ${{ hashFiles('./packages/client/libclient-py/**') }}
+        dockerfile-path: ./scripts/libclient/Dockerfile
+        builder-name: ${{ steps.buildx.outputs.name }}
+        target: "medium"
+
+    - name: Build cc with cache
+      uses: ./.github/actions/build_images_with_cache
+      with:
+        container-name: "dev_cc"
+        cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
+        dockerfile-path: ./packages/server/computation_container/Dockerfile
+        builder-name: ${{ steps.buildx.outputs.name }}
+        target: "dev"
+
+    - name: Build mc with cache
+      uses: ./.github/actions/build_images_with_cache
+      with:
+        container-name: "dev_mc"
+        cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+        dockerfile-path: ./packages/server/manage_container/Dockerfile
+        builder-name: ${{ steps.buildx.outputs.name }}
+        target: "dev"
