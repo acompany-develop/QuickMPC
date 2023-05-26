@@ -32,7 +32,6 @@ jobs:
 
   small_test_cc:
     runs-on: ubuntu-latest
-    needs: [lint]
 
     steps:
       - name: Checkout
@@ -63,7 +62,6 @@ jobs:
 
   small_test_mc:
     runs-on: ubuntu-latest
-    needs: [lint]
 
     steps:
       - name: Checkout
@@ -88,7 +86,6 @@ jobs:
 
   small_test_bts:
     runs-on: ubuntu-latest
-    needs: [lint]
 
     steps:
       - name: Checkout
@@ -111,17 +108,8 @@ jobs:
         run: make test t=./beaver_triple_service m=run
         working-directory: ./scripts
 
-  small_test:
-    runs-on: ubuntu-latest
-    needs: [lint, small_test_cc, small_test_mc, small_test_bts]
-
-    steps:
-      - name: Merge All small_test
-        run: echo "ok"
-
   medium_test_cc:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -163,7 +151,6 @@ jobs:
 
   medium_test_mc:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -187,7 +174,6 @@ jobs:
 
   medium_test_libclient:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -242,7 +228,6 @@ jobs:
 
   medium_test_container_up:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -271,7 +256,6 @@ jobs:
 
   medium_test_container_restart_test_succes_send_share_with_restart:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -300,7 +284,6 @@ jobs:
 
   medium_test_container_restart_test_success_execute_computation_with_restart:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -329,7 +312,6 @@ jobs:
 
   medium_test_container_restart_test_success_execute_computations_with_restart:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -358,7 +340,6 @@ jobs:
 
   medium_test_container_restart_test_success_get_computation_result_with_restart:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -387,7 +368,6 @@ jobs:
 
   medium_test_container_restart_test_success_execute_multiple_with_restart_0:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -416,7 +396,6 @@ jobs:
 
   medium_test_container_restart_test_success_execute_multiple_with_restart_1:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -445,7 +424,6 @@ jobs:
 
   medium_test_container_restart_test_success_execute_multiple_with_restart_2:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -474,7 +452,6 @@ jobs:
 
   medium_test_container_down_test_failed_send_share_with_down:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -503,7 +480,6 @@ jobs:
 
   medium_test_container_down_test_failed_execute_computation_with_down_0:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -532,7 +508,6 @@ jobs:
 
   medium_test_container_down_test_failed_execute_computation_with_down_1:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -561,7 +536,6 @@ jobs:
 
   medium_test_container_down_test_failed_get_computation_result_with_down:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -587,29 +561,3 @@ jobs:
           pipenv install --skip-lock ../../packages/client/libclient-py
           pipenv run pytest ./tests/test_down_request.py::test_failed_get_computation_result_with_down -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts/container_test
-
-  medium_test:
-    runs-on: ubuntu-latest
-    needs:
-      [
-        lint,
-        medium_test_cc,
-        medium_test_mc,
-        medium_test_libclient,
-        medium_test_container_up,
-        medium_test_container_restart_test_succes_send_share_with_restart,
-        medium_test_container_restart_test_success_execute_computation_with_restart,
-        medium_test_container_restart_test_success_execute_computations_with_restart,
-        medium_test_container_restart_test_success_get_computation_result_with_restart,
-        medium_test_container_restart_test_success_execute_multiple_with_restart_0,
-        medium_test_container_restart_test_success_execute_multiple_with_restart_1,
-        medium_test_container_restart_test_success_execute_multiple_with_restart_2,
-        medium_test_container_down_test_failed_send_share_with_down,
-        medium_test_container_down_test_failed_execute_computation_with_down_0,
-        medium_test_container_down_test_failed_execute_computation_with_down_1,
-        medium_test_container_down_test_failed_get_computation_result_with_down,
-      ]
-
-    steps:
-      - name: Merge All medium_test
-        run: echo "ok"
