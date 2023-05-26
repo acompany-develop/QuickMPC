@@ -65,6 +65,7 @@ jobs:
       name: Build C++
       run: |
         bazel build //:all
+      working-directory: ./packages/server/computation_container/
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 See https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#jobsjob_idstepsrun
