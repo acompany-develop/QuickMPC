@@ -2,8 +2,8 @@ runs:
   using: "composite"
   steps:
     - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
+      id: buildx
+      uses: docker/setup-buildx-action@v2
 
     - name: Build libc with cache
       uses: ./.github/actions/build_images_with_cache
