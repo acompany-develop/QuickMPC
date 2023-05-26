@@ -10,6 +10,7 @@ on:
 env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
+  COMPOSE_FILES_OPT: "-f ./docker-compose.medium.yml -f ./docker-compose.core.yml -f ./docker-compose.benchmark.yml -f ./docker-compose.small.yml -f ./docker-compose.datadog.yml -f ./docker-compose.dev.yml"
 
 jobs:
   lint:
@@ -231,7 +232,7 @@ jobs:
           target: "dev"
 
       - name: Run bazel test in libclient
-        run: docker-compose -f ./docker-compose.medium.yml -f ./docker-compose.core.yml -f ./docker-compose.benchmark.yml -f ./docker-compose.small.yml -f ./docker-compose.datadog.yml -f ./docker-compose.dev.yml run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_container_up:
