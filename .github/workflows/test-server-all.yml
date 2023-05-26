@@ -200,39 +200,10 @@ jobs:
       - name: Log into registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Set up Docker buildx
-        id: buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Build libc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "medium_libc"
-          cache-key: ${{ hashFiles('./packages/client/libclient-py/**') }}
-          dockerfile-path: ./scripts/libclient/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "medium"
-
-      - name: Build cc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_cc"
-          cache-key: ${{ hashFiles('./packages/server/computation_container/**') }}
-          dockerfile-path: ./packages/server/computation_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
-
-      - name: Build mc with cache
-        uses: ./.github/actions/build_images_with_cache
-        with:
-          container-name: "dev_mc"
-          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
-          dockerfile-path: ./packages/server/manage_container/Dockerfile
-          builder-name: ${{ steps.buildx.outputs.name }}
-          target: "dev"
+      - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts
 
   medium_test_container_up:
