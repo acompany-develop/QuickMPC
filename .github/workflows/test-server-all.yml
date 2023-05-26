@@ -181,18 +181,6 @@ jobs:
         run: make test t=./manage_container m=run p=medium
         working-directory: ./scripts
 
-  medium_test_libclient:
-    strategy:
-      matrix:
-        test_name: [correl, get_elapsed_time, ...]
-    steps:
-      ...
-      - run: ... pytest src/tests/test_${{ JOB_NAME}} ...
-        env:
-          JOB_NAME: ${{ matrix.test_name }}
-
-
-
   medium_test_libclient_test_correl:
     runs-on: ubuntu-latest
     steps:
