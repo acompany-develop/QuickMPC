@@ -181,6 +181,18 @@ jobs:
         run: make test t=./manage_container m=run p=medium
         working-directory: ./scripts
 
+  medium_test_libclient:
+    strategy:
+      matrix:
+        test_name: [correl, get_elapsed_time, ...]
+    steps:
+      ...
+      - run: ... pytest src/tests/test_${{ JOB_NAME}} ...
+        env:
+          JOB_NAME: ${{ matrix.test_name }}
+
+
+
   medium_test_libclient_test_correl:
     runs-on: ubuntu-latest
     steps:
@@ -203,7 +215,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_correl.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_correl.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_get_elapsed_time:
@@ -228,7 +240,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_get_elapsed_time.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_get_elapsed_time.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_job_error_info:
@@ -253,7 +265,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_job_error_info.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_job_error_info.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_join:
@@ -278,7 +290,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_join.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_join.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_mean:
@@ -303,7 +315,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_mean.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_mean.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_parallel:
@@ -328,7 +340,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_parallel.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_parallel.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_send_share:
@@ -353,7 +365,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_send_share.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_send_share.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_string:
@@ -378,7 +390,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_string.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_string.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_sum:
@@ -403,7 +415,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_sum.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_sum.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_token:
@@ -428,7 +440,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_token.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_token.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient_test_variance:
@@ -453,7 +465,7 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_variance.py -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_variance.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_libclient:
@@ -501,7 +513,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart_test_succes_send_share_with_restart:
@@ -529,7 +541,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_succes_send_share_with_restart -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_succes_send_share_with_restart -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart_test_success_execute_computation_with_restart:
@@ -557,7 +569,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_computation_with_restart -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_computation_with_restart -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart_test_success_execute_computations_with_restart:
@@ -585,7 +597,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_computations_with_restart -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_computations_with_restart -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart_test_success_get_computation_result_with_restart:
@@ -613,7 +625,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_success_get_computation_result_with_restart -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_success_get_computation_result_with_restart -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart_test_success_execute_multiple_with_restart_0:
@@ -641,7 +653,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container0] -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container0] -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart_test_success_execute_multiple_with_restart_1:
@@ -669,7 +681,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container1] -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container1] -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart_test_success_execute_multiple_with_restart_2:
@@ -697,7 +709,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container2] -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_restart_request.py::test_success_execute_multiple_with_restart -k [restart_container2] -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart:
@@ -741,7 +753,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_send_share_with_down -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_down_request.py::test_failed_send_share_with_down -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_execute_computation_with_down_0:
@@ -769,7 +781,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container0] -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container0] -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_execute_computation_with_down_1:
@@ -797,7 +809,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container1] -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_down_request.py::test_failed_execute_computation_with_down -k [down_container1] -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_down_test_failed_get_computation_result_with_down:
@@ -825,7 +837,7 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_get_computation_result_with_down -s -v -log-cli-level=DEBUG --durations=0
+          pipenv run pytest ./tests/test_down_request.py::test_failed_get_computation_result_with_down -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_down:
