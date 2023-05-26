@@ -231,7 +231,7 @@ jobs:
           target: "dev"
 
       - name: Run bazel test in libclient
-        run: docker-compose run -f ./docker-compose.medium.yml -f ./docker-compose.core.yml -f ./docker-compose.benchmark.yml -f ./docker-compose.small.yml -f ./docker-compose.datadog.yml -f ./docker-compose.dev.yml medium-libc pytest src/tests -s -v -log-cli-level=DEBUG
+        run: docker-compose -f ./docker-compose.medium.yml -f ./docker-compose.core.yml -f ./docker-compose.benchmark.yml -f ./docker-compose.small.yml -f ./docker-compose.datadog.yml -f ./docker-compose.dev.yml run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_container_up:
