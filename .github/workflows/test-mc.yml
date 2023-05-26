@@ -1,0 +1,58 @@
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "release/**"
+
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+jobs:
+  small_test_mc:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build mc with cache
+        uses: ./.github/actions/build_images_with_cache
+        with:
+          container-name: "small_mc"
+          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+          dockerfile-path: ./packages/server/manage_container/Dockerfile
+          builder-name: ${{ steps.buildx.outputs.name }}
+          target: "small"
+
+      - name: Run Go test in manage_container
+        run: make test t=./manage_container m=run p=small
+        working-directory: ./scripts
+
+  medium_test_mc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Docker buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build mc with cache
+        uses: ./.github/actions/build_images_with_cache
+        with:
+          container-name: "medium_mc"
+          cache-key: ${{ hashFiles('./packages/server/manage_container/**') }}
+          dockerfile-path: ./packages/server/manage_container/Dockerfile
+          builder-name: ${{ steps.buildx.outputs.name }}
+          target: "medium"
+
+      - name: Run bazel test in manage_container
+        run: make test t=./manage_container m=run p=medium
+        working-directory: ./scripts
