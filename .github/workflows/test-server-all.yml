@@ -281,31 +281,6 @@ jobs:
         run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_join.py -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts
 
-  medium_test_libclient_test_join:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
-          submodules: true
-
-      - name: Update .bazelrc for using remote cache
-        run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
-
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-      - uses: ./.github/actions/prepare_libclient_test
-
-      - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_join.py -s -v -log-cli-level=DEBUG --durations=0
-        working-directory: ./scripts
-
   medium_test_libclient_test_mean:
     runs-on: ubuntu-latest
     steps:
