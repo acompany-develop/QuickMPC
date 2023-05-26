@@ -235,7 +235,7 @@ jobs:
         working-directory: ./scripts
 
       - name: Run test
-        run: docker container exec -it medium-libc pytest src/tests -s -v -log-cli-level=DEBUG
+        run: docker exec -it libclient pytest src/tests -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_container_up:
