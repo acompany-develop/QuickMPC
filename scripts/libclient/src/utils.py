@@ -33,7 +33,7 @@ def __try_get_computation_result(job_uuid, is_limit):
     return None
 
 def get_result(res, limit=20):
-    """ 計算が終わるまで結果取得をし続ける(1秒x20回) """
+    """ 計算が終わるまで limit 回結果取得をし続ける i回目の終わりに i 秒待つ"""
     if not res["is_ok"]:
         return res
 
@@ -43,4 +43,4 @@ def get_result(res, limit=20):
         res = __try_get_computation_result(job_uuid, i+1 == limit)
         if res is not None:
             return res
-        time.sleep(1)
+        time.sleep(i+1)
