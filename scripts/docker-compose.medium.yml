@@ -226,5 +226,5 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - pip list && pytest src/tests -s -v -log-cli-level=DEBUG --durations=0
+      - pip list
     network_mode: host

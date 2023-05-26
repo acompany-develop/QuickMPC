@@ -234,6 +234,10 @@ jobs:
         run: make test t=./libclient m=run p=medium
         working-directory: ./scripts
 
+      - name: Run test
+        run: docker container exec -it medium-libc pytest src/tests -s -v -log-cli-level=DEBUG
+        working-directory: ./scripts
+
   medium_test_container_up:
     runs-on: ubuntu-latest
     steps:
