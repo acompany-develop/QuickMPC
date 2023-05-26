@@ -14,7 +14,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose $COMPOSE_FILES_OPT run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG --durations=0
+    docker-compose $COMPOSE_FILES_OPT run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG --durations=5
 }
 
 # runの後に実行されるteardown処理を記述する関数
