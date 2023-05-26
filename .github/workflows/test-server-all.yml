@@ -181,7 +181,7 @@ jobs:
         run: make test t=./manage_container m=run p=medium
         working-directory: ./scripts
 
-  medium_test_libclient:
+  medium_test_libclient_test_correl:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -203,8 +203,303 @@ jobs:
       - uses: ./.github/actions/prepare_libclient_test
 
       - name: Run bazel test in libclient
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests -s -v -log-cli-level=DEBUG --durations=0
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_correl.py -s -v -log-cli-level=DEBUG --durations=0
         working-directory: ./scripts
+
+  medium_test_libclient_test_get_elapsed_time:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_get_elapsed_time.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_job_error_info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_job_error_info.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_join:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_join.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_join:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_join.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_mean:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_mean.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_parallel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_parallel.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_send_share:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_send_share.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_string:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_string.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_sum:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_sum.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_token:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_token.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient_test_variance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
+          submodules: true
+
+      - name: Update .bazelrc for using remote cache
+        run: |
+          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+
+      - name: Log into registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - uses: ./.github/actions/prepare_libclient_test
+
+      - name: Run bazel test in libclient
+        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_variance.py -s -v -log-cli-level=DEBUG --durations=0
+        working-directory: ./scripts
+
+  medium_test_libclient:
+    runs-on: ubuntu-latest
+    needs:
+      [
+        medium_test_libclient_test_correl,
+        medium_test_libclient_test_get_elapsed_time,
+        medium_test_libclient_test_job_error_info,
+        medium_test_libclient_test_join,
+        medium_test_libclient_test_mean,
+        medium_test_libclient_test_parallel,
+        medium_test_libclient_test_send_share,
+        medium_test_libclient_test_string,
+        medium_test_libclient_test_sum,
+        medium_test_libclient_test_token,
+        medium_test_libclient_test_variance
+      ]
+    steps:
+      - name: Merge All medium_test_libclient
+        run: echo "ok"
 
   medium_test_container_up:
     runs-on: ubuntu-latest
