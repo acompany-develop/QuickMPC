@@ -14,7 +14,7 @@ setup() {
 # run処理を記述する関数
 # NOTE: この関数は例外的にワンライナーで書かなくて良い
 run() {
-    docker-compose $COMPOSE_FILES_OPT up --detach -it medium-libc
+    docker-compose $COMPOSE_FILES_OPT up --detach medium-libc
 }
 
 # runの後に実行されるteardown処理を記述する関数
