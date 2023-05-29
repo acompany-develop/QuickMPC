@@ -10,7 +10,7 @@ from utils import (all_containers, bts_p, cc_p, data_id, execute_computation,
         (mc_p(1)),
     ]
 )
-def test_succes_send_share_with_restart(restart_container):
+def test_success_send_share_with_restart(restart_container):
     # 特定のコンテナをrestartさせてsend_shareを送れるか
     Containers.down_all()
     mc_all().up()
