@@ -184,6 +184,7 @@ jobs:
   medium_test_libclient:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         test_name:
           [
@@ -253,6 +254,7 @@ jobs:
   medium_test_container_restart:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         test_name:
           [
@@ -285,12 +287,13 @@ jobs:
         run: |
           pipenv sync
           pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_succes_${{ matrix.test_name }}_with_restart -s -v -log-cli-level=DEBUG
+          pipenv run pytest ./tests/test_restart_request.py::test_success_${{ matrix.test_name }}_with_restart -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_down:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         test_name:
           [
