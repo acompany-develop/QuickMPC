@@ -47,8 +47,8 @@ func TestGetSharePieceSize(t *testing.T) {
 
 	testcases := map[string]struct {
 		dataID   string
-		size     int
-		expected int
+		size     int32
+		expected int32
 	}{
 		"1":   {"TestGetSharePieceSize1", 1, 1},
 		"10":  {"TestGetSharePieceSize10", 10, 10},
@@ -59,7 +59,7 @@ func TestGetSharePieceSize(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			os.Mkdir(fmt.Sprintf("/db/share/%s", tt.dataID), 0777)
-			for i := 0; i < tt.size; i++ {
+			for i := 0; i < int(tt.size); i++ {
 				os.Create(fmt.Sprintf("/db/share/%s/%d", tt.dataID, i))
 			}
 
@@ -199,6 +199,47 @@ func TestDeleteSharesSuccess(t *testing.T) {
 		t.Error(fmt.Sprintf("delete shares failed: '/db/share/%s' must be deleted, but exist", defaultDataID))
 	}
 	initialize()
+}
+
+func TestGetSharePiece_hoge(t *testing.T) {
+	initialize()
+
+	testcases := map[string]struct {
+		dataID   string
+		data     string
+		expected Share
+	}{
+		"full": {
+			"TestGetSharePieceFull",
+			`{"value":[["1","2"],["3","4"]],"meta":{"piece_id":0,"matching_column": 1}}`,
+			Share{Value: [][]string{{"1", "2"}, {"3", "4"}}, Meta: ShareMeta{PieceID: 0, MatchingColumn: 1}},
+		},
+		"empty": {
+			"TestGetSharePieceEmpty",
+			`{}`,
+			Share{},
+		},
+	}
+	for name, tt := range testcases {
+		tt := tt
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			os.Mkdir(fmt.Sprintf("/db/share/%s", tt.dataID), 0777)
+			ioutil.WriteFile(fmt.Sprintf("/db/share/%s/%d", tt.dataID, 0), []byte(tt.data), 0666)
+
+			client := Client{}
+			share, err := client.GetSharePiece(tt.dataID, 0)
+			if err != nil {
+				t.Error(err)
+			}
+			if !reflect.DeepEqual(share, tt.expected) {
+				t.Errorf("share must be %v, but %v", tt.expected, share)
+			}
+		})
+	}
+
+	// initialize()
 }
 
 /* GetSchema(string) ([]string, error) */

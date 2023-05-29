@@ -45,18 +45,19 @@ type ShareMeta struct {
 	MatchingColumn int32              `json:"matching_column"`
 }
 type Share struct {
-	DataID string      `json:"data_id"`
-	Meta   ShareMeta   `json:"meta"`
-	Value  interface{} `json:"value"`
-	SentAt string      `json:"sent_at"`
+	DataID string     `json:"data_id"`
+	Meta   ShareMeta  `json:"meta"`
+	Value  [][]string `json:"value"`
+	SentAt string     `json:"sent_at"`
 }
 
 // 外部から呼ばれるinterface
 type Client struct{}
 type M2DbClient interface {
-	GetSharePieceSize(string) (int, error)
+	GetSharePieceSize(string) (int32, error)
 	InsertShares(string, []*pb_types.Schema, int32, string, string, int32) error
 	DeleteShares([]string) error
+	GetSharePiece(string, int32) (Share, error)
 	GetSchema(string) ([]*pb_types.Schema, error)
 	GetComputationResult(string, []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
 	GetDataList() (string, error)
@@ -73,14 +74,14 @@ func isExists(path string) bool {
 	return err == nil
 }
 
-func (c Client) GetSharePieceSize(dataID string) (int, error) {
+func (c Client) GetSharePieceSize(dataID string) (int32, error) {
 	path := fmt.Sprintf("%s/%s", shareDbPath, dataID)
 	files, err := ioutil.ReadDir(path)
 	size := len(files)
 	if err != nil || size == 0 {
 		return 0, fmt.Errorf("データ未登録エラー: %sは登録されていません．", dataID)
 	}
-	return size, nil
+	return int32(size), nil
 }
 
 // DBにシェアを保存する
@@ -94,7 +95,7 @@ func (c Client) InsertShares(dataID string, schema []*pb_types.Schema, pieceID i
 	}
 	os.Mkdir(fmt.Sprintf("%s/%s", shareDbPath, dataID), 0777)
 
-	var sharesJson interface{}
+	var sharesJson [][]string
 	errUnmarshal := json.Unmarshal([]byte(shares), &sharesJson)
 	if errUnmarshal != nil {
 		return errUnmarshal
@@ -138,30 +139,34 @@ func (c Client) DeleteShares(dataIDs []string) error {
 	return nil
 }
 
-// DBからschemaを得る
-func (c Client) GetSchema(dataID string) ([]*pb_types.Schema, error) {
+func (c Client) GetSharePiece(dataID string, pieceID int32) (Share, error) {
 
 	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
 	ls.Lock(path)
 	defer ls.Unlock(path)
 
 	if !isExists(path) {
-		errMessage := "データ未登録エラー: " + dataID + "は登録されていません．"
-		return nil, errors.New(errMessage)
+		return Share{}, errors.New("重複データ登録エラー: " + dataID + "は既に登録されています．")
 	}
 
 	raw, errRead := ioutil.ReadFile(path)
 	if errRead != nil {
-		return nil, errRead
+		return Share{}, errRead
 	}
 
 	var data Share
 	errUnmarshal := json.Unmarshal(raw, &data)
 	if errUnmarshal != nil {
-		return nil, errUnmarshal
+		return Share{}, errUnmarshal
 	}
 
-	return data.Meta.Schema, nil
+	return data, nil
+}
+
+// DBからschemaを得る
+func (c Client) GetSchema(dataID string) ([]*pb_types.Schema, error) {
+	data, err := c.GetSharePiece(dataID, 0)
+	return data.Meta.Schema, err
 }
 
 var (
