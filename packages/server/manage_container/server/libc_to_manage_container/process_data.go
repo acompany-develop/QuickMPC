@@ -8,21 +8,6 @@ import (
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 )
 
-/*
-// Share形式
-type ShareMeta struct {
-	Schema         []*pb_types.Schema `json:"schema"`
-	PieceID        int32              `json:"piece_id"`
-	MatchingColumn int32              `json:"matching_column"`
-}
-type Share struct {
-	DataID string     `json:"data_id"`
-	Meta   ShareMeta  `json:"meta"`
-	Value  [][]string `json:"value"`
-	SentAt string     `json:"sent_at"`
-}
-*/
-
 type processer struct {
 	m2dbclient m2db.M2DbClient
 }
@@ -66,6 +51,7 @@ func (p processer) addValueToIDCol(dataID string, value []string) error {
 		if err != nil {
 			return err
 		}
+		p.m2dbclient.DeleteShares([]string{dataID})
 		p.m2dbclient.InsertShares(dataID, sampleShare.Meta.Schema, int32(pieceID), shareJsonStr, sampleShare.SentAt, matchingColumn)
 	}
 	return nil

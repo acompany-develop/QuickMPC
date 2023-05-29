@@ -201,7 +201,7 @@ func TestDeleteSharesSuccess(t *testing.T) {
 	initialize()
 }
 
-func TestGetSharePiece_hoge(t *testing.T) {
+func TestGetSharePiece(t *testing.T) {
 	initialize()
 
 	testcases := map[string]struct {
