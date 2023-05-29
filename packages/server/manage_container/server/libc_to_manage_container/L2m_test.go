@@ -20,11 +20,17 @@ type localCC struct{}
 type localMC struct{}
 type localTokenCA struct{}
 
+func (localDb) GetSharePieceSize(string) (int32, error) {
+	return 0, nil
+}
 func (localDb) InsertShares(string, []*pb_types.Schema, int32, string, string, int32) error {
 	return nil
 }
 func (localDb) DeleteShares([]string) error {
 	return nil
+}
+func (localDb) GetSharePiece(string, int32) (m2db.Share, error) {
+	return m2db.Share{}, nil
 }
 func (localDb) GetSchema(string) ([]*pb_types.Schema, error) {
 	return []*pb_types.Schema{{Name: "attr1"}}, nil
