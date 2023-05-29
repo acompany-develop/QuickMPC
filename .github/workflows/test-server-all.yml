@@ -1,4 +1,4 @@
-run-name: ${{ github.workflow }} (${{ github.ref_name }})
+run-name: ${{ github.ref_name }} [${{ github.event.head_commit.message }}]
 name: Build and Run Tests on CC, MC, and BTS Containers
 
 on:
