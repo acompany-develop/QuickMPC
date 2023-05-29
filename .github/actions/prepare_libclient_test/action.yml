@@ -31,3 +31,12 @@ runs:
         dockerfile-path: ./packages/server/manage_container/Dockerfile
         builder-name: ${{ steps.buildx.outputs.name }}
         target: "dev"
+
+    - name: Build bts with cache
+      uses: ./.github/actions/build_images_with_cache
+      with:
+        container-name: "dev_bts"
+        cache-key: ${{ hashFiles('./packages/server/beaver_triple_service/**') }}
+        dockerfile-path: ./packages/server/beaver_triple_service/Dockerfile
+        builder-name: ${{ steps.buildx.outputs.name }}
+        target: "dev"
