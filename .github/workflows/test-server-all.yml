@@ -1,4 +1,3 @@
-run-name: ${{ github.ref_name }} [${{ github.event.pull_request.commits_url }}]
 name: Build and Run Tests on CC, MC, and BTS Containers
 
 on:
