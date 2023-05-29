@@ -54,6 +54,7 @@ type Share struct {
 // 外部から呼ばれるinterface
 type Client struct{}
 type M2DbClient interface {
+	GetSharePieceSize(string) (int, error)
 	InsertShares(string, []*pb_types.Schema, int32, string, string, int32) error
 	DeleteShares([]string) error
 	GetSchema(string) ([]*pb_types.Schema, error)
@@ -70,6 +71,16 @@ type M2DbClient interface {
 func isExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
+}
+
+func (c Client) GetSharePieceSize(dataID string) (int, error) {
+	path := fmt.Sprintf("%s/%s", shareDbPath, dataID)
+	files, err := ioutil.ReadDir(path)
+	size := len(files)
+	if err != nil || size == 0 {
+		return 0, fmt.Errorf("データ未登録エラー: %sは登録されていません．", dataID)
+	}
+	return size, nil
 }
 
 // DBにシェアを保存する

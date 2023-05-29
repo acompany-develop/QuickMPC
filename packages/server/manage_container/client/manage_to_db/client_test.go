@@ -42,6 +42,66 @@ var defaultParams = []string{"1", "2", "3"}
 
 var defaultResult = []string{"1", "2", "3"}
 
+func TestGetSharePieceSize(t *testing.T) {
+	initialize()
+
+	testcases := map[string]struct {
+		dataID   string
+		size     int
+		expected int
+	}{
+		"1":   {"TestGetSharePieceSize1", 1, 1},
+		"10":  {"TestGetSharePieceSize10", 10, 10},
+		"100": {"TestGetSharePieceSize100", 100, 100},
+	}
+	for name, tt := range testcases {
+		tt := tt
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			os.Mkdir(fmt.Sprintf("/db/share/%s", tt.dataID), 0777)
+			for i := 0; i < tt.size; i++ {
+				os.Create(fmt.Sprintf("/db/share/%s/%d", tt.dataID, i))
+			}
+
+			client := Client{}
+			size, err := client.GetSharePieceSize(tt.dataID)
+			if size != tt.expected {
+				t.Errorf("size must be %d, but %d", tt.expected, size)
+			}
+			if err != nil {
+				t.Error(err)
+			}
+		})
+	}
+}
+func TestGetSharePieceSizeFailed(t *testing.T) {
+	initialize()
+
+	generateDataID := "TestGetSharePieceSizeFailed"
+	os.Mkdir(fmt.Sprintf("/db/share/%s", generateDataID), 0777)
+
+	testcases := map[string]struct {
+		dataID   string
+		expected string
+	}{
+		"dir_empty":   {"empty_dir_name", "データ未登録エラー: empty_dir_nameは登録されていません．"},
+		"piece_empty": {generateDataID, "データ未登録エラー: TestGetSharePieceSizeFailedは登録されていません．"},
+	}
+	for name, tt := range testcases {
+		tt := tt
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+			fmt.Println(tt.dataID)
+
+			client := Client{}
+			_, err := client.GetSharePieceSize(tt.dataID)
+			if err.Error() != tt.expected {
+				t.Errorf("error message must be `%s`, but `%s`", tt.expected, err.Error())
+			}
+		})
+	}
+}
+
 /* InsertShares(string, []string, int32, string, string) error */
 // シェアが保存されるかTest
 func TestInsertSharesSuccess(t *testing.T) {
