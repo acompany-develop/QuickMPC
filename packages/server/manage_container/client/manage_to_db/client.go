@@ -322,27 +322,8 @@ func (c Client) GetElapsedTime(jobUUID string) (float64, error) {
 }
 
 func (c Client) GetMatchingColumn(dataID string) (int32, error) {
-	path := fmt.Sprintf("%s/%s/%d", shareDbPath, dataID, 0)
-	ls.Lock(path)
-	defer ls.Unlock(path)
-
-	if !isExists(path) {
-		errMessage := "データ未登録エラー: " + dataID + "は登録されていません．"
-		return 0, errors.New(errMessage)
-	}
-
-	raw, errRead := ioutil.ReadFile(path)
-	if errRead != nil {
-		return 0, errRead
-	}
-
-	var data Share
-	errUnmarshal := json.Unmarshal(raw, &data)
-	if errUnmarshal != nil {
-		return 0, errUnmarshal
-	}
-
-	return data.Meta.MatchingColumn, nil
+	data, err := c.GetSharePiece(dataID, 0)
+	return data.Meta.MatchingColumn, err
 }
 
 func (c Client) CreateStatusFile(jobUUID string) error {
