@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
-from .utils.parse_csv import (parse, parse_csv)
+from .utils.parse_csv import parse, parse_csv
 from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
@@ -164,6 +164,13 @@ class QMPC:
         logger.info("get_job_error_info request. "
                     f"[job_uuid]={job_uuid}")
         return self.__qmpc_server.get_job_error_info(job_uuid)
+
+    def add_value_to_id(self, data_id: str, value: List[str],
+                        party_id: int) -> Dict:
+        logger.info("add value to id. "
+                    f"[data_id]={data_id}"
+                    f"[party_id]={party_id}")
+        return self.__qmpc_server.add_value_to_id(data_id, value, party_id)
 
     @staticmethod
     def set_log_level(level: int):

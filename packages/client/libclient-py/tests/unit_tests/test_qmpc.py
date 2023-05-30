@@ -135,6 +135,11 @@ class TestQMPC:
         response: Dict[str, Any] = self.qmpc.get_data_list()
         assert (response["is_ok"])
 
+    def test_add_value_to_id(self, run_server1, run_server2, run_server3):
+        """ serverにID列加算リクエストを遅れるかTest """
+        response: Dict[str, Any] = self.qmpc.add_value_to_id("data_id", [], 1)
+        assert (response["is_ok"])
+
     def test_get_job_error_info(self, run_server1, run_server2, run_server3):
         # 例外がthrowされないことをテスト
         response: Dict[str, Any] = self.qmpc.get_job_error_info("test")

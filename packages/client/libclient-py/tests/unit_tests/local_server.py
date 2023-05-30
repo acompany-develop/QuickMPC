@@ -91,6 +91,9 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
         )
         return res
 
+    def AddValueToId(self, request, context):
+        return empty_pb2.Empty()
+
     def GetElapsedTime(self, request, context):
         pass
 

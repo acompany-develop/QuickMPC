@@ -20,7 +20,8 @@ from grpc_status import rpc_status  # type: ignore
 from .exception import ArgumentError, QMPCJobError, QMPCServerError
 from .proto.common_types.common_types_pb2 import (JobErrorInfo, JobStatus,
                                                   Schema, ShareValueTypeEnum)
-from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
+from .proto.libc_to_manage_pb2 import (AddValueToIdRequest,
+                                       DeleteSharesRequest,
                                        ExecuteComputationRequest,
                                        GetComputationResultRequest,
                                        GetComputationResultResponse,
@@ -434,3 +435,19 @@ class QMPCServer:
         ]
 
         return {"is_ok": is_ok, "job_error_info": job_error_info}
+
+    def add_value_to_id(self, data_id: str, value: List[str],
+                        party_id: int) -> Dict:
+        req = AddValueToIdRequest(
+            data_id=data_id,
+            value=value
+        )
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            future = executor.submit(
+                self.__retry,
+                self.__client_stubs[party_id-1].AddValueToId,
+                req)
+        is_ok, response = QMPCServer.__futures_result(
+            [future], enable_progress_bar=False)
+        return {"is_ok": is_ok}
