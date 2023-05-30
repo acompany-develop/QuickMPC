@@ -8,9 +8,10 @@ from quickmpc.qmpc_server import QMPCServer
 
 def send_share_param(secrets=[[1, 2, 3]],
                      schema=["attr1", "attr2", "attr3"],
+                     row_process=lambda r: r,
                      matching_column=1,
                      piece_size=1_000_000):
-    return (secrets, schema, matching_column, piece_size)
+    return (secrets, schema, row_process, matching_column, piece_size)
 
 
 def execute_computation_param(method_id=1,

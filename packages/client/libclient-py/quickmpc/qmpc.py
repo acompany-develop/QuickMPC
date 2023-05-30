@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass, field, InitVar
-from typing import Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
@@ -39,6 +39,10 @@ class QMPC:
 
     def send_share_from_csv_file(self,
                                  filename: str,
+                                 row_process:
+                                 Callable[[List[Union[float, int]]],
+                                          List[Union[float, int]]]
+                                 = lambda r: r,
                                  matching_column: int = 1,
                                  piece_size: int = 1_000_000) -> Dict:
         secrets, schema = parse_csv(filename, matching_column)
@@ -46,10 +50,14 @@ class QMPC:
                     f"[filename]='{filename}'"
                     f"[matching ID name]={schema[matching_column-1]}")
         return self.__qmpc_server.send_share(
-            secrets, schema, matching_column, piece_size)
+            secrets, schema, row_process, matching_column, piece_size)
 
     def send_share_from_csv_data(self,
                                  data: List[List[str]],
+                                 row_process:
+                                 Callable[[List[Union[float, int]]],
+                                          List[Union[float, int]]]
+                                 = lambda r: r,
                                  matching_column: int = 1,
                                  piece_size: int = 1_000_000) -> Dict:
         secrets, schema = parse(data, matching_column)
@@ -57,7 +65,7 @@ class QMPC:
                     f"[secrets size]={len(secrets)}x{len(secrets[0])} "
                     f"[matching ID name]={schema[matching_column-1]}")
         return self.__qmpc_server.send_share(
-            secrets, schema, matching_column, piece_size)
+            secrets, schema, row_process, matching_column, piece_size)
 
     def delete_share(self, data_ids: List[str]) -> Dict:
         logger.info("delete_share request. "

@@ -220,6 +220,8 @@ class QMPCServer:
     @send_share.register(Dim3)
     def __send_share_impl(self, secrets: List,
                           schema: List[Union[str, Schema]],
+                          row_process: Callable[[List[Union[float, int]]],
+                                                List[Union[float, int]]],
                           matching_column: int,
                           piece_size: int) -> Dict:
         if piece_size < 1000 or piece_size > 1_000_000:
@@ -240,6 +242,7 @@ class QMPCServer:
         """ Shareをコンテナに送信 """
         sorted_secrets = sorted(
             secrets, key=lambda row: row[matching_column - 1])
+        sorted_secrets = [row_process(row) for row in sorted_secrets]
         # pieceに分けてシェア化
         pieces: list = MakePiece.make_pieces(
             sorted_secrets, int(piece_size / 10))
