@@ -239,7 +239,7 @@ func TestGetSharePiece(t *testing.T) {
 		})
 	}
 
-	// initialize()
+	initialize()
 }
 
 /* GetSchema(string) ([]string, error) */
