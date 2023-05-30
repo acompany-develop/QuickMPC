@@ -3,5 +3,12 @@
   "extends": ["config:base"],
   "timezone": "Asia/Tokyo",
   "schedule": ["after 10pm and before 8am every weekday", "every weekend"],
-  "rebaseWhen": "never"
+  "rebaseWhen": "never",
+
+  "packageRules": [
+    {
+      "matchPackagePatterns": ["**/QuickMPC/**"],
+      "enabled": false
+    }
+  ]
 }
