@@ -17,9 +17,9 @@ def Proto_repositories():
     if not native.existing_rule("com_github_grpc_grpc"):
         http_archive(
             name = "com_github_grpc_grpc",
-            sha256 = "e18b16f7976aab9a36c14c38180f042bb0fd196b75c9fd6a20a2b5f934876ad6",
+            sha256 = "9cf1a69a921534ac0b760dcbefb900f3c2f735f56070bf0536506913bb5bfd74",
             urls = [
-                "https://github.com/grpc/grpc/archive/refs/tags/v1.45.2.tar.gz",
+                "https://github.com/grpc/grpc/archive/refs/tags/v1.55.0.tar.gz",
             ],
-            strip_prefix = "grpc-1.45.2",
+            strip_prefix = "grpc-1.55.0",
         )
