@@ -5,7 +5,7 @@ go 1.18
 replace github.com/acompany-develop/QuickMPC/proto/engine_to_bts => ./../proto/engine_to_bts
 
 require (
-	github.com/acompany-develop/QuickMPC/proto/engine_to_bts v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/engine_to_bts 5b599820a09a
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
