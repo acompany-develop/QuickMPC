@@ -7,79 +7,9 @@ import (
 	"reflect"
 	"testing"
 
-	m2db "github.com/acompany-develop/QuickMPC/packages/server/manage_container/client/manage_to_db"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
-	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
-	pb_m2c "github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container"
 )
-
-// Test用のDbGとCCのmock
-type localDb struct{}
-type localCC struct{}
-type localMC struct{}
-type localTokenCA struct{}
-
-func (localDb) GetSharePieceSize(string) (int32, error) {
-	return 0, nil
-}
-func (localDb) InsertShares(string, []*pb_types.Schema, int32, string, string, int32) error {
-	return nil
-}
-func (localDb) DeleteShares([]string) error {
-	return nil
-}
-func (localDb) GetSharePiece(string, int32) (m2db.Share, error) {
-	return m2db.Share{}, nil
-}
-func (localDb) GetSchema(string) ([]*pb_types.Schema, error) {
-	return []*pb_types.Schema{{Name: "attr1"}}, nil
-}
-func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
-	return &pb_types.JobErrorInfo{What: "test"}, nil
-}
-func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
-	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
-}
-func (localDb) CreateStatusFile(string) error {
-	return nil
-}
-func (localDb) DeleteStatusFile(string) error {
-	return nil
-}
-func (localDb) GetDataList() (string, error) {
-	return "result", nil
-}
-func (localCC) ExecuteComputation(*pb_m2c.ExecuteComputationRequest) (string, int32, error) {
-	return "", 0, nil
-}
-func (localCC) CheckProgress(string) (*pb_types.JobProgress, error) {
-	return nil, nil
-}
-func (localMC) DeleteShares(string) error {
-	return nil
-}
-func (localMC) Sync(string) error {
-	return nil
-}
-func (localMC) CreateStatusFile(string) error {
-	return nil
-}
-func (localMC) DeleteStatusFile(string) error {
-	return nil
-}
-func (localDb) GetElapsedTime(string) (float64, error) {
-	return 0, nil
-}
-func (localDb) GetMatchingColumn(string) (int32, error) {
-	return 1, nil
-}
-func (localTokenCA) AuthorizeDep(token string) error {
-	return nil
-}
-func (localTokenCA) AuthorizeDemo(token string) error {
-	return nil
-}
 
 // Test用のサーバを起動(libClient)
 var s *utils.TestServer
@@ -98,7 +28,7 @@ func TestGetSchema(t *testing.T) {
 	client := pb.NewLibcToManageClient(conn)
 
 	result, err := client.GetSchema(context.Background(), &pb.GetSchemaRequest{
-		DataId: "id", Token: "token"})
+		DataId: exist_data_id, Token: "token"})
 
 	if err != nil {
 		t.Fatal(err)
@@ -119,7 +49,7 @@ func TestExecuteComputation(t *testing.T) {
 	_, err := client.ExecuteComputation(context.Background(), &pb.ExecuteComputationRequest{
 		MethodId: 1,
 		Table: &pb.JoinOrder{
-			DataIds: []string{"id"},
+			DataIds: []string{exist_data_id},
 			Join:    []int32{},
 			Index:   []int32{1}},
 		Arg: &pb.Input{
@@ -140,7 +70,7 @@ func TestExecuteComputationFailedDifferentIdColumn(t *testing.T) {
 	_, err := client.ExecuteComputation(context.Background(), &pb.ExecuteComputationRequest{
 		MethodId: 1,
 		Table: &pb.JoinOrder{
-			DataIds: []string{"id"},
+			DataIds: []string{exist_data_id},
 			Join:    []int32{},
 			Index:   []int32{2}},
 		Arg: &pb.Input{
