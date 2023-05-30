@@ -146,7 +146,7 @@ func (c Client) GetSharePiece(dataID string, pieceID int32) (Share, error) {
 	defer ls.Unlock(path)
 
 	if !isExists(path) {
-		return Share{}, errors.New("重複データ登録エラー: " + dataID + "は既に登録されています．")
+		return Share{}, fmt.Errorf("データ未登録エラー: %sは登録されていません．", dataID)
 	}
 
 	raw, errRead := ioutil.ReadFile(path)

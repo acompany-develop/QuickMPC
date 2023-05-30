@@ -44,7 +44,6 @@ func (localDb) InsertShares(dataID string, schema []*pb_types.Schema, pieceID in
 		Value:  sharesJson,
 		SentAt: sentAt,
 	}
-	fmt.Println(share)
 	_, ok := db[dataID]
 	if !ok {
 		db[dataID] = map[int32]m2db.Share{}

@@ -20,7 +20,9 @@ func TestAddValueToCol(t *testing.T) {
 			data: m2db.Share{Value: [][]string{{"1", "2"}, {"3", "4"}},
 				Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
 			value: []string{"10", "100"},
-			expected: m2db.Share{Value: [][]string{{"11.00000000000000000000000000000000000000000000000000", "2"}, {"103.00000000000000000000000000000000000000000000000000", "4"}},
+			expected: m2db.Share{DataID: "TestAddValueToColColumn1", Value: [][]string{
+				{"11.00000000000000000000000000000000000000000000000000", "2"},
+				{"103.00000000000000000000000000000000000000000000000000", "4"}},
 				Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
 		},
 		"Column2": {
@@ -28,7 +30,9 @@ func TestAddValueToCol(t *testing.T) {
 			data: m2db.Share{Value: [][]string{{"1", "2"}, {"3", "4"}},
 				Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
 			value: []string{"10", "100"},
-			expected: m2db.Share{Value: [][]string{{"1", "12.00000000000000000000000000000000000000000000000000"}, {"3", "104.00000000000000000000000000000000000000000000000000"}},
+			expected: m2db.Share{DataID: "TestAddValueToColColumn2", Value: [][]string{
+				{"1", "12.00000000000000000000000000000000000000000000000000"},
+				{"3", "104.00000000000000000000000000000000000000000000000000"}},
 				Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
 		},
 	}
@@ -70,28 +74,28 @@ func TestAddValueToColPiece(t *testing.T) {
 			dataID: "TestAddValueToColPieceColumn1",
 			data: []m2db.Share{
 				{Value: [][]string{{"1", "2"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
-				{Value: [][]string{{"3", "4"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
-				{Value: [][]string{{"5", "6"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
+				{Value: [][]string{{"3", "4"}}, Meta: m2db.ShareMeta{PieceID: 1, MatchingColumn: 1}},
+				{Value: [][]string{{"5", "6"}}, Meta: m2db.ShareMeta{PieceID: 2, MatchingColumn: 1}},
 			},
 			value: []string{"10", "100", "1000"},
 			expected: []m2db.Share{
-				{Value: [][]string{{"11.00000000000000000000000000000000000000000000000000", "2"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
-				{Value: [][]string{{"103.00000000000000000000000000000000000000000000000000", "4"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
-				{Value: [][]string{{"1005.00000000000000000000000000000000000000000000000000", "6"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
+				{DataID: "TestAddValueToColPieceColumn1", Value: [][]string{{"11.00000000000000000000000000000000000000000000000000", "2"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
+				{DataID: "TestAddValueToColPieceColumn1", Value: [][]string{{"103.00000000000000000000000000000000000000000000000000", "4"}}, Meta: m2db.ShareMeta{PieceID: 1, MatchingColumn: 1}},
+				{DataID: "TestAddValueToColPieceColumn1", Value: [][]string{{"1005.00000000000000000000000000000000000000000000000000", "6"}}, Meta: m2db.ShareMeta{PieceID: 2, MatchingColumn: 1}},
 			},
 		},
 		"Column2": {
 			dataID: "TestAddValueToColPieceColumn2",
 			data: []m2db.Share{
 				{Value: [][]string{{"1", "2"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
-				{Value: [][]string{{"3", "4"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
-				{Value: [][]string{{"5", "6"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
+				{Value: [][]string{{"3", "4"}}, Meta: m2db.ShareMeta{PieceID: 1, MatchingColumn: 2}},
+				{Value: [][]string{{"5", "6"}}, Meta: m2db.ShareMeta{PieceID: 2, MatchingColumn: 2}},
 			},
 			value: []string{"10", "100", "1000"},
 			expected: []m2db.Share{
-				{Value: [][]string{{"1", "12.00000000000000000000000000000000000000000000000000"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
-				{Value: [][]string{{"3", "104.00000000000000000000000000000000000000000000000000"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
-				{Value: [][]string{{"5", "1006.00000000000000000000000000000000000000000000000000"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
+				{DataID: "TestAddValueToColPieceColumn2", Value: [][]string{{"1", "12.00000000000000000000000000000000000000000000000000"}}, Meta: m2db.ShareMeta{PieceID: 0, MatchingColumn: 2}},
+				{DataID: "TestAddValueToColPieceColumn2", Value: [][]string{{"3", "104.00000000000000000000000000000000000000000000000000"}}, Meta: m2db.ShareMeta{PieceID: 1, MatchingColumn: 2}},
+				{DataID: "TestAddValueToColPieceColumn2", Value: [][]string{{"5", "1006.00000000000000000000000000000000000000000000000000"}}, Meta: m2db.ShareMeta{PieceID: 2, MatchingColumn: 2}},
 			},
 		},
 	}

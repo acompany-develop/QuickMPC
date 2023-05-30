@@ -39,20 +39,28 @@ func (p processer) addValueToIDCol(dataID string, value []string) error {
 	matchingColumn := sampleShare.Meta.MatchingColumn
 	for pieceID := 0; pieceID < int(pieceSize); pieceID++ {
 		share, _ := p.m2dbclient.GetSharePiece(dataID, int32(pieceID))
-		for i, row := range share.Value {
+		shareValue := [][]string{}
+		for _, row := range share.Value {
 			a, _ := new(big.Rat).SetString(row[matchingColumn-1])
 			b, _ := new(big.Rat).SetString(value[vi])
 			sum := new(big.Rat).Add(a, b).FloatString(50)
-			share.Value[i][matchingColumn-1] = sum
+			row[matchingColumn-1] = sum
+			shareValue = append(shareValue, row)
 			vi++
 		}
 
-		shareJsonStr, err := utils.ConvertToJsonstr(share)
+		shareJsonStr, err := utils.ConvertToJsonstr(shareValue)
 		if err != nil {
 			return err
 		}
-		p.m2dbclient.DeleteShares([]string{dataID})
-		p.m2dbclient.InsertShares(dataID, sampleShare.Meta.Schema, int32(pieceID), shareJsonStr, sampleShare.SentAt, matchingColumn)
+		errDelete := p.m2dbclient.DeleteShares([]string{dataID})
+		if errDelete != nil {
+			return errDelete
+		}
+		errInsert := p.m2dbclient.InsertShares(dataID, sampleShare.Meta.Schema, int32(pieceID), shareJsonStr, sampleShare.SentAt, matchingColumn)
+		if errInsert != nil {
+			return errInsert
+		}
 	}
 	return nil
 }
