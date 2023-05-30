@@ -147,3 +147,19 @@ func TestGetElapsedTime(t *testing.T) {
 		t.Fatal("GetElapsedTime Failed")
 	}
 }
+
+func TestAddValueToId(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewLibcToManageClient(conn)
+
+	_, err := client.AddValueToId(context.Background(), &pb.AddValueToIdRequest{
+		DataId: exist_data_id,
+		Value:  []string{"1", "2"},
+		Token:  "token_dep",
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+}

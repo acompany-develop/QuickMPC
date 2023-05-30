@@ -328,6 +328,15 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 	}, nil
 }
 
+func (s *server) AddValueToId(ctx context.Context, in *pb.AddValueToIdRequest) (*empty.Empty, error) {
+	AppLogger.Info("Add Value To Id;")
+	AppLogger.Info("dataID: " + in.GetDataId())
+
+	p := processer{s.m2dbclient}
+	err := p.addValueToIDCol(in.GetDataId(), in.GetValue())
+	return &empty.Empty{}, err
+}
+
 // LibtoMCサーバ起動
 func RunServer() {
 	config, err := utils.GetConfig()
