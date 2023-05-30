@@ -31,6 +31,7 @@ type LibcToManageClient interface {
 	GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error)
 	GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error)
+	AddValueToId(ctx context.Context, in *AddValueToIdRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type libcToManageClient struct {
@@ -136,6 +137,15 @@ func (c *libcToManageClient) GetJobErrorInfo(ctx context.Context, in *GetJobErro
 	return out, nil
 }
 
+func (c *libcToManageClient) AddValueToId(ctx context.Context, in *AddValueToIdRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/AddValueToId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LibcToManageServer is the server API for LibcToManage service.
 // All implementations must embed UnimplementedLibcToManageServer
 // for forward compatibility
@@ -148,6 +158,7 @@ type LibcToManageServer interface {
 	GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error)
 	GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error)
+	AddValueToId(context.Context, *AddValueToIdRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedLibcToManageServer()
 }
 
@@ -178,6 +189,9 @@ func (UnimplementedLibcToManageServer) GetElapsedTime(context.Context, *GetElaps
 }
 func (UnimplementedLibcToManageServer) GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJobErrorInfo not implemented")
+}
+func (UnimplementedLibcToManageServer) AddValueToId(context.Context, *AddValueToIdRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddValueToId not implemented")
 }
 func (UnimplementedLibcToManageServer) mustEmbedUnimplementedLibcToManageServer() {}
 
@@ -339,6 +353,24 @@ func _LibcToManage_GetJobErrorInfo_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LibcToManage_AddValueToId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddValueToIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LibcToManageServer).AddValueToId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libctomanage.LibcToManage/AddValueToId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LibcToManageServer).AddValueToId(ctx, req.(*AddValueToIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LibcToManage_ServiceDesc is the grpc.ServiceDesc for LibcToManage service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -373,6 +405,10 @@ var LibcToManage_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetJobErrorInfo",
 			Handler:    _LibcToManage_GetJobErrorInfo_Handler,
+		},
+		{
+			MethodName: "AddValueToId",
+			Handler:    _LibcToManage_AddValueToId_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
