@@ -89,7 +89,7 @@ ENV STAGE=dev
 WORKDIR /QuickMPC
 
 # image for deploy
-FROM alpine:3.16.2 as dep-runner
+FROM alpine:3.18.0 as dep-runner
 ENV STAGE=dep
 RUN apk update && \
     apk add --no-cache bash && \

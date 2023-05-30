@@ -92,7 +92,7 @@ RUN --mount=type=cache,id=debug:/root/.cache,target=/root/.cache \
 FROM builder as dev
 
 # image for deploy
-FROM alpine:3.16.2 as dep-runner
+FROM alpine:3.18.0 as dep-runner
 RUN apk update && \
     apk add curl && \
     apk add --no-cache bash && \

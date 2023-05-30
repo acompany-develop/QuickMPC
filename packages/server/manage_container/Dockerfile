@@ -72,7 +72,7 @@ FROM builder as dev
 WORKDIR /QuickMPC
 
 # image for deploy
-FROM alpine:3.16.2 as dep-runner
+FROM alpine:3.18.0 as dep-runner
 RUN apk update && \
   apk add --no-cache bash && \
   # CVE-2022-0778 対策
