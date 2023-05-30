@@ -12,7 +12,7 @@ replace (
 require (
 	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container v0.0.0-00010101000000-000000000000
-	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container 5b599820a09a
 	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container v0.0.0-00010101000000-000000000000
 	github.com/golang/protobuf v1.5.0
 	github.com/google/uuid v1.1.2
