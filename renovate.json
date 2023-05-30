@@ -6,7 +6,7 @@
   "automerge": true,
   "packageRules": [
     {
-      "packagePatterns": ["**/QuickMPC/**"],
+      "matchPackagePatterns": ["**/QuickMPC/**"],
       "automerge": false
     }
   ],
