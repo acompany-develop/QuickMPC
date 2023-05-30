@@ -8,9 +8,10 @@ from utils import qmpc
 
 def csv_data_param(secrets=[[1, 2, 3], [4, 5, 6]],
                    schema=["a", "b", "c"],
+                   row_process=lambda r: r,
                    matching_column=1,
                    piece_size=1_000_000):
-    return ([schema]+secrets, matching_column, piece_size)
+    return ([schema]+secrets, row_process, matching_column, piece_size)
 
 
 @pytest.mark.parametrize(
@@ -27,6 +28,9 @@ def csv_data_param(secrets=[[1, 2, 3], [4, 5, 6]],
 
         # small piece_size case
         (csv_data_param(piece_size=1_000)),
+
+        # row process running case
+        (csv_data_param(row_process=lambda r: [x+1 for x in r])),
     ]
 )
 def test_send_share_from_csv_data(param: tuple):
