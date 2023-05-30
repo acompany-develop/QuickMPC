@@ -22,6 +22,9 @@ var db = map[string]map[int32]m2db.Share{}
 const exist_data_id = "exist_data_id"
 
 func (localDb) GetSharePieceSize(dataID string) (int32, error) {
+	if dataID == exist_data_id {
+		return 1, nil
+	}
 	mp, _ := db[dataID]
 	return int32(len(mp)), nil
 }
@@ -54,7 +57,7 @@ func (localDb) DeleteShares([]string) error {
 }
 func (localDb) GetSharePiece(dataID string, pieceID int32) (m2db.Share, error) {
 	if dataID == exist_data_id {
-		return m2db.Share{Meta: m2db.ShareMeta{Schema: []*pb_types.Schema{{Name: "attr1"}}, MatchingColumn: 1}}, nil
+		return m2db.Share{Value: [][]string{{"1"}, {"2"}}, Meta: m2db.ShareMeta{Schema: []*pb_types.Schema{{Name: "attr1"}}, MatchingColumn: 1}}, nil
 	}
 	mp, _ := db[dataID]
 	share, ok := mp[pieceID]

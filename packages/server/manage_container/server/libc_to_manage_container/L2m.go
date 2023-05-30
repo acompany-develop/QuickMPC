@@ -127,7 +127,7 @@ func (s *server) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.Ge
 	}
 
 	return &pb.GetSchemaResponse{
-		Schema:  schema,
+		Schema: schema,
 	}, nil
 }
 
@@ -342,6 +342,15 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 	return &pb.GetJobErrorInfoResponse{
 		JobErrorInfo: errInfo,
 	}, nil
+}
+
+func (s *server) AddValueToId(ctx context.Context, in *pb.AddValueToIdRequest) (*empty.Empty, error) {
+	AppLogger.Info("Add Value To Id;")
+	AppLogger.Info("dataID: " + in.GetDataId())
+
+	p := processer{s.m2dbclient}
+	err := p.addValueToIDCol(in.GetDataId(), in.GetValue())
+	return &empty.Empty{}, err
 }
 
 // LibtoMCサーバ起動
