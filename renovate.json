@@ -3,5 +3,13 @@
   "extends": [
     "config:base"
   ],
-  "automerge": true
+  "automerge": true,
+  "packageRules": [
+    {
+      "packagePatterns": ["**/QuickMPC/**"],
+      "automerge": false
+    }
+  ],
+  "prHourlyLimit":0,
+  "prConcurrentLimit":0
 }
