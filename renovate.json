@@ -4,12 +4,6 @@
     "config:base"
   ],
   "automerge": true,
-  "packageRules": [
-    {
-      "matchPackagePatterns": ["**/QuickMPC/**"],
-      "automerge": false
-    }
-  ],
   "prHourlyLimit":0,
   "prConcurrentLimit":0
 }
