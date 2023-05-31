@@ -5,7 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
-grpcio-tools = "==1.46.3"
+grpcio-tools = "==1.54.2"
 pynacl = "*"
 tqdm = "*"
 grpcio-status = "==1.46.3"
