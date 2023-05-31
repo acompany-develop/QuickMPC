@@ -33,7 +33,7 @@ services:
   envoy:
     container_name: manage_envoy_container1
     tty: true # 起動しっぱなし
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - type: bind
         source: ./envoy.yaml

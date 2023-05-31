@@ -29,7 +29,7 @@ services:
       - 50020
 
   bts_envoy:
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ./config/beaver_triple_service/envoy.yaml
@@ -49,7 +49,7 @@ services:
 
   cc_envoy:
     container_name: compute_envoy_container
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ./config/computation_container/envoy.yaml
@@ -102,7 +102,7 @@ services:
 
   mc_envoy:
     container_name: manage_envoy_container
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ./config/manage_container/envoy.yaml

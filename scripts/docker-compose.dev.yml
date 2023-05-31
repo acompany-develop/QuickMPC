@@ -26,7 +26,7 @@ services:
     ports:
       - 0.0.0.0:60020:50020
   dev_bts_envoy:
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ../config/beaver_triple_service/envoy.yaml
@@ -42,7 +42,7 @@ services:
     tty: true
   dev_cc_envoy1:
     container_name: compute_envoy_container1
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ../config/computation_container/compute1/envoy.yaml
@@ -57,7 +57,7 @@ services:
     tty: true
   dev_cc_envoy2:
     container_name: compute_envoy_container2
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ../config/computation_container/compute2/envoy.yaml
@@ -72,7 +72,7 @@ services:
     tty: true
   dev_cc_envoy3:
     container_name: compute_envoy_container3
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ../config/computation_container/compute3/envoy.yaml
@@ -189,7 +189,7 @@ services:
     tty: true
   dev_mc_envoy1:
     container_name: manage_envoy_container1
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ../config/manage_container/manage1/envoy.yaml
@@ -206,7 +206,7 @@ services:
     tty: true
   dev_mc_envoy2:
     container_name: manage_envoy_container2
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ../config/manage_container/manage2/envoy.yaml
@@ -223,7 +223,7 @@ services:
     tty: true
   dev_mc_envoy3:
     container_name: manage_envoy_container3
-    image: envoyproxy/envoy:v1.17.1
+    image: envoyproxy/envoy:v1.26.1
     volumes:
       - target: /etc/envoy/envoy.yaml
         source: ../config/manage_container/manage3/envoy.yaml
