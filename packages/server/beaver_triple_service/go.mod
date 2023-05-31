@@ -6,7 +6,7 @@ replace github.com/acompany-develop/QuickMPC/proto/engine_to_bts => ./../proto/e
 
 require (
 	github.com/acompany-develop/QuickMPC/proto/engine_to_bts v0.0.0-00010101000000-000000000000
-	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/google/uuid v1.3.0
 	github.com/grpc-ecosystem/go-grpc-middleware v1.3.0
 	go.uber.org/zap v1.21.0
