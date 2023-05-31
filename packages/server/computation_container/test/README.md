@@ -19,7 +19,7 @@ cc_library(
     srcs = [
         "computation_test.cpp"
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     hdrs = [
         "computation_test.hpp",
     ],

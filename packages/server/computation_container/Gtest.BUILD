@@ -5,10 +5,10 @@ cc_library(
         exclude = ["src/gtest-all.cc"]
     ),
     hdrs = glob([
-        "include/**/*.h",
-        "src/*.h"
+        "googletest/include/**/*.h",
+        "googletest/src/*.h"
     ]),
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     linkopts = ["-pthread"],
     visibility = ["//visibility:public"],
 )
