@@ -227,9 +227,8 @@ jobs:
       - name: Check Port
         if: ${{ failure() }}
         run: |
-          lsof -i:50001
-          lsof -i:50002
-          lsof -i:50003
+          sudo apt-get install lsof
+          lsof -i:50001,50002,50003
 
   medium_test_container_up:
     runs-on: ubuntu-latest
@@ -262,9 +261,8 @@ jobs:
       - name: Check Port
         if: ${{ failure() }}
         run: |
-          lsof -i:50001
-          lsof -i:50002
-          lsof -i:50003
+          sudo apt-get install lsof
+          lsof -i:50001,50002,50003
 
   medium_test_container_restart:
     runs-on: ubuntu-latest
@@ -308,9 +306,8 @@ jobs:
       - name: Check Port
         if: ${{ failure() }}
         run: |
-          lsof -i:50001
-          lsof -i:50002
-          lsof -i:50003
+          sudo apt-get install lsof
+          lsof -i:50001,50002,50003
 
   medium_test_container_down:
     runs-on: ubuntu-latest
@@ -353,9 +350,8 @@ jobs:
       - name: Check Port
         if: ${{ failure() }}
         run: |
-          lsof -i:50001
-          lsof -i:50002
-          lsof -i:50003
+          sudo apt-get install lsof
+          lsof -i:50001,50002,50003
 
   medium_test_container:
     runs-on: ubuntu-latest
