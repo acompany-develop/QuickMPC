@@ -7,7 +7,7 @@
 
   "packageRules": [
     {
-      "matchPackagePatterns": ["**/QuickMPC/**"],
+      "matchPackagePatterns": ["^github.com/acompany-develop/QuickMPC"],
       "enabled": false
     }
   ]
