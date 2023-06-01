@@ -2,7 +2,7 @@ cc_library(
     name = "main",
     srcs = glob(
         ["googletest/src/*.cc"],
-        exclude = ["src/gtest-all.cc"]
+        exclude = ["googletest/src/gtest-all.cc"]
     ),
     hdrs = glob([
         "googletest/include/**/*.h",
