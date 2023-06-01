@@ -3,7 +3,7 @@ cc_library(
     srcs = [
         "computation_test.cpp"
     ],
-    copts = ["-Iexternal/gtest/include","-DDEBUG"],
+    copts = ["-Iexternal/gtest/googletest/include","-DDEBUG"],
     hdrs = [
         "computation_test.hpp",
     ],

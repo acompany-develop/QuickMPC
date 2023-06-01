@@ -4,7 +4,7 @@ cc_library(
     srcs = [
         "share_test.hpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//random:random",
@@ -57,7 +57,7 @@ cc_library(
     srcs = [
         "read_triple_from_bts_test.hpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//triple_handler:triple_handler",

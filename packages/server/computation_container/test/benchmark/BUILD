@@ -14,7 +14,7 @@ cc_library(
     srcs = [
         "share_benchmark.hpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//random:random",

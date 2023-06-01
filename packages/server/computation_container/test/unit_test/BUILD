@@ -3,7 +3,7 @@ cc_test(
     srcs = [
         "math_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "@com_github_grpc_grpc//:grpc++",
@@ -21,7 +21,7 @@ cc_test(
     srcs = [
         "share_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "@com_github_grpc_grpc//:grpc++",
@@ -37,7 +37,7 @@ cc_test(
     srcs = [
         "random_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//random:random",
@@ -50,7 +50,7 @@ cc_test(
     srcs = [
         "ctoc_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//server/computation_to_computation_container:server",
@@ -68,7 +68,7 @@ cc_test(
     srcs = [
         "fixed_point_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//fixed_point:fixed_point",
@@ -81,7 +81,7 @@ cc_test(
     srcs = [
         "transaction_queue_test.cpp"
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
        "//transaction_queue:transaction_queue"
@@ -93,7 +93,7 @@ cc_test(
     srcs = [
         "csprng_test.cpp"
     ],
-    copts = ["-Iexternal/gtest/include",],
+    copts = ["-Iexternal/gtest/googletest/include",],
     deps = [
         "@gtest//:main",
         "//random:csprng",
@@ -106,7 +106,7 @@ cc_test(
     srcs = [
         "log_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//logging:log",
@@ -119,7 +119,7 @@ cc_test(
     srcs = [
         "ctodb_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//client/computation_to_db:client",
@@ -136,7 +136,7 @@ cc_test(
     srcs = [
         "value_table_test.cpp",
     ],
-    copts = ["-Iexternal/gtest/include"],
+    copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
         "//value_table:valuetable",
