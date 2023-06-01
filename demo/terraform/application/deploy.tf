@@ -40,6 +40,9 @@ resource "null_resource" "setup" {
 # Prepare deploy
 # ---------------------------
 resource "null_resource" "prepare_deploy" {
+    triggers = {
+        image_tag = "${var.docker_image_tag}"
+    }
     count        = local.instance_count
     provisioner "remote-exec" {
         connection {

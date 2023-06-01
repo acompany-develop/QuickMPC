@@ -1,11 +1,12 @@
 #!/bin/bash
+set -e
 # ./prepare_deploy.sh party_id party_str image_tag
 party_id=$1           # パーティの番号を引数から取得
 party_str=$2          # パーティのipリストを引数から取得
 image_tag=$3          # containerイメージのタグを引数から取得
 
 # 0-indexを1-indexに変換(terraformのcount.indexが0-indexのため引数は0-index)
-((party_id++))
+party_id=$((party_id+=1))
 # パーティのリストをカンマで区切って配列に格納
 party_list=(${party_str//,/ })
 
