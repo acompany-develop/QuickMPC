@@ -21,9 +21,14 @@ variable "project_id" {
   default = "hoge-huga-123456"
 }
 
-variable "zone" {
+variable "region" {
   # NOTE: リソースを立ち上げたいリージョンを設定する
-  default = "asia-east2-a"
+  default = "asia-east2"
+}
+
+variable "zone" {
+  # NOTE: リソースを立ち上げたいゾーンを設定する
+  default = "a"
 }
 
 variable "mechine_type" {
@@ -39,6 +44,11 @@ variable "disk_image" {
 variable "disk_type" {
   # NOTE: https://cloud.google.com/compute/docs/disks?hl=ja#disk-types を参照
   default = "pd-ssd"
+}
+
+variable "disk_size" {
+  # NOTE: GB単位
+  default = "10"
 }
 
 variable "subnet_cidr_range" {

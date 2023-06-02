@@ -1,7 +1,18 @@
 locals {
-  party_num = local.instance_count - 1
-  bts_id = local.instance_count - 1
-  ip_str = join(",", local.qmpc_instance_gips)
+    # party_sizeがdefaultのままであればlocal.instance_countを使う
+    n_parties = var.party_size == -1 ? local.instance_count : var.party_size
+
+    # btsを除いたパーティ数
+    party_num = local.n_parties - 1
+
+    # btsサーバのindex
+    bts_id = local.n_parties - 1
+
+    # btsを含むサーバのipのタプル
+    party_ip = slice(local.qmpc_instance_gips, 0, local.n_parties)
+
+    # サーバのipを,で区切った文字列
+    ip_str = join(",", local.party_ip)
 }
 
 # ---------------------------
@@ -43,7 +54,7 @@ resource "null_resource" "prepare_deploy" {
     triggers = {
         image_tag = "${var.docker_image_tag}"
     }
-    count        = local.instance_count
+    count        = local.n_parties
     provisioner "remote-exec" {
         connection {
             host        = local.qmpc_instance_gips[count.index]
@@ -85,7 +96,7 @@ resource "null_resource" "sent_jwt" {
 # deploy QuickMPC
 # ---------------------------
 resource "null_resource" "deploy_quickmpc" {
-    count = local.instance_count
+    count = local.n_parties
     provisioner "remote-exec" {
         connection {
             host        = local.qmpc_instance_gips[count.index]

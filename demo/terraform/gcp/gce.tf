@@ -24,13 +24,23 @@ resource "local_file" "public_key_pem" {
 }
 
 # ---------------------------
+# static ip address
+# ---------------------------
+resource "google_compute_address" "qmpc_k8s_static_ip" {
+  count      = var.instance_count
+  name       = "${var.instance_name}-static-ip-${count.index}"
+  project    = var.project_id
+  region     = var.region
+}
+
+# ---------------------------
 # Vm instance
 # ---------------------------
 resource "google_compute_instance" "qmpc_k8s_vm" {
   count        = var.instance_count
   name         = "${var.instance_name}-vm-${count.index}"
   machine_type = var.mechine_type
-  zone         = var.zone
+  zone         = "${var.region}-${var.zone}"
 
   tags = [var.instance_name]
 
@@ -38,13 +48,16 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
     initialize_params {
       image = var.disk_image
       type  = var.disk_type
+      size  = var.disk_size
     }
   }
 
   network_interface {
     network    = google_compute_network.qmpc_k8s_vpc.*.self_link[count.index]
     subnetwork = google_compute_subnetwork.qmpc_k8s_sn.*.self_link[count.index]
-    access_config {}
+    access_config {
+      nat_ip = google_compute_address.qmpc_k8s_static_ip.*.address[count.index]
+    }
   }
 
   scheduling {
@@ -55,6 +68,7 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
   }
 
     metadata = {
-      ssh-keys = "${var.gce_ssh_user}:${tls_private_key.qmpc_k8s_keygen.public_key_openssh}"
+      # NOTE: 公開鍵を<protocol> <key-blob> google-sshの形式に変更している
+      ssh-keys = "${var.gce_ssh_user}:${trim(tls_private_key.qmpc_k8s_keygen.public_key_openssh, "\n")} google-ssh"
   }
 }

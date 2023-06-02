@@ -9,3 +9,9 @@ locals {
 variable "docker_image_tag" {
   default = "0.3.8"
 }
+
+variable "party_size" {
+  # NOTE: btsを含めたパーティ数を設定する
+  # NOTE: -1の場合、すべてのインスタンスを用いる
+  default = -1
+}

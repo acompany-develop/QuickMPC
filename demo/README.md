@@ -15,14 +15,25 @@
 ### GCP環境にQuickMPCを立ち上げる場合
 1. `./terraform`ディレクトリ内の[README.md](terraform/README.md)を参照の上、GCP環境を立ち上げる
 2. dockerイメージを設定する <br>
-    この[ページ](https://github.com/acompany-develop/QuickMPC/tags)の最新のtagを[variables.tf](./terraform/application/vaiables.tf)の`docker_image_tag`に設定します。
+    この[ページ](https://github.com/acompany-develop/QuickMPC/tags)の最新のtagを[variable.tf](./terraform/application/variable.tf)の`docker_image_tag`に設定します。
     ```
     ...
     variable "docker_image_tag" {
        default = "{tag}" # {tag}を書き換える
     }
     ```
-3. `./terraform`ディレクトリ内にて以下のコマンドを実行する
+3. party_sizeを設定する(任意) <br>
+    立てたインスタンスの内、QuickMPCのサーバとして使うインスタンス数を[variable.tf](./terraform/application/variable.tf)の`party_size`に設定します。<br>
+    ```
+    ...
+    variable "party_size" {
+        # NOTE: btsを含めたパーティ数を設定する
+        # NOTE: -1の場合、すべてのインスタンスを用いる
+        default = -1
+    }
+    ```
+
+4. `./terraform`ディレクトリ内にて以下のコマンドを実行する
     ```
     make deploy-quickmpc
     ```
