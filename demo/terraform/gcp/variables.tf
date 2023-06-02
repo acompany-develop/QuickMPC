@@ -41,6 +41,11 @@ variable "disk_type" {
   default = "pd-ssd"
 }
 
+variable "disk_size" {
+  # NOTE: GB単位
+  default = "10"
+}
+
 variable "subnet_cidr_range" {
   default = "10.0.1.0/24"
 }

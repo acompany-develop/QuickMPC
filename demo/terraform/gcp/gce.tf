@@ -38,6 +38,7 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
     initialize_params {
       image = var.disk_image
       type  = var.disk_type
+      size  = var.disk_size
     }
   }
 
