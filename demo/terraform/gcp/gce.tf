@@ -24,6 +24,16 @@ resource "local_file" "public_key_pem" {
 }
 
 # ---------------------------
+# static ip address
+# ---------------------------
+resource "google_compute_address" "qmpc_k8s_static_ip" {
+  count      = var.instance_count
+  name       = "${var.instance_name}-static-ip-${count.index}"
+  project    = var.project_id
+  region     = var.region
+}
+
+# ---------------------------
 # Vm instance
 # ---------------------------
 resource "google_compute_instance" "qmpc_k8s_vm" {
@@ -45,7 +55,9 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
   network_interface {
     network    = google_compute_network.qmpc_k8s_vpc.*.self_link[count.index]
     subnetwork = google_compute_subnetwork.qmpc_k8s_sn.*.self_link[count.index]
-    access_config {}
+    access_config {
+      nat_ip = google_compute_address.qmpc_k8s_static_ip.*.address[count.index]
+    }
   }
 
   scheduling {
