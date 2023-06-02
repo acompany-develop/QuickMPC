@@ -30,7 +30,7 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
   count        = var.instance_count
   name         = "${var.instance_name}-vm-${count.index}"
   machine_type = var.mechine_type
-  zone         = var.zone
+  zone         = "${var.region}-${var.zone}"
 
   tags = [var.instance_name]
 
