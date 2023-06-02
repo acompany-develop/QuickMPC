@@ -68,6 +68,7 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
   }
 
     metadata = {
-      ssh-keys = "${var.gce_ssh_user}:${tls_private_key.qmpc_k8s_keygen.public_key_openssh}"
+      # NOTE: 公開鍵を<protocol> <key-blob> google-sshの形式に変更している
+      ssh-keys = "${var.gce_ssh_user}:${trim(tls_private_key.qmpc_k8s_keygen.public_key_openssh, "\n")} google-ssh"
   }
 }
