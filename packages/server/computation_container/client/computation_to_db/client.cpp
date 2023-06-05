@@ -220,6 +220,17 @@ std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
     return schemas;
 }
 
+// matching_columnの取り出し
+int Client::readMatchingColumn(const std::string &data_id) const
+{
+    auto ifs = std::ifstream(shareDbPath / data_id / "0");
+    std::string data;
+    getline(ifs, data);
+    auto json = nlohmann::json::parse(data);
+    auto j = json["meta"]["matching_column"];
+    return j;
+}
+
 // shareDBに対してdataを書き込む
 void Client::writeShareDB(const std::string &data_id, const std::string &data, int piece_id)
 {

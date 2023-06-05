@@ -32,6 +32,7 @@ public:
     // Tableの取り出し
     std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
     std::vector<SchemaType> readSchema(const std::string &) const;
+    int readMatchingColumn(const std::string &data_id) const;
 
     // shareDBに対してdataを書き込む
     void writeShareDB(const std::string &data_id, const std::string &data, int piece_id = 0);

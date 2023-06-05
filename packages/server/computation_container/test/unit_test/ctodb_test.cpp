@@ -201,6 +201,29 @@ TEST(ComputationToDbTest, SuccessReadSchemaTest)
     initialize(data_id);
 }
 
+// matching_columnの取り出し
+// int Client::readMatchingColumn(const std::string &data_id);
+TEST(ComputationToDbTest, SuccessReadMatchingColumn)
+{
+    const std::string data_id = "SuccessReadMatchingColumn";
+    initialize(data_id);
+
+    const std::string data = R"({"meta":{"matching_column":1}})";
+    fs::create_directories("/db/share/" + data_id);
+    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto matching_column = cc_to_db->readMatchingColumn(data_id);
+
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
+    auto expected = 1;
+    EXPECT_EQ(expected, matching_column);
+
+    initialize(data_id);
+}
+
 // Job を DB に新規登録する
 // void Client::registerJob(const std::string &job_uuid, const int &status);
 TEST(ComputationToDbTest, SuccessRregisterJobTest)
