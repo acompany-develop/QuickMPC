@@ -93,6 +93,7 @@ class TableWriter
 {
     int current_size;
     int piece_id;
+    int matching_column;
     std::vector<std::vector<std::string>> piece_data;
     nlohmann::json json_schemas;
 
@@ -104,6 +105,7 @@ public:
 
     void write();
 
+    void addMatchingColumn(int);
     void emplace(const std::vector<std::string> &);
     void emplace(const std::vector<SchemaType> &);
 };

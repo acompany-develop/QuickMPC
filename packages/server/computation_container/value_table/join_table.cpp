@@ -319,6 +319,7 @@ std::string writeVJoinTable(
     // tableをpieceごとに保存する機構
     const std::string new_data_id = joinDataId(table1, table2, 1);
     auto writer = TableWriter(new_data_id);
+    writer.addMatchingColumn(table1.getMatchinColumnNumber());
 
     // schemasを構築
     auto new_schemas = std::vector<SchemaType>();
@@ -411,6 +412,7 @@ std::string writeHJoinTable(
     // tableをpieceごとに保存する機構
     const std::string new_data_id = joinDataId(table1, table2, 1);
     auto writer = TableWriter(new_data_id);
+    writer.addMatchingColumn(table1.getMatchinColumnNumber());
 
     // schemasを構築
     auto new_schemas = std::vector<SchemaType>();

@@ -398,6 +398,7 @@ TEST(ComputationToDbTest, SuccessTableWriteTest)
 
     qmpc::ComputationToDb::TableWriter writer(data_id);
 
+    writer.addMatchingColumn(1);
     writer.emplace(schema);
     for (const auto& row : table)
     {
@@ -409,7 +410,7 @@ TEST(ComputationToDbTest, SuccessTableWriteTest)
     std::string data;
     getline(ifs, data);
     std::string true_data =
-        R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
+        R"({"meta":{"matching_column":1,"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
         R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})";
     EXPECT_EQ(true_data, data);
     initialize(data_id);
@@ -428,6 +429,7 @@ TEST(ComputationToDbTest, SuccessTableWritePieceTest)
 
     qmpc::ComputationToDb::TableWriter writer(data_id, 4);
 
+    writer.addMatchingColumn(1);
     writer.emplace(schema);
     for (const auto& row : table)
     {
@@ -436,10 +438,10 @@ TEST(ComputationToDbTest, SuccessTableWritePieceTest)
     writer.write();
 
     std::vector<std::string> true_data = {
-        R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
+        R"({"meta":{"matching_column":1,"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
         R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})",
 
-        R"({"meta":{"piece_id":1,"schema":[]},"value":[["5","6"]]})"};
+        R"({"meta":{"matching_column":1,"piece_id":1,"schema":[]},"value":[["5","6"]]})"};
     for (int piece_id = 0; piece_id < 2; ++piece_id)
     {
         auto ifs = std::ifstream("/db/share/" + data_id + "/" + std::to_string(piece_id));
