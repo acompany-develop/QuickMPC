@@ -10,9 +10,8 @@ def execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 1, 2]],
                                                ["id", "s1", "s2"]),
                                        data_id([[1000, 1, 2], [1002, 1, 2]],
                                                ["id", "s1", "s3"])],
-                              join=[1],
-                              index=[1, 1]):
-    return ((dataIds, join, index))
+                              join=[1]):
+    return ((dataIds, join))
 
 
 @pytest.mark.parametrize(
@@ -51,6 +50,7 @@ def test_hjoin(param: tuple, expected: list):
     res = get_result(qmpc.get_join_table(param))
     assert (res["is_ok"])
 
+    print(res)
     # 正しく計算されたか確認
     for xl, yl in zip(res["results"]["table"], expected):
         for x, y in zip(xl, yl):
