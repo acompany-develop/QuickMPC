@@ -115,33 +115,12 @@ func TestExecuteComputation(t *testing.T) {
 		Table: &pb.JoinOrder{
 			DataIds: []string{"id"},
 			Join:    []int32{},
-			Index:   []int32{1}},
+		},
 		Arg: &pb.Input{
 			Src:    []int32{},
 			Target: []int32{}}})
 	if err != nil {
 		t.Fatal(err)
-	}
-}
-
-// id列が異なっていた場合にエラーがでるかテスト
-func TestExecuteComputationFailedDifferentIdColumn(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-
-	client := pb.NewLibcToManageClient(conn)
-
-	_, err := client.ExecuteComputation(context.Background(), &pb.ExecuteComputationRequest{
-		MethodId: 1,
-		Table: &pb.JoinOrder{
-			DataIds: []string{"id"},
-			Join:    []int32{},
-			Index:   []int32{2}},
-		Arg: &pb.Input{
-			Src:    []int32{},
-			Target: []int32{}}})
-	if err == nil {
-		t.Error("exucute computation must be failed, but success.")
 	}
 }
 
