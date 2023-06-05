@@ -80,11 +80,6 @@ computationtocomputationforjob::ExecuteComputeFromSPRequest convertExecuteComput
     {
         mc_request_table->add_join(join);
     }
-    for (auto &index : mc2cc_exec_comp_request.table().index())
-    {
-        mc_request_table->add_index(index);
-    }
-
     auto mc_request_arg = mc_request->mutable_arg();
     for (auto &src : mc2cc_exec_comp_request.arg().src())
     {
