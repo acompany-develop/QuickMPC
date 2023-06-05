@@ -79,7 +79,6 @@ class QMPC:
         logger.info("variance request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
                     f"[src columns]={src}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_VARIANCE"),
@@ -90,7 +89,6 @@ class QMPC:
         logger.info("sum request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
                     f"[src columns]={src}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_SUM"),
@@ -101,7 +99,6 @@ class QMPC:
         logger.info("correl request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
                     f"[src columns]={inp[0]}"
                     f"[target columns]={inp[1]}")
         return self.__qmpc_server.execute_computation(
@@ -113,7 +110,6 @@ class QMPC:
         logger.info("meshcode request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
                     f"[src columns]={src}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_MESH_CODE"),
@@ -124,11 +120,10 @@ class QMPC:
             -> Dict:
         logger.info("get_join_table request. "
                     f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]}")
+                    f"[join method]={join_order[1]}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_JOIN_TABLE"),
-            join_order, (join_order[2], []))
+            join_order, ([], []))
 
     def get_computation_result(self, job_uuid: str,
                                path: Optional[str] = None) -> Dict:
