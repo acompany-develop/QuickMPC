@@ -40,6 +40,7 @@ public:
     std::string getDataId() const;
     TableType getTable() const;
     std::vector<std::string> getColumn(int) const;
+    std::vector<std::string> getIdColumn() const;
     std::vector<SchemaType> getSchemas() const;
 };
 

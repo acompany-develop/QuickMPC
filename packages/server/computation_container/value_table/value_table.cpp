@@ -84,6 +84,11 @@ std::vector<std::string> ValueTable::getColumn(int column_number) const
     }
     return ret;
 }
+std::vector<std::string> ValueTable::getIdColumn() const
+{
+    auto matching_column = Client::getInstance()->readMatchingColumn(data_id);
+    return getColumn(matching_column - 1);
+}
 std::vector<SchemaType> ValueTable::getSchemas() const
 {
     return Client::getInstance()->readSchema(data_id);
