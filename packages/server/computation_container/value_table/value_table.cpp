@@ -66,6 +66,10 @@ TableIterator ValueTable::begin() const { return TableIterator(data_id); }
 TableIterator ValueTable::end() const { return TableIterator(std::nullopt); }
 
 std::string ValueTable::getDataId() const { return data_id; }
+int ValueTable::getMatchinColumnNumber() const
+{
+    return Client::getInstance()->readMatchingColumn(data_id);
+}
 TableType ValueTable::getTable() const
 {
     TableType table;
@@ -86,7 +90,7 @@ std::vector<std::string> ValueTable::getColumn(int column_number) const
 }
 std::vector<std::string> ValueTable::getIdColumn() const
 {
-    auto matching_column = Client::getInstance()->readMatchingColumn(data_id);
+    auto matching_column = getMatchinColumnNumber();
     return getColumn(matching_column - 1);
 }
 std::vector<SchemaType> ValueTable::getSchemas() const

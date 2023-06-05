@@ -38,6 +38,7 @@ public:
     TableIterator end() const;
 
     std::string getDataId() const;
+    int getMatchinColumnNumber() const;
     TableType getTable() const;
     std::vector<std::string> getColumn(int) const;
     std::vector<std::string> getIdColumn() const;
