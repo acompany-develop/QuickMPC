@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
-from .utils.parse_csv import (parse, parse_csv)
+from .utils.parse_csv import parse, parse_csv
 from .utils.restore import restore
 
 logger = logging.getLogger(__name__)
@@ -64,12 +64,11 @@ class QMPC:
                     f"[delete id list]={data_ids}")
         return self.__qmpc_server.delete_share(data_ids)
 
-    def mean(self, join_order: Tuple[List[str], List[int], List[int]],
+    def mean(self, join_order: Tuple[List[str], List[int]],
              src: List) -> Dict:
         logger.info("mean request. "
                     f"[data_id list]={join_order[0]} "
                     f"[join method]={join_order[1]} "
-                    f"[matching ID columns]={join_order[2]} "
                     f"[src columns]={src}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_MEAN"),
