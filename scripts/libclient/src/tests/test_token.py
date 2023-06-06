@@ -18,8 +18,7 @@ def __preprocess():
     res_send_share = qmpc.send_share_from_csv_file(filename_table)
     data_id: str = res_send_share["data_id"]
 
-    table = [[data_id], [], [1]]
-    res_execute_computation = qmpc.sum(table, inp)
+    res_execute_computation = qmpc.sum([data_id], inp)
     get_result(res_execute_computation)
     job_uuid: str = res_execute_computation["job_uuid"]
 
@@ -34,12 +33,11 @@ def check_all_request(token: str):
         token
     )
     data_id, job_uuid = __preprocess()
-    table = [[data_id], [], [1]]
 
     # 各requestを実行する
     requests = [
         (qmpc_inner.send_share_from_csv_file, [filename_table]),
-        (qmpc_inner.sum, (table, inp)),
+        (qmpc_inner.sum, ([data_id], inp)),
         (qmpc_inner.get_computation_result, (job_uuid,)),
         (qmpc_inner.delete_share, ([data_id],))
     ]

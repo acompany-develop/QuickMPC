@@ -55,7 +55,7 @@ def test_restor_string(secret: str):
 
     data_id = tests.common.data_id(secrets, schema)
 
-    res = get_result(qmpc.get_join_table(([data_id], [], [1])))
+    res = get_result(qmpc.get_join_table([data_id]))
     assert (res["is_ok"])
 
     assert res['results']['table'] == [[secret]]
