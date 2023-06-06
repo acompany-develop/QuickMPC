@@ -47,7 +47,7 @@ def execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 1, 2]],
 def test_hjoin(param: tuple, expected: list):
 
     # 非Shareの横結合リクエスト送信
-    res = get_result(qmpc.get_join_table(param, debug_mode=True))
+    res = get_result(qmpc.get_join_table(*param, debug_mode=True))
     assert (res["is_ok"])
 
     # 正しく計算されたか確認
@@ -89,7 +89,7 @@ def test_hjoin(param: tuple, expected: list):
 def test_hjoin_share(param: tuple, expected: list):
 
     # Shareの横結合リクエスト送信
-    res = get_result(qmpc.get_join_table(param))
+    res = get_result(qmpc.get_join_table(*param))
     assert (res["is_ok"])
 
     # 正しく計算されたか確認
