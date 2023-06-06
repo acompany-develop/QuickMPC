@@ -61,7 +61,7 @@ def test_execute(parallel_num: int):
     futures = []
     for _ in range(parallel_num):
         futures.append(
-            executor.submit(qmpc.sum, table, inp)
+            executor.submit(qmpc.sum, [data_id], inp)
         )
 
     for future in futures:
