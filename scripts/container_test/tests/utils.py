@@ -71,7 +71,7 @@ def data_id() -> str:
 
 
 def execute_computation(data_id1: str, data_id2: str) -> dict:
-    return qmpc.get_join_table(([data_id1, data_id2], [2], [1, 1]))
+    return qmpc.get_join_table([data_id1, data_id2])
 
 
 def job_uuid() -> str:
