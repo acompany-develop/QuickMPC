@@ -447,19 +447,22 @@ ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2)
     return ValueTable(new_data_id);
 }
 
-auto parseRead(const std::vector<ValueTable> &values, const std::vector<int> &join)
+auto parseRead(const std::vector<ValueTable> &values, bool debug_mode)
 {
-    auto joinFunc = [&](auto &&f, const ValueTable &t, unsigned int it = 0)
+    auto joinFunc = [&](auto &&f, const ValueTable &t, unsigned int it = 1)
     {
-        if (it == join.size())
+        if (it == values.size())
         {
             return t;
         }
-        if (join[it] == 0)
+        if (debug_mode)
         {
-            return f(f, hjoin(t, values[it + 1]), it + 1);
+            return f(f, hjoin(t, values[it]), it + 1);
         }
-        return f(f, hjoinShare(t, values[it + 1]), it + 1);
+        else
+        {
+            return f(f, hjoinShare(t, values[it]), it + 1);
+        }
     };
     return joinFunc(joinFunc, values[0]);
 }
@@ -468,20 +471,13 @@ auto parseRead(const std::vector<ValueTable> &values, const std::vector<int> &jo
 ValueTable readTable(const managetocomputation::JoinOrder &table)
 {
     // requestからデータ読み取り
-    auto size = table.join().size();
-    std::vector<int> join;
-    join.reserve(size);
-    for (const auto &j : table.join())
-    {
-        join.emplace_back(j);
-    }
     std::vector<ValueTable> tables;
-    tables.reserve(size + 1);
-    for (const auto &data_id : table.dataids())
+    for (const auto &data_id : table.data_ids())
     {
         tables.emplace_back(data_id);
     }
-    return parseRead(tables, join);
+    bool debug_mode = table.debug_mode();
+    return parseRead(tables, debug_mode);
 }
 
 }  // namespace qmpc::ComputationToDb
