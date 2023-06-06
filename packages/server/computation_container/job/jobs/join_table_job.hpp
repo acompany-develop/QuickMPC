@@ -14,15 +14,13 @@ class JoinTableJob : public JobBase<JoinTableJob>
 public:
     // 突合に使用した列をテーブルから削除する関数
     template <class T>
-    static T removeIdColumn(const std::vector<std::list<int>> &arg, const T &v)
+    static T removeIdColumn(unsigned int match_row, const T &v)
     {
-        const size_t match_row = arg[0].front() - 1;
-
         T new_vec;
         new_vec.reserve(v.size());
         for (size_t i = 0; i < v.size(); ++i)
         {
-            if (i != match_row)
+            if (i != match_row - 1)
             {
                 new_vec.emplace_back(v[i]);
             }
@@ -37,8 +35,9 @@ public:
         const std::vector<std::list<int>> &arg
     )
     {
+        unsigned int match_row = table.getMatchinColumnNumber();
         auto schemas = table.getSchemas();
-        auto new_schemas = removeIdColumn(arg, schemas);
+        auto new_schemas = removeIdColumn(match_row, schemas);
 
         auto db_client = qmpc::ComputationToDb::Client::getInstance();
         auto column_number = new_schemas.size();
@@ -48,7 +47,7 @@ public:
             qmpc::ComputationToDb::ComputationResultWriter(job_uuid, 1, column_number);
         for (const auto &row : table)
         {
-            computationResultWriterTable.emplace(removeIdColumn(arg, row));
+            computationResultWriterTable.emplace(removeIdColumn(match_row, row));
         }
         computationResultWriterTable.completed();
 

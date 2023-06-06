@@ -196,6 +196,27 @@ TEST(ValueTableTest, SuccessGetColumn)
     initialize(data_id);
 }
 
+TEST(ValueTableTest, SuccessGetIdColumn)
+{
+    const std::string data_id = "SuccessGetIdColumn";
+    initialize(data_id);
+
+    const std::string data =
+        R"({"value":[["1","2"],["3","4"]])"
+        R"(,"meta":{"piece_id":0,"schema":["attr1","attr2"],"matching_column":1}})";
+    fs::create_directories("/db/share/" + data_id);
+    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto table = qmpc::ComputationToDb::ValueTable(data_id);
+
+    std::vector<std::string> expected = {"1", "3"};
+    EXPECT_EQ(table.getIdColumn(), expected);
+
+    initialize(data_id);
+}
+
 TEST(ComputationToDbTest, SuccessGetSchema)
 {
     const std::string data_id = "SuccessReadSchemaTest";

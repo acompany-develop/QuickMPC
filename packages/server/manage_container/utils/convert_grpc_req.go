@@ -12,7 +12,7 @@ func ConvertExecuteComputationRequest(in *pb_l2m.ExecuteComputationRequest, jobU
 		Table: &pb_m2c.JoinOrder{
 			DataIds: in.GetTable().GetDataIds(),
 			Join:    in.GetTable().GetJoin(),
-			Index:   in.GetTable().GetIndex()},
+		},
 		Arg: &pb_m2c.Input{
 			Src:    in.GetArg().GetSrc(),
 			Target: in.GetArg().GetTarget()}}

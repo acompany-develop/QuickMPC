@@ -16,10 +16,9 @@ def send_share_param(secrets=[[1, 2, 3]],
 def execute_computation_param(method_id=1,
                               data_ids=["data_id1", "data_id2"],
                               join=[1],
-                              index=[1, 1],
                               src=[0],
                               target=[1]):
-    return (method_id, (data_ids, join, index), (src, target))
+    return (method_id, (data_ids, join), (src, target))
 
 
 class TestQMPC:
@@ -97,9 +96,6 @@ class TestQMPC:
         ("params", "expected_exception"), [
             # data_idsの要素数-1とjoinの要素数が一致していない
             (execute_computation_param(data_ids=["id1", "id2"], join=[1, 1]),
-             ArgumentError),
-            # data_idsの要素数とindexの要素数が一致していない
-            (execute_computation_param(data_ids=["id1", "id2"], index=[1]),
              ArgumentError),
             # joinの値が範囲外
             (execute_computation_param(join=[-1]),

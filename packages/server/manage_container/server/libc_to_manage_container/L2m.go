@@ -127,7 +127,7 @@ func (s *server) GetSchema(ctx context.Context, in *pb.GetSchemaRequest) (*pb.Ge
 	}
 
 	return &pb.GetSchemaResponse{
-		Schema:  schema,
+		Schema: schema,
 	}, nil
 }
 
@@ -136,7 +136,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	AppLogger.Info("Execute Computation;")
 	AppLogger.Info("methodID: " + strconv.Itoa(int(in.GetMethodId())))
 	AppLogger.Info("joinOrder:")
-	AppLogger.Info(in.GetTable().GetDataIds(), in.GetTable().GetJoin(), in.GetTable().GetIndex())
+	AppLogger.Info(in.GetTable().GetDataIds(), in.GetTable().GetJoin())
 	AppLogger.Info("Arg:")
 	AppLogger.Info(in.GetArg().GetSrc(), in.GetArg().GetTarget())
 	token := in.GetToken()
@@ -144,22 +144,6 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	errToken := s.authorize(token, []string{"demo", "dep"})
 	if errToken != nil {
 		return nil, errToken
-	}
-
-	dataIds := in.GetTable().GetDataIds()
-	index := in.GetTable().GetIndex()
-	for i := 0; i < len(dataIds); i++ {
-		matchingColumn, err := s.m2dbclient.GetMatchingColumn(dataIds[i])
-		if err != nil {
-			AppLogger.Error(err)
-			return nil, err
-		}
-
-		if matchingColumn != index[i] {
-			errMessage := fmt.Sprintf("dataId:%s's matchingColumn must be %d, but value is %d", dataIds[i], matchingColumn, index[i])
-			AppLogger.Error(errMessage)
-			return nil, errors.New(errMessage)
-		}
 	}
 
 	// JobUUIDを生成

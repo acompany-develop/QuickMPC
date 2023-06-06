@@ -126,21 +126,17 @@ class JoinOrder(google.protobuf.message.Message):
 
     DATAIDS_FIELD_NUMBER: builtins.int
     JOIN_FIELD_NUMBER: builtins.int
-    INDEX_FIELD_NUMBER: builtins.int
     @property
     def dataIds(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
     @property
     def join(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
-    @property
-    def index(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
     def __init__(
         self,
         *,
         dataIds: collections.abc.Iterable[builtins.str] | None = ...,
         join: collections.abc.Iterable[builtins.int] | None = ...,
-        index: collections.abc.Iterable[builtins.int] | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["dataIds", b"dataIds", "index", b"index", "join", b"join"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["dataIds", b"dataIds", "join", b"join"]) -> None: ...
 
 global___JoinOrder = JoinOrder
 

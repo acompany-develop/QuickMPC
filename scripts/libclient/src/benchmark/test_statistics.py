@@ -40,7 +40,7 @@ def test_mean(iterate_num: int, size: int, get_data_id):
     data_id, schema_size = get_data_id(size)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        table = [[data_id], [], [1]]
+        table = [[data_id], []]
         inp = [i+1 for i in range(schema_size)]
         with PrintTime("mean"):
             res = get_result(qmpc.mean(table, inp), limit=10000)
@@ -54,7 +54,7 @@ def test_sum(iterate_num: int, size: int, get_data_id):
     data_id, schema_size = get_data_id(size)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        table = [[data_id], [], [1]]
+        table = [[data_id], []]
         inp = [i+1 for i in range(schema_size)]
         with PrintTime("sum"):
             res = get_result(qmpc.sum(table, inp), limit=10000)
@@ -68,7 +68,7 @@ def test_variance(iterate_num: int, size: int, get_data_id):
     data_id, schema_size = get_data_id(size)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        table = [[data_id], [], [1]]
+        table = [[data_id], []]
         inp = [i+1 for i in range(schema_size)]
         with PrintTime("variance"):
             res = get_result(qmpc.variance(table, inp), limit=10000)
@@ -82,7 +82,7 @@ def test_correl(iterate_num: int, size: int, get_data_id):
     data_id, schema_size = get_data_id(size)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        table = [[data_id], [], [1]]
+        table = [[data_id], []]
         inp = ([i+1 for i in range(schema_size)], [schema_size])
         with PrintTime("correl"):
             res = get_result(qmpc.correl(table, inp), limit=10000)
@@ -97,7 +97,7 @@ def test_hjoin(iterate_num: int, size: int, get_data_id):
     data_id2, _ = get_data_id(size, data_num=2)
     for _ in range(iterate_num):
         # table情報を定義して計算
-        table = [[data_id1, data_id2], [2], [1, 1]]
+        table = [[data_id1, data_id2], [2]]
         with PrintTime("hjoin"):
             res = get_result(qmpc.get_join_table(table), limit=10000)
         assert (res["is_ok"])

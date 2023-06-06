@@ -5,9 +5,9 @@
 
 namespace qmpc::ComputationToDb
 {
-ValueTable vjoin(const ValueTable &, const ValueTable &, int, int);
-ValueTable hjoin(const ValueTable &, const ValueTable &, int, int);
-ValueTable hjoinShare(const ValueTable &, const ValueTable &, int, int);
+ValueTable vjoin(const ValueTable &, const ValueTable &);
+ValueTable hjoin(const ValueTable &, const ValueTable &);
+ValueTable hjoinShare(const ValueTable &, const ValueTable &);
 
 ValueTable readTable(const managetocomputation::JoinOrder &);
 }  // namespace qmpc::ComputationToDb

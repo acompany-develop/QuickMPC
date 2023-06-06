@@ -201,6 +201,29 @@ TEST(ComputationToDbTest, SuccessReadSchemaTest)
     initialize(data_id);
 }
 
+// matching_columnの取り出し
+// int Client::readMatchingColumn(const std::string &data_id);
+TEST(ComputationToDbTest, SuccessReadMatchingColumn)
+{
+    const std::string data_id = "SuccessReadMatchingColumn";
+    initialize(data_id);
+
+    const std::string data = R"({"meta":{"matching_column":1}})";
+    fs::create_directories("/db/share/" + data_id);
+    auto ofs = std::ofstream("/db/share/" + data_id + "/0");
+    ofs << data;
+    ofs.close();
+
+    auto cc_to_db = qmpc::ComputationToDb::Client::getInstance();
+    auto matching_column = cc_to_db->readMatchingColumn(data_id);
+
+    using SchemaType = qmpc::ComputationToDb::SchemaType;
+    auto expected = 1;
+    EXPECT_EQ(expected, matching_column);
+
+    initialize(data_id);
+}
+
 // Job を DB に新規登録する
 // void Client::registerJob(const std::string &job_uuid, const int &status);
 TEST(ComputationToDbTest, SuccessRregisterJobTest)
@@ -375,6 +398,7 @@ TEST(ComputationToDbTest, SuccessTableWriteTest)
 
     qmpc::ComputationToDb::TableWriter writer(data_id);
 
+    writer.addMatchingColumn(1);
     writer.emplace(schema);
     for (const auto& row : table)
     {
@@ -386,7 +410,7 @@ TEST(ComputationToDbTest, SuccessTableWriteTest)
     std::string data;
     getline(ifs, data);
     std::string true_data =
-        R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
+        R"({"meta":{"matching_column":1,"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
         R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})";
     EXPECT_EQ(true_data, data);
     initialize(data_id);
@@ -405,6 +429,7 @@ TEST(ComputationToDbTest, SuccessTableWritePieceTest)
 
     qmpc::ComputationToDb::TableWriter writer(data_id, 4);
 
+    writer.addMatchingColumn(1);
     writer.emplace(schema);
     for (const auto& row : table)
     {
@@ -413,10 +438,10 @@ TEST(ComputationToDbTest, SuccessTableWritePieceTest)
     writer.write();
 
     std::vector<std::string> true_data = {
-        R"({"meta":{"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
+        R"({"meta":{"matching_column":1,"piece_id":0,"schema":[{"name":"attr1","type":"SHARE_VALUE_TYPE_FIXED_POINT"},)"
         R"({"name":"attr2","type":"SHARE_VALUE_TYPE_FIXED_POINT"}]},"value":[["1","2"],["3","4"]]})",
 
-        R"({"meta":{"piece_id":1,"schema":[]},"value":[["5","6"]]})"};
+        R"({"meta":{"matching_column":1,"piece_id":1,"schema":[]},"value":[["5","6"]]})"};
     for (int piece_id = 0; piece_id < 2; ++piece_id)
     {
         auto ifs = std::ifstream("/db/share/" + data_id + "/" + std::to_string(piece_id));

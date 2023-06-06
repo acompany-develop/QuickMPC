@@ -319,6 +319,7 @@ std::string writeVJoinTable(
     // tableをpieceごとに保存する機構
     const std::string new_data_id = joinDataId(table1, table2, 1);
     auto writer = TableWriter(new_data_id);
+    writer.addMatchingColumn(table1.getMatchinColumnNumber());
 
     // schemasを構築
     auto new_schemas = std::vector<SchemaType>();
@@ -411,6 +412,7 @@ std::string writeHJoinTable(
     // tableをpieceごとに保存する機構
     const std::string new_data_id = joinDataId(table1, table2, 1);
     auto writer = TableWriter(new_data_id);
+    writer.addMatchingColumn(table1.getMatchinColumnNumber());
 
     // schemasを構築
     auto new_schemas = std::vector<SchemaType>();
@@ -480,17 +482,17 @@ std::string writeHJoinTable(
     return new_data_id;
 }
 
-ValueTable vjoin(const ValueTable &table1, const ValueTable &table2, int idx1, int idx2)
+ValueTable vjoin(const ValueTable &table1, const ValueTable &table2)
 {
     // joinしたschemasのindexリストを構築
     auto [schemas_it1, schemas_it2] =
         intersectionValueIndex(table1.getSchemas(), table2.getSchemas());
 
     // joinしたidsのindexリストを構築
-    auto ids_share1 = toShare(table1.getColumn(idx1 - 1));
+    auto ids_share1 = toShare(table1.getIdColumn());
     open(ids_share1);
     auto ids1 = recons(ids_share1);
-    auto ids_share2 = toShare(table2.getColumn(idx2 - 1));
+    auto ids_share2 = toShare(table2.getIdColumn());
     open(ids_share2);
     auto ids2 = recons(ids_share2);
     auto [ids_it1, ids_it2] = unionValueIndex(ids1, ids2);
@@ -500,16 +502,17 @@ ValueTable vjoin(const ValueTable &table1, const ValueTable &table2, int idx1, i
     return ValueTable(new_data_id);
 }
 
-ValueTable hjoin(const ValueTable &table1, const ValueTable &table2, int idx1, int idx2)
+ValueTable hjoin(const ValueTable &table1, const ValueTable &table2)
 {
     // joinしたschemasのindexリストを構築
     auto schemas_it1 = std::vector<int>(table1.getSchemas().size());
     auto schemas_it2 = std::vector<int>();
     std::iota(schemas_it1.begin(), schemas_it1.end(), 0);
     auto size2 = table2.getSchemas().size();
+    auto matching_column2 = table2.getMatchinColumnNumber();
     for (size_t i = 0; i < size2; ++i)
     {
-        if (static_cast<int>(i) == idx2 - 1)
+        if (static_cast<int>(i) == matching_column2 - 1)
         {
             continue;
         }
@@ -517,10 +520,10 @@ ValueTable hjoin(const ValueTable &table1, const ValueTable &table2, int idx1, i
     }
 
     // joinしたidsのindexリストを構築
-    auto ids_share1 = toShare(table1.getColumn(idx1 - 1));
+    auto ids_share1 = toShare(table1.getIdColumn());
     open(ids_share1);
     auto ids1 = recons(ids_share1);
-    auto ids_share2 = toShare(table2.getColumn(idx2 - 1));
+    auto ids_share2 = toShare(table2.getIdColumn());
     open(ids_share2);
     auto ids2 = recons(ids_share2);
     auto [ids_it1, ids_it2] = intersectionValueIndex(ids1, ids2);
@@ -530,16 +533,17 @@ ValueTable hjoin(const ValueTable &table1, const ValueTable &table2, int idx1, i
     return ValueTable(new_data_id);
 }
 
-ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2, int idx1, int idx2)
+ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2)
 {
     // joinしたschemasのindexリストを構築
     auto schemas_it1 = std::vector<int>(table1.getSchemas().size());
     auto schemas_it2 = std::vector<int>();
     std::iota(schemas_it1.begin(), schemas_it1.end(), 0);
     auto size2 = table2.getSchemas().size();
+    auto matching_column2 = table2.getMatchinColumnNumber();
     for (size_t i = 0; i < size2; ++i)
     {
-        if (static_cast<int>(i) == idx2 - 1)
+        if (static_cast<int>(i) == matching_column2 - 1)
         {
             continue;
         }
@@ -547,8 +551,8 @@ ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2, int id
     }
 
     // joinしたidsのindexリストを構築
-    auto ids_share1 = toShare(table1.getColumn(idx1 - 1));
-    auto ids_share2 = toShare(table2.getColumn(idx2 - 1));
+    auto ids_share1 = toShare(table1.getIdColumn());
+    auto ids_share2 = toShare(table2.getIdColumn());
     auto [ids_it1, ids_it2] = intersectionSortedValueIndex(ids_share1, ids_share2);
 
     // tableをjoinして保存
@@ -556,11 +560,7 @@ ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2, int id
     return ValueTable(new_data_id);
 }
 
-auto parseRead(
-    const std::vector<ValueTable> &values,
-    const std::vector<int> &join,
-    const std::vector<int> &index
-)
+auto parseRead(const std::vector<ValueTable> &values, const std::vector<int> &join)
 {
     auto joinFunc = [&](auto &&f, const ValueTable &t, unsigned int it = 0)
     {
@@ -570,13 +570,13 @@ auto parseRead(
         }
         if (join[it] == 0)
         {
-            return f(f, hjoin(t, values[it + 1], index[0], index[it + 1]), it + 1);
+            return f(f, hjoin(t, values[it + 1]), it + 1);
         }
         if (join[it] == 1)
         {
-            return f(f, vjoin(t, values[it + 1], index[0], index[it + 1]), it + 1);
+            return f(f, vjoin(t, values[it + 1]), it + 1);
         }
-        return f(f, hjoinShare(t, values[it + 1], index[0], index[it + 1]), it + 1);
+        return f(f, hjoinShare(t, values[it + 1]), it + 1);
     };
     return joinFunc(joinFunc, values[0]);
 }
@@ -592,19 +592,13 @@ ValueTable readTable(const managetocomputation::JoinOrder &table)
     {
         join.emplace_back(j);
     }
-    std::vector<int> index;
-    index.reserve(size);
-    for (const auto &j : table.index())
-    {
-        index.emplace_back(j);
-    }
     std::vector<ValueTable> tables;
     tables.reserve(size + 1);
     for (const auto &data_id : table.dataids())
     {
         tables.emplace_back(data_id);
     }
-    return parseRead(tables, join, index);
+    return parseRead(tables, join);
 }
 
 }  // namespace qmpc::ComputationToDb

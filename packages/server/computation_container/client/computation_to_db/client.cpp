@@ -101,7 +101,9 @@ void TableWriter::write()
 {
     // データを書き込む
     nlohmann::json piece_data_json = {
-        {"value", piece_data}, {"meta", {{"piece_id", piece_id}, {"schema", json_schemas}}}};
+        {"value", piece_data},
+        {"meta",
+         {{"matching_column", matching_column}, {"piece_id", piece_id}, {"schema", json_schemas}}}};
     const std::string data = piece_data_json.dump();
     Client::getInstance()->writeShareDB(data_id, data, piece_id);
 
@@ -110,6 +112,11 @@ void TableWriter::write()
     current_size = 0;
     piece_data.clear();
     json_schemas.clear();
+}
+
+void TableWriter::addMatchingColumn(int matching_column)
+{
+    this->matching_column = matching_column;
 }
 
 void TableWriter::emplace(const std::vector<std::string> &v)
@@ -218,6 +225,17 @@ std::vector<SchemaType> Client::readSchema(const std::string &data_id) const
     auto j = json["meta"]["schema"];
     std::vector<SchemaType> schemas = load_schema(j);
     return schemas;
+}
+
+// matching_columnの取り出し
+int Client::readMatchingColumn(const std::string &data_id) const
+{
+    auto ifs = std::ifstream(shareDbPath / data_id / "0");
+    std::string data;
+    getline(ifs, data);
+    auto json = nlohmann::json::parse(data);
+    auto j = json["meta"]["matching_column"];
+    return j;
 }
 
 // shareDBに対してdataを書き込む

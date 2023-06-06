@@ -10,9 +10,8 @@ def execute_computation_param(dataIds=[data_id([[1000, 1, 2], [1001, 1, 2]],
                                                ["id", "s1", "s2"]),
                                        data_id([[1000, 1, 2], [1002, 1, 2]],
                                                ["id", "s1", "s3"])],
-                              join=[1],
-                              index=[1, 1]):
-    return ((dataIds, join, index))
+                              join=[1]):
+    return ((dataIds, join))
 
 
 @pytest.mark.parametrize(

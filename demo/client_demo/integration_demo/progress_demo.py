@@ -7,13 +7,12 @@ Step 4. 計算リクエストを送信
 Step 5. レスポンスからプログレスバーを作成・更新
 """
 
+import collections
 import logging
 import time
-import collections
-from typing import List, Tuple, OrderedDict, Optional
+from typing import List, Optional, OrderedDict, Tuple
 
 import tqdm
-
 from quickmpc import QMPC, JobStatus
 
 logger = logging.getLogger(__name__)
@@ -62,7 +61,7 @@ if __name__ == '__main__':
     data_id2 = get_data_id(size, data_num=2)
 
     """ Step 4. テーブル横結合をリクエスト"""
-    table = ([data_id1, data_id2], [2], [1, 1])
+    table = ([data_id1, data_id2], [2])
     exec_res = qmpc.get_join_table(table)
 
     job_uuid = exec_res["job_uuid"]

@@ -64,7 +64,6 @@ message GetSchemaResponse {
 message JoinOrder{
     repeated string dataIds = 1;
     repeated int32 join = 2;
-    repeated int32 index = 3;
 }
 message Input{
     repeated int32 src = 1;

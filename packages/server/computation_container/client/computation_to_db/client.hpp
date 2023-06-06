@@ -32,6 +32,7 @@ public:
     // Tableの取り出し
     std::optional<std::vector<std::vector<std::string>>> readTable(const std::string &, int) const;
     std::vector<SchemaType> readSchema(const std::string &) const;
+    int readMatchingColumn(const std::string &data_id) const;
 
     // shareDBに対してdataを書き込む
     void writeShareDB(const std::string &data_id, const std::string &data, int piece_id = 0);
@@ -92,6 +93,7 @@ class TableWriter
 {
     int current_size;
     int piece_id;
+    int matching_column;
     std::vector<std::vector<std::string>> piece_data;
     nlohmann::json json_schemas;
 
@@ -103,6 +105,7 @@ public:
 
     void write();
 
+    void addMatchingColumn(int);
     void emplace(const std::vector<std::string> &);
     void emplace(const std::vector<SchemaType> &);
 };
