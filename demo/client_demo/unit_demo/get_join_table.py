@@ -25,8 +25,7 @@ if __name__ == '__main__':
     data_id1: str = send_share("../data/data1-1.csv")
     data_id2: str = send_share("../data/data1-2.csv")
 
-    join_order = ([data_id1, data_id2], [2])
-    res = qmpc.get_join_table(join_order)
+    res = qmpc.get_join_table([data_id1, data_id2])
 
     job_uuid: str = res["job_uuid"]
     for _ in range(100):

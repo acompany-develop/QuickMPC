@@ -15,10 +15,9 @@ def send_share_param(secrets=[[1, 2, 3]],
 
 def execute_computation_param(method_id=1,
                               data_ids=["data_id1", "data_id2"],
-                              join=[1],
                               src=[0],
                               target=[1]):
-    return (method_id, (data_ids, join), (src, target))
+    return (method_id, data_ids, (src, target))
 
 
 class TestQMPC:
@@ -94,14 +93,6 @@ class TestQMPC:
 
     @pytest.mark.parametrize(
         ("params", "expected_exception"), [
-            # data_idsの要素数-1とjoinの要素数が一致していない
-            (execute_computation_param(data_ids=["id1", "id2"], join=[1, 1]),
-             ArgumentError),
-            # joinの値が範囲外
-            (execute_computation_param(join=[-1]),
-             ArgumentError),
-            (execute_computation_param(join=[3]),
-             ArgumentError),
             # QMPCJobErrorとして例外がthrowされるか
             (execute_computation_param(src=[1000000000]),
              QMPCJobError),

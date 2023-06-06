@@ -40,8 +40,8 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             context.abort_with_status(rpc_status.to_status(rich_status))
             return libc_to_manage_pb2.ExecuteComputationResponse()
 
-        if len(request.table.dataIds) > 0 \
-                and request.table.dataIds[0] == "UnregisteredDataId":
+        if len(request.table.data_ids) > 0 \
+                and request.table.data_ids[0] == "UnregisteredDataId":
             # QMPCServerError
             # MC で Internal Server Error が発生している場合を再現
             context.set_code(grpc.StatusCode.UNKNOWN)

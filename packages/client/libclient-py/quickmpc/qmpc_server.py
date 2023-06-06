@@ -77,18 +77,6 @@ class QMPCServer:
 
         return channel
 
-    @staticmethod
-    def _argument_check(join_order: Tuple[List, List]):
-        if len(join_order[0]) - 1 != len(join_order[1]):
-            logger.error(
-                'the size of join must be one less than the size of dataIds')
-            return False
-        # TODO joinをenumにする
-        if not all([0 <= join <= 2 for join in join_order[1]]):
-            logger.error('join value must be in the range of 0 to 2')
-            return False
-        return True
-
     def __retry(self, f: Callable, *request: Any) -> Any:
         for ch in self.__client_channels:
             # channelの接続チェック
@@ -274,15 +262,13 @@ class QMPCServer:
         return {"is_ok": is_ok}
 
     def execute_computation(self, method_id: int,
-                            join_order: Tuple[List, List],
-                            inp: Tuple[List, List]) -> Dict:
-        if not self._argument_check(join_order):
-            raise ArgumentError("引数が正しくありません．")
-
+                            data_ids: List[str],
+                            inp: Tuple[List, List],
+                            *, debug_mode: bool = False) -> Dict:
         """ 計算リクエストを送信 """
         join_order_req = JoinOrder(
-            dataIds=join_order[0],
-            join=join_order[1])
+            data_ids=data_ids,
+            debug_mode=debug_mode)
         input_req = Input(
             src=inp[0],
             target=inp[1])
