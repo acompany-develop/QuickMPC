@@ -136,7 +136,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 	AppLogger.Info("Execute Computation;")
 	AppLogger.Info("methodID: " + strconv.Itoa(int(in.GetMethodId())))
 	AppLogger.Info("joinOrder:")
-	AppLogger.Info(in.GetTable().GetDataIds(), in.GetTable().GetJoin())
+	AppLogger.Info(in.GetTable().GetDataIds(), in.GetTable().GetDebugMode())
 	AppLogger.Info("Arg:")
 	AppLogger.Info(in.GetArg().GetSrc(), in.GetArg().GetTarget())
 	token := in.GetToken()

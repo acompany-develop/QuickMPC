@@ -10,8 +10,8 @@ func ConvertExecuteComputationRequest(in *pb_l2m.ExecuteComputationRequest, jobU
 		MethodId: in.GetMethodId(),
 		JobUuid:  jobUUID,
 		Table: &pb_m2c.JoinOrder{
-			DataIds: in.GetTable().GetDataIds(),
-			Join:    in.GetTable().GetJoin(),
+			DataIds:   in.GetTable().GetDataIds(),
+			DebugMode: in.GetTable().GetDebugMode(),
 		},
 		Arg: &pb_m2c.Input{
 			Src:    in.GetArg().GetSrc(),

@@ -124,19 +124,18 @@ class JoinOrder(google.protobuf.message.Message):
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    DATAIDS_FIELD_NUMBER: builtins.int
-    JOIN_FIELD_NUMBER: builtins.int
+    DATA_IDS_FIELD_NUMBER: builtins.int
+    DEBUG_MODE_FIELD_NUMBER: builtins.int
     @property
-    def dataIds(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
-    @property
-    def join(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.int]: ...
+    def data_ids(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    debug_mode: builtins.bool
     def __init__(
         self,
         *,
-        dataIds: collections.abc.Iterable[builtins.str] | None = ...,
-        join: collections.abc.Iterable[builtins.int] | None = ...,
+        data_ids: collections.abc.Iterable[builtins.str] | None = ...,
+        debug_mode: builtins.bool = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["dataIds", b"dataIds", "join", b"join"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["data_ids", b"data_ids", "debug_mode", b"debug_mode"]) -> None: ...
 
 global___JoinOrder = JoinOrder
 
