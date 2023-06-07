@@ -5,8 +5,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 import numpy as np
 import pytest
-from utils import get_result, qmpc
 from quickmpc import parse
+from utils import get_result, qmpc
 
 parallel_num = [
     (5),
@@ -51,10 +51,9 @@ def test_execute(parallel_num: int):
     # table情報と列指定情報を定義して計算
     secrets, schema = parse(filename)
     length: int = len(secrets[0])
-    table = [[data_id], [], [1]]
     inp = [i for i in range(2, length+1)]
 
-    res = get_result(qmpc.mean(table, inp))
+    res = get_result(qmpc.mean([data_id], inp))
     assert (res["is_ok"])
 
     # 並列にexecute_computation
@@ -62,7 +61,7 @@ def test_execute(parallel_num: int):
     futures = []
     for _ in range(parallel_num):
         futures.append(
-            executor.submit(qmpc.sum, table, inp)
+            executor.submit(qmpc.sum, [data_id], inp)
         )
 
     for future in futures:

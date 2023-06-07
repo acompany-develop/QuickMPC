@@ -61,8 +61,7 @@ if __name__ == '__main__':
     data_id2 = get_data_id(size, data_num=2)
 
     """ Step 4. テーブル横結合をリクエスト"""
-    table = ([data_id1, data_id2], [2])
-    exec_res = qmpc.get_join_table(table)
+    exec_res = qmpc.get_join_table([data_id1, data_id2])
 
     job_uuid = exec_res["job_uuid"]
     logger.info(f"job_uuid: {job_uuid}")

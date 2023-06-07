@@ -23,8 +23,8 @@ service ManageToComputation {
  * the message of ExecuteComputationRequest
 */
 message JoinOrder{
-    repeated string dataIds = 1;
-    repeated int32 join = 2;
+    repeated string data_ids = 1;
+    bool debug_mode = 2;
 }
 message Input{
     repeated int32 src = 1;

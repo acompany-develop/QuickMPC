@@ -113,8 +113,8 @@ func TestExecuteComputation(t *testing.T) {
 	_, err := client.ExecuteComputation(context.Background(), &pb.ExecuteComputationRequest{
 		MethodId: 1,
 		Table: &pb.JoinOrder{
-			DataIds: []string{"id"},
-			Join:    []int32{},
+			DataIds:   []string{"id"},
+			DebugMode: true,
 		},
 		Arg: &pb.Input{
 			Src:    []int32{},

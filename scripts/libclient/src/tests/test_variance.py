@@ -7,9 +7,8 @@ from tests.common import data_id
 
 
 def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 7, 10]])],
-                              join=[],
                               src=[1, 2, 3]):
-    return ((dataIds, join), src)
+    return (dataIds,  src)
 
 
 @pytest.mark.parametrize(

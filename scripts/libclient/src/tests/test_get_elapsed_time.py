@@ -32,10 +32,9 @@ def test_get_elapsed_time(table_file: str):
     # table情報と列指定情報を定義して計算
     secrets, schema = parse(filename)
     length = len(secrets[0])
-    table = [[data_id], []]
     inp = [i for i in range(2, length+1)]
 
-    response = qmpc.sum(table, inp)
+    response = qmpc.sum([data_id], inp)
     res = get_result(response)
     assert (res["is_ok"])
     job_uuid = response["job_uuid"]

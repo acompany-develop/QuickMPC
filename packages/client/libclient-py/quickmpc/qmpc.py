@@ -64,63 +64,65 @@ class QMPC:
                     f"[delete id list]={data_ids}")
         return self.__qmpc_server.delete_share(data_ids)
 
-    def mean(self, join_order: Tuple[List[str], List[int]], src: List) -> Dict:
+    def mean(self, data_ids: List[str], src: List,
+             *, debug_mode: bool = False) -> Dict:
         logger.info("mean request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[src columns]={src}")
+                    f"[data_id list]={data_ids} "
+                    f"[src columns]={src} "
+                    f"[debug_mode]={debug_mode}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_MEAN"),
-            join_order, (src, []))
+            data_ids, (src, []), debug_mode=debug_mode)
 
-    def variance(self, join_order: Tuple[List[str], List[int]],
-                 src: List) -> Dict:
+    def variance(self, data_ids: List[str], src: List,
+                 *, debug_mode: bool = False) -> Dict:
         logger.info("variance request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[src columns]={src}")
+                    f"[data_id list]={data_ids} "
+                    f"[src columns]={src} "
+                    f"[debug_mode]={debug_mode}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_VARIANCE"),
-            join_order, (src, []))
+            data_ids, (src, []), debug_mode=debug_mode)
 
-    def sum(self, join_order: Tuple[List[str], List[int]], src: List) -> Dict:
+    def sum(self, data_ids: List[str], src: List,
+            *, debug_mode: bool = False) -> Dict:
         logger.info("sum request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[src columns]={src}")
+                    f"[data_id list]={data_ids} "
+                    f"[src columns]={src} "
+                    f"[debug_mode]={debug_mode}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_SUM"),
-            join_order, (src, []))
+            data_ids, (src, []), debug_mode=debug_mode)
 
-    def correl(self, join_order: Tuple[List[str], List[int]],
-               inp: Tuple[List[int], List[int]]) -> Dict:
+    def correl(self, data_ids: List[str], inp: Tuple[List[int], List[int]],
+               *, debug_mode: bool = False) -> Dict:
         logger.info("correl request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
+                    f"[data_id list]={data_ids} "
                     f"[src columns]={inp[0]}"
-                    f"[target columns]={inp[1]}")
+                    f"[target columns]={inp[1]} "
+                    f"[debug_mode]={debug_mode}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_CORREL"),
-            join_order, inp)
+            data_ids, inp, debug_mode=debug_mode)
 
-    def meshcode(self, join_order: Tuple[List[str], List[int]],
-                 src: List) -> Dict:
+    def meshcode(self, data_ids: List[str], src: List,
+                 *, debug_mode: bool = False) -> Dict:
         logger.info("meshcode request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]} "
-                    f"[src columns]={src}")
+                    f"[data_id list]={data_ids} "
+                    f"[src columns]={src} "
+                    f"[debug_mode]={debug_mode}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_MESH_CODE"),
-            join_order, (src, []))
+            data_ids, (src, []), debug_mode=debug_mode)
 
-    def get_join_table(self, join_order: Tuple[List[str], List[int]])\
-            -> Dict:
+    def get_join_table(self, data_ids: List[str],
+                       *, debug_mode: bool = False) -> Dict:
         logger.info("get_join_table request. "
-                    f"[data_id list]={join_order[0]} "
-                    f"[join method]={join_order[1]}")
+                    f"[data_id list]={data_ids} "
+                    f"[debug_mode]={debug_mode}")
         return self.__qmpc_server.execute_computation(
             ComputationMethod.Value("COMPUTATION_METHOD_JOIN_TABLE"),
-            join_order, ([], []))
+            data_ids, ([], []), debug_mode=debug_mode)
 
     def get_computation_result(self, job_uuid: str,
                                path: Optional[str] = None) -> Dict:

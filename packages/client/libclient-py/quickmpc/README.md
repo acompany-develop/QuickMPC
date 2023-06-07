@@ -39,13 +39,12 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 ## QMPC.mean
 平均値を計算する
 ### Parameters
-- join_order: `Tuple[List[str], List[int], List[int]]`
-	- join_order[0]: data_idのリスト
-	- join_order[1]: テーブルデータの結合方向(1:横(open)，2:縦(open)，3:横(share))
-	- join_order[2]: 結合に用いるIDの列リスト
-	- 例えば(["d1", "d2"], [1], [1, 2])であれば，data_idがd1のテーブルデータとd2のテーブルデータをd1の1列目とd2の2列目をopenした値で突合させて横結合する
+- data_ids: `List[str]`
+	- data_idのリスト
 - src: `List[int]`
 	- 平均値を計算する列リスト
+- debug_mode: `bool`
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -56,13 +55,12 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 ## QMPC.variance
 分散を計算する
 ### Parameters
-- join_order: `Tuple[List[str], List[int], List[int]]`
-	- join_order[0]: data_idのリスト
-	- join_order[1]: テーブルデータの結合方向(1:横(open)，2:縦(open)，3:横(share))
-	- join_order[2]: 結合に用いるIDの列リスト
-	- 例えば(["d1", "d2"], [1], [1, 2])であれば，data_idがd1のテーブルデータとd2のテーブルデータをd1の1列目とd2の2列目をopenした値で突合させて横結合する
+- data_ids: `List[str]`
+	- data_idのリスト
 - src: `List[int]`
 	- 分散を計算する列リスト
+- debug_mode: `bool`
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -73,13 +71,12 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 ## QMPC.sum
 総和を計算する
 ### Parameters
-- join_order: `Tuple[List[str], List[int], List[int]]`
-	- join_order[0]: data_idのリスト
-	- join_order[1]: テーブルデータの結合方向(1:横(open)，2:縦(open)，3:横(share))
-	- join_order[2]: 結合に用いるIDの列リスト
-	- 例えば(["d1", "d2"], [1], [1, 2])であれば，data_idがd1のテーブルデータとd2のテーブルデータをd1の1列目とd2の2列目をopenした値で突合させて横結合する
+- data_ids: `List[str]`
+	- data_idのリスト
 - src: `List[int]`
 	- 総和を計算する列リスト
+- debug_mode: `bool`
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -90,14 +87,13 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 ## QMPC.correl
 相関係数を計算する
 ### Parameters
-- join_order: `Tuple[List[str], List[int], List[int]]`
-	- join_order[0]: data_idのリスト
-	- join_order[1]: テーブルデータの結合方向(1:横(open)，2:縦(open)，3:横(share))
-	- join_order[2]: 結合に用いるIDの列リスト
-	- 例えば(["d1", "d2"], [1], [1, 2])であれば，data_idがd1のテーブルデータとd2のテーブルデータをd1の1列目とd2の2列目をopenした値で突合させて横結合する
+- data_ids: `List[str]`
+	- data_idのリスト
 - inp: `Tuple[List[int], List[int]]`
 	- inp[0]: 相関係数の左列リスト
 	- inp[1]: 相関係数の右列リスト
+- debug_mode: `bool`
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -108,13 +104,12 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 ## QMPC.meshcode
 メッシュコードを計算する
 ### Parameters
-- join_order: `Tuple[List[str], List[int], List[int]]`
-	- join_order[0]: data_idのリスト
-	- join_order[1]: テーブルデータの結合方向(1:横(open)，2:縦(open)，3:横(share))
-	- join_order[2]: 結合に用いるIDの列リスト
-	- 例えば(["d1", "d2"], [1], [1, 2])であれば，data_idがd1のテーブルデータとd2のテーブルデータをd1の1列目とd2の2列目をopenした値で突合させて横結合する
+- data_ids: `List[str]`
+	- data_idのリスト
 - src: `List[int]`
 	- メッシュコードを計算する列リスト
+- debug_mode: `bool`
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -125,11 +120,10 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 ## QMPC.get_join_table
 テーブルを結合する
 ### Parameters
-- join_order: `Tuple[List[str], List[int], List[int]]`
-	- join_order[0]: data_idのリスト
-	- join_order[1]: テーブルデータの結合方向(1:横(open)，2:縦(open)，3:横(share))
-	- join_order[2]: 結合に用いるIDの列リスト
-	- 例えば(["d1", "d2"], [1], [1, 2])であれば，data_idがd1のテーブルデータとd2のテーブルデータをd1の1列目とd2の2列目をopenした値で突合させて横結合する
+- data_ids: `List[str]`
+	- data_idのリスト
+- debug_mode: `bool`
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`

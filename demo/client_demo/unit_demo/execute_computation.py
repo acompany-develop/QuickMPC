@@ -15,14 +15,11 @@ if __name__ == '__main__':
 
     # data_idに対して計算のリクエストを行う
     data_ids = [
-        "a0a0732235fd7fa8bee0a0fb4ac1ec70593f0952759c434d4d897b545b045741",
-        "b20850c6678ce0aeb78cb35a94fd00f02dc9e925f839718099d267bc9f650040"
+        "cedf69accf961f4074bd684227e7b18dbae92c3b78ee67bd5d56c8c27241ffd1",
+        "36af53bfa7bd6a19ad3fcee8531353f365bd7462f0cc3bde6979710282bb469e"
     ]
     res = qmpc.correl(
-        (
-            data_ids,  # 結合するdata_ids
-            [2],  # 結合方向(0:横，1:縦，2:横(Share))
-        ),
+        data_ids,  # 結合するdata_ids
         (
             [2, 3],  # 指定する列1
             [4]  # 指定する列2(func(列1, 列2)のように計算される)

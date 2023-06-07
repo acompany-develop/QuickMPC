@@ -5,7 +5,6 @@
 
 namespace qmpc::ComputationToDb
 {
-ValueTable vjoin(const ValueTable &, const ValueTable &);
 ValueTable hjoin(const ValueTable &, const ValueTable &);
 ValueTable hjoinShare(const ValueTable &, const ValueTable &);
 

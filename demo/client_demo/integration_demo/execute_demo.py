@@ -73,14 +73,14 @@ if __name__ == '__main__':
             ]
         ),
         (qmpc.correl, [[2, 3, 4], [5]],
-         [0.995537307016568, -0.192854233809008, 0.0441893193071959]),
+         [[0.995537307016568, -0.192854233809008, 0.0441893193071959]]),
     ]
     for exe_func, inp, true_val in exe_set:
         logger.info(f"---- {exe_func.__name__} start ----")
         # TODO: Jobごとに使用するdata_idを選択できるようにする
-        exec_res = exe_func([data_ids, [0, 0]], inp) \
+        exec_res = exe_func(data_ids, inp, debug_mode=True) \
             if exe_func == qmpc.meshcode  \
-            else exe_func([data_ids[:2], [0]], inp)
+            else exe_func(data_ids[:2], inp, debug_mode=True)
 
         """ Step 4. 結果を取得 """
         job_uuid = exec_res["job_uuid"]

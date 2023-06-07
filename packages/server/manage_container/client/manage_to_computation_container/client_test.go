@@ -45,8 +45,8 @@ func TestExecuteComputation(t *testing.T) {
 		MethodId: 1,
 		JobUuid:  "hugahuga",
 		Table: &pb.JoinOrder{
-			DataIds: []string{"hoge", "huga"},
-			Join:    []int32{0},
+			DataIds:   []string{"hoge", "huga"},
+			DebugMode: false,
 		},
 		Arg: &pb.Input{
 			Src:    []int32{0, 1},
@@ -103,8 +103,8 @@ func CheckExecuteComputation() {
 				MethodId: 1,
 				JobUuid:  "jobUuid",
 				Table: &pb.JoinOrder{
-					DataIds: []string{"apple", "banana"},
-					Join:    []int32{0},
+					DataIds:   []string{"apple", "banana"},
+					DebugMode: false,
 				},
 				Arg: &pb.Input{
 					Src:    []int32{0, 1},

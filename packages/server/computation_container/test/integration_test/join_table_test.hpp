@@ -85,34 +85,6 @@ protected:
     }
 };
 
-TEST_F(TableJoinerTest, vjoinTest)
-{
-    {
-        auto vt1 = genValueTable(0, 1);
-        auto vt2 = genValueTable(1, 1);
-        auto join_table = qmpc::ComputationToDb::vjoin(vt1, vt2);
-
-        const std::vector<std::vector<std::string>> expect_table{
-            {"101", "1"}, {"102", "3"}, {"103", "7"}};
-        const Schema expect_schema = to_schema({"id", "attr1"});
-        EXPECT_EQ(expect_table, join_table.getTable());
-        EXPECT_EQ(expect_schema, join_table.getSchemas());
-        initialize(join_table.getDataId());
-    }
-    {
-        auto vt1 = genValueTable(2, 1);
-        auto vt2 = genValueTable(3, 1);
-        auto join_table = qmpc::ComputationToDb::vjoin(vt1, vt2);
-
-        const std::vector<std::vector<std::string>> expect_table{
-            {"102", "10", "11"}, {"103", "13", "14"}, {"104", "18", "19"}, {"105", "21", "22"}};
-        const Schema expect_schema = to_schema({"id", "attr3", "attr4"});
-        EXPECT_EQ(expect_table, join_table.getTable());
-        EXPECT_EQ(expect_schema, join_table.getSchemas());
-        initialize(join_table.getDataId());
-    }
-}
-
 TEST_F(TableJoinerTest, hjoinTest)
 {
     {
@@ -135,66 +107,6 @@ TEST_F(TableJoinerTest, hjoinTest)
             {"103", "12", "13", "14", "15", "16", "17"}};
         const Schema expect_schema =
             to_schema({"id", "attr1", "attr3", "attr4", "attr3", "attr4", "attr5"});
-        EXPECT_EQ(expect_table, join_table.getTable());
-        EXPECT_EQ(expect_schema, join_table.getSchemas());
-        initialize(join_table.getDataId());
-    }
-}
-
-TEST_F(TableJoinerTest, vhjoinTest)
-{
-    auto vt1 = genValueTable(0, 1);
-    auto vt2 = genValueTable(1, 1);
-    auto vt3 = genValueTable(2, 1);
-    auto vt4 = qmpc::ComputationToDb::vjoin(vt1, vt2);
-    auto join_table = qmpc::ComputationToDb::hjoin(vt4, vt3);
-
-    const std::vector<std::vector<std::string>> expect_table{
-        {"102", "3", "9", "10", "11"}, {"103", "7", "12", "13", "14"}};
-    const Schema expect_schema = to_schema({"id", "attr1", "attr1", "attr3", "attr4"});
-    EXPECT_EQ(join_table.getTable(), expect_table);
-    EXPECT_EQ(join_table.getSchemas(), expect_schema);
-    initialize(join_table.getDataId());
-}
-
-TEST_F(TableJoinerTest, hvjoinTest)
-{
-    auto vt1 = genValueTable(0, 1);
-    auto vt2 = genValueTable(1, 1);
-    auto vt3 = genValueTable(2, 1);
-    auto vt4 = qmpc::ComputationToDb::hjoin(vt1, vt2);
-    auto join_table = qmpc::ComputationToDb::vjoin(vt4, vt3);
-
-    const std::vector<std::vector<std::string>> expect_table{
-        {"101", "1", "5", "6"}, {"102", "9", "9", "10"}, {"103", "12", "12", "13"}};
-    const Schema expect_schema = to_schema({"id", "attr1", "attr1", "attr3"});
-    EXPECT_EQ(expect_table, join_table.getTable());
-    EXPECT_EQ(expect_schema, join_table.getSchemas());
-    initialize(join_table.getDataId());
-}
-
-TEST_F(TableJoinerTest, vjoinColumnTest)
-{
-    {
-        auto vt1 = genValueTable(0, 2);
-        auto vt2 = genValueTable(4, 2);
-        auto join_table = qmpc::ComputationToDb::vjoin(vt1, vt2);
-
-        const std::vector<std::vector<std::string>> expect_table{
-            {"101", "1", "2"}, {"102", "3", "4"}, {"102", "0", "4"}};
-        const Schema expect_schema = to_schema({"id", "attr1", "attr2"});
-        EXPECT_EQ(expect_table, join_table.getTable());
-        EXPECT_EQ(expect_schema, join_table.getSchemas());
-        initialize(join_table.getDataId());
-    }
-    {
-        auto vt1 = genValueTable(0, 3);
-        auto vt2 = genValueTable(4, 3);
-        auto join_table = qmpc::ComputationToDb::vjoin(vt1, vt2);
-
-        const std::vector<std::vector<std::string>> expect_table{
-            {"101", "1", "2"}, {"102", "3", "4"}, {"101", "1", "0"}};
-        const Schema expect_schema = to_schema({"id", "attr1", "attr2"});
         EXPECT_EQ(expect_table, join_table.getTable());
         EXPECT_EQ(expect_schema, join_table.getSchemas());
         initialize(join_table.getDataId());

@@ -307,99 +307,6 @@ std::pair<std::vector<int>, std::vector<int>> unionValueIndex(
     return {v1_it, v2_it};
 }
 
-std::string writeVJoinTable(
-    const ValueTable &table1,
-    const ValueTable &table2,
-    const std::vector<int> &col1,
-    const std::vector<int> &col2,
-    const std::vector<int> &row1,
-    const std::vector<int> &row2
-)
-{
-    // tableをpieceごとに保存する機構
-    const std::string new_data_id = joinDataId(table1, table2, 1);
-    auto writer = TableWriter(new_data_id);
-    writer.addMatchingColumn(table1.getMatchinColumnNumber());
-
-    // schemasを構築
-    auto new_schemas = std::vector<SchemaType>();
-    auto schemas1 = table1.getSchemas();
-    for (const auto &it : col1)
-    {
-        new_schemas.emplace_back(schemas1[it]);
-    }
-    writer.emplace(new_schemas);
-
-    // tableを構築
-    auto row_dq1 = std::deque<int>(row1.begin(), row1.end());
-    auto itr1 = table1.begin();
-    auto table_idx1 = 0;
-    while (!row_dq1.empty())
-    {
-        // 使用される行になるまでincrement
-        while (table_idx1 < row_dq1.front())
-        {
-            ++table_idx1;
-            ++itr1;
-        }
-        if (itr1 == table1.end())
-        {
-            qmpc::Log::throw_with_trace(
-                std::range_error("The specified row is out of range of the table data.")
-            );
-        }
-
-        // 行を構築
-        auto new_row = std::vector<std::string>();
-        new_row.reserve(new_schemas.size());
-        auto r1 = *itr1;
-        for (const auto &it : col1)
-        {
-            new_row.emplace_back(r1[it]);
-        }
-        writer.emplace(new_row);
-        ++itr1;
-        ++table_idx1;
-        row_dq1.pop_front();
-    }
-
-    auto row_dq2 = std::deque<int>(row2.begin(), row2.end());
-    auto itr2 = table2.begin();
-    auto table_idx2 = 0;
-    while (!row_dq2.empty())
-    {
-        // 使用される行になるまでincrement
-        while (table_idx2 < row_dq2.front())
-        {
-            ++table_idx2;
-            ++itr2;
-        }
-        if (itr2 == table2.end())
-        {
-            qmpc::Log::throw_with_trace(
-                std::range_error("The specified row is out of range of the table data.")
-            );
-        }
-
-        // 行を構築
-        auto new_row = std::vector<std::string>();
-        new_row.reserve(new_schemas.size());
-        auto r2 = *itr2;
-        for (const auto &it : col2)
-        {
-            new_row.emplace_back(r2[it]);
-        }
-
-        writer.emplace(new_row);
-        ++itr2;
-        ++table_idx2;
-        row_dq2.pop_front();
-    }
-
-    writer.write();
-    return new_data_id;
-}
-
 std::string writeHJoinTable(
     const ValueTable &table1,
     const ValueTable &table2,
@@ -482,26 +389,6 @@ std::string writeHJoinTable(
     return new_data_id;
 }
 
-ValueTable vjoin(const ValueTable &table1, const ValueTable &table2)
-{
-    // joinしたschemasのindexリストを構築
-    auto [schemas_it1, schemas_it2] =
-        intersectionValueIndex(table1.getSchemas(), table2.getSchemas());
-
-    // joinしたidsのindexリストを構築
-    auto ids_share1 = toShare(table1.getIdColumn());
-    open(ids_share1);
-    auto ids1 = recons(ids_share1);
-    auto ids_share2 = toShare(table2.getIdColumn());
-    open(ids_share2);
-    auto ids2 = recons(ids_share2);
-    auto [ids_it1, ids_it2] = unionValueIndex(ids1, ids2);
-
-    // tableをjoinして保存
-    auto new_data_id = writeVJoinTable(table1, table2, schemas_it1, schemas_it2, ids_it1, ids_it2);
-    return ValueTable(new_data_id);
-}
-
 ValueTable hjoin(const ValueTable &table1, const ValueTable &table2)
 {
     // joinしたschemasのindexリストを構築
@@ -560,23 +447,22 @@ ValueTable hjoinShare(const ValueTable &table1, const ValueTable &table2)
     return ValueTable(new_data_id);
 }
 
-auto parseRead(const std::vector<ValueTable> &values, const std::vector<int> &join)
+auto parseRead(const std::vector<ValueTable> &values, bool debug_mode)
 {
-    auto joinFunc = [&](auto &&f, const ValueTable &t, unsigned int it = 0)
+    auto joinFunc = [&](auto &&f, const ValueTable &t, unsigned int it = 1)
     {
-        if (it == join.size())
+        if (it == values.size())
         {
             return t;
         }
-        if (join[it] == 0)
+        if (debug_mode)
         {
-            return f(f, hjoin(t, values[it + 1]), it + 1);
+            return f(f, hjoin(t, values[it]), it + 1);
         }
-        if (join[it] == 1)
+        else
         {
-            return f(f, vjoin(t, values[it + 1]), it + 1);
+            return f(f, hjoinShare(t, values[it]), it + 1);
         }
-        return f(f, hjoinShare(t, values[it + 1]), it + 1);
     };
     return joinFunc(joinFunc, values[0]);
 }
@@ -585,20 +471,13 @@ auto parseRead(const std::vector<ValueTable> &values, const std::vector<int> &jo
 ValueTable readTable(const managetocomputation::JoinOrder &table)
 {
     // requestからデータ読み取り
-    auto size = table.join().size();
-    std::vector<int> join;
-    join.reserve(size);
-    for (const auto &j : table.join())
-    {
-        join.emplace_back(j);
-    }
     std::vector<ValueTable> tables;
-    tables.reserve(size + 1);
-    for (const auto &data_id : table.dataids())
+    for (const auto &data_id : table.data_ids())
     {
         tables.emplace_back(data_id);
     }
-    return parseRead(tables, join);
+    bool debug_mode = table.debug_mode();
+    return parseRead(tables, debug_mode);
 }
 
 }  // namespace qmpc::ComputationToDb

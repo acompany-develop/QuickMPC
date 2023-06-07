@@ -72,14 +72,12 @@ computationtocomputationforjob::ExecuteComputeFromSPRequest convertExecuteComput
     mc_request->set_job_uuid(mc2cc_exec_comp_request.job_uuid());
 
     auto mc_request_table = mc_request->mutable_table();
-    for (auto &data_id : mc2cc_exec_comp_request.table().dataids())
+    for (auto &data_id : mc2cc_exec_comp_request.table().data_ids())
     {
-        mc_request_table->add_dataids(data_id);
+        mc_request_table->add_data_ids(data_id);
     }
-    for (auto &join : mc2cc_exec_comp_request.table().join())
-    {
-        mc_request_table->add_join(join);
-    }
+    mc_request_table->set_debug_mode(mc2cc_exec_comp_request.table().debug_mode());
+
     auto mc_request_arg = mc_request->mutable_arg();
     for (auto &src : mc2cc_exec_comp_request.arg().src())
     {
