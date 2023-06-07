@@ -44,7 +44,7 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 - src: `List[int]`
 	- 平均値を計算する列リスト
 - debug_mode: `bool`
-  - `True`の場合はdebug用の違法高速マッチングを行う
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -60,7 +60,7 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 - src: `List[int]`
 	- 分散を計算する列リスト
 - debug_mode: `bool`
-  - `True`の場合はdebug用の違法高速マッチングを行う
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -76,7 +76,7 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 - src: `List[int]`
 	- 総和を計算する列リスト
 - debug_mode: `bool`
-  - `True`の場合はdebug用の違法高速マッチングを行う
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -93,7 +93,7 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 	- inp[0]: 相関係数の左列リスト
 	- inp[1]: 相関係数の右列リスト
 - debug_mode: `bool`
-  - `True`の場合はdebug用の違法高速マッチングを行う
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -109,7 +109,7 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 - src: `List[int]`
 	- メッシュコードを計算する列リスト
 - debug_mode: `bool`
-  - `True`の場合はdebug用の違法高速マッチングを行う
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
@@ -123,7 +123,7 @@ csvファイルからテーブルデータを読み込みShare化して送信す
 - data_ids: `List[str]`
 	- data_idのリスト
 - debug_mode: `bool`
-  - `True`の場合はdebug用の違法高速マッチングを行う
+  - keyword引数．`True`の場合はdebug用の違法高速マッチングを行う
 ### Returns
 - res: `Dict`
 	- res["is_ok"]: `bool`
