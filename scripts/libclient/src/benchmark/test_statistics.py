@@ -69,9 +69,10 @@ def test_mean(iterate_num: int, path: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = [2]
         with PrintTime("mean"):
-            res, job_uuid = get_result(qmpc.mean([data_id], inp), limit=10000)
+            response = qmpc.mean([data_id], inp)
+            res = get_result(response, limit=10000)
         assert (res["is_ok"])
-        save_elapsed_time(job_uuid, "mean", path)
+        save_elapsed_time(response["job_uuid"], "mean", path)
 
 
 @pytest.mark.parametrize(
@@ -83,9 +84,10 @@ def test_sum(iterate_num: int, path: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = [2]
         with PrintTime("sum"):
-            res, job_uuid = get_result(qmpc.sum([data_id], inp), limit=10000)
+            response = qmpc.sum([data_id], inp)
+            res = get_result(response, limit=10000)
         assert (res["is_ok"])
-        save_elapsed_time(job_uuid, "sum", path)
+        save_elapsed_time(response["job_uuid"], "sum", path)
 
 
 @pytest.mark.parametrize(
@@ -97,9 +99,10 @@ def test_variance(iterate_num: int, path: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = [2]
         with PrintTime("variance"):
-            res, job_uuid = get_result(qmpc.variance([data_id], inp), limit=10000)
+            response = qmpc.variance([data_id], inp)
+            res = get_result(response, limit=10000)
         assert (res["is_ok"])
-        save_elapsed_time(job_uuid, "variance", path)
+        save_elapsed_time(response["job_uuid"], "variance", path)
 
 
 @pytest.mark.parametrize(
@@ -111,9 +114,10 @@ def test_correl(iterate_num: int, path: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = ([2], [schema_size])
         with PrintTime("correl"):
-            res, job_uuid = get_result(qmpc.correl([data_id], inp), limit=10000)
+            response = qmpc.correl([data_id], inp)
+            res = get_result(response, limit=10000)
         assert (res["is_ok"])
-        save_elapsed_time(job_uuid, "correl", path)
+        save_elapsed_time(response["job_uuid"], "correl", path)
 
 
 @pytest.mark.parametrize(
@@ -124,10 +128,10 @@ def test_hjoin(iterate_num: int, path: int, get_data_id):
     for _ in range(iterate_num):
         # table情報を定義して計算
         with PrintTime("hjoin"):
-            res, job_uuid = get_result(qmpc.get_join_table(
-                [data_id, data_id]), limit=10000)
+            response = qmpc.get_join_table([data_id, data_id])
+            res = get_result(response, limit=10000)
         assert (res["is_ok"])
-        save_elapsed_time(job_uuid, "hjoin", path)
+        save_elapsed_time(response["job_uuid"], "hjoin", path)
 
 
 def test_print_result():
