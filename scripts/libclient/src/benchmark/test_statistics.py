@@ -1,5 +1,6 @@
 import math
 import csv
+import os
 
 import numpy as np
 import pytest
@@ -29,10 +30,19 @@ def get_data_id():
 
 
 # types: (iterate_num, path)
-test_parameters = [
-    (10, "data/table_data_10x10.csv"),
-    (10, "data/table_data_100x10.csv"),
-]
+# testに使うファイルを指定
+is_ci_benchmark = os.getenv("IS_CI_BENCHMARK")
+if is_ci_benchmark:
+    # CIでbenchmarkを実行する場合
+    test_parameters = [
+        (1, "data/data_10m.csv")
+    ]
+else:
+    # localで実行する場合にはここにデータを追加する
+    test_parameters = [
+        (10, "data/table_data_10x10.csv"),
+        (10, "data/table_data_100x10.csv"),
+    ]
 
 
 @pytest.mark.parametrize(
