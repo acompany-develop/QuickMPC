@@ -28,11 +28,9 @@ def get_data_id():
     def get(path: str):
         if path in val:
             return val[path]
-        with PrintTime("send_share"):
-            start = time.time()
+        with PrintTime("send_share") as pt:
             res = qmpc.send_share_from_csv_file(path)
-            end = time.time()
-        elapsed_time_dict[(path, "send_share")] = end - start
+        elapsed_time_dict[(path, "send_share")] = pt.elapsed_time
         assert (res["is_ok"])
         data_id: str = res["data_id"]
         with open(path) as f:
