@@ -58,25 +58,7 @@ resource "null_resource" "benchmark" {
         inline = [
             "cd /home/${local.gce_ssh_user}/test",
             "chmod +x ./prepare.sh && ./prepare.sh ${local.ip_str}",
-            "mkdir /home/${local.gce_ssh_user}/test/data",
-            "export GOOGLE_APPLICATION_CREDENTIALS=\"/home/${local.gce_ssh_user}/test/service_account.json\" && gcsfuse benchmark-ci-data /home/${local.gce_ssh_user}/test/data",
-        ]
-    }
-
-    provisioner "remote-exec" {
-        connection {
-            host        = local.qmpc_instance_gips[local.client_id]
-            type        = "ssh"
-            user        = "${local.gce_ssh_user}"
-            private_key = file("${local.private_key_path}")
-            timeout     = "24h"
-        }
-        inline = [
-            "cd /home/${local.gce_ssh_user}/test",
-            # NOTE: gcsをmountしたディレクトリがdockerにmountできなかったためディレクトリを作成している
-            # TODO 直接mountできるようにする
-            "mkdir ./test_data && cp ./data/* ./test_data",
-            "chmod +x tester.sh && ./tester.sh",
+            "chmod +x ./tester.sh && ./tester.sh",
         ]
     }
 }
