@@ -49,10 +49,10 @@ else:
     ("iterate_num", "path"), test_parameters
 )
 def test_mean(iterate_num: int, path: int, get_data_id):
-    data_id, schema_size = get_data_id(path)
+    data_id, _ = get_data_id(path)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        inp = [i+1 for i in range(schema_size)]
+        inp = [2]
         with PrintTime("mean"):
             res, job_uuid = get_result(qmpc.mean([data_id], inp), limit=10000)
         assert (res["is_ok"])
@@ -62,10 +62,10 @@ def test_mean(iterate_num: int, path: int, get_data_id):
     ("iterate_num", "path"), test_parameters
 )
 def test_sum(iterate_num: int, path: int, get_data_id):
-    data_id, schema_size = get_data_id(path)
+    data_id, _ = get_data_id(path)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        inp = [i+1 for i in range(schema_size)]
+        inp = [2]
         with PrintTime("sum"):
             res, job_uuid = get_result(qmpc.sum([data_id], inp), limit=10000)
         assert (res["is_ok"])
@@ -75,10 +75,10 @@ def test_sum(iterate_num: int, path: int, get_data_id):
     ("iterate_num", "path"), test_parameters
 )
 def test_variance(iterate_num: int, path: int, get_data_id):
-    data_id, schema_size = get_data_id(path)
+    data_id, _ = get_data_id(path)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        inp = [i+1 for i in range(schema_size)]
+        inp = [2]
         with PrintTime("variance"):
             res, job_uuid = get_result(qmpc.variance([data_id], inp), limit=10000)
         assert (res["is_ok"])
@@ -91,7 +91,7 @@ def test_correl(iterate_num: int, path: int, get_data_id):
     data_id, schema_size = get_data_id(path)
     for _ in range(iterate_num):
         # table情報と列指定情報を定義して計算
-        inp = ([i+1 for i in range(schema_size)], [schema_size])
+        inp = ([2], [schema_size])
         with PrintTime("correl"):
             res, job_uuid = get_result(qmpc.correl([data_id], inp), limit=10000)
         assert (res["is_ok"])
