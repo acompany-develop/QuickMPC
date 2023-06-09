@@ -42,7 +42,7 @@ def test_mean(iterate_num: int, size: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = [i+1 for i in range(schema_size)]
         with PrintTime("mean"):
-            res = get_result(qmpc.mean([data_id], inp), limit=10000)
+            res, job_uuid = get_result(qmpc.mean([data_id], inp), limit=10000)
         assert (res["is_ok"])
 
 
@@ -55,7 +55,7 @@ def test_sum(iterate_num: int, size: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = [i+1 for i in range(schema_size)]
         with PrintTime("sum"):
-            res = get_result(qmpc.sum([data_id], inp), limit=10000)
+            res, job_uuid = get_result(qmpc.sum([data_id], inp), limit=10000)
         assert (res["is_ok"])
 
 
@@ -68,7 +68,7 @@ def test_variance(iterate_num: int, size: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = [i+1 for i in range(schema_size)]
         with PrintTime("variance"):
-            res = get_result(qmpc.variance([data_id], inp), limit=10000)
+            res, job_uuid = get_result(qmpc.variance([data_id], inp), limit=10000)
         assert (res["is_ok"])
 
 
@@ -81,7 +81,7 @@ def test_correl(iterate_num: int, size: int, get_data_id):
         # table情報と列指定情報を定義して計算
         inp = ([i+1 for i in range(schema_size)], [schema_size])
         with PrintTime("correl"):
-            res = get_result(qmpc.correl([data_id], inp), limit=10000)
+            res, job_uuid = get_result(qmpc.correl([data_id], inp), limit=10000)
         assert (res["is_ok"])
 
 
@@ -94,6 +94,6 @@ def test_hjoin(iterate_num: int, size: int, get_data_id):
     for _ in range(iterate_num):
         # table情報を定義して計算
         with PrintTime("hjoin"):
-            res = get_result(qmpc.get_join_table(
+            res, job_uuid = get_result(qmpc.get_join_table(
                 [data_id1, data_id2]), limit=10000)
         assert (res["is_ok"])
