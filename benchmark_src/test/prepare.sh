@@ -1,4 +1,6 @@
 #!/bin/bash
+# ./prepare.sh 127.0.0.1,127.0.0.2
+set -e
 party_str=$1          # パーティのipリストを引数から取得
 party_list=(${party_str//,/ })
 printf 'PARTY_SIZE=%s\n' "${#party_list[@]}" > ./.env
