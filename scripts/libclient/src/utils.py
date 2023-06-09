@@ -63,4 +63,4 @@ def get_result(res, limit=20):
         time.sleep(i)
         res = __try_get_computation_result(job_uuid, i+1 == limit)
         if res is not None:
-            return res, job_uuid
+            return res
