@@ -17,3 +17,7 @@ output "private_key_path" {
 output "gce_ssh_user" {
   value = local.gce_ssh_user
 }
+
+output "docker_image_tag" {
+  value = var.docker_image_tag
+}
