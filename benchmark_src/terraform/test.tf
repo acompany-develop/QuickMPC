@@ -2,6 +2,7 @@ locals {
   json_data = jsondecode(file("./output.json"))
   party_size = local.json_data["party_size"]["value"]
   qmpc_instance_gips = local.json_data["qmpc_instance_gips"]["value"]
+  docker_image_tag = local.json_data["docker_image_tag"]["value"]
   private_key_path = "../../demo/terraform/application/${local.json_data["private_key_path"]["value"]}"
   gce_ssh_user =  local.json_data["gce_ssh_user"]["value"]
   party_num = local.party_size - 1
@@ -57,7 +58,7 @@ resource "null_resource" "benchmark" {
 
         inline = [
             "cd /home/${local.gce_ssh_user}/test",
-            "chmod +x ./prepare.sh && ./prepare.sh ${local.ip_str}",
+            "chmod +x ./prepare.sh && ./prepare.sh ${local.ip_str} ${local.docker_image_tag}",
             "chmod +x ./tester.sh && ./tester.sh",
         ]
     }
