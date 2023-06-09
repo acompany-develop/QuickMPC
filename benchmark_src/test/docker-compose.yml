@@ -7,6 +7,8 @@ services:
       context: ./
       dockerfile: ./Dockerfile
       target: medium
+      args:
+        QMPC_VERSION: ${QMPC_VERSION}
     volumes:
       - target: /libclient/src
         source: ./src
