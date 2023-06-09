@@ -1,12 +1,24 @@
 import math
 import csv
+import time
 import os
+from tabulate import tabulate
 
 import numpy as np
 import pytest
 from utils import get_result, qmpc
 
 from benchmark.metrics import PrintTime
+
+
+elapsed_time_dict: dict = {}
+def save_elapsed_time(job_uuid, job_name, path):
+    res = qmpc.get_elapsed_time(job_uuid)
+    assert (res["is_ok"])
+    if (path, job_name) in elapsed_time_dict:
+        elapsed_time_dict[(path, job_name)] = max(elapsed_time_dict[(path, job_name)], res["elapsed_time"])
+    else:
+        elapsed_time_dict[(path, job_name)] = res["elapsed_time"]
 
 
 @pytest.fixture(scope="module")
@@ -17,7 +29,10 @@ def get_data_id():
         if path in val:
             return val[path]
         with PrintTime("send_share"):
+            start = time.time()
             res = qmpc.send_share_from_csv_file(path)
+            end = time.time()
+        elapsed_time_dict[(path, "send_share")] = end - start
         assert (res["is_ok"])
         data_id: str = res["data_id"]
         with open(path) as f:
@@ -56,6 +71,7 @@ def test_mean(iterate_num: int, path: int, get_data_id):
         with PrintTime("mean"):
             res, job_uuid = get_result(qmpc.mean([data_id], inp), limit=10000)
         assert (res["is_ok"])
+        save_elapsed_time(job_uuid, "mean", path)
 
 
 @pytest.mark.parametrize(
@@ -69,6 +85,7 @@ def test_sum(iterate_num: int, path: int, get_data_id):
         with PrintTime("sum"):
             res, job_uuid = get_result(qmpc.sum([data_id], inp), limit=10000)
         assert (res["is_ok"])
+        save_elapsed_time(job_uuid, "sum", path)
 
 
 @pytest.mark.parametrize(
@@ -82,6 +99,7 @@ def test_variance(iterate_num: int, path: int, get_data_id):
         with PrintTime("variance"):
             res, job_uuid = get_result(qmpc.variance([data_id], inp), limit=10000)
         assert (res["is_ok"])
+        save_elapsed_time(job_uuid, "variance", path)
 
 
 @pytest.mark.parametrize(
@@ -95,6 +113,7 @@ def test_correl(iterate_num: int, path: int, get_data_id):
         with PrintTime("correl"):
             res, job_uuid = get_result(qmpc.correl([data_id], inp), limit=10000)
         assert (res["is_ok"])
+        save_elapsed_time(job_uuid, "correl", path)
 
 
 @pytest.mark.parametrize(
@@ -108,3 +127,15 @@ def test_hjoin(iterate_num: int, path: int, get_data_id):
             res, job_uuid = get_result(qmpc.get_join_table(
                 [data_id, data_id]), limit=10000)
         assert (res["is_ok"])
+        save_elapsed_time(job_uuid, "hjoin", path)
+
+
+def test_print_result():
+    headers = [ "path", "job", "elapsed_time[s]", "elapsed_time[m]"]
+    data = []
+    for key in elapsed_time_dict:
+        elapsed_time_s = elapsed_time_dict[key]
+        elapsed_time_m = elapsed_time_s / 60
+        data.append([*key, elapsed_time_s, elapsed_time_m])
+    data.sort()
+    print("\n"+tabulate(data, headers=headers, tablefmt='fancy_grid'))
