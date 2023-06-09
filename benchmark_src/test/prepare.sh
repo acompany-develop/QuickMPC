@@ -14,3 +14,16 @@ echo "deb http://packages.cloud.google.com/apt $GCSFUSE_REPO main" | sudo tee /e
 curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install gcsfuse
+
+
+ssh_user=$(whoami)
+mkdir /home/${ssh_user}/test/data
+
+# gcsを./dataにmount
+export GOOGLE_APPLICATION_CREDENTIALS=/home/${ssh_user}/test/service_account.json
+gcsfuse benchmark-ci-data /home/${ssh_user}/test/data
+
+# NOTE: gcsをmountしたディレクトリがdockerにmountできなかったためディレクトリを作成している
+# TODO 直接mountできるようにする
+mkdir ./test_data
+cp ./data/* ./test_data
