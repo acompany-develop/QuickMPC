@@ -8,7 +8,7 @@ project_id=$3
 # tagの書き換え
 sed "s/{tag}/${image_tag}/g" ./template/application/variable.tf.template > ./template/application/variable.tf
 # project_idの書き換え
-sed "s/{project_id}/${project_id}/g" ./template/gcp/variables.tf.template > ./template/gcp/variables.tf
+sed "s/{project_id}/${project_id}/g; s/{version}/${image_tag//./-}/g" ./template/gcp/variables.tf.template > ./template/gcp/variables.tf
 
 
 # encodeされたjsonキーをjsonファイルに変換
