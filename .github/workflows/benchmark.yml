@@ -28,7 +28,7 @@ jobs:
           terraform_wrapper: false
 
       - name: setup
-        run: ./setup.sh ${{ env.TAG_NAME }} ${{ secrets.GITHUB_TOKEN }} ${{ secrets.GCP_PROJECT_ID }}
+        run: ./setup.sh ${{ env.TAG_NAME }} ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} ${{ secrets.GCP_PROJECT_ID }}
         working-directory: ./benchmark_src/
 
       - name: create gcp instance
