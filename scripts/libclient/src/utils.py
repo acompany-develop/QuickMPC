@@ -26,11 +26,8 @@ def __try_get_computation_result(job_uuid, is_limit, path = './result'):
         all_completed = all([status == JobStatus.COMPLETED
                                 for status in get_res["statuses"]])
 
-    if glob.glob(f"{path}/schema*{job_uuid}-*") == 0:
-        return None
     if all_completed:
         res = qmpc.restore(job_uuid, path)
-        print(job_uuid)
         get_res["results"] = res
         # NOTE
         # 計算結果取得時には含まれていないが，job_uuidがmodelの取得に使われるので
