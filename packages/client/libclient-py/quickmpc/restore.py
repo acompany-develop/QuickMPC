@@ -36,7 +36,7 @@ def restore(job_uuid: str, path: str, party_size: int) -> Any:
     column_number = get_meta(job_uuid, path)
 
     schema = [None]*column_number
-    result: Any = []
+    results: Any = []
 
     is_schema = True if len(
         glob.glob(f"{path}/schema-{job_uuid}-*")) != 0 else False
@@ -60,17 +60,17 @@ def restore(job_uuid: str, path: str, party_size: int) -> Any:
         itr = 0
         for val in get_result(job_uuid, f"{path}/dim?", party):
             f = Share.get_pre_convert_func(schema[itr % column_number])
-            if itr >= len(result):
-                result.append(f(val))
+            if itr >= len(results):
+                results.append(f(val))
             else:
-                result[itr] += f(val)
+                results[itr] += f(val)
             itr += 1
-    result = np.array(result)\
-        .reshape(-1, column_number).tolist() if is_dim2 else result
-    if is_dim2 and len(result) == 0:
+    results = np.array(results)\
+        .reshape(-1, column_number).tolist() if is_dim2 else results
+    if is_dim2 and len(results) == 0:
         schema = []
-        result = [[]]
+        results = [[]]
 
-    results = if_present(result, Share.convert_type, schema)
-    result = {"schema": schema, "table": results} if is_schema else results
-    return result
+    results = if_present(results, Share.convert_type, schema)
+    results = {"schema": schema, "table": results} if is_schema else results
+    return results
