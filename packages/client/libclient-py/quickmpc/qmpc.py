@@ -6,7 +6,7 @@ from .proto.common_types import common_types_pb2
 from .qmpc_server import QMPCServer
 from .share import Share
 from .utils.parse_csv import parse, parse_csv
-from .utils.restore import restore
+from .restore import restore
 
 logger = logging.getLogger(__name__)
 # qmpc.JobStatus でアクセスできるようにエイリアスを設定する
