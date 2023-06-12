@@ -6,6 +6,11 @@ from typing import Any
 import numpy as np
 from natsort import natsorted
 
+import google.protobuf.json_format
+from .proto.common_types.common_types_pb2 import Schema
+from .share import Share
+from .utils.if_present import if_present
+
 
 def get_meta(job_uuid: str, path: str):
     file_name = glob.glob(f"{path}/dim?-{job_uuid}-*")[0]
@@ -28,30 +33,44 @@ def get_result(job_uuid: str, path: str, party: int):
 
 
 def restore(job_uuid: str, path: str, party_size: int) -> Any:
-    schema = []
+    column_number = get_meta(job_uuid, path)
+
+    schema = [None]*column_number
     result: Any = []
 
-    column_number = get_meta(job_uuid, path)
+    is_schema = True if len(
+        glob.glob(f"{path}/schema-{job_uuid}-*")) != 0 else False
     is_dim2 = True if len(
         glob.glob(f"{path}/dim2-{job_uuid}-*")) != 0 else False
     if column_number == 0:
-        return [[]] if is_dim2 else []
+        if is_schema:
+            return {"schema": [], "table": [[]]}
+        elif is_dim2:
+            return [[]]
+        else:
+            return []
 
     for party in range(party_size):
         if party == 0:
-            for val in get_result(job_uuid, f"{path}/schema", party):
-                schema.append(val)
+            for i, val in enumerate(get_result(job_uuid, f"{path}/schema", party)):
+                col_sch = google.protobuf.json_format.Parse(
+                    val, Schema())
+                schema[i] = col_sch
 
         itr = 0
         for val in get_result(job_uuid, f"{path}/dim?", party):
+            f = Share.get_pre_convert_func(schema[itr % column_number])
             if itr >= len(result):
-                result.append(Decimal(val))
+                result.append(f(val))
             else:
-                result[itr] += Decimal(val)
+                result[itr] += f(val)
             itr += 1
+    result = np.array(result)\
+        .reshape(-1, column_number).tolist() if is_dim2 else result
+    if is_dim2 and len(result) == 0:
+        schema = []
+        result = [[]]
 
-    result_float = np.vectorize(float)(result)
-    result = np.array(result_float)\
-        .reshape(-1, column_number).tolist() if is_dim2 else result_float
-    result = {"schema": schema, "table": result} if len(schema) else result
+    results = if_present(result, Share.convert_type, schema)
+    result = {"schema": schema, "table": results} if is_schema else results
     return result
