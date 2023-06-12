@@ -14,10 +14,10 @@ namespace qmpc::Utils
 namespace mp = boost::multiprecision;
 using cpp_dec_float = mp::number<mp::cpp_dec_float<50>>;
 /*
-T:保持する整数型
-D:変換する浮動小数点型
-length:1LL<<length が最大値
-resolution:1LL<<resolutionを1とする
+T : 保持する整数型
+D : 変換する浮動小数点型
+length : 使用するTのbit長
+resolution : 1LL<<resolutionを1とする
 */
 template <
     typename T = boost::multiprecision::cpp_int,
@@ -28,7 +28,7 @@ class FixedPointImpl : private boost::operators<FixedPointImpl<>>
 {
 private:
     constexpr static long long shift = 1LL << resolution;
-    constexpr static long long maxInt = 1LL << length; // FixedPointImplがとりうる整数の最大値
+    constexpr static long long maxInt = 1LL << (length-resolution); // FixedPointImplがとりうる整数の最大値
     T value;
 public:
     FixedPointImpl() : value(0) {}
