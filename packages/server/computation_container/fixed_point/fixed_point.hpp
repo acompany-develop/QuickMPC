@@ -11,41 +11,25 @@
 
 namespace qmpc::Utils
 {
-template <typename T, typename U>
-inline static constexpr T mypow(T a_, U n_) noexcept
-{
-    T a = a_;
-    U n = n_;
-    T ret = 1;
-    while (n > 0)
-    {
-        if (n & 1) ret *= a;
-        a *= a;
-        n >>= 1;
-    }
-    return ret;
-}
 namespace mp = boost::multiprecision;
 using cpp_dec_float = mp::number<mp::cpp_dec_float<50>>;
 /*
 T:保持する整数型
 D:変換する浮動小数点型
-length:10^length が最大値
-resolution:10^resolutionを1とする
+length:1LL<<length が最大値
+resolution:1LL<<resolutionを1とする
 */
 template <
     typename T = boost::multiprecision::cpp_int,
     typename D = cpp_dec_float,
-    int length = 18,
-    int resolution = 8>
+    int length = 60,
+    int resolution = 27>
 class FixedPointImpl : private boost::operators<FixedPointImpl<>>
 {
 private:
-    constexpr static long long shift = mypow(10ll, resolution);
-    constexpr static long long maxInt =
-        mypow(10ll, length - resolution);  // FixedPointImplがとりうる整数の最大値
+    constexpr static long long shift = 1LL << resolution;
+    constexpr static long long maxInt = 1LL << length; // FixedPointImplがとりうる整数の最大値
     T value;
-
 public:
     FixedPointImpl() : value(0) {}
     FixedPointImpl(const FixedPointImpl &v) : value(v.value) {}
@@ -53,8 +37,8 @@ public:
     template <
         typename U,
         std::enable_if_t<
-            std::is_arithmetic_v<
-                std::remove_reference_t<U>> or std::is_convertible_v<T, std::remove_reference_t<U>>,
+            std::is_arithmetic_v<std::remove_reference_t<U>>
+                or std::is_convertible_v<T, std::remove_reference_t<U>>,
             std::nullptr_t> = nullptr>
     FixedPointImpl(const U &v)
     {
@@ -171,7 +155,7 @@ public:
     }
     /*
     TODO:
-    オーバーフローの可能性が10^shift^2 = 10^12の掛け算でかなり高くなってしまうので
+    オーバーフローの可能性が shift^2 = 1LL<<54 の掛け算でかなり高くなってしまうので
     一時的に浮動小数点に戻してから演算を行うことも考慮しておく
     */
     FixedPointImpl &operator*=(const FixedPointImpl &obj)
