@@ -1,6 +1,5 @@
 import csv
 import glob
-from decimal import Decimal
 from typing import Any
 
 import numpy as np
@@ -35,7 +34,7 @@ def get_result(job_uuid: str, path: str, party: int):
 def restore(job_uuid: str, path: str, party_size: int) -> Any:
     column_number = get_meta(job_uuid, path)
 
-    schema = [None]*column_number
+    schema: Any = [None]*column_number
     results: Any = []
 
     is_schema = True if len(
@@ -52,7 +51,8 @@ def restore(job_uuid: str, path: str, party_size: int) -> Any:
 
     for party in range(party_size):
         if party == 0:
-            for i, val in enumerate(get_result(job_uuid, f"{path}/schema", party)):
+            for i, val in enumerate(get_result(
+                                    job_uuid, f"{path}/schema", party)):
                 col_sch = google.protobuf.json_format.Parse(
                     val, Schema())
                 schema[i] = col_sch
