@@ -147,7 +147,7 @@ class QMPCServer:
         is_ok: bool = True
         res_list = []
         for res in stream:
-            if path is not None:
+            if path and res.status == JobStatus.Value('COMPLETED'):
                 file_title = "dim1"
                 if res.HasField("is_dim2"):
                     file_title = "dim2"
