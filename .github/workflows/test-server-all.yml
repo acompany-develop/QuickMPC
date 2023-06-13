@@ -198,7 +198,8 @@ jobs:
             string,
             sum,
             token,
-            variance
+            variance,
+            get_computation_result
           ]
     steps:
       - name: Checkout
