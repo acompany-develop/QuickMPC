@@ -47,6 +47,24 @@ resource "null_resource" "setup" {
     }
 }
 
+resource "null_resource" "site24x7" {
+    count        = local.instance_count
+
+    provisioner "remote-exec" {
+        connection {
+            host        = local.qmpc_instance_gips[count.index]
+            type        = "ssh"
+            user        = "${local.gce_ssh_user}"
+            private_key = file("${local.private_key_path}")
+        }
+
+        inline = [
+            "wget https://staticdownloads.site24x7.com/server/Site24x7InstallScript.sh",
+            "bash Site24x7InstallScript.sh -i -key=${{ secrets.SITE24X7 }} -automation=true"
+        ]
+    }
+}
+
 # ---------------------------
 # Prepare deploy
 # ---------------------------
@@ -66,7 +84,7 @@ resource "null_resource" "prepare_deploy" {
             "cd /home/${local.gce_ssh_user}/QuickMPC && chmod +x ./prepare_deploy.sh && ./prepare_deploy.sh ${count.index} ${local.ip_str} ${var.docker_image_tag}"
         ]
     }
-    depends_on = [null_resource.setup]
+    depends_on = [null_resource.setup, null_resource.site24x7]
 }
 
 # ---------------------------

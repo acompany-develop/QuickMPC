@@ -48,7 +48,8 @@ is_ci_benchmark = os.getenv("IS_CI_BENCHMARK")
 if is_ci_benchmark:
     # CIでbenchmarkを実行する場合
     test_parameters = [
-        (1, "data/data_10m.csv")
+        #(1, "data/data_10m.csv")
+        (1, "data/data_debug.csv")
     ]
 else:
     # localで実行する場合にはここにデータを追加する

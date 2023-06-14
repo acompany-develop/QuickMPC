@@ -13,7 +13,7 @@ variable "service_account_json" {
 
 variable "instance_name" {
   # NOTE: リソース名のprefixとなるので適切な名前を設定する
-  default = "qmpc-benchmark-{version}"
+  default = "spec-check-qmpc-benchmark-{version}"
 }
 
 variable "project_id" {
@@ -33,7 +33,7 @@ variable "zone" {
 
 variable "mechine_type" {
   # NOTE: インスタンスタイプを設定する
-  default = "e2-standard-32"
+  default = "n2-standard-64"
 }
 
 variable "disk_image" {
