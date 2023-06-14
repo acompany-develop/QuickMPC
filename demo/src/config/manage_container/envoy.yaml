@@ -29,7 +29,7 @@ static_resources:
               - match: { prefix: "/" }  # "/"がリクエストのルートと一致
                 route:
                   cluster: libc_to_manage_service
-                  max_grpc_timeout: 120s  # 最大許容タイムアウト, 0sは無限大
+                  max_grpc_timeout: 0s  # 最大許容タイムアウト, 0sは無限大
               cors:
                 allow_origin_string_match:  # 許可されたorigin
                   - prefix: "*"

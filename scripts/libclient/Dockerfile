@@ -12,6 +12,7 @@ WORKDIR /libclient
 RUN pip install -U pip && \
   pip install \
   pytest \
+  tabulate \
   /packages/client/libclient-py
 
 
