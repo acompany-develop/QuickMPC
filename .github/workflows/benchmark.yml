@@ -10,7 +10,8 @@ jobs:
   benchmark-test:
     name: Benchmark test
     runs-on: ubuntu-latest
-
+    # releaseタグがtriggerの時のみ走らせる
+    if: ${{ !startsWith(github.event.workflow_run.head_branch, 'main') }}
     steps:
       - name: checkout
         uses: actions/checkout@v2
