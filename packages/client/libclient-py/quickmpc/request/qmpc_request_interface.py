@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, InitVar
 from typing import List
 
 import pandas as pd
@@ -16,7 +16,8 @@ class QMPCRequestInterface(ABC):
     """
 
     @abstractmethod
-    def send_share(self, df: pd.DataFrame) -> SendShareResponse: ...
+    def send_share(self, df: pd.DataFrame,
+                   piece_size: int) -> SendShareResponse: ...
 
     @abstractmethod
     def sum(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse: ...
@@ -45,42 +46,4 @@ class QMPCRequestInterface(ABC):
         -> GetResultResponse: ...
 
     @abstractmethod
-    def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse: ...
-
-
-@dataclass(frozen=True)
-class QMPCRequest(QMPCRequestInterface):
-    """QuickMPCサーバと通信を行う
-
-    Attributes
-    ----------
-    __endpoints: List[url]
-        QuickMPCサーバのURL
-    __token: str
-        QuickMPCサーバへの通信を担う
-    """
-
-    __endpoints: List[str]
-    __token: str = field(init=False)
-
-    def send_share(self, df: pd.DataFrame) -> SendShareResponse: ...
-
-    def sum(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse: ...
-
-    def mean(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse: ...
-
-    def variance(self, data_ids: List[str], inp: List[int]) \
-        -> ExecuteResponse: ...
-
-    def correl(self, data_ids: List[str], inp1: List[int], inp2: List[int]) \
-        -> ExecuteResponse: ...
-
-    def meshcode(self, data_ids: List[str], inp1: List[int], inp2: List[int]) \
-        -> ExecuteResponse: ...
-
-    def join(self, data_ids: List[str]) -> ExecuteResponse: ...
-
-    def get_computation_result(self, job_uuid: str, filepath: str) \
-        -> GetResultResponse: ...
-
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse: ...
