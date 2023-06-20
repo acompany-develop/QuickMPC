@@ -6,6 +6,11 @@ variable "instance_count" {
   default = 1
 }
 
+variable "contain_client" {
+  # NOTE: party数にclientが含まれているか
+  default = false
+}
+
 variable "service_account_json" {
   # NOTE: README.mdを参考に参考に取得したjsonをterraform/gcp/jsonに配置してその絶対パスを設定する
   default = "/path/to/json"
@@ -32,6 +37,16 @@ variable "zone" {
 }
 
 variable "mechine_type" {
+  # NOTE: インスタンスタイプを設定する
+  default = "e2-medium"
+}
+
+variable "bts_machine_type" {
+  # NOTE: インスタンスタイプを設定する
+  default = "e2-medium"
+}
+
+variable "client_machine_type" {
   # NOTE: インスタンスタイプを設定する
   default = "e2-medium"
 }

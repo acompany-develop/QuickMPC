@@ -36,10 +36,14 @@ resource "google_compute_address" "qmpc_k8s_static_ip" {
 # ---------------------------
 # Vm instance
 # ---------------------------
+locals {
+  bts_index = var.contain_client ? var.instance_count - 2 : var.instance_count -1
+  client_index = var.contain_client ? var.instance_count -1 : -1
+}
 resource "google_compute_instance" "qmpc_k8s_vm" {
   count        = var.instance_count
   name         = "${var.instance_name}-vm-${count.index}"
-  machine_type = var.mechine_type
+  machine_type = count.index == local.client_index ? var.client_machine_type : count.index == local.bts_index ? var.bts_machine_type : var.mechine_type
   zone         = "${var.region}-${var.zone}"
 
   tags = [var.instance_name]
