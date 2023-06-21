@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
-from ..proto.common_types.common_types_pb2 import JobStatus
+from ..proto.common_types.common_types_pb2 import (JobErrorInfo,
+                                                   JobProgress, JobStatus)
 from .status import Status
 
 
@@ -21,10 +22,11 @@ class ExecuteResponse():
 class GetResultResponse():
     status: Status
     job_status: List[JobStatus.Value]
-    progress: List[int]
+    progress: List[JobProgress]
     results: dict  # TODO: 適切な型を付ける
 
 
 @dataclass(frozen=True)
 class GetJobErrorInfoResponse():
     status: Status
+    job_error_info: JobErrorInfo

@@ -112,3 +112,9 @@ class TestQMPCRequest:
                                     run_server1, run_server2, run_server3):
         response = self.qmpc_request.get_computation_result("job_uuid", None)
         assert response.status == Status.OK
+
+    def test_get_job_error_info(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.get_job_error_info("test")
+        assert response.status == Status.OK
+        for res in response.job_error_info:
+            assert res.what == "QMPCJobError"

@@ -384,4 +384,24 @@ class QMPCRequest(QMPCRequestInterface):
                                  progress=progresses,
                                  results=results)
 
-    def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse: ...
+    def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse:
+        # リクエストパラメータを設定
+        req = GetJobErrorInfoRequest(
+            job_uuid=job_uuid,
+            token=self.__token
+        )
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry, stub.GetJobErrorInfo, req)
+                       for stub in self.__client_stubs]
+        is_ok, response = QMPCRequest.__futures_result(
+            futures, enable_progress_bar=False)
+
+        job_error_info = [
+            res.job_error_info if res.HasField("job_error_info") else None
+            for res in response
+        ]
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return GetJobErrorInfoResponse(Status.OK, job_error_info)
+        return GetJobErrorInfoResponse(Status.BadGateway, None)
