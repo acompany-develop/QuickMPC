@@ -257,12 +257,12 @@ class QMPCRequest(QMPCRequestInterface):
             ComputationMethod.COMPUTATION_METHOD_CORREL,
             data_ids, (inp1, inp2), debug_mode=debug_mode)
 
-    def meshcode(self, data_ids: List[str], inp1: List[int], inp2: List[int],
+    def meshcode(self, data_ids: List[str], inp1: List[int],
                  *, debug_mode: bool = False) \
             -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_MESH_CODE,
-            data_ids, (inp1, inp2), debug_mode=debug_mode)
+            data_ids, (inp1, []), debug_mode=debug_mode)
 
     def join(self, data_ids: List[str],
              *, debug_mode: bool = False) -> ExecuteResponse:

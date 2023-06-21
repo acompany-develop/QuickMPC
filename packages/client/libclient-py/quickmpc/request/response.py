@@ -21,7 +21,7 @@ class ExecuteResponse():
 @dataclass(frozen=True)
 class GetResultResponse():
     status: Status
-    job_status: Optional[List[JobStatus]]
+    job_status: Optional[List["JobStatus"]]
     progress: List[JobProgress]
     results: Any  # TODO: 適切な型を付ける
 

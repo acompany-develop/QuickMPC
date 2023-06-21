@@ -33,7 +33,7 @@ class QMPCRequestInterface(ABC):
         -> ExecuteResponse: ...
 
     @abstractmethod
-    def meshcode(self, data_ids: List[str], inp1: List[int], inp2: List[int]) \
+    def meshcode(self, data_ids: List[str], inp: List[int]) \
         -> ExecuteResponse: ...
 
     @abstractmethod

@@ -96,7 +96,7 @@ class TestQMPCRequest:
         assert response.status == Status.OK
 
     def test_meshcode(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.meshcode(["data_id1"], [1, 2, 3], [4])
+        response = self.qmpc_request.meshcode(["data_id1"], [1, 2, 3])
         assert response.status == Status.OK
 
     def test_join(self, run_server1, run_server2, run_server3):
