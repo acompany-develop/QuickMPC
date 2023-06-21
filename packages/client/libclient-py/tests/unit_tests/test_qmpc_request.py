@@ -107,3 +107,8 @@ class TestQMPCRequest:
     def test_join(self, run_server1, run_server2, run_server3):
         response = self.qmpc_request.join(["data_id1"])
         assert response.status == Status.OK
+
+    def test_get_computation_result(self,
+                                    run_server1, run_server2, run_server3):
+        response = self.qmpc_request.get_computation_result("job_uuid", None)
+        assert response.status == Status.OK

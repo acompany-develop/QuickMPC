@@ -82,6 +82,7 @@ class QMPCRequest(QMPCRequestInterface):
     __client_channels: Tuple[grpc.Channel] = field(init=False)
     __party_size: int = field(init=False)
     __token: str = "token"
+    # TODO: retry manager的なのを作る
     __retry_num: int = 10
     __retry_wait_time: int = 5
 
@@ -155,38 +156,6 @@ class QMPCRequest(QMPCRequestInterface):
             logger.error(e)
 
         return is_ok, response
-
-    @staticmethod
-    def __stream_result(stream: Iterable, job_uuid: str, party: int,
-                        path: Optional[str]) -> Dict:
-        """ エラーチェックしてstreamのresultを得る """
-        is_ok: bool = True
-        res_list = []
-        for res in stream:
-            if path is not None:
-                file_title = "dim1"
-                if res.HasField("is_dim2"):
-                    file_title = "dim2"
-                elif res.HasField("is_schema"):
-                    file_title = "schema"
-
-                file_path = f"{path}/" + \
-                    f"{file_title}-{job_uuid}-{party}-{res.piece_id}.csv"
-
-                with open(file_path, 'w') as f:
-                    writer = csv.writer(f)
-                    writer.writerow([res.column_number])
-                    writer.writerow(res.result)
-                progress = res.progress if res.HasField('progress') else None
-                res = GetComputationResultResponse(
-                    column_number=res.column_number,
-                    status=res.status,
-                    piece_id=res.piece_id,
-                    progress=progress,
-                )
-            res_list.append(res)
-        res_dict: Dict = {"is_ok": is_ok, "responses": res_list}
-        return res_dict
 
     def send_share(self, df: pd.DataFrame, piece_size: int = 1_000_000) \
             -> SendShareResponse:
@@ -297,7 +266,122 @@ class QMPCRequest(QMPCRequestInterface):
             ComputationMethod.COMPUTATION_METHOD_JOIN_TABLE,
             data_ids, ([], []))
 
-    def get_computation_result(self, job_uuid: str, filepath: str) \
-        -> GetResultResponse: ...
+    @staticmethod
+    def __stream_result(stream: Iterable, job_uuid: str, party: int,
+                        path: Optional[str]) -> Dict:
+        """ エラーチェックしてstreamのresultを得る """
+        is_ok: bool = True
+        res_list = []
+        for res in stream:
+            if path is not None:
+                file_title = "dim1"
+                if res.HasField("is_dim2"):
+                    file_title = "dim2"
+                elif res.HasField("is_schema"):
+                    file_title = "schema"
+
+                file_path = f"{path}/" + \
+                    f"{file_title}-{job_uuid}-{party}-{res.piece_id}.csv"
+
+                with open(file_path, 'w') as f:
+                    writer = csv.writer(f)
+                    writer.writerow([res.column_number])
+                    writer.writerow(res.result)
+                progress = res.progress if res.HasField('progress') else None
+                res = GetComputationResultResponse(
+                    column_number=res.column_number,
+                    status=res.status,
+                    piece_id=res.piece_id,
+                    progress=progress,
+                )
+            res_list.append(res)
+        res_dict: Dict = {"is_ok": is_ok, "responses": res_list}
+        return res_dict
+
+    def get_computation_result(self, job_uuid: str,
+                               filepath: Optional[str] = None) \
+            -> GetResultResponse:
+        """ コンテナから結果を取得 """
+        # リクエストパラメータを設定
+        req = GetComputationResultRequest(
+            job_uuid=job_uuid,
+            token=self.__token
+        )
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       QMPCRequest.__stream_result,
+                                       stub.GetComputationResult(req),
+                                       job_uuid, party, filepath)
+                       for party, stub in enumerate(self.__client_stubs)]
+        is_ok, response = QMPCRequest.__futures_result(
+            futures, enable_progress_bar=False)
+        results_sorted = [sorted(res["responses"], key=lambda r: r.piece_id)
+                          for res in response]
+        # NOTE: statusは0番目(piece_id=1)の要素にのみ含まれている
+        statuses = [res[0].status for res in results_sorted] \
+            if results_sorted else None
+        all_completed = all([
+            s == JobStatus.Value('COMPLETED') for s in statuses
+        ]) if statuses is not None else False
+
+        progresses = None
+        if results_sorted is not None:
+            progresses = [
+                res[0].progress if res[0].HasField("progress") else None
+                for res in results_sorted
+            ]
+
+        results: Optional[Any] = None
+        schema = None
+        is_table = False
+        if not filepath and all_completed:
+            for res in results_sorted:
+                is_dim2 = False
+                column_number = 0
+                result: Any = []
+                schema_1p = []
+                for r in res:
+                    if r.HasField("is_schema"):
+                        if not is_table:
+                            is_table = True
+                        for val in r.result:
+                            col_sch = google.protobuf.json_format.Parse(
+                                val, Schema())
+                            schema_1p.append(col_sch)
+                            # schema = col_sch
+                    else:
+                        if r.HasField("is_dim2"):
+                            is_dim2 = True
+                        for val in r.result:
+                            result.append(val)
+
+                    column_number = r.column_number
+
+                if is_dim2:
+                    result = np.array(result).reshape(-1,
+                                                      column_number).tolist()
+                if len(schema_1p) != 0:
+                    schema = schema_1p
+                result = Share.convert_type(result, schema)
+                if results is None:
+                    results = []
+                results.append(result)
+
+        results = if_present(results, Share.recons)
+        results = if_present(results, Share.convert_type, schema)
+        if is_table:
+            results = {"schema": schema, "table": results}
+
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return GetResultResponse(Status.OK,
+                                     job_status=statuses,
+                                     progress=progresses,
+                                     results=results)
+        return GetResultResponse(Status.BadGateway,
+                                 job_status=statuses,
+                                 progress=progresses,
+                                 results=results)
 
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse: ...
