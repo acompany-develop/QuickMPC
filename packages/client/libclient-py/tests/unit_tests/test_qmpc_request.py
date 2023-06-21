@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from quickmpc.exception import ArgumentError, QMPCJobError, QMPCServerError
+from quickmpc.proto.common_types.common_types_pb2 import ComputationMethod
 from quickmpc.qmpc_request import QMPCRequest
 from quickmpc.request.response import SendShareResponse
 from quickmpc.request.status import Status
@@ -30,6 +31,14 @@ def send_share_param(df: pd.DataFrame = data_frame(), piece_size: int = 1000):
     return (df, piece_size)
 
 
+def execute_computation_param(method_id=1,
+                              data_ids=["data_id1", "data_id2"],
+                              join=[1],
+                              src=[0],
+                              target=[1]):
+    return (method_id, (data_ids, join), (src, target))
+
+
 class TestQMPCRequest:
     qmpc_request = QMPCRequest(local_ip_list)
 
@@ -46,7 +55,6 @@ class TestQMPCRequest:
     )
     def test_send_shares(self, params,
                          run_server1, run_server2, run_server3):
-        """ serverにシェアを送れるかのTest"""
         response = self.qmpc_request.send_share(*params)
         assert response.status == Status.OK
 
@@ -75,3 +83,27 @@ class TestQMPCRequest:
                                        run_server1, run_server2, run_server3):
         with pytest.raises(expected_exception):
             self.qmpc_request.send_share(*params)
+
+    def test_sum(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.sum(["data_id1"], [1, 2, 3])
+        assert response.status == Status.OK
+
+    def test_mean(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.mean(["data_id1"], [1, 2, 3])
+        assert response.status == Status.OK
+
+    def test_variance(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.variance(["data_id1"], [1, 2, 3])
+        assert response.status == Status.OK
+
+    def test_correl(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.correl(["data_id1"], [1, 2, 3], [4])
+        assert response.status == Status.OK
+
+    def test_meshcode(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.meshcode(["data_id1"], [1, 2, 3], [4])
+        assert response.status == Status.OK
+
+    def test_join(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.join(["data_id1"])
+        assert response.status == Status.OK

@@ -20,7 +20,8 @@ import tqdm  # type: ignore
 from grpc_status import rpc_status  # type: ignore
 
 from .exception import ArgumentError, QMPCJobError, QMPCServerError
-from .proto.common_types.common_types_pb2 import (JobErrorInfo, JobStatus,
+from .proto.common_types.common_types_pb2 import (ComputationMethod,
+                                                  JobErrorInfo, JobStatus,
                                                   Schema, ShareValueTypeEnum)
 from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        ExecuteComputationRequest,
@@ -234,20 +235,67 @@ class QMPCRequest(QMPCRequestInterface):
             return SendShareResponse(Status.OK, data_id)
         return SendShareResponse(Status.BadGateway, "")
 
-    def sum(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse: ...
+    def __execute_computation(self, method_id: ComputationMethod.ValueType,
+                              data_ids: List[str],
+                              inp: Tuple[List, List],
+                              *, debug_mode: bool = False)  \
+            -> ExecuteResponse:
+        """ 計算リクエストを送信 """
+        req = ExecuteComputationRequest(
+            method_id=method_id,
+            token=self.__token,
+            table=JoinOrder(data_ids=data_ids,
+                            debug_mode=debug_mode),
+            arg=Input(src=inp[0],
+                      target=inp[1]),
+        )
 
-    def mean(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse: ...
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            # JobidをMCから貰う関係で単一MC（現在はSP（ID=0）のみ対応）にリクエストを送る
+            futures = [
+                executor.submit(self.__retry,
+                                self.__client_stubs[0].ExecuteComputation,
+                                req)]
+
+        is_ok, response = QMPCRequest.__futures_result(futures)
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return ExecuteResponse(Status.OK, response[0].job_uuid)
+        return ExecuteResponse(Status.BadGateway, "")
+
+    def sum(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse:
+        return self.__execute_computation(
+            ComputationMethod.COMPUTATION_METHOD_SUM,
+            data_ids, (inp, []))
+
+    def mean(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse:
+        return self.__execute_computation(
+            ComputationMethod.COMPUTATION_METHOD_MEAN,
+            data_ids, (inp, []))
 
     def variance(self, data_ids: List[str], inp: List[int]) \
-        -> ExecuteResponse: ...
+            -> ExecuteResponse:
+        return self.__execute_computation(
+            ComputationMethod.COMPUTATION_METHOD_VARIANCE,
+            data_ids, (inp, []))
 
     def correl(self, data_ids: List[str], inp1: List[int], inp2: List[int]) \
-        -> ExecuteResponse: ...
+            -> ExecuteResponse:
+        return self.__execute_computation(
+            ComputationMethod.COMPUTATION_METHOD_CORREL,
+            data_ids, (inp1, inp2))
 
     def meshcode(self, data_ids: List[str], inp1: List[int], inp2: List[int]) \
-        -> ExecuteResponse: ...
+            -> ExecuteResponse:
+        return self.__execute_computation(
+            ComputationMethod.COMPUTATION_METHOD_MESH_CODE,
+            data_ids, (inp1, inp2))
 
-    def join(self, data_ids: List[str]) -> ExecuteResponse: ...
+    def join(self, data_ids: List[str]) -> ExecuteResponse:
+        return self.__execute_computation(
+            ComputationMethod.COMPUTATION_METHOD_JOIN_TABLE,
+            data_ids, ([], []))
 
     def get_computation_result(self, job_uuid: str, filepath: str) \
         -> GetResultResponse: ...
