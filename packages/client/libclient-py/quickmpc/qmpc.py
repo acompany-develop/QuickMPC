@@ -89,7 +89,7 @@ class QMPC:
                     f"[data_id list]={data_ids} "
                     f"[src columns]={src} "
                     f"[debug_mode]={debug_mode}")
-        res = self.__qmpc_request.mean(data_ids, src)
+        res = self.__qmpc_request.mean(data_ids, src, debug_mode=debug_mode)
         return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
 
     def variance(self, data_ids: List[str], src: List,
@@ -98,7 +98,8 @@ class QMPC:
                     f"[data_id list]={data_ids} "
                     f"[src columns]={src} "
                     f"[debug_mode]={debug_mode}")
-        res = self.__qmpc_request.variance(data_ids, src)
+        res = self.__qmpc_request.variance(
+            data_ids, src, debug_mode=debug_mode)
         return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
 
     def sum(self, data_ids: List[str], src: List,
@@ -107,7 +108,7 @@ class QMPC:
                     f"[data_id list]={data_ids} "
                     f"[src columns]={src} "
                     f"[debug_mode]={debug_mode}")
-        res = self.__qmpc_request.sum(data_ids, src)
+        res = self.__qmpc_request.sum(data_ids, src, debug_mode=debug_mode)
         return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
 
     def correl(self, data_ids: List[str], inp: Tuple[List[int], List[int]],
@@ -117,7 +118,8 @@ class QMPC:
                     f"[src columns]={inp[0]}"
                     f"[target columns]={inp[1]} "
                     f"[debug_mode]={debug_mode}")
-        res = self.__qmpc_request.correl(data_ids, inp[0], inp[1])
+        res = self.__qmpc_request.correl(
+            data_ids, inp[0], inp[1], debug_mode=debug_mode)
         return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
 
     def meshcode(self, data_ids: List[str], src: List,
@@ -126,7 +128,8 @@ class QMPC:
                     f"[data_id list]={data_ids} "
                     f"[src columns]={src} "
                     f"[debug_mode]={debug_mode}")
-        res = self.__qmpc_request.meshcode(data_ids, src)
+        res = self.__qmpc_request.meshcode(
+            data_ids, src, debug_mode=debug_mode)
         return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
 
     def get_join_table(self, data_ids: List[str],
@@ -134,16 +137,17 @@ class QMPC:
         logger.info("get_join_table request. "
                     f"[data_id list]={data_ids} "
                     f"[debug_mode]={debug_mode}")
-        return self.__qmpc_server.execute_computation(
-            ComputationMethod.Value("COMPUTATION_METHOD_JOIN_TABLE"),
-            data_ids, ([], []), debug_mode=debug_mode)
+        res = self.__qmpc_request.join(data_ids, debug_mode=debug_mode)
+        return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
 
     def get_computation_result(self, job_uuid: str,
                                path: Optional[str] = None) -> Dict:
         logger.info("get_computation_result request. "
                     f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
-        return self.__qmpc_server.get_computation_result(job_uuid, path)
+        res = self.__qmpc_request.get_computation_result(job_uuid)
+        return {"is_ok": res.status == Status.OK, "statuses": res.job_statuses,
+                "results": res.results, "progresses": res.progresses}
 
     def get_data_list(self) -> Dict:
         logger.info("get_data_list request.")
@@ -169,7 +173,9 @@ class QMPC:
     def get_job_error_info(self, job_uuid: str) -> Dict:
         logger.info("get_job_error_info request. "
                     f"[job_uuid]={job_uuid}")
-        return self.__qmpc_server.get_job_error_info(job_uuid)
+        res = self.__qmpc_request.get_job_error_info(job_uuid)
+        return {"is_ok": res.status == Status.OK,
+                "job_error_info": res.job_error_info}
 
     @staticmethod
     def set_log_level(level: int):

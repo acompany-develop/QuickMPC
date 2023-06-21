@@ -380,12 +380,12 @@ class QMPCRequest(QMPCRequestInterface):
         # TODO: __futures_resultの返り値を適切なものに変更する
         if is_ok:
             return GetResultResponse(Status.OK,
-                                     job_status=statuses,
-                                     progress=progresses,
+                                     job_statuses=statuses,
+                                     progresses=progresses,
                                      results=results)
         return GetResultResponse(Status.BadGateway,
-                                 job_status=statuses,
-                                 progress=progresses,
+                                 job_statuses=statuses,
+                                 progresses=progresses,
                                  results=results)
 
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse:
