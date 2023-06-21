@@ -11,6 +11,7 @@ resource "google_compute_subnetwork" "qmpc_k8s_sn" {
   count        = var.instance_count
   name         = "${var.instance_name}-sn-${count.index}"
   ip_cidr_range = var.subnet_cidr_range
+  region        = count.index == 1 ? var.p2_region : var.region
   network       = google_compute_network.qmpc_k8s_vpc.*.self_link[count.index]
 }
 

@@ -30,7 +30,7 @@ resource "google_compute_address" "qmpc_k8s_static_ip" {
   count      = var.instance_count
   name       = "${var.instance_name}-static-ip-${count.index}"
   project    = var.project_id
-  region     = var.region
+  region     = count.index == 1 ? var.p2_region : var.region
 }
 
 # ---------------------------
@@ -44,7 +44,7 @@ resource "google_compute_instance" "qmpc_k8s_vm" {
   count        = var.instance_count
   name         = "${var.instance_name}-vm-${count.index}"
   machine_type = count.index == local.client_index ? var.client_machine_type : count.index == local.bts_index ? var.bts_machine_type : var.mechine_type
-  zone         = "${var.region}-${var.zone}"
+  zone         = count.index == 1 ? "${var.p2_region}-${var.p2_zone}" : "${var.region}-${var.zone}"
 
   tags = [var.instance_name]
 

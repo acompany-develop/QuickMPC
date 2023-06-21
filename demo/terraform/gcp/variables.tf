@@ -36,6 +36,16 @@ variable "zone" {
   default = "a"
 }
 
+variable "p2_region" {
+  # NOTE: リソースを立ち上げたいリージョンを設定する
+  default = "asia-northeast1"
+}
+
+variable "p2_zone" {
+  # NOTE: リソースを立ち上げたいゾーンを設定する
+  default = "a"
+}
+
 variable "mechine_type" {
   # NOTE: インスタンスタイプを設定する
   default = "e2-medium"
