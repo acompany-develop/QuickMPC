@@ -408,4 +408,4 @@ class QMPCRequest(QMPCRequestInterface):
         # TODO: __futures_resultの返り値を適切なものに変更する
         if is_ok:
             return GetJobErrorInfoResponse(Status.OK, job_error_info)
-        return GetJobErrorInfoResponse(Status.BadGateway, None)
+        return GetJobErrorInfoResponse(Status.BadGateway, [])
