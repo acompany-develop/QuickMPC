@@ -233,38 +233,44 @@ class QMPCRequest(QMPCRequestInterface):
             return ExecuteResponse(Status.OK, response[0].job_uuid)
         return ExecuteResponse(Status.BadGateway, "")
 
-    def sum(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse:
+    def sum(self, data_ids: List[str], inp: List[int],
+            *, debug_mode: bool = False) -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_SUM,
-            data_ids, (inp, []))
+            data_ids, (inp, []), debug_mode=debug_mode)
 
-    def mean(self, data_ids: List[str], inp: List[int]) -> ExecuteResponse:
+    def mean(self, data_ids: List[str], inp: List[int],
+             *, debug_mode: bool = False) -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_MEAN,
-            data_ids, (inp, []))
+            data_ids, (inp, []), debug_mode=debug_mode)
 
-    def variance(self, data_ids: List[str], inp: List[int]) \
+    def variance(self, data_ids: List[str], inp: List[int],
+                 *, debug_mode: bool = False) \
             -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_VARIANCE,
-            data_ids, (inp, []))
+            data_ids, (inp, []), debug_mode=debug_mode)
 
-    def correl(self, data_ids: List[str], inp1: List[int], inp2: List[int]) \
+    def correl(self, data_ids: List[str], inp1: List[int], inp2: List[int],
+               *, debug_mode: bool = False) \
             -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_CORREL,
-            data_ids, (inp1, inp2))
+            data_ids, (inp1, inp2), debug_mode=debug_mode)
 
-    def meshcode(self, data_ids: List[str], inp1: List[int], inp2: List[int]) \
+    def meshcode(self, data_ids: List[str], inp1: List[int], inp2: List[int],
+                 *, debug_mode: bool = False) \
             -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_MESH_CODE,
-            data_ids, (inp1, inp2))
+            data_ids, (inp1, inp2), debug_mode=debug_mode)
 
-    def join(self, data_ids: List[str]) -> ExecuteResponse:
+    def join(self, data_ids: List[str],
+             *, debug_mode: bool = False) -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_JOIN_TABLE,
-            data_ids, ([], []))
+            data_ids, ([], []), debug_mode=debug_mode)
 
     @staticmethod
     def __stream_result(stream: Iterable, job_uuid: str, party: int,
