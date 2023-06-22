@@ -61,6 +61,7 @@ class JobManager
                 QMPC_LOG_ERROR("thrown exception has no stack trace information");
                 statusManager.error(e, std::nullopt);
             }
+            ProgressManager::getInstance()->unregisterJob(job_uuid);
         };
 
         try
