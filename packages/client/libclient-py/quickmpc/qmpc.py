@@ -45,14 +45,12 @@ class QMPC:
             endpoints, token, retry_num, retry_wait_time))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
-    def send_share_from_csv_file(self,
-                                 filename: Union[str, io.StringIO],
-                                 matching_column: int = 1,
-                                 piece_size: int = 1_000_000) -> Dict:
-        df = pd.read_csv(filename)
+    def send_share_from_df(self,
+                           df: pd.DataFrame,
+                           matching_column: int = 1,
+                           piece_size: int = 1_000_000) -> Dict:
         index_col = df.columns[matching_column-1]
-        logger.info("send_share_from_csv_file. "
-                    f"[filename]='{filename}' "
+        logger.info("send_share. "
                     f"[matching ID name]={index_col}")
         # ID列を1列目に持ってくる
         df = df.iloc[:, [matching_column-1] +
@@ -69,14 +67,19 @@ class QMPC:
         res = self.__qmpc_request.send_share(df, piece_size=piece_size)
         return {"is_ok": res.status == Status.OK, "data_id": res.data_id}
 
+    def send_share_from_csv_file(self,
+                                 filename: Union[str, io.StringIO],
+                                 matching_column: int = 1,
+                                 piece_size: int = 1_000_000) -> Dict:
+        df = pd.read_csv(filename)
+        return self.send_share_from_df(df, matching_column, piece_size)
+
     def send_share_from_csv_data(self,
                                  data: List[List[str]],
                                  matching_column: int = 1,
                                  piece_size: int = 1_000_000) -> Dict:
-        data_str = "\n".join([",".join(map(str, row)) for row in data])
-        return self.send_share_from_csv_file(io.StringIO(data_str),
-                                             matching_column=matching_column,
-                                             piece_size=piece_size)
+        df = pd.DataFrame(data[1:], columns=data[0])
+        return self.send_share_from_df(df, matching_column, piece_size)
 
     def delete_share(self, data_ids: List[str]) -> Dict:
         logger.info("delete_share request. "
@@ -145,7 +148,8 @@ class QMPC:
         logger.info("get_computation_result request. "
                     f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
-        res = self.__qmpc_request.get_computation_result(job_uuid)
+        res = self.__qmpc_request.get_computation_result(job_uuid,
+                                                         filepath=path)
         return {"is_ok": res.status == Status.OK, "statuses": res.job_statuses,
                 "results": res.results, "progresses": res.progresses}
 
