@@ -221,6 +221,13 @@ public:
     void registerJob(const int& id, const std::string& uuid);
 
     /**
+     * this function applies followings:
+     * - remove mapping from dictionaries
+     * - remove Observer from manage
+     */
+    void unregisterJob(const std::string& uuid);
+
+    /**
      * Progress generator. this function applies followings:
      * - create Builder
      * - instantiate inherited progress class with args

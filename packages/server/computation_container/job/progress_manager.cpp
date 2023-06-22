@@ -210,6 +210,19 @@ void ProgressManager::registerJob(const int& id, const std::string& uuid)
     progresses[uuid] = std::make_shared<Observer>();
 }
 
+void ProgressManager::unregisterJob(const std::string& uuid)
+{
+    std::lock_guard<std::recursive_mutex> lock(dict_mtx);
+
+    if (progresses.find(uuid) != progresses.end())
+    {
+        progresses.erase(uuid);
+        auto id = job_uuid_to_job_id[uuid];
+        job_id_to_job_uuid.erase(id);
+        job_uuid_to_job_id.erase(uuid);
+    }
+}
+
 std::shared_ptr<Observer> ProgressManager::getObserver(const int& id)
 {
     std::lock_guard<std::recursive_mutex> lock(dict_mtx);
