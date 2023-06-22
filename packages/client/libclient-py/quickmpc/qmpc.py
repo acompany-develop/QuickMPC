@@ -149,7 +149,7 @@ class QMPC:
                     f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
         res = self.__qmpc_request.get_computation_result(job_uuid,
-                                                         filepath=path)
+                                                         output_path=path)
         return {"is_ok": res.status == Status.OK, "statuses": res.job_statuses,
                 "results": res.results, "progresses": res.progresses}
 

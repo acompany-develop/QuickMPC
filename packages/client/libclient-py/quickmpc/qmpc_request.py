@@ -204,7 +204,7 @@ class QMPCRequest(QMPCRequestInterface):
 
     def __execute_computation(self, method_id: ComputationMethod.ValueType,
                               data_ids: List[str],
-                              inp: Tuple[List, List],
+                              columns: Tuple[List, List],
                               *, debug_mode: bool = False)  \
             -> ExecuteResponse:
         """ 計算リクエストを送信 """
@@ -213,8 +213,8 @@ class QMPCRequest(QMPCRequestInterface):
             token=self.__token,
             table=JoinOrder(data_ids=data_ids,
                             debug_mode=debug_mode),
-            arg=Input(src=inp[0],
-                      target=inp[1]),
+            arg=Input(src=columns[0],
+                      target=columns[1]),
         )
 
         # 非同期にリクエスト送信
@@ -231,24 +231,24 @@ class QMPCRequest(QMPCRequestInterface):
             return ExecuteResponse(Status.OK, response[0].job_uuid)
         return ExecuteResponse(Status.BadGateway, "")
 
-    def sum(self, data_ids: List[str], inp: List[int],
+    def sum(self, data_ids: List[str], columns: List[int],
             *, debug_mode: bool = False) -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_SUM,
-            data_ids, (inp, []), debug_mode=debug_mode)
+            data_ids, (columns, []), debug_mode=debug_mode)
 
-    def mean(self, data_ids: List[str], inp: List[int],
+    def mean(self, data_ids: List[str], columns: List[int],
              *, debug_mode: bool = False) -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_MEAN,
-            data_ids, (inp, []), debug_mode=debug_mode)
+            data_ids, (columns, []), debug_mode=debug_mode)
 
-    def variance(self, data_ids: List[str], inp: List[int],
+    def variance(self, data_ids: List[str], columns: List[int],
                  *, debug_mode: bool = False) \
             -> ExecuteResponse:
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_VARIANCE,
-            data_ids, (inp, []), debug_mode=debug_mode)
+            data_ids, (columns, []), debug_mode=debug_mode)
 
     def correl(self, data_ids: List[str], inp1: List[int], inp2: List[int],
                *, debug_mode: bool = False) \
@@ -272,19 +272,19 @@ class QMPCRequest(QMPCRequestInterface):
 
     @staticmethod
     def __stream_result(stream: Iterable, job_uuid: str, party: int,
-                        path: Optional[str]) -> Dict:
+                        output_path: Optional[str]) -> Dict:
         """ エラーチェックしてstreamのresultを得る """
         is_ok: bool = True
         res_list = []
         for res in stream:
-            if path is not None:
+            if output_path is not None:
                 file_title = "dim1"
                 if res.HasField("is_dim2"):
                     file_title = "dim2"
                 elif res.HasField("is_schema"):
                     file_title = "schema"
 
-                file_path = f"{path}/" + \
+                file_path = f"{output_path }/" + \
                     f"{file_title}-{job_uuid}-{party}-{res.piece_id}.csv"
 
                 with open(file_path, 'w') as f:
@@ -303,7 +303,7 @@ class QMPCRequest(QMPCRequestInterface):
         return res_dict
 
     def get_computation_result(self, job_uuid: str,
-                               filepath: Optional[str] = None) \
+                               output_path: Optional[str] = None) \
             -> GetResultResponse:
         """ コンテナから結果を取得 """
         # リクエストパラメータを設定
@@ -316,7 +316,7 @@ class QMPCRequest(QMPCRequestInterface):
             futures = [executor.submit(self.__retry,
                                        QMPCRequest.__stream_result,
                                        stub.GetComputationResult(req),
-                                       job_uuid, party, filepath)
+                                       job_uuid, party, output_path)
                        for party, stub in enumerate(self.__client_stubs)]
         is_ok, response = QMPCRequest.__futures_result(
             futures, enable_progress_bar=False)
@@ -339,7 +339,7 @@ class QMPCRequest(QMPCRequestInterface):
         results: Optional[Any] = None
         schema = None
         is_table = False
-        if not filepath and all_completed:
+        if not output_path and all_completed:
             for res in results_sorted:
                 is_dim2 = False
                 column_number = 0
