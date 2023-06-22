@@ -113,3 +113,15 @@ class TestQMPCRequest:
         assert response.status == Status.OK
         for res in response.job_error_info:
             assert res.what == "QMPCJobError"
+
+    def test_get_elapsed_time(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.get_elapsed_time("job_uuid")
+        assert response.status == Status.OK
+
+    def test_get_data_list(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.get_data_list()
+        assert response.status == Status.OK
+
+    def test_delete_share(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.delete_share(["data_id"])
+        assert response.status == Status.OK

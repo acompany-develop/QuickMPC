@@ -30,3 +30,20 @@ class GetResultResponse():
 class GetJobErrorInfoResponse():
     status: Status
     job_error_info: List[JobErrorInfo]
+
+
+@dataclass(frozen=True)
+class GetElapsedTimeResponse():
+    status: Status
+    elapsed_time: List[float]
+
+
+@dataclass(frozen=True)
+class GetDataListResponse():
+    status: Status
+    data_ids: List[str]
+
+
+@dataclass(frozen=True)
+class DeleteShareResponse():
+    status: Status

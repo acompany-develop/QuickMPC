@@ -33,8 +33,10 @@ from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        JoinOrder, SendSharesRequest)
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
 from .request.qmpc_request_interface import QMPCRequestInterface
-from .request.response import (ExecuteResponse, GetJobErrorInfoResponse,
-                               GetResultResponse, SendShareResponse)
+from .request.response import (DeleteShareResponse, ExecuteResponse,
+                               GetDataListResponse, GetElapsedTimeResponse,
+                               GetJobErrorInfoResponse, GetResultResponse,
+                               SendShareResponse)
 from .request.status import Status
 from .share import Share
 from .utils.if_present import if_present
@@ -409,3 +411,49 @@ class QMPCRequest(QMPCRequestInterface):
         if is_ok:
             return GetJobErrorInfoResponse(Status.OK, job_error_info)
         return GetJobErrorInfoResponse(Status.BadGateway, [])
+
+    def get_elapsed_time(self, job_uuid: str) -> GetElapsedTimeResponse:
+        # リクエストパラメータを設定
+        req = GetElapsedTimeRequest(
+            job_uuid=job_uuid,
+            token=self.__token
+        )
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       stub.GetElapsedTime,
+                                       req)
+                       for stub in self.__client_stubs]
+        is_ok, response = QMPCRequest.__futures_result(futures)
+        elapsed_time = max([res.elapsed_time
+                            for res in response]) if is_ok else None
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return GetElapsedTimeResponse(Status.OK, elapsed_time)
+        return GetElapsedTimeResponse(Status.BadGateway, [])
+
+    def get_data_list(self) -> GetDataListResponse:
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       stub.GetDataList,
+                                       GetDataListRequest(token=self.__token))
+                       for stub in self.__client_stubs]
+        is_ok, response = QMPCRequest.__futures_result(futures)
+        results = [eval(r.result) for r in response] if is_ok else None
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return GetDataListResponse(Status.OK, results)
+        return GetDataListResponse(Status.BadGateway, [])
+
+    def delete_share(self, data_ids: List[str]) -> DeleteShareResponse:
+        req = DeleteSharesRequest(dataIds=data_ids, token=self.__token)
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry, stub.DeleteShares, req)
+                       for stub in self.__client_stubs]
+        is_ok, _ = QMPCRequest.__futures_result(futures)
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return DeleteShareResponse(Status.OK)
+        return DeleteShareResponse(Status.BadGateway)
