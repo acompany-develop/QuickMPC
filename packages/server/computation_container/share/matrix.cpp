@@ -181,19 +181,4 @@ Matrix::Matrix(const MatrixType &mat) : mat(mat) {}
 // Eigen methods
 const ::Share::value_type &Matrix::operator()(int i, int j) const { return mat(i, j); }
 Matrix Matrix::inverse() const { return Matrix(mat.inverse()); }
-
-ShareMatrix Matrix::sharize_mat() const
-{
-    int h = mat.rows();
-    int w = mat.cols();
-    std::vector<std::vector<Share>> ret(h, std::vector<Share>(w));
-    for (int i = 0; i < h; ++i)
-    {
-        for (int j = 0; j < w; ++j)
-        {
-            ret[i][j] = qmpc::Share::sharize(mat(i, j));
-        }
-    }
-    return ret;
-}
 }  // namespace qmpc::Share
