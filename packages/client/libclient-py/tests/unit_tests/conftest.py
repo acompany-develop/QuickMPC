@@ -20,7 +20,7 @@ def run_server1():
     yield
 
     """ test end """
-    for file in glob.glob("./tests/unit_tests/dim1-uuid*"):
+    for file in glob.glob("./tests/unit_tests/dim1-*.csv"):
         os.remove(file)
 
     server.stop(0)

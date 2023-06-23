@@ -101,19 +101,19 @@ class ShareDataFrame:
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def meshcode(self, list, columns1: list, columns2: list) \
+    def meshcode(self, columns: list) \
             -> "ShareDataFrame":
-        res = self.__qmpc_request.meshcode([self.__id], columns1, columns2)
+        res = self.__qmpc_request.meshcode([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
     @_wait_execute_decorator
-    def to_csv(self, filepath: str) -> None:
+    def to_csv(self, output_path: str) -> None:
         """計算結果をCSVに保存する．
 
         Parameters
         ----------
-        filepath: str
+        output_path: str
             保存するファイルの絶対path
 
         Returns
@@ -121,8 +121,8 @@ class ShareDataFrame:
         """
         # 計算結果でないなら保存されないようにする
         if not self.__is_result:
-            logger.error("Shareを保存することはできません．")
-        self.__qmpc_request.get_computation_result(self.__id, filepath)
+            raise RuntimeError("Shareを保存することはできません．")
+        self.__qmpc_request.get_computation_result(self.__id, output_path)
 
     @_wait_execute_decorator
     def get_error_info(self) -> dict:

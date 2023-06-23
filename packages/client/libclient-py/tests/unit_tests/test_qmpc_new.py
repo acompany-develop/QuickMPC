@@ -30,7 +30,7 @@ ip_list = [
 ]
 
 
-class TestQMPCRequest:
+class TestQMPC:
     qmpc: QMPC = QMPC(ip_list)
 
     @pytest.mark.parametrize(
@@ -62,7 +62,7 @@ class TestQMPCRequest:
         with pytest.raises(expected):
             QMPC(arg)
 
-    @ pytest.mark.parametrize(
+    @pytest.mark.parametrize(
         ("data", "index_col", "expected"), [
             # 通常パターン
             ([["id", "c"], ["a", 1], ["b", 2]],
