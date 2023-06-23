@@ -66,7 +66,6 @@ public:
 
     static ShareMatrix identity(int h, int w);
     ShareMatrix transpose() const;
-    ShareMatrix inverse() const;
 
     std::vector<std::vector<Share>> get_row() const;
 };
@@ -85,6 +84,5 @@ public:
     const Share::value_type &operator()(int i, int j) const;
 
     Matrix inverse() const;
-    ShareMatrix sharize_mat() const;
 };
 }  // namespace qmpc::Share

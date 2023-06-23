@@ -133,27 +133,6 @@ ShareMatrix ShareMatrix::identity(int h, int w)
     return identity;
 }
 
-ShareMatrix ShareMatrix::inverse() const
-{
-    auto R_ = std::vector<std::vector<Share>>(h, std::vector<Share>(w));
-    for (int i = 0; i < h; ++i)
-    {
-        for (int j = 0; j < w; ++j)
-        {
-            // 乱数の範囲はいくつかの実験で定めたもの，最適であるとは限らない
-            FixedPoint rnd = RandGenerator::getInstance()->getRand<FixedPoint>(0, 100) / 50.0;
-            R_[i][j] = rnd;
-        }
-    }
-    auto R = ShareMatrix(R_);
-    auto U_s = R * mat;
-    auto U = Matrix(U_s.open_and_recons());
-    auto U_inv = U.inverse();
-    auto U_inv_s = U_inv.sharize_mat();
-    auto mat_inv = U_inv_s * R;
-    return mat_inv;
-}
-
 std::vector<std::vector<::Share>> ShareMatrix::get_row() const
 {
     std::vector<std::vector<Share>> ret;
