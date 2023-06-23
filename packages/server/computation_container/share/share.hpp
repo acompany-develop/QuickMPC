@@ -281,36 +281,6 @@ public:
     }
 };
 
-template <class T>
-Share<T> sharize(const T &secret)
-{
-    Config *conf = Config::getInstance();
-    Share<T> s;
-    if (conf->party_id == conf->sp_id)
-    {
-        T r_sum;
-        std::string ip_addr;
-        for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
-        {
-            if (pt_id == conf->sp_id)
-            {
-                continue;
-            }
-            auto r = RandGenerator::getInstance()->getRand<T>(1, (1LL << 60));
-
-            r_sum += r;
-            send(r, s.getId(), pt_id);
-        }
-        s = secret - r_sum;
-    }
-    else
-    {
-        s = receive<T>(conf->sp_id, s.getId());
-    }
-    return s;
-}
-
-
 // vector の各要素の加法逆元を求める。
 template <typename T>
 std::vector<Share<T>> getAdditiveInvVec(const std::vector<Share<T>> &s)
