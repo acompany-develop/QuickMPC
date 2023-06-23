@@ -98,6 +98,38 @@ public:
         return *this;
     }
 
+    friend SV operator%(const Share &left, const SV &right)
+    {
+        // 事前準備 (乱数範囲の設定)
+        // オーバフローしない範囲を計算
+        long long int rand_max_value =
+            (long long int)(right.getMaxInt() / std::stod(right.getStrVal()));
+        long long int rand_min_value = -rand_max_value;
+        if (rand_min_value > rand_max_value)
+        {
+            std::swap(rand_min_value, rand_max_value);
+        }
+
+        // step1: 乱数kを取得し、r_shareを計算
+        Share k =
+            Share(RandGenerator::getInstance()->getRand<FixedPoint>(rand_min_value, rand_max_value)
+            );
+        Share r_share = k * right - left;
+
+        // step2: r_shareをopenにする。
+        open(r_share);
+        SV r_recons = recons(r_share);
+
+        // step3: a mod p = p*{-r/p} を計算する。
+        double p = std::stod(right.getStrVal());
+        double r = std::stod(r_recons.getStrVal());
+        double tmp = -(r / p);
+        double round_value = std::round(p * (tmp - std::floor(tmp)));
+        SV res(std::to_string(round_value));
+
+        return res;
+    }
+
     Share &operator+=(const SV &obj)
     {
         Config *conf = Config::getInstance();
