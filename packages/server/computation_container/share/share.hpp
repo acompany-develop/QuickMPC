@@ -16,10 +16,7 @@ namespace qmpc::Share
 {
 template <typename SV>
 class Share : boost::totally_ordered<Share<SV>>,
-              boost::bitwise<Share<SV>>,
-              boost::unit_steppable<Share<SV>>,
               boost::additive<Share<SV>>,
-              boost::modable<Share<SV>>,
               boost::multipliable<Share<SV>>,
               boost::addable<Share<SV>, SV>,
               boost::subtractable<Share<SV>, SV>,
