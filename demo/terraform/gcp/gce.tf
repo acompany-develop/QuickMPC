@@ -39,7 +39,7 @@ resource "google_compute_address" "qmpc_k8s_static_ip" {
 resource "google_compute_instance" "qmpc_k8s_vm" {
   count        = var.instance_count
   name         = "${var.instance_name}-vm-${count.index}"
-  machine_type = var.mechine_type
+  machine_type = var.machine_type
   zone         = "${var.region}-${var.zone}"
 
   tags = [var.instance_name]

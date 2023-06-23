@@ -31,7 +31,7 @@ variable "zone" {
   default = "a"
 }
 
-variable "mechine_type" {
+variable "machine_type" {
   # NOTE: インスタンスタイプを設定する
   default = "e2-standard-32"
 }
