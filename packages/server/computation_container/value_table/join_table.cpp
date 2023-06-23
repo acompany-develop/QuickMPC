@@ -39,7 +39,7 @@ auto toShare(const std::vector<std::vector<std::string>> &table)
 std::string joinDataId(const ValueTable &vt1, const ValueTable &vt2, int type)
 {
     // 結合テーブルIDと結合方式から一意に定まるIDを生成する
-    auto text = vt1.getDataId() + vt2.getDataId() + std::to_string(type);
+    auto text = vt1.getDataId() + "+" +  vt2.getDataId() + "+" + std::to_string(type);
 
     unsigned char hs[SHA256_DIGEST_LENGTH];
     SHA256_CTX sha256;
