@@ -7,7 +7,6 @@ import pandas as pd
 from .proto.common_types import common_types_pb2
 from .qmpc_logging import get_logger
 from .qmpc_request import QMPCRequest
-from .qmpc_server import QMPCServer
 from .request.status import Status
 from .restore import restore
 from .share import Share
@@ -32,15 +31,12 @@ class QMPC:
     retry_num: InitVar[int] = 10
     retry_wait_time: InitVar[int] = 5
 
-    __qmpc_server: QMPCServer = field(init=False)
     __qmpc_request: QMPCRequest = field(init=False)
     __party_size: int = field(init=False)
 
     def __post_init__(self, endpoints: List[str],
                       token: str, retry_num: int, retry_wait_time: int):
         logger.info(f"[QuickMPC server IP]={endpoints}")
-        object.__setattr__(self, "_QMPC__qmpc_server", QMPCServer(
-            endpoints, token, retry_num, retry_wait_time))
         object.__setattr__(self, "_QMPC__qmpc_request", QMPCRequest(
             endpoints, token, retry_num, retry_wait_time))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
@@ -84,7 +80,7 @@ class QMPC:
     def delete_share(self, data_ids: List[str]) -> Dict:
         logger.info("delete_share request. "
                     f"[delete id list]={data_ids}")
-        return self.__qmpc_server.delete_share(data_ids)
+        return self.__qmpc_request.delete_share(data_ids)
 
     def mean(self, data_ids: List[str], src: List,
              *, debug_mode: bool = False) -> Dict:
@@ -155,7 +151,7 @@ class QMPC:
 
     def get_data_list(self) -> Dict:
         logger.info("get_data_list request.")
-        return self.__qmpc_server.get_data_list()
+        return self.__qmpc_request.get_data_list()
 
     def demo_sharize(self, secrets: List) -> Dict:
         logger.info("demo_sharize request. "
@@ -166,7 +162,7 @@ class QMPC:
     def get_elapsed_time(self, job_uuid: str) -> Dict:
         logger.info("get_elapsed_time request. "
                     f"[job_uuid]={job_uuid}")
-        return self.__qmpc_server.get_elapsed_time(job_uuid)
+        return self.__qmpc_request.get_elapsed_time(job_uuid)
 
     def restore(self, job_uuid: str, path: str):
         logger.info("restore request. "

@@ -7,12 +7,6 @@ from quickmpc.qmpc_request import QMPCRequest
 from quickmpc.request.response import SendShareResponse
 from quickmpc.request.status import Status
 
-local_ip_list = [
-    "http://localhost:50001",
-    "http://localhost:50002",
-    "http://localhost:50003"
-]
-
 
 def data_frame(values: List[List] = [[1, 2], [3, 4]],
                columns: Optional[List[str]] = None) -> pd.DataFrame:
@@ -26,16 +20,12 @@ def send_share_param(df: pd.DataFrame = data_frame(), piece_size: int = 1000):
     return (df, piece_size)
 
 
-def execute_computation_param(method_id=1,
-                              data_ids=["data_id1", "data_id2"],
-                              join=[1],
-                              src=[0],
-                              target=[1]):
-    return (method_id, (data_ids, join), (src, target))
-
-
 class TestQMPCRequest:
-    qmpc_request = QMPCRequest(local_ip_list)
+    qmpc_request = QMPCRequest([
+        "http://localhost:50001",
+        "http://localhost:50002",
+        "http://localhost:50003"
+    ])
 
     @pytest.mark.parametrize(
         ("params"), [
@@ -125,3 +115,33 @@ class TestQMPCRequest:
     def test_delete_share(self, run_server1, run_server2, run_server3):
         response = self.qmpc_request.delete_share(["data_id"])
         assert response.status == Status.OK
+
+
+class TestQMPCRequestFailed:
+    # 通信失敗する場合をテストする用のサーバー
+    qmpc_request_failed = QMPCRequest(
+        ["http://localhost:33333",
+         "http://localhost:44444",
+         "http://localhost:55555"],
+        "token_demo",
+        10,
+        0
+    )
+
+    @pytest.mark.parametrize(
+        ("function", "argument"), [
+            (qmpc_request_failed.send_share, send_share_param()),
+            (qmpc_request_failed.delete_share, ["data_id"]),
+            (qmpc_request_failed.sum, (["data_id"], [1])),
+            (qmpc_request_failed.get_data_list, ([])),
+            (qmpc_request_failed.get_elapsed_time, (["uuid"])),
+            (qmpc_request_failed.get_computation_result, ["uuid", None]),
+            (qmpc_request_failed.get_job_error_info, ["uuid"]),
+        ]
+    )
+    def test_retry(self, function, argument, caplog,
+                   run_server1, run_server2, run_server3):
+        print(argument, *argument)
+        # 10回の retry に失敗したら "All 10 times it was an error" が log に出るかをテスト
+        _ = function(*argument)
+        assert "channel の準備が出来ません" in caplog.text
