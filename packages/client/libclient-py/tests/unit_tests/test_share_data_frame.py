@@ -95,3 +95,16 @@ class TestShareDataFrame:
         output_path = "./tests/unit_tests/"
         with pytest.raises(RuntimeError):
             sdf.to_csv(output_path)
+
+    def test_to_dataframe_is_result(self,
+                                    run_server1, run_server2, run_server3):
+        sdf = ShareDataFrame("job_uuid", self.qmpc_request, True)
+        df = sdf.to_data_frame()
+        expected = pd.DataFrame([3.0, 6.0])
+        pd.testing.assert_frame_equal(df, expected)
+
+    def test_to_dataframe_is_not_result(self,
+                                        run_server1, run_server2, run_server3):
+        sdf = ShareDataFrame("data_id", self.qmpc_request, False)
+        with pytest.raises(RuntimeError):
+            sdf.to_data_frame()
