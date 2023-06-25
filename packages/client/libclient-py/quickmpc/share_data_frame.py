@@ -1,9 +1,13 @@
 import logging
+import time
 from dataclasses import dataclass
 from enum import Enum
 from functools import update_wrapper
 from typing import Callable
 
+import pandas as pd
+
+from .proto.common_types.common_types_pb2 import JobStatus
 from .request.qmpc_request_interface import QMPCRequestInterface
 
 logger = logging.getLogger(__name__)
@@ -30,7 +34,7 @@ def _wait_execute_decorator(func: Callable) -> Callable:
 
     def wrapper(self: "ShareDataFrame", *args, **kwargs):
         self._wait_execute()
-        func(self, *args, **kwargs)
+        return func(self, *args, **kwargs)
     update_wrapper(wrapper, func)
     return wrapper
 
@@ -59,7 +63,15 @@ class ShareDataFrame:
     def _wait_execute(self):
         if self.__status == ShareDataFrameStatus.EXECUTE:
             logger.info("wait execute...")
-            # 実際は計算が終了するまで待機する
+            # TODO: 待機設定を指定できるようにする
+            for _ in range(10):
+                time.sleep(1)
+                res = self.__qmpc_request.get_computation_result(self.__id)
+                all_completed = all([
+                    s == JobStatus.COMPLETED for s in res.job_statuses
+                ])
+                if all_completed:
+                    break
             self.__status = ShareDataFrameStatus.OK
 
     def join(self, other: "ShareDataFrame") -> "ShareDataFrame":
@@ -123,6 +135,30 @@ class ShareDataFrame:
         if not self.__is_result:
             raise RuntimeError("Shareを保存することはできません．")
         self.__qmpc_request.get_computation_result(self.__id, output_path)
+
+    @_wait_execute_decorator
+    def to_data_frame(self) -> pd.DataFrame:
+        """計算結果をDataFrameで返す
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        pd.DataFrame
+            計算結果
+        """
+        # 計算結果でないなら取得できないようにする
+        if not self.__is_result:
+            raise RuntimeError("Shareを取り出すことはできません．")
+        res = self.__qmpc_request.get_computation_result(self.__id, None)
+        # TODO: 型をつけて分岐できるようにする or そもそもdfで返す
+        if type(res.results) == dict:
+            schema = [s.name for s in res.results["schema"]]
+            df = pd.DataFrame(res.results["table"],
+                              columns=schema)
+            return df
+        return pd.DataFrame(res.results)
 
     @_wait_execute_decorator
     def get_error_info(self) -> dict:
