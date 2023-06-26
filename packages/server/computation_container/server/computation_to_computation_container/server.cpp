@@ -157,9 +157,15 @@ std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
 
 // 複数シェアget用
 std::vector<std::string> Server::getShares(
-    int party_id, const std::vector<qmpc::Share::AddressId> &share_ids, unsigned int length
+    int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
 )
 {
+    const size_t length = share_ids.size();
+    if(length==0)
+    {
+        return std::vector<std::string>{};
+    }
+
     Config *conf = Config::getInstance();
     // std::cout << "party share job thread"
     //           << " " << party_id << " " << share_ids[0].getShareId() << " "
@@ -181,6 +187,7 @@ std::vector<std::string> Server::getShares(
     }
     auto local_str_shares = shares_vec[key];
     shares_vec.erase(key);
+    assert(local_str_shares.size() == length);
     return local_str_shares;
 }
 

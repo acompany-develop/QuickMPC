@@ -96,7 +96,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     EXPECT_TRUE(status.ok());
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    auto datas = server->getShares(conf->party_id, share_ids, length);
+    auto datas = server->getShares(conf->party_id, share_ids);
     for (unsigned int i = 0; i < length; i++)
     {
         EXPECT_EQ(values[i], datas[i]);
@@ -119,7 +119,7 @@ TEST(CtoC_Test, GetSharesThrowExceptionTest)
     std::vector<qmpc::Share::AddressId> share_ids(length);
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    EXPECT_ANY_THROW(server->getShares(conf->party_id, share_ids, length));
+    EXPECT_ANY_THROW(server->getShares(conf->party_id, share_ids));
 }
 int main(int argc, char **argv)
 {

@@ -47,7 +47,7 @@ public:
     // 受け取ったシェアをgetするメソッド
     std::string getShare(int party_id, qmpc::Share::AddressId share_id);
     std::vector<std::string> getShares(
-        int party_id, const std::vector<qmpc::Share::AddressId> &share_ids, unsigned int length
+        int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
     );
     Server(Server &&) noexcept = delete;
     Server(const Server &) noexcept = delete;
