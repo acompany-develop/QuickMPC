@@ -1,29 +1,26 @@
+import pandas as pd
 import pytest
-from quickmpc import JobErrorInfo
 from quickmpc.exception import QMPCJobError
-from tests.common import data_id
-from utils import get_result, qmpc
-
-
-def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
-                              src=[1, 2, 3]):
-    return (dataIds, src)
+from utils import qmpc_new
 
 
 @pytest.mark.parametrize(
-    ("param"),
+    ("column"),
     [
         # column index is outside left of range
-        execute_computation_param(src=[0]),
+        (0),
 
         # column index is outside right of range
-        execute_computation_param(src=[4]),
+        (3),
     ]
 )
-def test_job_error_info(param: tuple):
+def test_job_error_info(column: int):
+    sdf = qmpc_new.send_to(pd.DataFrame([[1, 2], [3, 4]],
+                                        columns=["s1", "s2"]))
+
     err_info = None
     try:
-        get_result(qmpc.sum(*param), 10)
+        sdf.sum([column]).to_data_frame()
     except QMPCJobError as e:
         err_info = e.err_info
 

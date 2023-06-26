@@ -65,7 +65,7 @@ class ShareDataFrame:
         if self.__status == ShareDataFrameStatus.EXECUTE:
             logger.info("wait execute...")
             # TODO: 待機設定を指定できるようにする
-            for _ in range(10):
+            while True:
                 time.sleep(1)
                 res = self.__qmpc_request.get_computation_result(self.__id)
                 all_completed = all([
@@ -175,8 +175,12 @@ class ShareDataFrame:
         if not self.__is_result:
             raise RuntimeError("Shareを取り出すことはできません．")
         res = self.__qmpc_request.get_computation_result(self.__id, None)
+        if res.results is None:
+            return pd.DataFrame()
         # TODO: 型をつけて分岐できるようにする or そもそもdfで返す
         if type(res.results) == dict:
+            if res.results["schema"] is None or res.results["table"] is None:
+                return pd.DataFrame()
             schema = [s.name for s in res.results["schema"]]
             df = pd.DataFrame(res.results["table"],
                               columns=schema)
