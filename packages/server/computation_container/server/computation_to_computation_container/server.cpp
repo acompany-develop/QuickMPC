@@ -160,7 +160,7 @@ std::vector<std::string> Server::getShares(
     int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
 )
 {
-    const size_t length = share_ids.size();
+    const std::size_t length = share_ids.size();
     if (length == 0)
     {
         return std::vector<std::string>{};
