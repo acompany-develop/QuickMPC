@@ -200,3 +200,21 @@ class ShareDataFrame:
             return ""
         res = self.__qmpc_request.get_job_error_info(self.__id)
         return res.job_error_info
+
+    @_wait_execute_decorator
+    def get_elapsed_time(self) -> float:
+        """計算時間を取得する
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        float
+            計算時間
+        """
+        # 計算していない場合は計算時間が存在しない
+        if not self.__is_result:
+            raise RuntimeError("計算していないため計算時間を取得できません")
+        res = self.__qmpc_request.get_elapsed_time(self.__id)
+        return res.elapsed_time
