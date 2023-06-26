@@ -179,7 +179,7 @@ std::vector<std::string> Server::getShares(
 
     if (!cond.wait_for(
             lock,
-            std::chrono::seconds(conf->getshare_time_limit),
+            std::chrono::seconds(conf->getshare_time_limit * length),
             [&] { return shares_vec.count(key) == 1; }
         ))  // 待機
     {
