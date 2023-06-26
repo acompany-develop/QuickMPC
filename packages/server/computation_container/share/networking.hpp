@@ -207,7 +207,7 @@ auto recons(const T &share)
         }
         else
         {
-            std::vector<std::string> values = server->getShares(pt_id, ids_list, length);
+            std::vector<std::string> values = server->getShares(pt_id, ids_list);
             for (unsigned int i = 0; i < length; i++)
             {
                 if constexpr (std::is_same_v<Result, bool>)
@@ -253,7 +253,7 @@ std::vector<SV> receive(int sp_id, const std::vector<AddressId> &address_ids)
     ComputationToComputation::Server *server = ComputationToComputation::Server::getServer();
     int n = address_ids.size();
     std::vector<SV> ret(n);
-    auto shares = server->getShares(sp_id, address_ids, address_ids.size());
+    auto shares = server->getShares(sp_id, address_ids);
     for (int i = 0; i < n; ++i)
     {
         ret[i] = stosv<SV>(shares[i]);
