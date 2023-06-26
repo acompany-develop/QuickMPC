@@ -184,7 +184,7 @@ class ShareDataFrame:
         return pd.DataFrame(res.results)
 
     @_wait_execute_decorator
-    def get_error_info(self) -> dict:
+    def get_error_info(self) -> str:
         """計算中のエラー情報を取得する
 
         Parameters
@@ -192,7 +192,11 @@ class ShareDataFrame:
 
         Returns
         ----------
-        dict
-            なんやかんや
+        str
+            エラー情報の文字列
         """
-        ...
+        # 計算していない場合はそもそもエラー情報は存在しない
+        if not self.__is_result:
+            return ""
+        res = self.__qmpc_request.get_job_error_info(self.__id)
+        return res.job_error_info
