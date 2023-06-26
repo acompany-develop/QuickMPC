@@ -3,12 +3,13 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 from functools import update_wrapper
-from typing import Callable
+from typing import Callable, List
 
 import pandas as pd
 
 from .proto.common_types.common_types_pb2 import JobStatus
 from .request.qmpc_request_interface import QMPCRequestInterface
+from .utils.overload_tools import Dim1, methoddispatch
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,7 @@ class ShareDataFrame:
                     break
             self.__status = ShareDataFrameStatus.OK
 
+    @methoddispatch()
     def join(self, other: "ShareDataFrame") -> "ShareDataFrame":
         """テーブルデータを結合する．
 
@@ -89,7 +91,25 @@ class ShareDataFrame:
         Result
             結合したDataFrameのResult
         """
-        res = self.__qmpc_request.join([self.__id, other.__id])
+        return self.join([other])
+
+    @join.register(Dim1)
+    def join_list(self, others: List["ShareDataFrame"]) -> "ShareDataFrame":
+        """テーブルデータを結合する．
+
+        inner_joinのみ．
+
+        Parameters
+        ----------
+        others: List[ShareDataFrame]
+            結合したいDataFrameのリスト
+
+        Returns
+        ----------
+        Result
+            結合したDataFrameのResult
+        """
+        res = self.__qmpc_request.join([self.__id] + [o.__id for o in others])
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
