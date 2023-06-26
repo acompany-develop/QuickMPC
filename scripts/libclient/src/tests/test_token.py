@@ -1,5 +1,5 @@
-
 import csv
+import os
 import time
 
 from quickmpc import QMPC, parse
@@ -26,11 +26,11 @@ def __preprocess():
 
 
 def check_all_request(token: str):
+    os.environ["QMPC_TOKEN"] = token
     qmpc_inner: QMPC = QMPC(
         ["http://localhost:50001",
          "http://localhost:50002",
          "http://localhost:50003"],
-        token
     )
     data_id, job_uuid = __preprocess()
 

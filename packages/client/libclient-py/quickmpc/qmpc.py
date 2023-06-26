@@ -78,7 +78,8 @@ class QMPC:
     def delete_share(self, data_ids: List[str]) -> Dict:
         logger.info("delete_share request. "
                     f"[delete id list]={data_ids}")
-        return self.__qmpc_request.delete_share(data_ids)
+        res = self.__qmpc_request.delete_share(data_ids)
+        return {"is_ok": res.status == Status.OK}
 
     def mean(self, data_ids: List[str], src: List,
              *, debug_mode: bool = False) -> Dict:
@@ -160,7 +161,9 @@ class QMPC:
     def get_elapsed_time(self, job_uuid: str) -> Dict:
         logger.info("get_elapsed_time request. "
                     f"[job_uuid]={job_uuid}")
-        return self.__qmpc_request.get_elapsed_time(job_uuid)
+        res = self.__qmpc_request.get_elapsed_time(job_uuid)
+        return {"is_ok": res.status == Status.OK,
+                "elapsed_time": res.elapsed_time}
 
     def restore(self, job_uuid: str, path: str):
         logger.info("restore request. "
