@@ -76,7 +76,8 @@ class ShareDataFrame:
             self.__status = ShareDataFrameStatus.OK
 
     @methoddispatch()
-    def join(self, other: "ShareDataFrame") -> "ShareDataFrame":
+    def join(self, other: "ShareDataFrame", *, debug_mode=False) \
+            -> "ShareDataFrame":
         """テーブルデータを結合する．
 
         inner_joinのみ．
@@ -91,10 +92,11 @@ class ShareDataFrame:
         Result
             結合したDataFrameのResult
         """
-        return self.join([other])
+        return self.join([other], debug_mode=debug_mode)
 
     @join.register(Dim1)
-    def join_list(self, others: List["ShareDataFrame"]) -> "ShareDataFrame":
+    def join_list(self, others: List["ShareDataFrame"], *, debug_mode=False)\
+            -> "ShareDataFrame":
         """テーブルデータを結合する．
 
         inner_joinのみ．
@@ -109,7 +111,8 @@ class ShareDataFrame:
         Result
             結合したDataFrameのResult
         """
-        res = self.__qmpc_request.join([self.__id] + [o.__id for o in others])
+        res = self.__qmpc_request.join([self.__id] + [o.__id for o in others],
+                                       debug_mode=debug_mode)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
