@@ -161,7 +161,7 @@ std::vector<std::string> Server::getShares(
 )
 {
     const size_t length = share_ids.size();
-    if(length==0)
+    if(length == 0)
     {
         return std::vector<std::string>{};
     }
