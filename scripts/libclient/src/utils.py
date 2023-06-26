@@ -1,15 +1,18 @@
 
-import time
 import glob
 import os
+import time
+
 from quickmpc import QMPC, JobStatus
-import os
+from quickmpc.qmpc_new import QMPC as QMPC_new
+
 
 def get_endpoints():
     party_size = os.getenv("PARTY_SIZE")
     if party_size:
         try:
-            endpoints = [f"http://{os.environ[f'PARTY{i}']}:50000" for i in range(1,int(party_size)+1)]
+            endpoints = [
+                f"http://{os.environ[f'PARTY{i}']}:50000" for i in range(1, int(party_size)+1)]
             return endpoints
         except KeyError:
             raise
@@ -24,8 +27,12 @@ def get_endpoints():
 qmpc: QMPC = QMPC(
     get_endpoints()
 )
+qmpc_new: QMPC_new = QMPC_new(
+    get_endpoints()
+)
 
-def __try_get_computation_result(job_uuid, is_limit, path = './result'):
+
+def __try_get_computation_result(job_uuid, is_limit, path='./result'):
     try:
         if not os.path.isdir(path):
             os.mkdir(path)
@@ -35,11 +42,10 @@ def __try_get_computation_result(job_uuid, is_limit, path = './result'):
             raise
         return None
 
-
     all_completed = False
     if get_res["statuses"] is not None:
         all_completed = all([status == JobStatus.COMPLETED
-                                for status in get_res["statuses"]])
+                             for status in get_res["statuses"]])
 
     if all_completed:
         res = qmpc.restore(job_uuid, path)
@@ -51,6 +57,7 @@ def __try_get_computation_result(job_uuid, is_limit, path = './result'):
         return get_res
 
     return None
+
 
 def get_result(res, limit=20):
     """ 計算が終わるまで limit 回結果取得をし続ける i回目の終わりにi秒待つ"""
