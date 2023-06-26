@@ -26,8 +26,6 @@ ShareValueTypeEnum = common_types_pb2.ShareValueTypeEnum
 @dataclass(frozen=True)
 class QMPC:
     endpoints: InitVar[List[str]]
-    # tokenがちゃんと使用されるようになったらデフォルト値を外す
-    token: InitVar[str] = "token_demo"
     retry_num: InitVar[int] = 10
     retry_wait_time: InitVar[int] = 5
 
@@ -35,10 +33,10 @@ class QMPC:
     __party_size: int = field(init=False)
 
     def __post_init__(self, endpoints: List[str],
-                      token: str, retry_num: int, retry_wait_time: int):
+                      retry_num: int, retry_wait_time: int):
         logger.info(f"[QuickMPC server IP]={endpoints}")
         object.__setattr__(self, "_QMPC__qmpc_request", QMPCRequest(
-            endpoints, token, retry_num, retry_wait_time))
+            endpoints, retry_num, retry_wait_time))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
     def send_share_from_df(self,

@@ -83,7 +83,7 @@ class QMPCRequest(QMPCRequestInterface):
     __client_stubs: Tuple[LibcToManageStub] = field(init=False)
     __client_channels: Tuple[grpc.Channel] = field(init=False)
     __party_size: int = field(init=False)
-    __token: str = "token_demo"
+    __token: str = field(init=False)
     # TODO: retry manager的なのを作る
     __retry_num: int = 10
     __retry_wait_time: int = 5
@@ -94,6 +94,9 @@ class QMPCRequest(QMPCRequestInterface):
         object.__setattr__(self, "_QMPCRequest__client_channels", chs)
         object.__setattr__(self, "_QMPCRequest__client_stubs", stubs)
         object.__setattr__(self, "_QMPCRequest__party_size", len(endpoints))
+        token = os.environ["QMPC_TOKEN"] \
+            if "QMPC_TOKEN" in os.environ else "token_demo"
+        object.__setattr__(self, "_QMPCRequest__token", token)
 
     def __retry(self, f: Callable, *request: Any) -> Any:
         for ch in self.__client_channels:
