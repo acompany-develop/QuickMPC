@@ -17,14 +17,11 @@ local_ip_list = [
 
 
 def data_frame(values: List[List] = [[1, 2], [3, 4]],
-               index: Optional[List[float]] = None,
                columns: Optional[List[str]] = None) -> pd.DataFrame:
-    if index is None:
-        index = [i for i in range(len(values))]
     if columns is None:
         columns = [f"c{i}" for i in range(len(values[0]))] \
             if len(values) > 0 else []
-    return pd.DataFrame(values, index=index, columns=columns)
+    return pd.DataFrame(values, columns=columns)
 
 
 def send_share_param(df: pd.DataFrame = data_frame(), piece_size: int = 1000):

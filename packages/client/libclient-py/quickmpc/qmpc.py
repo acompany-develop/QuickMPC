@@ -1,12 +1,17 @@
+import io
 from dataclasses import dataclass, field, InitVar
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
+
+import pandas as pd
 
 from .proto.common_types import common_types_pb2
 from .qmpc_logging import get_logger
+from .qmpc_request import QMPCRequest
 from .qmpc_server import QMPCServer
+from .request.status import Status
 from .restore import restore
 from .share import Share
-from .utils.parse_csv import parse, parse_csv
+from .utils.parse_csv import parse, parse_csv, to_float
 
 logger = get_logger()
 # qmpc.JobStatus でアクセスできるようにエイリアスを設定する
@@ -28,6 +33,7 @@ class QMPC:
     retry_wait_time: InitVar[int] = 5
 
     __qmpc_server: QMPCServer = field(init=False)
+    __qmpc_request: QMPCRequest = field(init=False)
     __party_size: int = field(init=False)
 
     def __post_init__(self, endpoints: List[str],
@@ -35,29 +41,42 @@ class QMPC:
         logger.info(f"[QuickMPC server IP]={endpoints}")
         object.__setattr__(self, "_QMPC__qmpc_server", QMPCServer(
             endpoints, token, retry_num, retry_wait_time))
+        object.__setattr__(self, "_QMPC__qmpc_request", QMPCRequest(
+            endpoints, token, retry_num, retry_wait_time))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
     def send_share_from_csv_file(self,
-                                 filename: str,
+                                 filename: Union[str, io.StringIO],
                                  matching_column: int = 1,
                                  piece_size: int = 1_000_000) -> Dict:
-        secrets, schema = parse_csv(filename, matching_column)
+        df = pd.read_csv(filename)
+        index_col = df.columns[matching_column-1]
         logger.info("send_share_from_csv_file. "
-                    f"[filename]='{filename}'"
-                    f"[matching ID name]={schema[matching_column-1]}")
-        return self.__qmpc_server.send_share(
-            secrets, schema, matching_column, piece_size)
+                    f"[filename]='{filename}' "
+                    f"[matching ID name]={index_col}")
+        # ID列を1列目に持ってくる
+        df = df.iloc[:, [matching_column-1] +
+                     [i for i in range(len(df.columns))
+                      if i != matching_column-1]]
+        # ID列を数値化
+        df[index_col] = df[index_col].map(lambda x: to_float(x))
+        # join時にQMPCのCC側でID列でsortできる様に、座圧を行いindexに設定しておく
+        df["original_index"] = df.index
+        df = df.sort_values(by=index_col) \
+            .reset_index(drop=True) \
+            .sort_values(by="original_index") \
+            .drop('original_index', axis=1)
+        res = self.__qmpc_request.send_share(df, piece_size=piece_size)
+        return {"is_ok": res.status == Status.OK, "data_id": res.data_id}
 
     def send_share_from_csv_data(self,
                                  data: List[List[str]],
                                  matching_column: int = 1,
                                  piece_size: int = 1_000_000) -> Dict:
-        secrets, schema = parse(data, matching_column)
-        logger.info("send_share_from_csv_data. "
-                    f"[secrets size]={len(secrets)}x{len(secrets[0])} "
-                    f"[matching ID name]={schema[matching_column-1]}")
-        return self.__qmpc_server.send_share(
-            secrets, schema, matching_column, piece_size)
+        data_str = "\n".join([",".join(map(str, row)) for row in data])
+        return self.send_share_from_csv_file(io.StringIO(data_str),
+                                             matching_column=matching_column,
+                                             piece_size=piece_size)
 
     def delete_share(self, data_ids: List[str]) -> Dict:
         logger.info("delete_share request. "

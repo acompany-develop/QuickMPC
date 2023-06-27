@@ -81,7 +81,7 @@ class QMPCRequest(QMPCRequestInterface):
     __client_stubs: Tuple[LibcToManageStub] = field(init=False)
     __client_channels: Tuple[grpc.Channel] = field(init=False)
     __party_size: int = field(init=False)
-    __token: str = "token"
+    __token: str = "token_demo"
     # TODO: retry manager的なのを作る
     __retry_num: int = 10
     __retry_wait_time: int = 5
@@ -167,18 +167,16 @@ class QMPCRequest(QMPCRequestInterface):
             raise RuntimeError("規定されたフォーマットでないデータです．")
 
         # TODO: 無駄に一度tableを再構成しているのでparse関数を書き直す
-        table = [["id"] + df.columns.values.tolist()] + \
-            [[i] + row.tolist() for i, row in zip(df.index.values, df.values)]
+        df = df.sort_index()
+        table = [df.columns.values.tolist()] + \
+                [row.tolist() for row in df.values]
         secrets, schema = parse(table, matching_column=1)
 
-        # TODO: pandasで受け取ってるしpandasの処理でやった方が良さそう
-        # NOTE: pandas前処理でmatching_columnは1列目で固定になってる
-        sorted_secrets = sorted(secrets, key=lambda row: row[0])
         # pieceに分けてシェア化
         pieces: list = MakePiece.make_pieces(
-            sorted_secrets, int(piece_size / 10))
+            secrets, int(piece_size / 10))
         data_id: str = hashlib.sha256(
-            str(sorted_secrets).encode() + struct.pack('d', time.time())
+            str(secrets).encode() + struct.pack('d', time.time())
         ).hexdigest()
 
         # リクエストパラメータを設定して非同期にリクエスト送信
