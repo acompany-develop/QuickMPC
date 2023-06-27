@@ -174,7 +174,7 @@ class ShareDataFrame:
         # 計算結果でないなら取得できないようにする
         if not self.__is_result:
             raise RuntimeError("Shareを取り出すことはできません．")
-        res = self.__qmpc_request.get_computation_result(self.__id, "")
+        res = self.__qmpc_request.get_computation_result(self.__id, None)
         if res.results is None:
             return pd.DataFrame()
         # TODO: 型をつけて分岐できるようにする or そもそもdfで返す

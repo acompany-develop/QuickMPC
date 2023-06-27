@@ -1,7 +1,6 @@
 from dataclasses import dataclass, field, InitVar
 from typing import List, Union
 
-import numpy as np
 import pandas as pd
 
 from .qmpc_request import QMPCRequest

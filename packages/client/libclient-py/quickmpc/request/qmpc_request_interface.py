@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 
@@ -45,7 +45,8 @@ class QMPCRequestInterface(ABC):
         -> ExecuteResponse: ...
 
     @abstractmethod
-    def get_computation_result(self, job_uuid: str, output_path: str) \
+    def get_computation_result(self, job_uuid: str,
+                               output_path: Optional[str]) \
         -> GetResultResponse: ...
 
     @abstractmethod
