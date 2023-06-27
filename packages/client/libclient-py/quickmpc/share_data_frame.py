@@ -75,6 +75,24 @@ class ShareDataFrame:
                     break
             self.__status = ShareDataFrameStatus.OK
 
+    def __add__(self, other: "ShareDataFrame") -> "ShareDataFrame":
+        """テーブルを加算する．
+
+        qmpc.send_toで送ったデータでかつ，行数，列数が一致している場合のみ正常に動作する．
+
+        Parameters
+        ----------
+        other: ShareDataFrame
+            結合したいDataFrame
+
+        Returns
+        ----------
+        Result
+            加算して得られたDataFrameのResult
+        """
+        res = self.__qmpc_request.add_share_data_frame(self.__id, other.__id)
+        return ShareDataFrame(res.data_id, self.__qmpc_request)
+
     @methoddispatch()
     def join(self, other: "ShareDataFrame", *, debug_mode=False) \
             -> "ShareDataFrame":
