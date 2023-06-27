@@ -26,11 +26,12 @@ func TestAddShareDataFrameSave(t *testing.T) {
 				{"13.00000000000000000000000000000000000000000000000000",
 					"104.00000000000000000000000000000000000000000000000000"},
 			},
-				DataID: "str",
+				DataID: "6a8787d0da13f1dc67fce89cbb217aeeb5473fb1dce55e846ab65f35135dd215",
 				Meta:   m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
 		},
 	}
 	for name, tt := range testcases {
+		name := name
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
@@ -82,17 +83,17 @@ func TestAddPieceShareDataFrameSave(t *testing.T) {
 				{Value: [][]string{{
 					"11.00000000000000000000000000000000000000000000000000",
 					"102.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "6a8787d0da13f1dc67fce89cbb217aeeb5473fb1dce55e846ab65f35135dd215",
 					Meta:   m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
 				{Value: [][]string{{
 					"13.00000000000000000000000000000000000000000000000000",
 					"104.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "6a8787d0da13f1dc67fce89cbb217aeeb5473fb1dce55e846ab65f35135dd215",
 					Meta:   m2db.ShareMeta{PieceID: 1, MatchingColumn: 1}},
 				{Value: [][]string{{
 					"15.00000000000000000000000000000000000000000000000000",
 					"106.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "6a8787d0da13f1dc67fce89cbb217aeeb5473fb1dce55e846ab65f35135dd215",
 					Meta:   m2db.ShareMeta{PieceID: 2, MatchingColumn: 1}},
 			},
 		},
@@ -110,17 +111,17 @@ func TestAddPieceShareDataFrameSave(t *testing.T) {
 				{Value: [][]string{{
 					"11.00000000000000000000000000000000000000000000000000",
 					"102.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "bbcc21770ff7bf4b711243017e94d8493437d92a8152aa7da7b0be276096fc80",
 					Meta:   m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
 				{Value: [][]string{{
 					"13.00000000000000000000000000000000000000000000000000",
 					"104.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "bbcc21770ff7bf4b711243017e94d8493437d92a8152aa7da7b0be276096fc80",
 					Meta:   m2db.ShareMeta{PieceID: 1, MatchingColumn: 1}},
 				{Value: [][]string{{
 					"15.00000000000000000000000000000000000000000000000000",
 					"106.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "bbcc21770ff7bf4b711243017e94d8493437d92a8152aa7da7b0be276096fc80",
 					Meta:   m2db.ShareMeta{PieceID: 2, MatchingColumn: 1}},
 			},
 		},
@@ -138,19 +139,20 @@ func TestAddPieceShareDataFrameSave(t *testing.T) {
 				{Value: [][]string{{
 					"11.00000000000000000000000000000000000000000000000000",
 					"102.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "184642e3b73a954582fb59d6feb3f0a95a458923bc3ef033059f4b64e6032cc1",
 					Meta:   m2db.ShareMeta{PieceID: 0, MatchingColumn: 1}},
 				{Value: [][]string{
 					{"13.00000000000000000000000000000000000000000000000000",
 						"104.00000000000000000000000000000000000000000000000000"},
 					{"15.00000000000000000000000000000000000000000000000000",
 						"106.00000000000000000000000000000000000000000000000000"}},
-					DataID: "str",
+					DataID: "184642e3b73a954582fb59d6feb3f0a95a458923bc3ef033059f4b64e6032cc1",
 					Meta:   m2db.ShareMeta{PieceID: 1, MatchingColumn: 1}},
 			},
 		},
 	}
 	for name, tt := range testcases {
+		name := name
 		tt := tt
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
