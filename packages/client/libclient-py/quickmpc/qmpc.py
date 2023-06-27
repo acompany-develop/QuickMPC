@@ -10,7 +10,7 @@ from .qmpc_request import QMPCRequest
 from .request.status import Status
 from .restore import restore
 from .share import Share
-from .utils.parse_csv import parse, parse_csv, to_float
+from .utils.parse_csv import to_float
 
 logger = get_logger()
 # qmpc.JobStatus でアクセスできるようにエイリアスを設定する
