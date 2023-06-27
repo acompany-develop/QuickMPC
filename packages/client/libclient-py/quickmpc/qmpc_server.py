@@ -2,7 +2,6 @@ import csv
 import datetime
 import hashlib
 import json
-import logging
 import os
 import struct
 import time
