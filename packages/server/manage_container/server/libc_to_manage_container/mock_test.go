@@ -71,7 +71,11 @@ func (localDb) GetSharePiece(dataID string, pieceID int32) (m2db.Share, error) {
 	if !ok {
 		return m2db.Share{}, fmt.Errorf("share not found")
 	}
-	return share, nil
+	// deep copy
+	var ret m2db.Share
+	b, _ := json.Marshal(share)
+	json.Unmarshal(b, &ret)
+	return ret, nil
 }
 func (localDb) GetSchema(string) ([]*pb_types.Schema, error) {
 	return []*pb_types.Schema{{Name: "attr1"}}, nil
