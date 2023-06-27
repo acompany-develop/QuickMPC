@@ -39,10 +39,12 @@ func TestAddShareDataFrameSave(t *testing.T) {
 			// テスト用データをテスト用DBに保存しておく
 			dataID1 := fmt.Sprintf("%s%d", name, 1)
 			dataID2 := fmt.Sprintf("%s%d", name, 2)
+			mu.Lock()
 			db[dataID1] = map[int32]m2db.Share{}
 			db[dataID1][0] = tt.baseData
 			db[dataID2] = map[int32]m2db.Share{}
 			db[dataID2][0] = tt.addData
+			mu.Unlock()
 
 			// 加算処理をしてDBに加算された値が保存されているか確認
 			p := processer{m2dbclient: localDb{}}
@@ -160,6 +162,7 @@ func TestAddPieceShareDataFrameSave(t *testing.T) {
 			// テスト用データを1行ずつテスト用DBに保存しておく
 			baseDataID := fmt.Sprintf("%s%d", name, 1)
 			addDataID := fmt.Sprintf("%s%d", name, 2)
+			mu.Lock()
 			db[baseDataID] = map[int32]m2db.Share{}
 			for pieceID, share := range tt.baseData {
 				db[baseDataID][int32(pieceID)] = share
@@ -168,6 +171,7 @@ func TestAddPieceShareDataFrameSave(t *testing.T) {
 			for pieceID, share := range tt.addData {
 				db[addDataID][int32(pieceID)] = share
 			}
+			mu.Unlock()
 
 			// 加算処理をしてDBに加算された値が保存されているか確認
 			p := processer{m2dbclient: localDb{}}
