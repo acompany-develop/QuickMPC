@@ -41,7 +41,7 @@ class QMPCRequestInterface(ABC):
         -> ExecuteResponse: ...
 
     @abstractmethod
-    def join(self, data_ids: List[str]) \
+    def join(self, data_ids: List[str], *, debug_mode: bool) \
         -> ExecuteResponse: ...
 
     @abstractmethod

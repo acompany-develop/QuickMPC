@@ -7,7 +7,7 @@ from typing import Callable, List
 
 import pandas as pd
 
-from .proto.common_types.common_types_pb2 import JobStatus
+from .proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
 from .request.qmpc_request_interface import QMPCRequestInterface
 from .utils.overload_tools import Dim1, methoddispatch
 
@@ -174,7 +174,7 @@ class ShareDataFrame:
         # 計算結果でないなら取得できないようにする
         if not self.__is_result:
             raise RuntimeError("Shareを取り出すことはできません．")
-        res = self.__qmpc_request.get_computation_result(self.__id, None)
+        res = self.__qmpc_request.get_computation_result(self.__id, "")
         if res.results is None:
             return pd.DataFrame()
         # TODO: 型をつけて分岐できるようにする or そもそもdfで返す
@@ -188,7 +188,7 @@ class ShareDataFrame:
         return pd.DataFrame(res.results)
 
     @_wait_execute_decorator
-    def get_error_info(self) -> str:
+    def get_error_info(self) -> List[JobErrorInfo]:
         """計算中のエラー情報を取得する
 
         Parameters
@@ -201,12 +201,12 @@ class ShareDataFrame:
         """
         # 計算していない場合はそもそもエラー情報は存在しない
         if not self.__is_result:
-            return ""
+            return []
         res = self.__qmpc_request.get_job_error_info(self.__id)
         return res.job_error_info
 
     @_wait_execute_decorator
-    def get_elapsed_time(self) -> float:
+    def get_elapsed_time(self) -> List[float]:
         """計算時間を取得する
 
         Parameters

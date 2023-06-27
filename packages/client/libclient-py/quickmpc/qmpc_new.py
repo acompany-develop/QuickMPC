@@ -86,7 +86,7 @@ class QMPC:
             QuickMPC形式のDataframe
         """
         # send_shareできる形式に変換
-        res = self.__qmpc_request.send_share(df)
+        res = self.__qmpc_request.send_share(df, piece_size=1_000_000)
         return ShareDataFrame(res.data_id, self.__qmpc_request)
 
     def load_from(self, data_id: str) -> ShareDataFrame:
