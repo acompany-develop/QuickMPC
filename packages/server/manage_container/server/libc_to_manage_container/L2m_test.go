@@ -148,15 +148,15 @@ func TestGetElapsedTime(t *testing.T) {
 	}
 }
 
-func TestAddValueToId(t *testing.T) {
+func TestAddShareDataFrame(t *testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
 	client := pb.NewLibcToManageClient(conn)
 
-	_, err := client.AddValueToId(context.Background(), &pb.AddValueToIdRequest{
-		DataId: exist_data_id,
-		Value:  []string{"1", "2"},
-		Token:  "token_dep",
+	_, err := client.AddShareDataFrame(context.Background(), &pb.AddShareDataFrameRequest{
+		BaseDataId: exist_data_id,
+		AddDataId:  exist_data_id,
+		Token:      "token_dep",
 	})
 
 	if err != nil {

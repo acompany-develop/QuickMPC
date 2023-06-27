@@ -328,13 +328,20 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 	}, nil
 }
 
-func (s *server) AddValueToId(ctx context.Context, in *pb.AddValueToIdRequest) (*empty.Empty, error) {
-	AppLogger.Info("Add Value To Id;")
-	AppLogger.Info("dataID: " + in.GetDataId())
+func (s *server) AddShareDataFrame(ctx context.Context, in *pb.AddShareDataFrameRequest) (*pb.AddShareDataFrameResponse, error) {
+	AppLogger.Info("AddShareDataFrame;")
+	AppLogger.Info("baseDataID: " + in.GetBaseDataId())
+	AppLogger.Info("addDataID: " + in.GetAddDataId())
 
 	p := processer{s.m2dbclient}
-	err := p.addValueToIDCol(in.GetDataId(), in.GetValue())
-	return &empty.Empty{}, err
+	dataID, err := p.addShareDataFrame(in.GetBaseDataId(), in.GetAddDataId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AddShareDataFrameResponse{
+		DataId: dataID,
+	}, nil
 }
 
 // LibtoMCサーバ起動
