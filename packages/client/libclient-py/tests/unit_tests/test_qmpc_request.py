@@ -123,7 +123,6 @@ class TestQMPCRequestFailed:
         ["http://localhost:33333",
          "http://localhost:44444",
          "http://localhost:55555"],
-        "token_demo",
         10,
         0
     )
