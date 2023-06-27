@@ -8,11 +8,12 @@ import numpy as np
 
 from .exception import ArgumentError
 from .proto.common_types.common_types_pb2 import Schema, ShareValueTypeEnum
+from .qmpc_logging import get_logger
 from .utils.overload_tools import (DictList, DictList2, Dim1,
                                    Dim2, Dim3, methoddispatch)
 from .utils.random import ChaCha20, RandomInterface
 
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 
 @dataclass(frozen=True)

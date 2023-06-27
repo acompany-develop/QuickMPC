@@ -3,12 +3,13 @@ from dataclasses import dataclass, field, InitVar
 from typing import Dict, List, Optional, Tuple
 
 from .proto.common_types import common_types_pb2
+from .qmpc_logging import get_logger
 from .qmpc_server import QMPCServer
+from .restore import restore
 from .share import Share
 from .utils.parse_csv import parse, parse_csv
-from .restore import restore
 
-logger = logging.getLogger(__name__)
+logger = get_logger()
 # qmpc.JobStatus でアクセスできるようにエイリアスを設定する
 JobStatus \
     = common_types_pb2.JobStatus

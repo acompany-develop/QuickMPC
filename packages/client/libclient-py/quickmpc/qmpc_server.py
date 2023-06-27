@@ -29,6 +29,7 @@ from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        GetJobErrorInfoRequest, Input,
                                        JoinOrder, SendSharesRequest)
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
+from .qmpc_logging import get_logger
 from .share import Share
 from .utils.if_present import if_present
 from .utils.make_pieces import MakePiece
@@ -38,7 +39,7 @@ from .utils.parse_csv import format_check
 abs_file = os.path.abspath(__file__)
 base_dir = os.path.dirname(abs_file)
 
-logger = logging.getLogger(__name__)
+logger = get_logger()
 
 
 @dataclass(frozen=True)
