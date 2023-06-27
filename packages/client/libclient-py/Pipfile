@@ -10,6 +10,7 @@ pynacl = "*"
 tqdm = "*"
 grpcio-status = "==1.46.3"
 natsort = "*"
+pandas = "*"
 
 [dev-packages]
 pytest = "*"
