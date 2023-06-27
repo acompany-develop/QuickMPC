@@ -115,6 +115,10 @@ class TestQMPCRequest:
         response = self.qmpc_request.delete_share(["data_id"])
         assert response.status == Status.OK
 
+    def test_add_share_data_frame(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.add_share_data_frame("id1", "id2")
+        assert response.status == Status.OK
+
 
 class TestQMPCRequestFailed:
     # 通信失敗する場合をテストする用のサーバー
@@ -135,6 +139,7 @@ class TestQMPCRequestFailed:
             (qmpc_request_failed.get_elapsed_time, (["uuid"])),
             (qmpc_request_failed.get_computation_result, ["uuid", None]),
             (qmpc_request_failed.get_job_error_info, ["uuid"]),
+            (qmpc_request_failed.add_share_data_frame, ["id1", "id2"]),
         ]
     )
     def test_retry(self, function, argument, caplog,

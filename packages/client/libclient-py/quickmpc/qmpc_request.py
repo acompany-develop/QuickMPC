@@ -22,7 +22,8 @@ from .exception import ArgumentError, QMPCJobError, QMPCServerError
 from .proto.common_types.common_types_pb2 import (ComputationMethod,
                                                   JobErrorInfo, JobStatus,
                                                   Schema)
-from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
+from .proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
+                                       DeleteSharesRequest,
                                        ExecuteComputationRequest,
                                        GetComputationResultRequest,
                                        GetComputationResultResponse,
@@ -32,10 +33,10 @@ from .proto.libc_to_manage_pb2 import (DeleteSharesRequest,
                                        JoinOrder, SendSharesRequest)
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
 from .request.qmpc_request_interface import QMPCRequestInterface
-from .request.response import (DeleteShareResponse, ExecuteResponse,
-                               GetDataListResponse, GetElapsedTimeResponse,
-                               GetJobErrorInfoResponse, GetResultResponse,
-                               SendShareResponse)
+from .request.response import (AddShareDataFrameResponse, DeleteShareResponse,
+                               ExecuteResponse, GetDataListResponse,
+                               GetElapsedTimeResponse, GetJobErrorInfoResponse,
+                               GetResultResponse, SendShareResponse)
 from .request.status import Status
 from .share import Share
 from .utils.if_present import if_present
@@ -458,3 +459,20 @@ class QMPCRequest(QMPCRequestInterface):
         if is_ok:
             return DeleteShareResponse(Status.OK)
         return DeleteShareResponse(Status.BadGateway)
+
+    def add_share_data_frame(self, base_data_id: str, add_data_id: str) \
+            -> AddShareDataFrameResponse:
+        req = AddShareDataFrameRequest(base_data_id=base_data_id,
+                                       add_data_id=add_data_id,
+                                       token=self.__token)
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       stub.AddShareDataFrame, req)
+                       for stub in self.__client_stubs]
+        is_ok, response = QMPCRequest.__futures_result(futures)
+        data_id = response[0].data_id if is_ok else ""
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return AddShareDataFrameResponse(Status.OK, data_id)
+        return AddShareDataFrameResponse(Status.BadGateway, data_id)

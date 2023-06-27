@@ -101,6 +101,12 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
         res = libc_to_manage_pb2.GetSchemaResponse()
         return res
 
+    def AddShareDataFrame(self, request, context):
+        res = libc_to_manage_pb2.AddShareDataFrameResponse(
+            data_id="data_id"
+        )
+        return res
+
 
 def serve(num: int):
     """ server setting """
