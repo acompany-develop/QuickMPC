@@ -150,7 +150,8 @@ class QMPC:
 
     def get_data_list(self) -> Dict:
         logger.info("get_data_list request.")
-        return self.__qmpc_request.get_data_list()
+        res = self.__qmpc_request.get_data_list()
+        return {"is_ok": res.status == Status.OK, "results": res.data_ids}
 
     def demo_sharize(self, secrets: List) -> Dict:
         logger.info("demo_sharize request. "

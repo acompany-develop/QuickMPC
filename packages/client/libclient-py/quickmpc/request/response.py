@@ -41,7 +41,7 @@ class GetElapsedTimeResponse():
 @dataclass(frozen=True)
 class GetDataListResponse():
     status: Status
-    data_ids: List[str]
+    data_ids: Optional[List[str]]
 
 
 @dataclass(frozen=True)
