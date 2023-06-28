@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  JWT_SECRET_KEY: pOdd9laRfJVMB3kWJn5HpPPE+lQ2f+jWWqXYasT0OBA=
+kind: ConfigMap
+metadata:
+  creationTimestamp:
+  labels:
+    io.kompose.service: beaver-triple-service-config-others-jwt-envs-server-jwt-env
+  name: config-others-jwt-envs-server-jwt-env
