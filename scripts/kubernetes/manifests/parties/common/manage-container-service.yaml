@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.image-pull-secret: registry-credential
+    kompose.volume.type: persistentVolumeClaim
+  creationTimestamp:
+  labels:
+    io.kompose.service: manage-container
+  name: manage-container
+spec:
+  ports:
+  - name: "50011"
+    port: 50011
+    targetPort: 50011
+  - name: "51011"
+    port: 51011
+    targetPort: 51011
+  selector:
+    io.kompose.service: manage-container
+status:
+  loadBalancer: {}
