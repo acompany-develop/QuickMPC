@@ -9,15 +9,17 @@ metadata:
   name: manage-envoy-container
 spec:
   ports:
-  - name: "50001"
-    port: 50001
+  - name: "50000"
+    port: 50000
     targetPort: 50000
+    nodePort: 30000
   - name: "15000"
     port: 15000
     targetPort: 15000
   - name: "50010"
     port: 50010
     targetPort: 50010
+    nodePort: 30010
   selector:
     io.kompose.service: manage-envoy-container
   type: NodePort

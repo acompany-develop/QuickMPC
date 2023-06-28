@@ -12,9 +12,11 @@ spec:
   - name: "50020"
     port: 50020
     targetPort: 50020
+    nodePort: 30020
   - name: "31020"
     port: 31020
     targetPort: 31020
+    nodePort: 31020
   selector:
     io.kompose.service: compute-envoy-container
   type: NodePort
