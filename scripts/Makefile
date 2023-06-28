@@ -51,3 +51,13 @@ gen-jwt:
 	docker-compose $(COMPOSE_FILES_OPT) down -v
 	docker buildx bake $(COMPOSE_FILES_OPT) small_bts --load
 	docker-compose $(COMPOSE_FILES_OPT) run --rm small_bts /bin/sh -c './beaver_triple_service generateJwt --file /QuickMPC/config/sample.yaml --output /QuickMPC/config'
+
+create-gke-cluster:
+	cd kubernetes/terraform && \
+	terraform init && \
+	terraform plan && \
+	terraform apply
+
+delete-gke-cluster:
+	cd kubernetes/terraform && \
+	terraform destroy
