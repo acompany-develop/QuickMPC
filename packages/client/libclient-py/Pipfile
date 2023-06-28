@@ -5,10 +5,10 @@ name = "pypi"
 
 [packages]
 numpy = "*"
-grpcio-tools = "==1.46.3"
+grpcio-tools = "*"
 pynacl = "*"
 tqdm = "*"
-grpcio-status = "==1.46.3"
+grpcio-status = "*"
 natsort = "*"
 pandas = "*"
 
