@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp:
+  labels:
+    io.kompose.service: beaver-triple-service
+  name: beaver-triple-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: beaver-triple-service
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp:
+      labels:
+        io.kompose.network/beaver-triple-service-default: "true"
+        io.kompose.service: beaver-triple-service
+    spec:
+      containers:
+      - args:
+        - /bin/bash
+        - -c
+        - ./beaver_triple_service
+        env:
+        - name: BTS_TOKEN
+          valueFrom:
+            configMapKeyRef:
+              key: BTS_TOKEN
+              name: config-others-jwt-envs-client-jwt-env
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            configMapKeyRef:
+              key: JWT_SECRET_KEY
+              name: config-others-jwt-envs-server-jwt-env
+        - name: PORT
+          valueFrom:
+            configMapKeyRef:
+              key: PORT
+              name: config-others-beaver-triple-service--env
+        - name: WITH_ENVOY
+          valueFrom:
+            configMapKeyRef:
+              key: WITH_ENVOY
+              name: config-others-beaver-triple-service--env
+        image: ghcr.io/acompany-develop/quickmpc-bts:20230228
+        livenessProbe:
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - |-
+              /bin/grpc_health_probe \
+                -addr=:50020 \
+                -rpc-header=authorization:"bearer $$BTS_TOKEN"
+          periodSeconds: 3
+          timeoutSeconds: 5
+        name: beaver-triple-service
+        ports:
+        - containerPort: 50020
+        resources: {}
+      restartPolicy: Always
+status: {}
