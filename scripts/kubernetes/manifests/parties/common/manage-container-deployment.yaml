@@ -71,7 +71,7 @@ spec:
             configMapKeyRef:
               key: PARTY_LIST2
               name: config-manage-container--env
-        image: ghcr.io/acompany-develop/quickmpc-mc:20230302
+        image: ghcr.io/acompany-develop/quickmpc-mc:0.4.2
         livenessProbe:
           exec:
             command:

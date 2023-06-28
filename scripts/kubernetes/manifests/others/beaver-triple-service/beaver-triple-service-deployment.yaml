@@ -29,10 +29,10 @@ spec:
             configMapKeyRef:
               key: BTS_TOKEN
               name: config-others-jwt-envs-client-jwt-env
-        - name: JWT_SECRET_KEY
+        - name: JWT_BASE64_SECRET_KEY
           valueFrom:
             configMapKeyRef:
-              key: JWT_SECRET_KEY
+              key: JWT_BASE64_SECRET_KEY
               name: config-others-jwt-envs-server-jwt-env
         - name: PORT
           valueFrom:
@@ -44,7 +44,7 @@ spec:
             configMapKeyRef:
               key: WITH_ENVOY
               name: config-others-beaver-triple-service--env
-        image: ghcr.io/acompany-develop/quickmpc-bts:20230228
+        image: ghcr.io/acompany-develop/quickmpc-bts:0.4.2
         livenessProbe:
           exec:
             command:

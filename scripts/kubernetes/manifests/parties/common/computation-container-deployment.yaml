@@ -76,7 +76,7 @@ spec:
             configMapKeyRef:
               key: SP_ID
               name: config-computation-container--env
-        image: ghcr.io/acompany-develop/quickmpc-cc:20230302
+        image: ghcr.io/acompany-develop/quickmpc-cc:0.4.2
         livenessProbe:
           exec:
             command:
