@@ -8,7 +8,6 @@ class TestQMPC:
         ["http://localhost:50001",
          "http://localhost:50002",
          "http://localhost:50003"],
-        "token_demo"
     )
 
     def test_restore(self, run_server1, run_server2, run_server3):

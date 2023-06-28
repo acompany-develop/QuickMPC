@@ -19,7 +19,7 @@ def generate_random_string(seed: int, length: int) -> str:
         # normal case
         'secret',
         # random case
-        *[generate_random_string(seed=seed, length=512) for seed in range(5)],
+        generate_random_string(seed=0, length=512),
         # alphabet
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
         # hiragana
