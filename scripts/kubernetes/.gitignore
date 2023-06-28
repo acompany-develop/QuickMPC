@@ -1,0 +1,4 @@
+terraform/*terraform**
+src/terraform.tfstate
+src/kubeip/
+src/json/*.json
