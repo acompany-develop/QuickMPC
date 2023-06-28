@@ -6,12 +6,6 @@ import pytest
 from quickmpc.qmpc_request import QMPCRequest
 from quickmpc.request.status import Status
 
-local_ip_list = [
-    "http://localhost:50001",
-    "http://localhost:50002",
-    "http://localhost:50003"
-]
-
 
 def data_frame(values: List[List] = [[1, 2], [3, 4]],
                columns: Optional[List[str]] = None) -> pd.DataFrame:
@@ -26,7 +20,11 @@ def send_share_param(df: pd.DataFrame = data_frame(), piece_size: int = 1000):
 
 
 class TestQMPCRequest:
-    qmpc_request = QMPCRequest(local_ip_list)
+    qmpc_request = QMPCRequest([
+        "http://localhost:50001",
+        "http://localhost:50002",
+        "http://localhost:50003"
+    ])
 
     @pytest.mark.parametrize(
         ("params"), [
