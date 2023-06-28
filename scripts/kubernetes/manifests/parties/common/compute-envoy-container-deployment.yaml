@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.service.type: nodeport
+  creationTimestamp:
+  labels:
+    io.kompose.service: compute-envoy-container
+  name: compute-envoy-container
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: compute-envoy-container
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.service.type: nodeport
+      creationTimestamp:
+      labels:
+        io.kompose.network/1-default: "true"
+        io.kompose.service: compute-envoy-container
+    spec:
+      containers:
+      - args:
+        - /bin/sh
+        - -c
+        - /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
+        image: envoyproxy/envoy:v1.17.1
+        name: compute-envoy-container
+        ports:
+        - containerPort: 50020
+        - containerPort: 31020
+        resources: {}
+        tty: true
+        volumeMounts:
+        - mountPath: /etc/envoy/envoy.yaml
+          name: compute-envoy-container-hostpath0
+      restartPolicy: Always
+      volumes:
+      - hostPath:
+          path: /opt/QuickMPC/config/computation-container/envoy.yaml
+        name: compute-envoy-container-hostpath0
+status: {}
