@@ -1,4 +1,4 @@
-FROM python:3.7 as src
+FROM python:3.11 as src
 
 RUN apt-get update && \
     apt-get install -y \
@@ -9,7 +9,7 @@ RUN pip install -U pip && \
     pip install \
     autopep8 \
     mypy-protobuf \
-    grpcio-tools==1.46.3
+    grpcio-tools
 
 ENV PATH $PATH:/root/go/bin
 ENV PATH $PATH:/usr/local/go/bin

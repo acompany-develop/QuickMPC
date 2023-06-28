@@ -18,6 +18,7 @@ else:
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
+@typing_extensions.final
 class SendSharesRequest(google.protobuf.message.Message):
     """*
     the message of SendSharesRequest
@@ -55,6 +56,7 @@ class SendSharesRequest(google.protobuf.message.Message):
 
 global___SendSharesRequest = SendSharesRequest
 
+@typing_extensions.final
 class DeleteSharesRequest(google.protobuf.message.Message):
     """*
     the message of DeleteSharesRequest
@@ -77,6 +79,7 @@ class DeleteSharesRequest(google.protobuf.message.Message):
 
 global___DeleteSharesRequest = DeleteSharesRequest
 
+@typing_extensions.final
 class GetSchemaRequest(google.protobuf.message.Message):
     """*
     the message of GetSchemaRequest
@@ -98,6 +101,7 @@ class GetSchemaRequest(google.protobuf.message.Message):
 
 global___GetSchemaRequest = GetSchemaRequest
 
+@typing_extensions.final
 class GetSchemaResponse(google.protobuf.message.Message):
     """*
     the message of GetSchemaResponse
@@ -117,6 +121,7 @@ class GetSchemaResponse(google.protobuf.message.Message):
 
 global___GetSchemaResponse = GetSchemaResponse
 
+@typing_extensions.final
 class JoinOrder(google.protobuf.message.Message):
     """*
     the message of ExecuteComputationRequest
@@ -139,6 +144,7 @@ class JoinOrder(google.protobuf.message.Message):
 
 global___JoinOrder = JoinOrder
 
+@typing_extensions.final
 class Input(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -158,6 +164,7 @@ class Input(google.protobuf.message.Message):
 
 global___Input = Input
 
+@typing_extensions.final
 class ExecuteComputationRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -184,6 +191,7 @@ class ExecuteComputationRequest(google.protobuf.message.Message):
 
 global___ExecuteComputationRequest = ExecuteComputationRequest
 
+@typing_extensions.final
 class ExecuteComputationResponse(google.protobuf.message.Message):
     """
     the message of ExecuteComputationResponse
@@ -202,6 +210,7 @@ class ExecuteComputationResponse(google.protobuf.message.Message):
 
 global___ExecuteComputationResponse = ExecuteComputationResponse
 
+@typing_extensions.final
 class GetComputationResultRequest(google.protobuf.message.Message):
     """*
     the message of GetComputationResultRequest
@@ -223,6 +232,7 @@ class GetComputationResultRequest(google.protobuf.message.Message):
 
 global___GetComputationResultRequest = GetComputationResultRequest
 
+@typing_extensions.final
 class GetComputationResultResponse(google.protobuf.message.Message):
     """*
     the message of GetComputationResultResponse
@@ -269,6 +279,7 @@ class GetComputationResultResponse(google.protobuf.message.Message):
 
 global___GetComputationResultResponse = GetComputationResultResponse
 
+@typing_extensions.final
 class GetDataListRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -283,6 +294,7 @@ class GetDataListRequest(google.protobuf.message.Message):
 
 global___GetDataListRequest = GetDataListRequest
 
+@typing_extensions.final
 class GetDataListResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -297,6 +309,7 @@ class GetDataListResponse(google.protobuf.message.Message):
 
 global___GetDataListResponse = GetDataListResponse
 
+@typing_extensions.final
 class GetElapsedTimeRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -314,6 +327,7 @@ class GetElapsedTimeRequest(google.protobuf.message.Message):
 
 global___GetElapsedTimeRequest = GetElapsedTimeRequest
 
+@typing_extensions.final
 class GetElapsedTimeResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -328,6 +342,7 @@ class GetElapsedTimeResponse(google.protobuf.message.Message):
 
 global___GetElapsedTimeResponse = GetElapsedTimeResponse
 
+@typing_extensions.final
 class GetJobErrorInfoRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -345,6 +360,7 @@ class GetJobErrorInfoRequest(google.protobuf.message.Message):
 
 global___GetJobErrorInfoRequest = GetJobErrorInfoRequest
 
+@typing_extensions.final
 class GetJobErrorInfoResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
