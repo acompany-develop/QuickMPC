@@ -89,8 +89,6 @@ spec:
         resources: {}
         tty: true
         volumeMounts:
-        - mountPath: /QuickMPC/config
-          name: manage-container-claim0
         - mountPath: /db/share
           name: sharedb
         - mountPath: /db/result
