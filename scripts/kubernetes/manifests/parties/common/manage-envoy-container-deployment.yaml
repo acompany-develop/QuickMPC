@@ -38,11 +38,11 @@ spec:
         resources: {}
         tty: true
         volumeMounts:
-        - mountPath: /etc/envoy/envoy.yaml
-          name: manage-envoy-container-hostpath0
+        - mountPath: /etc/envoy
+          name: envoy
       restartPolicy: Always
       volumes:
-      - hostPath:
-          path: /opt/QuickMPC/config/manage-container/envoy.yaml
-        name: manage-envoy-container-hostpath0
+        - name: envoy
+          configMap:
+            name: manage-envoy-container-hostpath0
 status: {}

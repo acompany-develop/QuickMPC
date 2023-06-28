@@ -40,11 +40,11 @@ spec:
         resources: {}
         tty: true
         volumeMounts:
-        - mountPath: /etc/envoy/envoy.yaml
-          name: beaver-triple-service-envoy-hostpath0
+        - mountPath: /etc/envoy
+          name: envoy
       restartPolicy: Always
       volumes:
-      - hostPath:
-          path: /opt/QuickMPC/config/beaver-triple-service/envoy.yaml
-        name: beaver-triple-service-envoy-hostpath0
+      - name: envoy
+        configMap:
+          name: bts-envoy-container-hostpath0
 status: {}
