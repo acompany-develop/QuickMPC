@@ -28,19 +28,6 @@ cc_library(
 )
 
 cc_library(
-    name = "matrix_test",
-    hdrs = [
-        "matrix_test.hpp",
-    ],
-    deps = [
-        "@gtest//:main",
-        "//share:matrix",
-        "//logging:log",
-    ],
-    visibility = ["//visibility:public"],
-)
-
-cc_library(
     name = "meshcode_test",
     srcs = [
         "mesh_code_test.hpp",
