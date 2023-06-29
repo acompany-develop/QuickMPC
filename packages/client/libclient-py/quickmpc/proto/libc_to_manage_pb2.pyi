@@ -379,23 +379,37 @@ class GetJobErrorInfoResponse(google.protobuf.message.Message):
 global___GetJobErrorInfoResponse = GetJobErrorInfoResponse
 
 @typing_extensions.final
-class AddValueToIdRequest(google.protobuf.message.Message):
+class AddShareDataFrameRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    DATA_ID_FIELD_NUMBER: builtins.int
-    VALUE_FIELD_NUMBER: builtins.int
+    BASE_DATA_ID_FIELD_NUMBER: builtins.int
+    ADD_DATA_ID_FIELD_NUMBER: builtins.int
     TOKEN_FIELD_NUMBER: builtins.int
-    data_id: builtins.str
-    @property
-    def value(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    base_data_id: builtins.str
+    add_data_id: builtins.str
     token: builtins.str
     def __init__(
         self,
         *,
-        data_id: builtins.str = ...,
-        value: collections.abc.Iterable[builtins.str] | None = ...,
+        base_data_id: builtins.str = ...,
+        add_data_id: builtins.str = ...,
         token: builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["data_id", b"data_id", "token", b"token", "value", b"value"]) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["add_data_id", b"add_data_id", "base_data_id", b"base_data_id", "token", b"token"]) -> None: ...
 
-global___AddValueToIdRequest = AddValueToIdRequest
+global___AddShareDataFrameRequest = AddShareDataFrameRequest
+
+@typing_extensions.final
+class AddShareDataFrameResponse(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    DATA_ID_FIELD_NUMBER: builtins.int
+    data_id: builtins.str
+    def __init__(
+        self,
+        *,
+        data_id: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["data_id", b"data_id"]) -> None: ...
+
+global___AddShareDataFrameResponse = AddShareDataFrameResponse

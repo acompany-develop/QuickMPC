@@ -20,7 +20,7 @@ service LibcToManage {
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                                    // data一覧取得リクエスト
     rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                           // 計算時間取得リクエスト
     rpc GetJobErrorInfo(GetJobErrorInfoRequest) returns (GetJobErrorInfoResponse) {}                        // stacktrace取得リクエスト
-    rpc AddValueToId(AddValueToIdRequest) returns (google.protobuf.Empty) {}                               // ID列加算リクエスト
+    rpc AddShareDataFrame(AddShareDataFrameRequest) returns (AddShareDataFrameResponse) {}                  // テーブル加算リクエスト
 }
 
 /**
@@ -134,8 +134,12 @@ message GetJobErrorInfoResponse {
     optional pb_common_types.JobErrorInfo job_error_info = 1;
 }
 
-message AddValueToIdRequest {
-    string data_id= 1;
-    repeated string value = 2;
+message AddShareDataFrameRequest {
+    string base_data_id = 1;
+    string add_data_id = 2;
     string token = 3;
+}
+
+message AddShareDataFrameResponse {
+		string data_id = 1;
 }

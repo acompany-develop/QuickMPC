@@ -57,10 +57,10 @@ class LibcToManageStub(object):
             request_serializer=libc__to__manage__pb2.GetJobErrorInfoRequest.SerializeToString,
             response_deserializer=libc__to__manage__pb2.GetJobErrorInfoResponse.FromString,
         )
-        self.AddValueToId = channel.unary_unary(
-            '/libctomanage.LibcToManage/AddValueToId',
-            request_serializer=libc__to__manage__pb2.AddValueToIdRequest.SerializeToString,
-            response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+        self.AddShareDataFrame = channel.unary_unary(
+            '/libctomanage.LibcToManage/AddShareDataFrame',
+            request_serializer=libc__to__manage__pb2.AddShareDataFrameRequest.SerializeToString,
+            response_deserializer=libc__to__manage__pb2.AddShareDataFrameResponse.FromString,
         )
 
 
@@ -117,7 +117,7 @@ class LibcToManageServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def AddValueToId(self, request, context):
+    def AddShareDataFrame(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -166,10 +166,10 @@ def add_LibcToManageServicer_to_server(servicer, server):
             request_deserializer=libc__to__manage__pb2.GetJobErrorInfoRequest.FromString,
             response_serializer=libc__to__manage__pb2.GetJobErrorInfoResponse.SerializeToString,
         ),
-        'AddValueToId': grpc.unary_unary_rpc_method_handler(
-            servicer.AddValueToId,
-            request_deserializer=libc__to__manage__pb2.AddValueToIdRequest.FromString,
-            response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+        'AddShareDataFrame': grpc.unary_unary_rpc_method_handler(
+            servicer.AddShareDataFrame,
+            request_deserializer=libc__to__manage__pb2.AddShareDataFrameRequest.FromString,
+            response_serializer=libc__to__manage__pb2.AddShareDataFrameResponse.SerializeToString,
         ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -321,18 +321,18 @@ class LibcToManage(object):
                                              insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def AddValueToId(request,
-                     target,
-                     options=(),
-                     channel_credentials=None,
-                     call_credentials=None,
-                     insecure=False,
-                     compression=None,
-                     wait_for_ready=None,
-                     timeout=None,
-                     metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/AddValueToId',
-                                             libc__to__manage__pb2.AddValueToIdRequest.SerializeToString,
-                                             google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+    def AddShareDataFrame(request,
+                          target,
+                          options=(),
+                          channel_credentials=None,
+                          call_credentials=None,
+                          insecure=False,
+                          compression=None,
+                          wait_for_ready=None,
+                          timeout=None,
+                          metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/AddShareDataFrame',
+                                             libc__to__manage__pb2.AddShareDataFrameRequest.SerializeToString,
+                                             libc__to__manage__pb2.AddShareDataFrameResponse.FromString,
                                              options, channel_credentials,
                                              insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

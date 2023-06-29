@@ -31,7 +31,7 @@ type LibcToManageClient interface {
 	GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error)
 	GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error)
-	AddValueToId(ctx context.Context, in *AddValueToIdRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	AddShareDataFrame(ctx context.Context, in *AddShareDataFrameRequest, opts ...grpc.CallOption) (*AddShareDataFrameResponse, error)
 }
 
 type libcToManageClient struct {
@@ -137,9 +137,9 @@ func (c *libcToManageClient) GetJobErrorInfo(ctx context.Context, in *GetJobErro
 	return out, nil
 }
 
-func (c *libcToManageClient) AddValueToId(ctx context.Context, in *AddValueToIdRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
-	out := new(emptypb.Empty)
-	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/AddValueToId", in, out, opts...)
+func (c *libcToManageClient) AddShareDataFrame(ctx context.Context, in *AddShareDataFrameRequest, opts ...grpc.CallOption) (*AddShareDataFrameResponse, error) {
+	out := new(AddShareDataFrameResponse)
+	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/AddShareDataFrame", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -158,7 +158,7 @@ type LibcToManageServer interface {
 	GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error)
 	GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error)
-	AddValueToId(context.Context, *AddValueToIdRequest) (*emptypb.Empty, error)
+	AddShareDataFrame(context.Context, *AddShareDataFrameRequest) (*AddShareDataFrameResponse, error)
 	mustEmbedUnimplementedLibcToManageServer()
 }
 
@@ -190,8 +190,8 @@ func (UnimplementedLibcToManageServer) GetElapsedTime(context.Context, *GetElaps
 func (UnimplementedLibcToManageServer) GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetJobErrorInfo not implemented")
 }
-func (UnimplementedLibcToManageServer) AddValueToId(context.Context, *AddValueToIdRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddValueToId not implemented")
+func (UnimplementedLibcToManageServer) AddShareDataFrame(context.Context, *AddShareDataFrameRequest) (*AddShareDataFrameResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddShareDataFrame not implemented")
 }
 func (UnimplementedLibcToManageServer) mustEmbedUnimplementedLibcToManageServer() {}
 
@@ -353,20 +353,20 @@ func _LibcToManage_GetJobErrorInfo_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _LibcToManage_AddValueToId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(AddValueToIdRequest)
+func _LibcToManage_AddShareDataFrame_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddShareDataFrameRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LibcToManageServer).AddValueToId(ctx, in)
+		return srv.(LibcToManageServer).AddShareDataFrame(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libctomanage.LibcToManage/AddValueToId",
+		FullMethod: "/libctomanage.LibcToManage/AddShareDataFrame",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LibcToManageServer).AddValueToId(ctx, req.(*AddValueToIdRequest))
+		return srv.(LibcToManageServer).AddShareDataFrame(ctx, req.(*AddShareDataFrameRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -407,8 +407,8 @@ var LibcToManage_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LibcToManage_GetJobErrorInfo_Handler,
 		},
 		{
-			MethodName: "AddValueToId",
-			Handler:    _LibcToManage_AddValueToId_Handler,
+			MethodName: "AddShareDataFrame",
+			Handler:    _LibcToManage_AddShareDataFrame_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

@@ -46,9 +46,9 @@ class LibcToManageStub:
         libc_to_manage_pb2.GetJobErrorInfoRequest,
         libc_to_manage_pb2.GetJobErrorInfoResponse,
     ]
-    AddValueToId: grpc.UnaryUnaryMultiCallable[
-        libc_to_manage_pb2.AddValueToIdRequest,
-        google.protobuf.empty_pb2.Empty,
+    AddShareDataFrame: grpc.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.AddShareDataFrameRequest,
+        libc_to_manage_pb2.AddShareDataFrameResponse,
     ]
 
 class LibcToManageServicer(metaclass=abc.ABCMeta):
@@ -105,10 +105,10 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
         context: grpc.ServicerContext,
     ) -> libc_to_manage_pb2.GetJobErrorInfoResponse: ...
     @abc.abstractmethod
-    def AddValueToId(
+    def AddShareDataFrame(
         self,
-        request: libc_to_manage_pb2.AddValueToIdRequest,
+        request: libc_to_manage_pb2.AddShareDataFrameRequest,
         context: grpc.ServicerContext,
-    ) -> google.protobuf.empty_pb2.Empty: ...
+    ) -> libc_to_manage_pb2.AddShareDataFrameResponse: ...
 
 def add_LibcToManageServicer_to_server(servicer: LibcToManageServicer, server: grpc.Server) -> None: ...
