@@ -5,6 +5,7 @@ import pandas as pd
 
 from .qmpc_request import QMPCRequest
 from .request.qmpc_request_interface import QMPCRequestInterface
+from .restore import restore
 from .share_data_frame import ShareDataFrame
 from .utils.overload_tools import Dim1, methoddispatch
 from .utils.parse_csv import to_float
@@ -102,3 +103,33 @@ class QMPC:
             QuickMPC形式のDataframe
         """
         return ShareDataFrame(data_id, self.__qmpc_request)
+
+    # TODO: job_uuidとparty_sizeは指定しなくても良いようにしたい
+    def restore(self, job_uuid: str, filepath: str, party_size: int) \
+            -> ShareDataFrame:
+        """既に送信してあるデータを参照する．
+
+        Parameters
+        ----------
+        job_uuid: str
+            データのID
+        filepath: str
+            dataが保存してあるディレクトリ
+
+        Returns
+        ----------
+        ShareDataFrame
+            QuickMPC形式のDataframe
+        """
+        # TODO: get_computation_resultと同じ処理なのでうまくまとめる
+        res = restore(job_uuid, filepath, party_size)
+        if res is None:
+            return pd.DataFrame()
+        if type(res) == dict:
+            if res["schema"] is None or res["table"] is None:
+                return pd.DataFrame()
+            schema = [s.name for s in res["schema"]]
+            df = pd.DataFrame(res["table"],
+                              columns=schema)
+            return df
+        return pd.DataFrame(res)
