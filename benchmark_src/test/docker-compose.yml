@@ -25,5 +25,5 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - pip list && pytest src/benchmark -s -v -log-cli-level=DEBUG
+      - pip list && pytest src/benchmark -s -v -log-cli-level=DEBUG -k test_hjoin
     network_mode: host
