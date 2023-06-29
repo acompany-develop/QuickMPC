@@ -41,13 +41,6 @@ http_archive(
     build_file = "@//third_party/nlohmann_json:nlohmann_json.BUILD",
 )
 
-# Eigen
-new_local_repository(
-    name = "eigen",
-    path = "/usr/include/eigen3",
-    build_file = "@//:eigen.BUILD",
-)
-
 # spdlog
 new_local_repository(
     name = "libspdlog",
