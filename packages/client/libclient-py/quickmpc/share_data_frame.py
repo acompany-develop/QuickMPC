@@ -222,3 +222,16 @@ class ShareDataFrame:
             raise RuntimeError("計算していないため計算時間を取得できません")
         res = self.__qmpc_request.get_elapsed_time(self.__id)
         return res.elapsed_time
+
+    def get_id(self) -> str:
+        """IDを取得する
+
+        Parameters
+        ----------
+
+        Returns
+        ----------
+        str
+            ID
+        """
+        return self.__id
