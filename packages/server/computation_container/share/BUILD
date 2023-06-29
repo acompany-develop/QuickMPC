@@ -38,19 +38,3 @@ cc_library(
     ],
     visibility = ["//visibility:public"],
 )
-
-cc_library(
-    name = "matrix",
-    hdrs = [
-        "matrix.hpp",
-    ],
-    srcs = [
-        "matrix.cpp"
-    ],
-    deps = [
-        "//share:share",
-        "//server/computation_to_computation_container:server",
-        "@eigen//:eigen",
-    ],
-    visibility = ["//visibility:public"],
-)

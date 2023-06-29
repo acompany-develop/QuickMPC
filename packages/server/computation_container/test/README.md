@@ -28,7 +28,6 @@ cc_library(
         "//test/integration_test:share_test",
         "//test/integration_test:share_comp_test",
         "//test/integration_test:math_test",
-        "//test/integration_test:matrix_test",
         "//test/integration_test:model_test",
         "//test/integration_test:triple_recons_test",
         "//config_parse:config_parse",
@@ -53,7 +52,6 @@ cc_library(
 #include "test/integration_test/share_comp_test.hpp"
 #include "test/integration_test/share_test.hpp"
 #include "test/integration_test/math_test.hpp"
-#include "test/integration_test/matrix_test.hpp"
 #include "test/integration_test/ModelTest.hpp"
 #include "test/integration_test/TripleReconsTest.hpp"
 

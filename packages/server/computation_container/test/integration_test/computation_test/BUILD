@@ -12,7 +12,6 @@ cc_library(
         "//test/integration_test:share_test",
         "//test/integration_test:meshcode_test",
         "//test/integration_test:math_test",
-        "//test/integration_test:matrix_test",
         "//test/integration_test:read_triple_test",
         "//test/integration_test:join_table_test",
         "//config_parse:config_parse",

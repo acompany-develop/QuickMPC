@@ -19,7 +19,6 @@ RUN apt-get update && \
     pkg-config \
     libtool \
     libboost-all-dev \
-    libeigen3-dev \
     vim \
     cron \
     curl \
