@@ -12,14 +12,15 @@ import "google/protobuf/empty.proto";
  * LibcToManage service
 */
 service LibcToManage {
-    rpc SendShares(SendSharesRequest) returns (google.protobuf.Empty) {}                                // シェアの送信リクエスト
-    rpc DeleteShares(DeleteSharesRequest) returns (google.protobuf.Empty) {}                          // シェアの削除リクエスト
-    rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                   // スキーマ取得リクエスト
-    rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}        // 計算リクエスト
+    rpc SendShares(SendSharesRequest) returns (google.protobuf.Empty) {}                                    // シェアの送信リクエスト
+    rpc DeleteShares(DeleteSharesRequest) returns (google.protobuf.Empty) {}                                // シェアの削除リクエスト
+    rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                          // スキーマ取得リクエスト
+    rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}               // 計算リクエスト
     rpc GetComputationResult(GetComputationResultRequest) returns (stream GetComputationResultResponse) {}  // 計算結果取得リクエスト
-    rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                             // data一覧取得リクエスト
-    rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                    // 計算時間取得リクエスト
-    rpc GetJobErrorInfo(GetJobErrorInfoRequest) returns (GetJobErrorInfoResponse) {}                 // stacktrace取得リクエスト
+    rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                                    // data一覧取得リクエスト
+    rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                           // 計算時間取得リクエスト
+    rpc GetJobErrorInfo(GetJobErrorInfoRequest) returns (GetJobErrorInfoResponse) {}                        // stacktrace取得リクエスト
+    rpc AddValueToId(AddValueToIdRequest) returns (google.protobuf.Empty) {}                               // ID列加算リクエスト
 }
 
 /**
@@ -131,4 +132,10 @@ message GetJobErrorInfoRequest {
 
 message GetJobErrorInfoResponse {
     optional pb_common_types.JobErrorInfo job_error_info = 1;
+}
+
+message AddValueToIdRequest {
+    string data_id= 1;
+    repeated string value = 2;
+    string token = 3;
 }

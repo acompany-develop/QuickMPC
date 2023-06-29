@@ -377,3 +377,25 @@ class GetJobErrorInfoResponse(google.protobuf.message.Message):
     def WhichOneof(self, oneof_group: typing_extensions.Literal["_job_error_info", b"_job_error_info"]) -> typing_extensions.Literal["job_error_info"] | None: ...
 
 global___GetJobErrorInfoResponse = GetJobErrorInfoResponse
+
+@typing_extensions.final
+class AddValueToIdRequest(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    DATA_ID_FIELD_NUMBER: builtins.int
+    VALUE_FIELD_NUMBER: builtins.int
+    TOKEN_FIELD_NUMBER: builtins.int
+    data_id: builtins.str
+    @property
+    def value(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    token: builtins.str
+    def __init__(
+        self,
+        *,
+        data_id: builtins.str = ...,
+        value: collections.abc.Iterable[builtins.str] | None = ...,
+        token: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["data_id", b"data_id", "token", b"token", "value", b"value"]) -> None: ...
+
+global___AddValueToIdRequest = AddValueToIdRequest

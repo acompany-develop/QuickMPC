@@ -46,6 +46,10 @@ class LibcToManageStub:
         libc_to_manage_pb2.GetJobErrorInfoRequest,
         libc_to_manage_pb2.GetJobErrorInfoResponse,
     ]
+    AddValueToId: grpc.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.AddValueToIdRequest,
+        google.protobuf.empty_pb2.Empty,
+    ]
 
 class LibcToManageServicer(metaclass=abc.ABCMeta):
     """*
@@ -100,5 +104,11 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
         request: libc_to_manage_pb2.GetJobErrorInfoRequest,
         context: grpc.ServicerContext,
     ) -> libc_to_manage_pb2.GetJobErrorInfoResponse: ...
+    @abc.abstractmethod
+    def AddValueToId(
+        self,
+        request: libc_to_manage_pb2.AddValueToIdRequest,
+        context: grpc.ServicerContext,
+    ) -> google.protobuf.empty_pb2.Empty: ...
 
 def add_LibcToManageServicer_to_server(servicer: LibcToManageServicer, server: grpc.Server) -> None: ...
