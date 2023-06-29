@@ -3,6 +3,7 @@ package l2mserver
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sync"
 
@@ -29,7 +30,10 @@ func (localDb) GetSharePieceSize(dataID string) (int32, error) {
 	}
 	mu.Lock()
 	defer mu.Unlock()
-	mp, _ := db[dataID]
+	mp, ok := db[dataID]
+	if !ok {
+		return 0, fmt.Errorf("データ未登録エラー: %sは登録されていません．", dataID)
+	}
 	return int32(len(mp)), nil
 }
 func (localDb) InsertShares(dataID string, schema []*pb_types.Schema, pieceID int32, shares string, sentAt string, matchingColumn int32) error {
@@ -53,6 +57,9 @@ func (localDb) InsertShares(dataID string, schema []*pb_types.Schema, pieceID in
 	_, ok := db[dataID]
 	if !ok {
 		db[dataID] = map[int32]m2db.Share{}
+	}
+	if _, ok := db[dataID][pieceID]; ok {
+		return errors.New("重複データ登録エラー: " + dataID + "は既に登録されています．")
 	}
 	db[dataID][pieceID] = share
 	return nil

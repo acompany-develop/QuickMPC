@@ -29,6 +29,11 @@ func (p processer) addShareDataFrame(baseDataID string, addDataID string) (strin
 	s := fmt.Sprintf("%s+%s", baseDataID, addDataID)
 	r := sha256.Sum256([]byte(s))
 	dataID := hex.EncodeToString(r[:])
+	_, err := p.m2dbclient.GetSharePieceSize(dataID)
+	if err == nil {
+		// errがない(既に登録されている)場合は既に加算されてるはずなのでそのままreturn
+		return dataID, nil
+	}
 
 	// pieceのindexと今見ているpieceデータのindex
 	basePieceID := int32(0)
