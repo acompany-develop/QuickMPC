@@ -344,31 +344,6 @@ Share<T> sharize(const T &secret)
     return s;
 }
 
-template <typename T>
-Share<T> getInv(const Share<T> &s)
-{
-    Config *conf = Config::getInstance();
-    Share<T> r =
-        Share(RandGenerator::getInstance()->getRand<T>(1, 1000));  // TODO: 範囲を適切に制限する
-    auto u = s * r;
-    Share<T> s_inv;
-
-    if (conf->party_id == conf->sp_id)
-    {
-        T u_rec = recons(u);
-        T inv = T(1) / u_rec;
-        s_inv = sharize(inv);
-    }
-    else
-    {
-        send(u, conf->sp_id);
-        s_inv = sharize(T());
-    }
-    s_inv = s_inv * r;
-
-    return s_inv;
-}
-
 // vector の各要素の加法逆元を求める。
 template <typename T>
 std::vector<Share<T>> getAdditiveInvVec(const std::vector<Share<T>> &s)
