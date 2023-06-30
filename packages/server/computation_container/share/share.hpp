@@ -16,10 +16,7 @@ namespace qmpc::Share
 {
 template <typename SV>
 class Share : boost::totally_ordered<Share<SV>>,
-              boost::bitwise<Share<SV>>,
-              boost::unit_steppable<Share<SV>>,
               boost::additive<Share<SV>>,
-              boost::modable<Share<SV>>,
               boost::multipliable<Share<SV>>,
               boost::addable<Share<SV>, SV>,
               boost::subtractable<Share<SV>, SV>,
@@ -63,37 +60,6 @@ public:
         Share ret{*this};
         ret.value = -ret.value;
         return ret;
-    }
-    friend SV operator%(const Share &left, const SV &right)
-    {
-        // 事前準備 (乱数範囲の設定)
-        // オーバフローしない範囲を計算
-        long long int rand_max_value =
-            (long long int)(right.getMaxInt() / std::stod(right.getStrVal()));
-        long long int rand_min_value = -rand_max_value;
-        if (rand_min_value > rand_max_value)
-        {
-            std::swap(rand_min_value, rand_max_value);
-        }
-
-        // step1: 乱数kを取得し、r_shareを計算
-        Share k =
-            Share(RandGenerator::getInstance()->getRand<FixedPoint>(rand_min_value, rand_max_value)
-            );
-        Share r_share = k * right - left;
-
-        // step2: r_shareをopenにする。
-        open(r_share);
-        SV r_recons = recons(r_share);
-
-        // step3: a mod p = p*{-r/p} を計算する。
-        double p = std::stod(right.getStrVal());
-        double r = std::stod(r_recons.getStrVal());
-        double tmp = -(r / p);
-        double round_value = std::round(p * (tmp - std::floor(tmp)));
-        SV res(std::to_string(round_value));
-
-        return res;
     }
 
     Share &operator+=(const Share &obj)
@@ -314,60 +280,6 @@ public:
         return v;
     }
 };
-
-template <class T>
-Share<T> sharize(const T &secret)
-{
-    Config *conf = Config::getInstance();
-    Share<T> s;
-    if (conf->party_id == conf->sp_id)
-    {
-        T r_sum;
-        std::string ip_addr;
-        for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
-        {
-            if (pt_id == conf->sp_id)
-            {
-                continue;
-            }
-            auto r = RandGenerator::getInstance()->getRand<T>(1, (1LL << 60));
-
-            r_sum += r;
-            send(r, s.getId(), pt_id);
-        }
-        s = secret - r_sum;
-    }
-    else
-    {
-        s = receive<T>(conf->sp_id, s.getId());
-    }
-    return s;
-}
-
-template <typename T>
-Share<T> getInv(const Share<T> &s)
-{
-    Config *conf = Config::getInstance();
-    Share<T> r =
-        Share(RandGenerator::getInstance()->getRand<T>(1, 1000));  // TODO: 範囲を適切に制限する
-    auto u = s * r;
-    Share<T> s_inv;
-
-    if (conf->party_id == conf->sp_id)
-    {
-        T u_rec = recons(u);
-        T inv = T(1) / u_rec;
-        s_inv = sharize(inv);
-    }
-    else
-    {
-        send(u, conf->sp_id);
-        s_inv = sharize(T());
-    }
-    s_inv = s_inv * r;
-
-    return s_inv;
-}
 
 // vector の各要素の加法逆元を求める。
 template <typename T>
