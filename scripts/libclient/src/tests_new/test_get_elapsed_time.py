@@ -1,0 +1,18 @@
+import pandas as pd
+import pytest
+from utils import qmpc_new
+
+
+@pytest.mark.parametrize(
+    ("size"),
+    [
+        (1), (10), (100), (1000),
+    ]
+)
+def test_sum(size: int):
+    df = pd.DataFrame([[1, 2, 3] for _ in range(size)],
+                      columns=["s1", "s2", "s3"])
+    sdf = qmpc_new.send_to(df)
+    sdf_res = sdf.sum([1, 2, 3])
+    tm = sdf_res.get_elapsed_time()
+    assert tm is not None

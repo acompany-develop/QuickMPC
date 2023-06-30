@@ -48,7 +48,7 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             return libc_to_manage_pb2.ExecuteComputationResponse()
 
         res = libc_to_manage_pb2.ExecuteComputationResponse(
-            job_uuid="jobjobjob"
+            job_uuid="job_uuid"
         )
         return res
 
