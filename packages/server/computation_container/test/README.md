@@ -49,7 +49,6 @@ cc_library(
 #include "config_parse/config_parse.hpp"
 #include "server/computation_to_computation_container/server.hpp"
 #include "server/manage_to_computation_container/server.hpp"
-#include "test/integration_test/share_comp_test.hpp"
 #include "test/integration_test/share_test.hpp"
 #include "test/integration_test/math_test.hpp"
 #include "test/integration_test/ModelTest.hpp"
