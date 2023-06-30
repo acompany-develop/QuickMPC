@@ -328,6 +328,22 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 	}, nil
 }
 
+func (s *server) AddShareDataFrame(ctx context.Context, in *pb.AddShareDataFrameRequest) (*pb.AddShareDataFrameResponse, error) {
+	AppLogger.Info("AddShareDataFrame;")
+	AppLogger.Info("baseDataID: " + in.GetBaseDataId())
+	AppLogger.Info("addDataID: " + in.GetAddDataId())
+
+	p := processer{s.m2dbclient}
+	dataID, err := p.addShareDataFrame(in.GetBaseDataId(), in.GetAddDataId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AddShareDataFrameResponse{
+		DataId: dataID,
+	}, nil
+}
+
 // LibtoMCサーバ起動
 func RunServer() {
 	config, err := utils.GetConfig()

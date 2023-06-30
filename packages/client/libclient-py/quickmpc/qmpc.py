@@ -37,8 +37,6 @@ class QMPC:
         logger.info(f"[QuickMPC server IP]={endpoints}")
         object.__setattr__(self, "_QMPC__qmpc_request", QMPCRequest(
             endpoints, retry_num, retry_wait_time))
-        object.__setattr__(self, "_QMPC__qmpc_request", QMPCRequest(
-            endpoints, retry_num, retry_wait_time))
         object.__setattr__(self, "_QMPC__party_size", len(endpoints))
 
     def send_share_from_df(self,

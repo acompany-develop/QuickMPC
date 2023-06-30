@@ -3,10 +3,10 @@ from typing import List, Optional
 
 import pandas as pd
 
-from .response import (DeleteShareResponse, ExecuteResponse,
-                       GetDataListResponse, GetElapsedTimeResponse,
-                       GetJobErrorInfoResponse, GetResultResponse,
-                       SendShareResponse)
+from .response import (AddShareDataFrameResponse, DeleteShareResponse,
+                       ExecuteResponse, GetDataListResponse,
+                       GetElapsedTimeResponse, GetJobErrorInfoResponse,
+                       GetResultResponse, SendShareResponse)
 
 
 class QMPCRequestInterface(ABC):
@@ -60,3 +60,7 @@ class QMPCRequestInterface(ABC):
 
     @abstractmethod
     def delete_share(self, data_ids: List[str]) -> DeleteShareResponse: ...
+
+    @abstractmethod
+    def add_share_data_frame(self, base_data_id: str, add_data_id: str) \
+        -> AddShareDataFrameResponse: ...

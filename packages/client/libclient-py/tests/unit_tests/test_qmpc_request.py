@@ -6,12 +6,6 @@ import pytest
 from quickmpc.qmpc_request import QMPCRequest
 from quickmpc.request.status import Status
 
-local_ip_list = [
-    "http://localhost:50001",
-    "http://localhost:50002",
-    "http://localhost:50003"
-]
-
 
 def data_frame(values: List[List] = [[1, 2], [3, 4]],
                columns: Optional[List[str]] = None) -> pd.DataFrame:
@@ -26,7 +20,11 @@ def send_share_param(df: pd.DataFrame = data_frame(), piece_size: int = 1000):
 
 
 class TestQMPCRequest:
-    qmpc_request = QMPCRequest(local_ip_list)
+    qmpc_request = QMPCRequest([
+        "http://localhost:50001",
+        "http://localhost:50002",
+        "http://localhost:50003"
+    ])
 
     @pytest.mark.parametrize(
         ("params"), [
@@ -117,6 +115,10 @@ class TestQMPCRequest:
         response = self.qmpc_request.delete_share(["data_id"])
         assert response.status == Status.OK
 
+    def test_add_share_data_frame(self, run_server1, run_server2, run_server3):
+        response = self.qmpc_request.add_share_data_frame("id1", "id2")
+        assert response.status == Status.OK
+
 
 class TestQMPCRequestFailed:
     # 通信失敗する場合をテストする用のサーバー
@@ -137,6 +139,7 @@ class TestQMPCRequestFailed:
             (qmpc_request_failed.get_elapsed_time, (["uuid"])),
             (qmpc_request_failed.get_computation_result, ["uuid", None]),
             (qmpc_request_failed.get_job_error_info, ["uuid"]),
+            (qmpc_request_failed.add_share_data_frame, ["id1", "id2"]),
         ]
     )
     def test_retry(self, function, argument, caplog,

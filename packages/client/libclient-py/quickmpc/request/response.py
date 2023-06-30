@@ -47,3 +47,9 @@ class GetDataListResponse():
 @dataclass(frozen=True)
 class DeleteShareResponse():
     status: Status
+
+
+@dataclass(frozen=True)
+class AddShareDataFrameResponse():
+    status: Status
+    data_id: str

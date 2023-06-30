@@ -35,6 +35,14 @@ ip_list = [
 class TestShareDataFrame:
     qmpc_request = QMPCRequest(ip_list)
 
+    def test_add(self,
+                 run_server1, run_server2, run_server3):
+        sdf1 = ShareDataFrame("data_id1", self.qmpc_request)
+        sdf2 = ShareDataFrame("data_id2", self.qmpc_request)
+        expected = ShareDataFrame("data_id", self.qmpc_request,
+                                  False, ShareDataFrameStatus.OK)
+        assert (sdf1+sdf2) == expected
+
     def test_join(self,
                   run_server1, run_server2, run_server3):
         sdf1 = ShareDataFrame("data_id1", self.qmpc_request)

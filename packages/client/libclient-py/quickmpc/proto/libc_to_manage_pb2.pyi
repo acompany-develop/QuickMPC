@@ -377,3 +377,39 @@ class GetJobErrorInfoResponse(google.protobuf.message.Message):
     def WhichOneof(self, oneof_group: typing_extensions.Literal["_job_error_info", b"_job_error_info"]) -> typing_extensions.Literal["job_error_info"] | None: ...
 
 global___GetJobErrorInfoResponse = GetJobErrorInfoResponse
+
+@typing_extensions.final
+class AddShareDataFrameRequest(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    BASE_DATA_ID_FIELD_NUMBER: builtins.int
+    ADD_DATA_ID_FIELD_NUMBER: builtins.int
+    TOKEN_FIELD_NUMBER: builtins.int
+    base_data_id: builtins.str
+    add_data_id: builtins.str
+    token: builtins.str
+    def __init__(
+        self,
+        *,
+        base_data_id: builtins.str = ...,
+        add_data_id: builtins.str = ...,
+        token: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["add_data_id", b"add_data_id", "base_data_id", b"base_data_id", "token", b"token"]) -> None: ...
+
+global___AddShareDataFrameRequest = AddShareDataFrameRequest
+
+@typing_extensions.final
+class AddShareDataFrameResponse(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    DATA_ID_FIELD_NUMBER: builtins.int
+    data_id: builtins.str
+    def __init__(
+        self,
+        *,
+        data_id: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["data_id", b"data_id"]) -> None: ...
+
+global___AddShareDataFrameResponse = AddShareDataFrameResponse
