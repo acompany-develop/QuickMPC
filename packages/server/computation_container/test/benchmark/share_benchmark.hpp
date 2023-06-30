@@ -137,15 +137,6 @@ TEST(ShareBenchmark, DivBetweenSharesAndFixedPoint)
     measureExecTime("DivBetweenSharesAndFixedPoint", 5, [&]() { auto c = a / b; });
 }
 
-TEST(ShareBenchmark, ModuloBetweenShareAndFixedPoint)
-{
-    // IntagrationTest/share_test.hpp からコピペ
-    // share_test にある テスト14 のみを計測
-    Share a = Share(FixedPoint("-430333161.0"));
-    FixedPoint b = FixedPoint("683330992.0");
-    measureExecTime("ModuloBetweenShareAndFixedPoint", 5, [&]() { auto c = a % b; });
-}
-
 TEST(ShareBenchmark, AddBetweenFixedPointAndShare)
 {
     Share a(FixedPoint("1.0"));
