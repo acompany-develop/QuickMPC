@@ -54,9 +54,9 @@ def test_restore(method: str, args: dict, expected: pd.DataFrame,
         shutil.rmtree(path)
     os.mkdir(path)
 
-    sdf_resulr = getattr(sdf, method)(*args)
-    sdf_resulr.to_csv(path)
-    result = qmpc_new.restore(sdf_resulr.get_id(), path, 3)
+    sdf_result = getattr(sdf, method)(*args)
+    sdf_result.to_csv(path)
+    result = qmpc_new.restore(sdf_result.get_id(), path, 3)
     pd.testing.assert_frame_equal(result, expected)
 
     shutil.rmtree(path)
