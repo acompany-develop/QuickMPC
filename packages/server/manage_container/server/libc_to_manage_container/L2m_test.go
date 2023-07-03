@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
 )
 
@@ -86,6 +87,26 @@ func TestGetComputationResult(t *testing.T) {
 		if !reflect.DeepEqual(res, ac) {
 			t.Fatal(fmt.Sprintf("GetComputationResult Failed. getResult() must be %s, but response is %s", ac, res))
 		}
+	}
+}
+
+// Statusを取得できるかTest
+func TestGetComputationStatus(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewLibcToManageClient(conn)
+
+	result, err := client.GetComputationStatus(context.Background(), &pb.GetComputationRequest{
+		JobUuid: "id",
+		Token:   "token_dep",
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.Status != pb_types.JobStatus_COMPLETED {
+		t.Fatal("TestGetComputationStatusFailed")
 	}
 }
 

@@ -306,6 +306,26 @@ func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeReques
 	}, nil
 }
 
+func (s *server) GetComputationStatus(ctx context.Context, in *pb.GetComputationRequest) (*pb.GetComputationStatusResponse, error) {
+	AppLogger.Info("Get Computation Status")
+	AppLogger.Info("jobUUID: " + in.GetJobUuid())
+	JobUUID := in.GetJobUuid()
+	token := in.GetToken()
+
+	errToken := s.authorize(token, []string{"demo", "dep"})
+	if errToken != nil {
+		return nil, errToken
+	}
+
+	status, err := s.m2dbclient.GetComputationStatus(JobUUID)
+	if err != nil {
+		return &pb.GetComputationStatusResponse{}, err
+	}
+	return &pb.GetComputationStatusResponse{
+		Status: status,
+	}, nil
+}
+
 func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequest) (*pb.GetJobErrorInfoResponse, error) {
 	AppLogger.Info("Get Job Error Info;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
