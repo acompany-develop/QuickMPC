@@ -1,12 +1,13 @@
 import math
-import time
 import os
+import time
 
 import pytest
+from quickmpc import JobStatus
 from utils import get_result, qmpc
 
 from tests.common import data_id
-from quickmpc import JobStatus
+
 
 def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
                               src=[1, 2, 3]):
@@ -93,14 +94,15 @@ def test_restore(param: tuple, expected: list):
     assert (res["is_ok"])
     for i in range(10000):
         time.sleep(i+1)
-        get_res = qmpc.get_computation_result(res["job_uuid"], path)
-        assert (get_res["is_ok"])
-
+        res_status = qmpc.get_computation_status(res["job_uuid"])
+        assert (res_status["is_ok"])
         all_completed = all([status == JobStatus.COMPLETED
-                                for status in get_res["statuses"]])
-
+                             for status in res_status["statuses"]])
         if not all_completed:
             continue
+
+        get_res = qmpc.get_computation_result(res["job_uuid"], path)
+        assert (get_res["is_ok"])
         res = qmpc.restore(res["job_uuid"], path)
         # 正しく取得できたか確認
         for x, y in zip(res, expected):

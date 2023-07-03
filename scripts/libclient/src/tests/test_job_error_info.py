@@ -1,5 +1,7 @@
+import time
+
 import pytest
-from quickmpc import JobErrorInfo
+from quickmpc import QMPC, JobErrorInfo, JobStatus
 from quickmpc.exception import QMPCJobError
 from utils import get_result, qmpc
 
@@ -23,10 +25,18 @@ def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
 )
 def test_job_error_info(param: tuple):
     err_info = None
-    try:
-        get_result(qmpc.sum(*param), 10)
-    except QMPCJobError as e:
-        err_info = e.err_info
+    res = qmpc.sum(*param)
+    job_uuid = res["job_uuid"]
+    print()
+    for retry in range(10):
+        res = qmpc.get_computation_status(job_uuid)
+        error = any([status == JobStatus.ERROR
+                     for status in res["statuses"]])
+        if error:
+            res = qmpc.get_job_error_info(job_uuid)
+            err_info = res["job_error_info"][0]
+            break
+        time.sleep(5)
 
     assert (err_info is not None)
     assert (err_info.what != '')
