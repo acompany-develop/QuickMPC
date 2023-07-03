@@ -66,12 +66,6 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
             is_dim1=True,
         )
 
-    def GetDataList(self, request, context):
-        res = libc_to_manage_pb2.GetDataListResponse(
-            result="[]"
-        )
-        return res
-
     def GetJoinTable(self, request, context):
         res = libc_to_manage_pb2.GetJoinTableResponse(
             is_ok=True,

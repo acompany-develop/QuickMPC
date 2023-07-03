@@ -115,10 +115,6 @@ class TestQMPCRequest:
         response = self.qmpc_request.get_elapsed_time("job_uuid")
         assert response.status == Status.OK
 
-    def test_get_data_list(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.get_data_list()
-        assert response.status == Status.OK
-
     def test_delete_share(self, run_server1, run_server2, run_server3):
         response = self.qmpc_request.delete_share(["data_id"])
         assert response.status == Status.OK
@@ -143,7 +139,6 @@ class TestQMPCRequestFailed:
             (qmpc_request_failed.send_share, send_share_param()),
             (qmpc_request_failed.delete_share, ["data_id"]),
             (qmpc_request_failed.sum, (["data_id"], [1])),
-            (qmpc_request_failed.get_data_list, ([])),
             (qmpc_request_failed.get_elapsed_time, (["uuid"])),
             (qmpc_request_failed.get_computation_result, ["uuid", None]),
             (qmpc_request_failed.get_job_error_info, ["uuid"]),

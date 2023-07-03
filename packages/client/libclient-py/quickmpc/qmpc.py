@@ -147,11 +147,6 @@ class QMPC:
                                                          output_path=path)
         return {"is_ok": res.status == Status.OK, "results": res.results}
 
-    def get_data_list(self) -> Dict:
-        logger.info("get_data_list request.")
-        res = self.__qmpc_request.get_data_list()
-        return {"is_ok": res.status == Status.OK, "results": res.data_ids}
-
     def demo_sharize(self, secrets: List) -> Dict:
         logger.info("demo_sharize request. "
                     f"[secrets size]={len(secrets)}x{len(secrets[0])}")
