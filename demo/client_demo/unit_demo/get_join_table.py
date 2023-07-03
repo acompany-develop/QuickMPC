@@ -1,8 +1,7 @@
-
 import logging
 import time
 
-from quickmpc import QMPC
+from quickmpc import QMPC, JobStatus
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -22,17 +21,19 @@ if __name__ == '__main__':
     )
 
     # 複数のシェアを作成・送信
-    data_id1: str = send_share("../data/data1-1.csv")
-    data_id2: str = send_share("../data/data1-2.csv")
+    path = "../data/"
+    data_id1: str = send_share(f"{path}/data1-1.csv")
+    data_id2: str = send_share(f"{path}/data1-2.csv")
 
     res = qmpc.get_join_table([data_id1, data_id2])
 
     job_uuid: str = res["job_uuid"]
     for _ in range(100):
         # 計算が終わるか100秒(1秒x100回)経つまで繰り返す
-        get_res = qmpc.get_computation_result(job_uuid)
-        if get_res["results"] is not None:
-            res = get_res["results"]
+        get_res = qmpc.get_computation_status(job_uuid)
+        if all([r == JobStatus.Value('COMPLETED')
+                for r in get_res["statuses"]]):
             break
         time.sleep(1)
+    res = qmpc.get_computation_result(job_uuid)
     logger.info(res)

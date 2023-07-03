@@ -10,7 +10,7 @@ import logging
 import time
 from typing import Callable, List, Tuple
 
-from quickmpc import QMPC
+from quickmpc import QMPC, JobStatus
 
 from utils import make_statuses_detailed
 
@@ -90,16 +90,18 @@ if __name__ == '__main__':
 
         for _ in range(100):
             # 計算が終わるか100秒(1秒x100回)経つまで繰り返す
-            get_res = qmpc.get_computation_result(job_uuid)
-            if get_res["results"] is not None:
-                result_secrets = get_res["results"]
-                logger.info(f"exec value: {result_secrets}")
-                logger.info(f"true value: {true_val}")
-
-                logger.info(f"---- {exe_func.__name__} success ----")
+            get_res = qmpc.get_computation_status(job_uuid)
+            if all([r == JobStatus.Value('COMPLETED')
+                    for r in get_res["statuses"]]):
                 break
-
             statuses = make_statuses_detailed(get_res['statuses'])
             logger.info(f"statuses: {statuses}")
-
             time.sleep(1)
+
+        get_res = qmpc.get_computation_result(job_uuid)
+        if get_res["results"] is not None:
+            result_secrets = get_res["results"]
+            logger.info(f"exec value: {result_secrets}")
+            logger.info(f"true value: {true_val}")
+
+            logger.info(f"---- {exe_func.__name__} success ----")

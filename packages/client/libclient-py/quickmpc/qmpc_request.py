@@ -387,7 +387,7 @@ class QMPCRequest(QMPCRequestInterface):
         is_ok, response = QMPCRequest.__futures_result(
             futures, enable_progress_bar=False)
         statuses = [res.status for res in response]
-        progresses = [res.progres if res.HasField("progress") else None
+        progresses = [res.progress if res.HasField("progress") else None
                       for res in response]
 
         # TODO: __futures_resultの返り値を適切なものに変更する

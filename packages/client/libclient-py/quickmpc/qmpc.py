@@ -171,6 +171,13 @@ class QMPC:
                     f"[path]={path}")
         return restore(job_uuid, path, self.__party_size)
 
+    def get_computation_status(self, job_uuid: str) -> Dict:
+        logger.info("get_computation_status request. "
+                    f"[job_uuid]={job_uuid}")
+        res = self.__qmpc_request.get_computation_status(job_uuid)
+        return {"is_ok": res.status == Status.OK,
+                "statuses": res.job_statuses, "progresses": res.progresses}
+
     def get_job_error_info(self, job_uuid: str) -> Dict:
         logger.info("get_job_error_info request. "
                     f"[job_uuid]={job_uuid}")
