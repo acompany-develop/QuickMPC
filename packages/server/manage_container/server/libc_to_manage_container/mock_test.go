@@ -102,9 +102,6 @@ func (localDb) CreateStatusFile(string) error {
 func (localDb) DeleteStatusFile(string) error {
 	return nil
 }
-func (localDb) GetDataList() (string, error) {
-	return "result", nil
-}
 func (localDb) GetElapsedTime(string) (float64, error) {
 	return 0, nil
 }

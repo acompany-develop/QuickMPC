@@ -116,7 +116,7 @@ func TestGetJobErrorInfo(t *testing.T) {
 	defer conn.Close()
 	client := pb.NewLibcToManageClient(conn)
 
-	result, err := client.GetJobErrorInfo(context.Background(), &pb.GetJobErrorInfoRequest{
+	result, err := client.GetJobErrorInfo(context.Background(), &pb.GetComputationRequest{
 		JobUuid: "id",
 		Token:   "token_dep",
 	})
@@ -127,25 +127,6 @@ func TestGetJobErrorInfo(t *testing.T) {
 
 	if result.GetJobErrorInfo().GetWhat() != "test" {
 		t.Fatal("GetJobErrorInfo Failed")
-	}
-}
-
-func TestGetDataList(t *testing.T) {
-
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewLibcToManageClient(conn)
-
-	result, err := client.GetDataList(context.Background(), &pb.GetDataListRequest{
-		Token: "token_dep",
-	})
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if result.GetResult() != "result" {
-		t.Fatal("GetDataList Failed")
 	}
 }
 

@@ -11,7 +11,6 @@ import (
 
 	"google.golang.org/protobuf/encoding/protojson"
 
-	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
 	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
@@ -60,7 +59,6 @@ type M2DbClient interface {
 	GetComputationStatus(string) (pb_types.JobStatus, error)
 	GetJobErrorInfo(string) *pb_types.JobErrorInfo
 	GetComputationResult(string, []string) ([]*ComputationResult, error)
-	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
 	CreateStatusFile(string) error
@@ -258,13 +256,6 @@ func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*C
 	}
 
 	return computationResults, nil
-}
-
-// DBからdata一覧を取得する
-func (c Client) GetDataList() (string, error) {
-	AppLogger.Warning("GetDataList()は削除予定の非推奨機能です．")
-	// NOTE: 一部のテストで使用しているため削除まではnilを返す
-	return "", nil
 }
 
 func getTime(path string) (float64, error) {

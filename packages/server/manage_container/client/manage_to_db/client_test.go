@@ -588,6 +588,3 @@ func TestDeleteStatusFile(t *testing.T) {
 
 	initialize()
 }
-
-// XXX: オブジェクトストレージへの移行に備えて廃止予定
-/* GetDataList() (string, error) */

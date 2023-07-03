@@ -232,25 +232,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationRequest, stream pb.Li
 	return nil
 }
 
-func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*pb.GetDataListResponse, error) {
-	token := in.GetToken()
-
-	errToken := s.authorize(token, []string{"demo", "dep"})
-	if errToken != nil {
-		return nil, errToken
-	}
-
-	getDataList, err := s.m2dbclient.GetDataList()
-	if err != nil {
-		AppLogger.Error(err)
-		return nil, err
-	}
-
-	return &pb.GetDataListResponse{
-		Result: getDataList,
-	}, nil
-}
-
 func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeRequest) (*pb.GetElapsedTimeResponse, error) {
 	AppLogger.Info("Get Elapsed time;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
@@ -315,7 +296,7 @@ func (s *server) GetComputationStatus(ctx context.Context, in *pb.GetComputation
 	}, nil
 }
 
-func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequest) (*pb.GetJobErrorInfoResponse, error) {
+func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetComputationRequest) (*pb.GetJobErrorInfoResponse, error) {
 	AppLogger.Info("Get Job Error Info;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 	JobUUID := in.GetJobUuid()

@@ -28,11 +28,14 @@ func (localDb) GetSharePiece(string, int32) (m2db.Share, error) {
 func (localDb) GetSchema(string) ([]*pb_types.Schema, error) {
 	return []*pb_types.Schema{{Name: ""}}, nil
 }
-func (localDb) GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error) {
-	return &pb_types.JobErrorInfo{}, nil
+func (localDb) GetJobErrorInfo(string) *pb_types.JobErrorInfo {
+	return &pb_types.JobErrorInfo{}
 }
-func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
-	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
+func (localDb) GetComputationStatus(string) (pb_types.JobStatus, error) {
+	return pb_types.JobStatus_COMPLETED, nil
+}
+func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, error) {
+	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil
 }
 func (localDb) InsertModelParams(string, []string, int32) error {
 	return nil
@@ -42,9 +45,6 @@ func (localDb) CreateStatusFile(string) error {
 }
 func (localDb) DeleteStatusFile(string) error {
 	return nil
-}
-func (localDb) GetDataList() (string, error) {
-	return "result", nil
 }
 func (localDb) GetElapsedTime(string) (float64, error) {
 	return 0, nil
