@@ -290,36 +290,6 @@ class GetComputationStatusResponse(google.protobuf.message.Message):
 global___GetComputationStatusResponse = GetComputationStatusResponse
 
 @typing_extensions.final
-class GetDataListRequest(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    TOKEN_FIELD_NUMBER: builtins.int
-    token: builtins.str
-    def __init__(
-        self,
-        *,
-        token: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["token", b"token"]) -> None: ...
-
-global___GetDataListRequest = GetDataListRequest
-
-@typing_extensions.final
-class GetDataListResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    RESULT_FIELD_NUMBER: builtins.int
-    result: builtins.str
-    def __init__(
-        self,
-        *,
-        result: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
-
-global___GetDataListResponse = GetDataListResponse
-
-@typing_extensions.final
 class GetElapsedTimeRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -351,24 +321,6 @@ class GetElapsedTimeResponse(google.protobuf.message.Message):
     def ClearField(self, field_name: typing_extensions.Literal["elapsed_time", b"elapsed_time"]) -> None: ...
 
 global___GetElapsedTimeResponse = GetElapsedTimeResponse
-
-@typing_extensions.final
-class GetJobErrorInfoRequest(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    JOB_UUID_FIELD_NUMBER: builtins.int
-    TOKEN_FIELD_NUMBER: builtins.int
-    job_uuid: builtins.str
-    token: builtins.str
-    def __init__(
-        self,
-        *,
-        job_uuid: builtins.str = ...,
-        token: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["job_uuid", b"job_uuid", "token", b"token"]) -> None: ...
-
-global___GetJobErrorInfoRequest = GetJobErrorInfoRequest
 
 @typing_extensions.final
 class GetJobErrorInfoResponse(google.protobuf.message.Message):

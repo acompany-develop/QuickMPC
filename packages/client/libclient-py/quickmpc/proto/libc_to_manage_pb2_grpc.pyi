@@ -38,17 +38,13 @@ class LibcToManageStub:
         libc_to_manage_pb2.GetComputationRequest,
         libc_to_manage_pb2.GetComputationStatusResponse,
     ]
-    GetDataList: grpc.UnaryUnaryMultiCallable[
-        libc_to_manage_pb2.GetDataListRequest,
-        libc_to_manage_pb2.GetDataListResponse,
+    GetJobErrorInfo: grpc.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.GetComputationRequest,
+        libc_to_manage_pb2.GetJobErrorInfoResponse,
     ]
     GetElapsedTime: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.GetElapsedTimeRequest,
         libc_to_manage_pb2.GetElapsedTimeResponse,
-    ]
-    GetJobErrorInfo: grpc.UnaryUnaryMultiCallable[
-        libc_to_manage_pb2.GetJobErrorInfoRequest,
-        libc_to_manage_pb2.GetJobErrorInfoResponse,
     ]
     AddShareDataFrame: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.AddShareDataFrameRequest,
@@ -97,23 +93,17 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
         context: grpc.ServicerContext,
     ) -> libc_to_manage_pb2.GetComputationStatusResponse: ...
     @abc.abstractmethod
-    def GetDataList(
+    def GetJobErrorInfo(
         self,
-        request: libc_to_manage_pb2.GetDataListRequest,
+        request: libc_to_manage_pb2.GetComputationRequest,
         context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.GetDataListResponse: ...
+    ) -> libc_to_manage_pb2.GetJobErrorInfoResponse: ...
     @abc.abstractmethod
     def GetElapsedTime(
         self,
         request: libc_to_manage_pb2.GetElapsedTimeRequest,
         context: grpc.ServicerContext,
     ) -> libc_to_manage_pb2.GetElapsedTimeResponse: ...
-    @abc.abstractmethod
-    def GetJobErrorInfo(
-        self,
-        request: libc_to_manage_pb2.GetJobErrorInfoRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.GetJobErrorInfoResponse: ...
     @abc.abstractmethod
     def AddShareDataFrame(
         self,
