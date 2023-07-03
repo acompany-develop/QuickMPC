@@ -9,7 +9,6 @@ import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
 import sys
-import typing
 
 if sys.version_info >= (3, 8):
     import typing as typing_extensions
@@ -242,19 +241,14 @@ class GetComputationResultResponse(google.protobuf.message.Message):
 
     RESULT_FIELD_NUMBER: builtins.int
     COLUMN_NUMBER_FIELD_NUMBER: builtins.int
-    STATUS_FIELD_NUMBER: builtins.int
     PIECE_ID_FIELD_NUMBER: builtins.int
-    PROGRESS_FIELD_NUMBER: builtins.int
     IS_DIM1_FIELD_NUMBER: builtins.int
     IS_DIM2_FIELD_NUMBER: builtins.int
     IS_SCHEMA_FIELD_NUMBER: builtins.int
     @property
     def result(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
     column_number: builtins.int
-    status: common_types.common_types_pb2.JobStatus.ValueType
     piece_id: builtins.int
-    @property
-    def progress(self) -> common_types.common_types_pb2.JobProgress: ...
     is_dim1: builtins.bool
     is_dim2: builtins.bool
     is_schema: builtins.bool
@@ -263,18 +257,13 @@ class GetComputationResultResponse(google.protobuf.message.Message):
         *,
         result: collections.abc.Iterable[builtins.str] | None = ...,
         column_number: builtins.int = ...,
-        status: common_types.common_types_pb2.JobStatus.ValueType = ...,
         piece_id: builtins.int = ...,
-        progress: common_types.common_types_pb2.JobProgress | None = ...,
         is_dim1: builtins.bool = ...,
         is_dim2: builtins.bool = ...,
         is_schema: builtins.bool = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["_progress", b"_progress", "is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "progress", b"progress", "result_type", b"result_type"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["_progress", b"_progress", "column_number", b"column_number", "is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "piece_id", b"piece_id", "progress", b"progress", "result", b"result", "result_type", b"result_type", "status", b"status"]) -> None: ...
-    @typing.overload
-    def WhichOneof(self, oneof_group: typing_extensions.Literal["_progress", b"_progress"]) -> typing_extensions.Literal["progress"] | None: ...
-    @typing.overload
+    def HasField(self, field_name: typing_extensions.Literal["is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "result_type", b"result_type"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["column_number", b"column_number", "is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "piece_id", b"piece_id", "result", b"result", "result_type", b"result_type"]) -> None: ...
     def WhichOneof(self, oneof_group: typing_extensions.Literal["result_type", b"result_type"]) -> typing_extensions.Literal["is_dim1", "is_dim2", "is_schema"] | None: ...
 
 global___GetComputationResultResponse = GetComputationResultResponse

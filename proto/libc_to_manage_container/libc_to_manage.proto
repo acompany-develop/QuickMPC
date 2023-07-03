@@ -97,15 +97,13 @@ message GetComputationRequest {
  * the message of GetComputationResultResponse
 */
 message GetComputationResultResponse {
-    repeated string result = 3;
-    int32 column_number = 4;
-    pb_common_types.JobStatus status = 5;
-    int32 piece_id = 6;
-    optional pb_common_types.JobProgress progress = 7;
+    repeated string result = 1;
+    int32 column_number = 2;
+    int32 piece_id = 3;
     oneof result_type{
-        bool is_dim1 = 8;
-        bool is_dim2 = 9;
-        bool is_schema = 10;
+        bool is_dim1 = 4;
+        bool is_dim2 = 5;
+        bool is_schema = 6;
     }
 }
 
