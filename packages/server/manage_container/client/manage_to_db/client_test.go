@@ -292,10 +292,9 @@ func TestGetComputationResultSuccessDim1(t *testing.T) {
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
 	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/dim1_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
+	result, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
@@ -308,9 +307,6 @@ func TestGetComputationResultSuccessDim1(t *testing.T) {
 	}
 	if result[0].Meta.PieceID != defaultPieceID {
 		t.Error(fmt.Sprintf("get computation result failed: PieceID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
-	}
-	if result[0].Status != pb_types.JobStatus_COMPLETED {
-		t.Error(fmt.Sprintf("get computation result failed: Status must be %d, but value is %d", pb_types.JobStatus_COMPLETED, result[0].Status))
 	}
 
 	initialize()
@@ -322,10 +318,9 @@ func TestGetComputationResultSuccessDim2(t *testing.T) {
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
 	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/dim2_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim2"})
+	result, err := client.GetComputationResult(defaultJobUUID, []string{"dim2"})
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
@@ -338,9 +333,6 @@ func TestGetComputationResultSuccessDim2(t *testing.T) {
 	}
 	if result[0].Meta.PieceID != defaultPieceID {
 		t.Error(fmt.Sprintf("get computation result failed: PieceID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
-	}
-	if result[0].Status != pb_types.JobStatus_COMPLETED {
-		t.Error(fmt.Sprintf("get computation result failed: Status must be %d, but value is %d", pb_types.JobStatus_COMPLETED, result[0].Status))
 	}
 
 	initialize()
@@ -352,10 +344,9 @@ func TestGetComputationResultSuccessSchema(t *testing.T) {
 	data := `{"id":"","job_uuid":"m2db_test_jobuuid","result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
 	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/schema_%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
 	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"schema"})
+	result, err := client.GetComputationResult(defaultJobUUID, []string{"schema"})
 
 	if err != nil {
 		t.Error("get computation result failed: " + err.Error())
@@ -369,10 +360,6 @@ func TestGetComputationResultSuccessSchema(t *testing.T) {
 	if result[0].Meta.PieceID != defaultPieceID {
 		t.Error(fmt.Sprintf("get computation result failed: PieceID must be %d, but value is %d", defaultPieceID, result[0].Meta.PieceID))
 	}
-	if result[0].Status != pb_types.JobStatus_COMPLETED {
-		t.Error(fmt.Sprintf("get computation result failed: Status must be %d, but value is %d", pb_types.JobStatus_COMPLETED, result[0].Status))
-	}
-
 	initialize()
 }
 
@@ -382,10 +369,9 @@ func TestGetComputationResultFailedEmptyOnlyComputationResult(t *testing.T) {
 
 	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
 	os.Create(fmt.Sprintf("/db/result/%s/completed", defaultJobUUID))
-	os.Create(fmt.Sprintf("/db/result/%s/status_COMPLETED", defaultJobUUID))
 
 	client := Client{}
-	result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1", "dim2", "schema"})
+	result, err := client.GetComputationResult(defaultJobUUID, []string{"dim1", "dim2", "schema"})
 
 	if err == nil {
 		t.Error("get computation result must be failed")
@@ -398,127 +384,22 @@ func TestGetComputationResultFailedEmptyOnlyComputationResult(t *testing.T) {
 	initialize()
 }
 
-// 計算結果が存在しない場合にエラーがでるかTest
+// 計算が終了していない場合にresultの件数が0になるかTest
 func TestGetComputationResultFailedEmptyResult(t *testing.T) {
 	initialize()
 
 	client := Client{}
-	_, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
+	result, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
 
 	if err == nil {
-		t.Error("get computation result must be failed: result is not registered.")
+		t.Error("get computation result must be failed")
+	}
+
+	if len(result) != 0 {
+		t.Errorf("get computation result must be empty, but result is %v", result)
 	}
 
 	initialize()
-}
-
-// statusもcompletedも存在しない場合にエラーがでるかTest
-func TestGetComputationResultFailedEmptyComplated(t *testing.T) {
-	initialize()
-
-	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
-	data := `{"id":"","job_uuid":"m2db_test_jobuuid","status":1,"result":["1","2","3"],"meta":{"piece_id":0,"column_number": 3}}`
-	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/%d", defaultJobUUID, defaultPieceID), []byte(data), 0666)
-
-	client := Client{}
-	_, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
-
-	if err == nil {
-		t.Error("get computation result must be failed: computation is running(complated file is not found).")
-	}
-
-	initialize()
-}
-
-// complatedでなくても最新のstatusが正しく取得できるかTest
-func TestGetComputationResultSuccessGetStatus(t *testing.T) {
-	initialize()
-
-	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
-	statusSize := len(pb_types.JobStatus_value)
-	// UNKNOWN, ERRORを除く各Statusについて昇順にチェック
-	for i := 2; i < statusSize; i++ {
-		status := pb_types.JobStatus_name[int32(i)]
-		os.Create(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, status))
-
-		client := Client{}
-		result, _, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
-
-		if err != nil {
-			t.Error("get computation result failed: " + err.Error())
-		}
-		resultIndex := int32(result[0].Status)
-		if resultIndex != int32(i) {
-			t.Errorf("get computation result failed: status must be %s, but value is %s.", status, pb_types.JobStatus_name[resultIndex])
-		}
-	}
-
-	initialize()
-}
-
-// ERROR の status が存在する時にエラー情報を取得できるかTest
-func TestGetComputationResultFailedJobErrorInfo(t *testing.T) {
-	initialize()
-	defer initialize()
-
-	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
-	data := `{"what": "test"}`
-	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
-
-	client := Client{}
-	_, info, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	if info == nil {
-		t.Error("there are no job error info")
-	}
-
-	expected := "test"
-	if info.What != expected {
-		t.Errorf("error information could not be parsed expectedly: required property What: %s, expected: %s", info.What, expected)
-	}
-
-	if info.Stacktrace != nil {
-		t.Error("error information could not be parsed expectedly: optional property Stacktrace is not nil")
-	}
-}
-
-// ERROR の status が存在する時にエラー情報(Stacktrace付き)を取得できるかTest
-func TestGetComputationResultFailedJobErrorInfoWithStacktrace(t *testing.T) {
-	initialize()
-	defer initialize()
-
-	os.Mkdir(fmt.Sprintf("/db/result/%s", defaultJobUUID), 0777)
-	data := `{
-		"what": "test",
-		"stacktrace": {
-			"frames": []
-		}
-	}`
-	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
-
-	client := Client{}
-	_, info, err := client.GetComputationResult(defaultJobUUID, []string{"dim1"})
-
-	if err != nil {
-		t.Error(err)
-	}
-
-	if info == nil {
-		t.Error("there are no job error info")
-	}
-
-	expected := "test"
-	if info.What != expected {
-		t.Errorf("error information could not be parsed expectedly: required property What: %s, expected: %s", info.What, expected)
-	}
-
-	if info.Stacktrace == nil {
-		t.Error("error information could not be parsed expectedly: optional property Stacktrace is nil")
-	}
 }
 
 // ERROR の status が存在する時にエラー情報(Stacktrace付き)を取得できるかTest

@@ -202,49 +202,16 @@ func (s *server) GetComputationResult(in *pb.GetComputationRequest, stream pb.Li
 		return errToken
 	}
 
-	progress, err := s.m2cclient.CheckProgress(JobUUID)
-
-	if err != nil {
-		st, ok := status.FromError(err)
-		if !ok {
-			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
-		}
-		// optional な情報のためロガーに残すのみでエラーを返さない
-		logger_func := func(template string, args ...interface{}) {}
-		switch st.Code() {
-		case codes.NotFound:
-			logger_func = AppLogger.Infof
-		case
-			codes.Internal,
-			codes.Unavailable:
-			logger_func = AppLogger.Warningf
-		default:
-			logger_func = AppLogger.Errorf
-		}
-		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
-	}
-
-	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
-
+	computationResults, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
 	if err != nil {
 		return err
 	}
 
-	if computationErrInfo != nil {
-		status, err := status.New(codes.Unknown, "computation result has error info").WithDetails(computationErrInfo)
-		if err != nil {
-			return err
-		}
-		return status.Err()
-	}
-
 	for _, result := range computationResults {
 		response := pb.GetComputationResultResponse{
-			Status:       computationResults[0].Status,
 			Result:       result.Result,
 			ColumnNumber: result.Meta.ColumnNumber,
 			PieceId:      result.Meta.PieceID,
-			Progress:     progress,
 		}
 		if result.Meta.ResultType == "dim1" {
 			response.ResultType = &pb.GetComputationResultResponse_IsDim1{
@@ -317,12 +284,34 @@ func (s *server) GetComputationStatus(ctx context.Context, in *pb.GetComputation
 		return nil, errToken
 	}
 
+	progress, err := s.m2cclient.CheckProgress(JobUUID)
+	if err != nil {
+		st, ok := status.FromError(err)
+		if !ok {
+			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
+		}
+		// optional な情報のためロガーに残すのみでエラーを返さない
+		logger_func := func(template string, args ...interface{}) {}
+		switch st.Code() {
+		case codes.NotFound:
+			logger_func = AppLogger.Infof
+		case
+			codes.Internal,
+			codes.Unavailable:
+			logger_func = AppLogger.Warningf
+		default:
+			logger_func = AppLogger.Errorf
+		}
+		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
+	}
+
 	status, err := s.m2dbclient.GetComputationStatus(JobUUID)
 	if err != nil {
 		return &pb.GetComputationStatusResponse{}, err
 	}
 	return &pb.GetComputationStatusResponse{
-		Status: status,
+		Status:   status,
+		Progress: progress,
 	}, nil
 }
 

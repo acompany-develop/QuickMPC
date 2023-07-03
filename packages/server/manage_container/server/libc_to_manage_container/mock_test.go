@@ -93,8 +93,8 @@ func (localDb) GetJobErrorInfo(string) *pb_types.JobErrorInfo {
 func (localDb) GetComputationStatus(string) (pb_types.JobStatus, error) {
 	return pb_types.JobStatus_COMPLETED, nil
 }
-func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, *pb_types.JobErrorInfo, error) {
-	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil, nil
+func (localDb) GetComputationResult(string, []string) ([]*m2db.ComputationResult, error) {
+	return []*m2db.ComputationResult{{Result: []string{"result"}}, {Result: []string{"result"}}}, nil
 }
 func (localDb) CreateStatusFile(string) error {
 	return nil

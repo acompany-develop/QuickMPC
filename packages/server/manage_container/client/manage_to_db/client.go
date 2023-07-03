@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"google.golang.org/protobuf/encoding/protojson"
-	"google.golang.org/protobuf/proto"
 
 	. "github.com/acompany-develop/QuickMPC/packages/server/manage_container/log"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
@@ -33,7 +32,6 @@ type ComputationResultMeta struct {
 type ComputationResult struct {
 	ID      string                `json:"id"`
 	JobUUID string                `json:"job_uuid"`
-	Status  pb_types.JobStatus    `json:"status"`
 	Result  []string              `json:"result"`
 	Meta    ComputationResultMeta `json:"meta"`
 }
@@ -61,7 +59,7 @@ type M2DbClient interface {
 	GetSchema(string) ([]*pb_types.Schema, error)
 	GetComputationStatus(string) (pb_types.JobStatus, error)
 	GetJobErrorInfo(string) *pb_types.JobErrorInfo
-	GetComputationResult(string, []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
+	GetComputationResult(string, []string) ([]*ComputationResult, error)
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
@@ -226,34 +224,14 @@ func (c Client) GetJobErrorInfo(jobUUID string) *pb_types.JobErrorInfo {
 }
 
 // DBから計算結果を得る
-func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
-	status, errStatus := c.GetComputationStatus(jobUUID)
-	if errStatus != nil {
-		return nil, nil, errStatus
-	}
-
-	if status == pb_types.JobStatus_ERROR {
-		errInfo := c.GetJobErrorInfo(jobUUID)
-		if errInfo != nil {
-			// metadataは7kbまで
-			if proto.Size(errInfo) > 7000 {
-				// スタックトレース情報を削除する
-				errInfo.Stacktrace = nil
-
-				additionalInfo := "Stacktrace information is too long. Please use get_job_error_info method to get more information"
-				errInfo.AdditionalInfo = &additionalInfo
-			}
-
-			return nil, errInfo, nil
-		}
-	}
-
+func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*ComputationResult, error) {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
+
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 	if !isExists(path + "/completed") {
-		// statusが存在する場合はstatusだけ返してエラーはnilとする
-		return []*ComputationResult{{Status: status}}, nil, nil
+		// 計算が終了していない場合は空の配列を返す
+		return nil, errors.New("unique computation result could not be found")
 	}
 
 	var computationResults []*ComputationResult
@@ -262,13 +240,13 @@ func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*C
 		for _, piecePath := range files {
 			raw, errRead := ioutil.ReadFile(piecePath)
 			if errRead != nil {
-				return nil, nil, errRead
+				return nil, errRead
 			}
 
 			var result *ComputationResult
 			errUnmarshal := json.Unmarshal(raw, &result)
 			if errUnmarshal != nil {
-				return nil, nil, errUnmarshal
+				return nil, errUnmarshal
 			}
 			result.Meta.ResultType = resultType
 			computationResults = append(computationResults, result)
@@ -276,12 +254,10 @@ func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*C
 	}
 
 	if len(computationResults) == 0 {
-		return nil, nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
+		return nil, errors.New("unique computation result could not be found: " + strconv.Itoa(len(computationResults)))
 	}
 
-	// CC側でStatusが更新されないためここで更新する
-	computationResults[0].Status = status
-	return computationResults, nil, nil
+	return computationResults, nil
 }
 
 // DBからdata一覧を取得する
