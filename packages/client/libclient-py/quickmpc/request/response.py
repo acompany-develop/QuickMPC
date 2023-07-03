@@ -33,6 +33,12 @@ class GetJobErrorInfoResponse():
 
 
 @dataclass(frozen=True)
+class GetComputationStatusResponse():
+    status: Status
+    job_statuses: List["JobStatus"]
+
+
+@dataclass(frozen=True)
 class GetElapsedTimeResponse():
     status: Status
     elapsed_time: List[float]

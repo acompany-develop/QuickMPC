@@ -3,6 +3,7 @@ from typing import List, Optional
 import pandas as pd
 import pytest
 
+from quickmpc.proto.common_types import common_types_pb2
 from quickmpc.qmpc_request import QMPCRequest
 from quickmpc.request.status import Status
 
@@ -96,6 +97,13 @@ class TestQMPCRequest:
                                     run_server1, run_server2, run_server3):
         response = self.qmpc_request.get_computation_result("job_uuid", None)
         assert response.status == Status.OK
+
+    def test_get_computation_status(self,
+                                    run_server1, run_server2, run_server3):
+        response = self.qmpc_request.get_computation_status("test")
+        assert response.status == Status.OK
+        assert response.job_statuses == [
+            common_types_pb2.COMPLETED for _ in range(3)]
 
     def test_get_job_error_info(self, run_server1, run_server2, run_server3):
         response = self.qmpc_request.get_job_error_info("test")

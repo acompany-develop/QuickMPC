@@ -34,9 +34,10 @@ from .proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
 from .request.qmpc_request_interface import QMPCRequestInterface
 from .request.response import (AddShareDataFrameResponse, DeleteShareResponse,
-                               ExecuteResponse, GetDataListResponse,
-                               GetElapsedTimeResponse, GetJobErrorInfoResponse,
-                               GetResultResponse, SendShareResponse)
+                               ExecuteResponse, GetComputationStatusResponse,
+                               GetDataListResponse, GetElapsedTimeResponse,
+                               GetJobErrorInfoResponse, GetResultResponse,
+                               SendShareResponse)
 from .request.status import Status
 from .share import Share
 from .utils.if_present import if_present
@@ -391,6 +392,28 @@ class QMPCRequest(QMPCRequestInterface):
                                  job_statuses=statuses,
                                  progresses=progresses,
                                  results=results)
+
+    def get_computation_status(self, job_uuid: str) \
+            -> GetComputationStatusResponse:
+        # リクエストパラメータを設定
+        req = GetComputationRequest(
+            job_uuid=job_uuid,
+            token=self.__token
+        )
+        # 非同期にリクエスト送信
+        with ThreadPoolExecutor() as executor:
+            futures = [executor.submit(self.__retry,
+                                       stub.GetComputationStatus,
+                                       req)
+                       for stub in self.__client_stubs]
+        is_ok, response = QMPCRequest.__futures_result(
+            futures, enable_progress_bar=False)
+        statuses = [res.status for res in response]
+
+        # TODO: __futures_resultの返り値を適切なものに変更する
+        if is_ok:
+            return GetComputationStatusResponse(Status.OK, statuses)
+        return GetComputationStatusResponse(Status.BadGateway, [])
 
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse:
         # リクエストパラメータを設定

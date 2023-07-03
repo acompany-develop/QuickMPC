@@ -82,6 +82,12 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
         )
         return res
 
+    def GetComputationStatus(self, request, context):
+        res = libc_to_manage_pb2.GetComputationStatusResponse(
+            status=common_types_pb2.COMPLETED,
+        )
+        return res
+
     def GetJobErrorInfo(self, request, context):
         res = libc_to_manage_pb2.GetJobErrorInfoResponse(
             job_error_info=JobErrorInfo(
