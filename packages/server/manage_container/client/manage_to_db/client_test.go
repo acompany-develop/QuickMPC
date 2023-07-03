@@ -536,11 +536,7 @@ func TestGetJobErrorInfoSuccess(t *testing.T) {
 	ioutil.WriteFile(fmt.Sprintf("/db/result/%s/status_%s", defaultJobUUID, pb_types.JobStatus_ERROR.String()), []byte(data), 0666)
 
 	client := Client{}
-	info, err := client.GetJobErrorInfo(defaultJobUUID)
-
-	if err != nil {
-		t.Error(err)
-	}
+	info := client.GetJobErrorInfo(defaultJobUUID)
 
 	if info == nil {
 		t.Error("there are no job error info")
@@ -556,16 +552,56 @@ func TestGetJobErrorInfoSuccess(t *testing.T) {
 	}
 }
 
-// statusもcompletedも存在しない場合にエラーがでるかTest
-func TestGetJobErrorInfoFailed(t *testing.T) {
+// ERROR の status が存在しない時に空のresultを返すか
+func TestGetJobErrorInfoNil(t *testing.T) {
 	initialize()
 	defer initialize()
 
 	client := Client{}
-	_, err := client.GetJobErrorInfo(defaultJobUUID)
+	info := client.GetJobErrorInfo(defaultJobUUID)
 
-	if err == nil {
-		t.Error("get job error info must be failed: any status file not found")
+	if info != nil {
+		t.Error("info must be nil.")
+	}
+}
+
+// Job status が取得できるかTest
+func TestGetComputationStatus(t *testing.T) {
+	initialize()
+	defer initialize()
+
+	testcases := map[string]struct {
+		status pb_types.JobStatus
+	}{
+		"ERROR":     {status: pb_types.JobStatus_ERROR},
+		"RECEIVED ": {status: pb_types.JobStatus_RECEIVED},
+		"PRE_JOB":   {status: pb_types.JobStatus_PRE_JOB},
+		"READ_DB":   {status: pb_types.JobStatus_READ_DB},
+		"COMPUTE":   {status: pb_types.JobStatus_COMPUTE},
+		"COMPLETED": {status: pb_types.JobStatus_COMPLETED},
+	}
+	for name, tt := range testcases {
+		name := name
+		tt := tt
+		t.Run(name, func(t *testing.T) {
+			t.Parallel()
+
+			jobUUID := fmt.Sprintf("TestGetComputationStatus_%s", name)
+
+			os.Mkdir(fmt.Sprintf("/db/result/%s", jobUUID), 0777)
+			path := fmt.Sprintf("/db/result/%s/status_%s", jobUUID, pb_types.JobStatus_name[int32(tt.status)])
+			os.Create(path)
+
+			client := Client{}
+			result, err := client.GetComputationStatus(jobUUID)
+
+			if err != nil {
+				t.Error("there are no job error info")
+			}
+			if result != tt.status {
+				t.Errorf("`result` must be %s, but %s", tt.status, result)
+			}
+		})
 	}
 }
 

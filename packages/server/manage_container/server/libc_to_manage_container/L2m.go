@@ -317,11 +317,7 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 		return nil, errToken
 	}
 
-	errInfo, err := s.m2dbclient.GetJobErrorInfo(JobUUID)
-
-	if err != nil {
-		return nil, err
-	}
+	errInfo := s.m2dbclient.GetJobErrorInfo(JobUUID)
 
 	return &pb.GetJobErrorInfoResponse{
 		JobErrorInfo: errInfo,

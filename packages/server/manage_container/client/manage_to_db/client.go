@@ -59,11 +59,12 @@ type M2DbClient interface {
 	DeleteShares([]string) error
 	GetSharePiece(string, int32) (Share, error)
 	GetSchema(string) ([]*pb_types.Schema, error)
+	GetComputationStatus(string) (pb_types.JobStatus, error)
+	GetJobErrorInfo(string) *pb_types.JobErrorInfo
 	GetComputationResult(string, []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error)
 	GetDataList() (string, error)
 	GetElapsedTime(string) (float64, error)
 	GetMatchingColumn(string) (int32, error)
-	GetJobErrorInfo(string) (*pb_types.JobErrorInfo, error)
 	CreateStatusFile(string) error
 	DeleteStatusFile(string) error
 }
@@ -182,73 +183,74 @@ func readStatusFile(root string, status pb_types.JobStatus) ([]byte, error) {
 	return nil, fmt.Errorf(`file: "%#v" is not found, error: %w`, path, errorSpecificStatusFileNotFound)
 }
 
-func getComputationStatus(path string) (pb_types.JobStatus, *pb_types.JobErrorInfo, error) {
-	// ERROR が存在する場合は先に返す
-	raw, err := readStatusFile(path, pb_types.JobStatus_ERROR)
+func (c Client) GetComputationStatus(jobUUID string) (pb_types.JobStatus, error) {
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
+
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
+	// NOTE: 降順だとERRORが他のStatusより後ろなので先に判定する
+	_, err := readStatusFile(path, pb_types.JobStatus_ERROR)
 	if err == nil {
-		info := &pb_types.JobErrorInfo{}
-		err = protojson.Unmarshal(raw, info)
-		return pb_types.JobStatus_ERROR, info, err
+		return pb_types.JobStatus_ERROR, err
 	}
 
 	// JobStatus を降順で探す
 	statusSize := len(pb_types.JobStatus_value)
 	for i := statusSize - 1; i > 0; i-- {
 		status := pb_types.JobStatus(i)
-		_, err = readStatusFile(path, status)
+		_, err := readStatusFile(path, status)
 
 		if errors.Is(err, errorSpecificStatusFileNotFound) {
 			continue
 		}
 
-		return status, nil, err
+		return status, err
 	}
 
-	return pb_types.JobStatus_UNKNOWN, nil, errorAnyStatusFileNotFound
+	return pb_types.JobStatus_UNKNOWN, errorAnyStatusFileNotFound
 }
 
-func (c Client) GetJobErrorInfo(jobUUID string) (*pb_types.JobErrorInfo, error) {
+func (c Client) GetJobErrorInfo(jobUUID string) *pb_types.JobErrorInfo {
 	ls.Lock(jobUUID)
 	defer ls.Unlock(jobUUID)
 
 	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 
-	_, errInfo, errStatus := getComputationStatus(path)
-	if errStatus != nil {
-		return nil, errStatus
+	raw, err := readStatusFile(path, pb_types.JobStatus_ERROR)
+	if err != nil {
+		return nil
 	}
-	if errInfo != nil {
-		return errInfo, nil
-	}
-
-	return nil, nil
+	info := &pb_types.JobErrorInfo{}
+	err = protojson.Unmarshal(raw, info)
+	return info
 }
 
 // DBから計算結果を得る
 func (c Client) GetComputationResult(jobUUID string, resultTypes []string) ([]*ComputationResult, *pb_types.JobErrorInfo, error) {
-	ls.Lock(jobUUID)
-	defer ls.Unlock(jobUUID)
-
-	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
-
-	status, errInfo, errStatus := getComputationStatus(path)
+	status, errStatus := c.GetComputationStatus(jobUUID)
 	if errStatus != nil {
 		return nil, nil, errStatus
 	}
 
-	if errInfo != nil {
-		// metadataは7kbまで
-		if proto.Size(errInfo) > 7000 {
-			// スタックトレース情報を削除する
-			errInfo.Stacktrace = nil
+	if status == pb_types.JobStatus_ERROR {
+		errInfo := c.GetJobErrorInfo(jobUUID)
+		if errInfo != nil {
+			// metadataは7kbまで
+			if proto.Size(errInfo) > 7000 {
+				// スタックトレース情報を削除する
+				errInfo.Stacktrace = nil
 
-			additionalInfo := "Stacktrace information is too long. Please use get_job_error_info method to get more information"
-			errInfo.AdditionalInfo = &additionalInfo
+				additionalInfo := "Stacktrace information is too long. Please use get_job_error_info method to get more information"
+				errInfo.AdditionalInfo = &additionalInfo
+			}
+
+			return nil, errInfo, nil
 		}
-
-		return nil, errInfo, nil
 	}
 
+	ls.Lock(jobUUID)
+	defer ls.Unlock(jobUUID)
+	path := fmt.Sprintf("%s/%s", resultDbPath, jobUUID)
 	if !isExists(path + "/completed") {
 		// statusが存在する場合はstatusだけ返してエラーはnilとする
 		return []*ComputationResult{{Status: status}}, nil, nil
