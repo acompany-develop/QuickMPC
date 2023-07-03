@@ -282,7 +282,7 @@ class QMPCRequest(QMPCRequestInterface):
         is_ok: bool = True
         res_list = []
         for res in stream:
-            if output_path and res.status == JobStatus.Value('COMPLETED'):
+            if output_path:
                 file_title = "dim1"
                 if res.HasField("is_dim2"):
                     file_title = "dim2"
@@ -296,12 +296,9 @@ class QMPCRequest(QMPCRequestInterface):
                     writer = csv.writer(f)
                     writer.writerow([res.column_number])
                     writer.writerow(res.result)
-                progress = res.progress if res.HasField('progress') else None
                 res = GetComputationResultResponse(
                     column_number=res.column_number,
-                    status=res.status,
                     piece_id=res.piece_id,
-                    progress=progress,
                 )
             res_list.append(res)
         res_dict: Dict = {"is_ok": is_ok, "responses": res_list}
@@ -327,24 +324,11 @@ class QMPCRequest(QMPCRequestInterface):
             futures, enable_progress_bar=False)
         results_sorted = [sorted(res["responses"], key=lambda r: r.piece_id)
                           for res in response]
-        # NOTE: statusは0番目(piece_id=1)の要素にのみ含まれている
-        statuses = [res[0].status for res in results_sorted] \
-            if results_sorted else None
-        all_completed = all([
-            s == JobStatus.Value('COMPLETED') for s in statuses
-        ]) if statuses is not None else False
-
-        progresses = None
-        if results_sorted is not None:
-            progresses = [
-                res[0].progress if res[0].HasField("progress") else None
-                for res in results_sorted
-            ]
 
         results: Optional[Any] = None
         schema = None
         is_table = False
-        if not output_path and all_completed:
+        if not output_path:
             for res in results_sorted:
                 is_dim2 = False
                 column_number = 0
@@ -384,14 +368,8 @@ class QMPCRequest(QMPCRequestInterface):
 
         # TODO: __futures_resultの返り値を適切なものに変更する
         if is_ok:
-            return GetResultResponse(Status.OK,
-                                     job_statuses=statuses,
-                                     progresses=progresses,
-                                     results=results)
-        return GetResultResponse(Status.BadGateway,
-                                 job_statuses=statuses,
-                                 progresses=progresses,
-                                 results=results)
+            return GetResultResponse(Status.OK, results=results)
+        return GetResultResponse(Status.BadGateway, results=results)
 
     def get_computation_status(self, job_uuid: str) \
             -> GetComputationStatusResponse:
@@ -409,11 +387,14 @@ class QMPCRequest(QMPCRequestInterface):
         is_ok, response = QMPCRequest.__futures_result(
             futures, enable_progress_bar=False)
         statuses = [res.status for res in response]
+        progresses = [res.progres if res.HasField("progress") else None
+                      for res in response]
 
         # TODO: __futures_resultの返り値を適切なものに変更する
         if is_ok:
-            return GetComputationStatusResponse(Status.OK, statuses)
-        return GetComputationStatusResponse(Status.BadGateway, [])
+            return GetComputationStatusResponse(Status.OK,
+                                                statuses, progresses)
+        return GetComputationStatusResponse(Status.BadGateway, [], [])
 
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse:
         # リクエストパラメータを設定

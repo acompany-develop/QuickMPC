@@ -145,8 +145,7 @@ class QMPC:
                     f"[path]={path}")
         res = self.__qmpc_request.get_computation_result(job_uuid,
                                                          output_path=path)
-        return {"is_ok": res.status == Status.OK, "statuses": res.job_statuses,
-                "results": res.results, "progresses": res.progresses}
+        return {"is_ok": res.status == Status.OK, "results": res.results}
 
     def get_data_list(self) -> Dict:
         logger.info("get_data_list request.")
