@@ -12,7 +12,7 @@ namespace qmpc::ComputationToBts
 {
 using Triple = std::tuple<std::string, std::string, std::string>;
 
-thread_local static inline unsigned int request_id_generator = 0;
+thread_local static inline std::int64_t request_id_generator = 0;
 
 class Client
 {
