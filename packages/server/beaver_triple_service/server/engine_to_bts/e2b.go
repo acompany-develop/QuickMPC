@@ -73,26 +73,6 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	}, nil
 }
 
-func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if !ok {
-		return nil, status.Error(codes.Internal, "failed claims type assertions")
-	}
-
-	partyId, err := GetPartyIdFromClaims(claims)
-	if err != nil {
-		return nil, err
-	}
-	logger.Infof("jobId: %d, partyId: %d\n", in.GetJobId(), partyId)
-
-	err = tg.DeleteJobIdTriple(in.GetJobId())
-	if err != nil {
-		return nil, err
-	}
-
-	return &emptypb.Empty{}, err
-}
-
 func RunServer() {
 	listenPort, err := getListenPort()
 	if err != nil {

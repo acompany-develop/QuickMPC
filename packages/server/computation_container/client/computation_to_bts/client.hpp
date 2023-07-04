@@ -74,23 +74,5 @@ public:
         }
         return triples;
     }
-
-    void deleteJobIdTriple(const unsigned int job_id)
-    {
-        grpc::Status status;
-        enginetobts::DeleteJobIdTripleRequest request;
-        request.set_job_id(job_id);
-        google::protobuf::Empty response;
-
-        // リトライポリシーに従ってリクエストを送る
-        auto retry_manager = RetryManager("BTS", "deleteJobIdTriple");
-        do
-        {
-            grpc::ClientContext context;
-            const std::string token = Config::getInstance()->cc_to_bts_token;
-            context.AddMetadata("authorization", "bearer " + token);
-            status = stub_->DeleteJobIdTriple(&context, request, &response);
-        } while (retry_manager.retry(status));
-    }
 };
 }  // namespace qmpc::ComputationToBts
