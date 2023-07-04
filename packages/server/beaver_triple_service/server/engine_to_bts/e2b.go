@@ -63,7 +63,7 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	}
 	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetTripleType())
 
-	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
+	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType(), in.GetRequestId())
 	if err != nil {
 		return nil, err
 	}
