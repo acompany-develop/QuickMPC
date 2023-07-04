@@ -86,8 +86,6 @@ func getContext(opts ...ctxOptFunc) (context.Context, error) {
 	return ctx, nil
 }
 
-requestIdGenerator := uint32(0)
-
 func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32, partyId uint32) {
 	t.Run(fmt.Sprintf("testGetTriples_Party%d", partyId), func(t *testing.T) {
 		t.Helper()
@@ -98,8 +96,7 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 			t.Fatal(err)
 		}
 
-		result, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT, requestId: requestIdGenerator})
-		requestIdGenerator += 1
+		result, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -190,8 +187,7 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1, requestIdGenerator})
-	requestIdGenerator += 1
+	_, err = client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1})
 
 	if err == nil {
 		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
