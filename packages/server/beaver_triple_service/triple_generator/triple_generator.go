@@ -102,7 +102,7 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 
 	// jobId が初めての場合
 	if _, ok := Db.PreID[jobId]; !ok {
-		Db.PreID[jobId] = make(map[uint32](uint32))
+		Db.PreID[jobId] = make(map[uint32](int64))
 		Db.PreAmount[jobId] = make(map[uint32](uint32))
 		Db.Triples[jobId] = make(map[uint32]([]*pb.Triple))
 	}
