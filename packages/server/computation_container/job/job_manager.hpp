@@ -193,9 +193,7 @@ public:
             auto job_id = job_manager->pollingPopJobId();
 
             // 3. 取りだしたJobReqの内容を全パーティに伝える
-            try_catch_run(
-                job_req.job_uuid(), [&]() { job_manager->sendJobInfo(job_req, job_id); }
-            );
+            try_catch_run(job_req.job_uuid(), [&]() { job_manager->sendJobInfo(job_req, job_id); });
         }
     }
 };
