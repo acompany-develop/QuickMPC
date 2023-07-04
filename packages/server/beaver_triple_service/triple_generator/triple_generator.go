@@ -96,23 +96,23 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type
 	return ret, nil
 }
 
-func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestID uint32) ([]*ts.Triple, error) {
+func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestId uint32) ([]*ts.Triple, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
 	pre_id, ok := Db.PreID[jobId][partyId]
 
 	// 前回の request と異なる場合
-	if ok && pre_id != requestID{
+	if ok && pre_id != requestId{
 		pre_amount := Db.PreAmount[jobId][partyId]
 		Db.Triples[jobId][partyId] = Db.Triples[jobId][partyId][pre_amount:]
-		Db.PreID[jobId][partyId] = requestID
+		Db.PreID[jobId][partyId] = requestId
 		Db.PreAmount[jobId][partyId] = amount
 	}
 
 	// request が初めての場合
 	if !ok{
-		Db.PreID[jobId][partyId] = requestID
+		Db.PreID[jobId][partyId] = requestId
 		Db.PreAmount[jobId][partyId] = amount
 	}
 
