@@ -116,7 +116,7 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 		Db.PreAmount[jobId][partyId] = amount
 	}
 
-	//
+	// まだ生成されていない
 	if len(Db.Triples[jobId][partyId]) == 0{
 		newTriples, err := GenerateTriples(claims, amount, triple_type)
 		if err != nil {
