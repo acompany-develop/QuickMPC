@@ -25,8 +25,8 @@ func GetInstance() *SafeTripleStore {
 		logger.Info("new instance")
 		instance = &SafeTripleStore{
 			Triples: make(map[uint32](map[uint32]([]*Triple))),
-			PreID: make(map[uint32](map[uint32](uint32)))
-			PreAmount: make(map[uint32](map[uint32](uint32)))
+			PreID: make(map[uint32](map[uint32](uint32))),
+			PreAmount: make(map[uint32](map[uint32](uint32))),
 		}
 	})
 	return instance
