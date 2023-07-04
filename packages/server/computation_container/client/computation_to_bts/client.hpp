@@ -12,6 +12,8 @@ namespace qmpc::ComputationToBts
 {
 using Triple = std::tuple<std::string, std::string, std::string>;
 
+thread_local static inline std::atomic<std::uint32_t> request_id_generator = 0;
+
 class Client
 {
 private:
@@ -49,12 +51,14 @@ public:
 
         // リトライポリシーに従ってリクエストを送る
         auto retry_manager = RetryManager("BTS", "readTriples");
+
+        std::uint32_t request_id = ++request_id_generator;
         do
         {
             grpc::ClientContext context;
             const std::string token = Config::getInstance()->cc_to_bts_token;
             context.AddMetadata("authorization", "bearer " + token);
-            status = stub_->GetTriples(&context, request, &response);
+            status = stub_->GetTriples(&context, request, &response, request_id);
         } while (retry_manager.retry(status));
 
         // responseから結果を取り出して返す

@@ -96,29 +96,35 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type
 	return ret, nil
 }
 
-func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type) ([]*ts.Triple, error) {
+func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestID uint32) ([]*ts.Triple, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
-	if len(Db.Triples[jobId]) == 0 {
-		newTriples, err := GenerateTriples(claims, amount, triple_type)
+	pre_id, ok := Db.PreID[jobID][partyID]
+
+	// 前回の request と異なる場合
+	if ok && pre_id != requestID{
+		pre_amount, err := PreAmont[jobID][PartyID]
 		if err != nil {
 			return nil, err
 		}
-
-		Db.Triples[jobId] = newTriples
+		Db.Triples[jobId][partyId] = Db.Triples[jobId][partyId][pre_amount:]
+		Db.PreID[jobID][partyID] = requestID
+		Db.PreAmount[jobID][partyID] = amount
 	}
 
-	var triples []*ts.Triple
-	_, ok := Db.Triples[jobId][partyId]
+	// request が初めての場合
+	if !ok{
+		Db.PreID[jobID][partyID] = requestID
+		Db.PreAmount[jobID][partyID] = amount
+	}
 
-	// とあるパーティの複数回目のリクエストが、他パーティより先行されても対応できるように全パーティに triple をappendする
-	if !ok {
+	//
+	if len(Db.Triples[jobId][partyId]) == 0{
 		newTriples, err := GenerateTriples(claims, amount, triple_type)
 		if err != nil {
 			return nil, err
 		}
-
 		// partyIdは1-index
 		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
 			_, ok := Db.Triples[jobId][partyId]
@@ -131,27 +137,12 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 	}
 
 	triples = Db.Triples[jobId][partyId][:amount]
-	Db.Triples[jobId][partyId] = Db.Triples[jobId][partyId][amount:]
-	if len(Db.Triples[jobId][partyId]) == 0 {
-		delete(Db.Triples[jobId], partyId)
-	}
-
-	if len(triples) == 0 {
-		errText := "すでに取得済みのリソースがリクエストされた"
-		logger.Error(errText)
-		return nil, errors.New(errText)
-	}
-
-	// 全て配り終わったら削除
-	if len(Db.Triples[jobId]) == 0 {
-		delete(Db.Triples, jobId)
-	}
 
 	return triples, nil
 }
 
 func DeleteJobIdTriple(jobId uint32) error {
 	// jobIdに紐付いたTripleを削除
-	delete(Db.Triples, jobId)
+	// delete(Db.Triples, jobId)
 	return nil
 }
