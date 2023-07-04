@@ -23,7 +23,6 @@ import (
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type server struct {
