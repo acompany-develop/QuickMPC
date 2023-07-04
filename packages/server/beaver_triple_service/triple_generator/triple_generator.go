@@ -100,6 +100,13 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
+	// jobId が初めての場合
+	if _, ok := Db.PreID[jobId]; !ok {
+		Db.PreID[jobId] = make(map[uint32](uint32))
+		Db.PreAmount[jobId] = make(map[uint32](uint32))
+		Db.Triples[jobId] = make(map[uint32]([]*pb.Triple))
+	}
+
 	pre_id, ok := Db.PreID[jobId][partyId]
 
 	// 前回の request と異なる場合
