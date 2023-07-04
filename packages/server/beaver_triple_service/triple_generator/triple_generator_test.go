@@ -42,7 +42,7 @@ func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum u
 	t.Helper()
 	for jobId := uint32(0); jobId < jobNum; jobId++ {
 		t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
-			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type)
+			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, -1)
 			if err != nil {
 				t.Fatal(err)
 			}
