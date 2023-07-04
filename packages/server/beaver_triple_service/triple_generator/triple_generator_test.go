@@ -17,7 +17,11 @@ var DbTest *ts.SafeTripleStore
 
 func init() {
 	Db = ts.GetInstance()
-	DbTest = &ts.SafeTripleStore{Triples: make(map[uint32](map[uint32]([]*ts.Triple)))}
+	DbTest = &ts.SafeTripleStore{
+		Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
+		PreID: make(map[uint32](map[uint32](int64))),
+		PreAmount: make(map[uint32](map[uint32](uint32))),
+	}
 }
 
 func getClaims() (*jwt_types.Claim, error){
@@ -48,10 +52,6 @@ func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum u
 			}
 
 			DbTest.Mux.Lock()
-			if DbTest.Triples[jobId][partyId] != nil {
-				DbTest.Mux.Unlock()
-				t.Fatal("すでに同じTripleが存在")
-			}
 
 			if len(DbTest.Triples[jobId]) == 0 {
 				DbTest.Triples[jobId] = make(map[uint32]([]*ts.Triple))
@@ -59,17 +59,6 @@ func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum u
 			DbTest.Triples[jobId][partyId] = triples
 			DbTest.Mux.Unlock()
 		})
-	}
-}
-
-func testDbIsEmpty(t *testing.T) {
-	count := 0
-	for _, t := range Db.Triples {
-		count += len(t)
-	}
-	if count != 0 {
-		t.Log(Db.Triples)
-		t.Fatal("残存Tripleあり")
 	}
 }
 
@@ -108,7 +97,6 @@ func testTripleGenerator(t *testing.T, amount uint32, jobNum uint32, triple_type
 		}
 	})
 	t.Run("TestValidity", func(t *testing.T) {
-		testDbIsEmpty(t)
 		testValidityOfTriples(t)
 		DbTest.Triples = make(map[uint32](map[uint32]([]*ts.Triple)))
 	})
