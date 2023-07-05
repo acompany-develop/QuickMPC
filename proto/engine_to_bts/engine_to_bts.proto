@@ -4,8 +4,6 @@ package enginetobts;
 
 option go_package = "github.com/acompany-develop/QuickMPC/proto/engine_to_bts";
 
-import "google/protobuf/empty.proto";
-
 service EngineToBts {
     rpc GetTriples(GetTriplesRequest) returns (GetTriplesResponse) {}
 }
