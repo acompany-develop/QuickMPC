@@ -4,6 +4,7 @@ import (
 	"os"
 	"fmt"
 	"testing"
+	"sync"
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
@@ -13,10 +14,15 @@ import (
 )
 
 var Db *ts.SafeTripleStore
-var TriplesStock map[uint32](map[uint32]([]*ts.Triple))
+
+type TriplesStock struct{
+	Stock map[uint32](map[uint32]([]*ts.Triple))
+	Mux     sync.Mutex
+}
+var TS TriplesStock
 
 func init() {
-	TriplesStock = make(map[uint32](map[uint32]([]*ts.Triple)))
+	TS.Stock = make(map[uint32](map[uint32]([]*ts.Triple)))
 }
 
 func getClaims() (*jwt_types.Claim, error){
@@ -41,14 +47,14 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 		t.Fatal(err)
 	}
 
-	TriplesStock.Mux.Lock()
+	TS.Stock.Mux.Lock()
 
-	_, ok := TriplesStock[jobId]
+	_, ok := TS.Stock[jobId]
 	if !ok{
-		TriplesStock[jobId] = make(map[uint32]([]*ts.Triple))
+		TS.Stock[jobId] = make(map[uint32]([]*ts.Triple))
 	}
 
-	TriplesStock.Mux.UnLock()
+	TS.Stock.Mux.UnLock()
 
 	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
 		for requestId := uint32(0); requestId < requestTimes; requestId++ {
@@ -57,22 +63,22 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 				t.Fatal(err)
 			}
 
-			TriplesStock.Mux.Lock()
+			TS.Stock.Mux.Lock()
 
-			_, ok := TriplesStock[jobId][PartyId]
+			_, ok := TS.Stock[jobId][PartyId]
 			if ok {
-				TriplesStock[jobId][PartyId] = append(TriplesStock[jobId][PartyId], triples)
+				TS.Stock[jobId][PartyId] = append(TS.Stock[jobId][PartyId], triples)
 			} else {
 				Db.Triples[jobId][partyId] = triples
 			}
 
-			TriplesStock.Mux.UnLock()
+			TS.Stock.Mux.UnLock()
 		}
 	})
 }
 
 func testValidityOfTriples(t *testing.T) {
-	for jobId, PartyToTriples := range TriplesStock {
+	for jobId, PartyToTriples := range TS.Stock {
 		for i := 0; i < len(PartyToTriples[1]); i++ {
 			aShareSum, bShareSum, cShareSum := int64(0), int64(0), int64(0)
 			for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
@@ -106,7 +112,7 @@ func parallelGetTriples(t *testing.T, amount uint32, jobNum uint32, requestTimes
 
 	t.Run("TestValidity", func(t *testing.T) {
 		testValidityOfTriples(t)
-		TriplesStock = make(map[uint32](map[uint32]([]*ts.Triple)))
+		TS.Stock = make(map[uint32](map[uint32]([]*ts.Triple)))
 	})
 }
 
