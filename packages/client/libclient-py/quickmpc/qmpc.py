@@ -7,7 +7,6 @@ import pandas as pd
 from .proto.common_types import common_types_pb2
 from .qmpc_logging import get_logger
 from .qmpc_request import QMPCRequest
-from .request.status import Status
 from .restore import restore
 from .share import Share
 from .utils.parse_csv import to_float
@@ -59,7 +58,7 @@ class QMPC:
             .sort_values(by="original_index") \
             .drop('original_index', axis=1)
         res = self.__qmpc_request.send_share(df, piece_size=piece_size)
-        return {"is_ok": res.status == Status.OK, "data_id": res.data_id}
+        return {"is_ok": True, "data_id": res.data_id}
 
     def send_share_from_csv_file(self,
                                  filename: Union[str, io.StringIO],
@@ -78,8 +77,8 @@ class QMPC:
     def delete_share(self, data_ids: List[str]) -> Dict:
         logger.info("delete_share request. "
                     f"[delete id list]={data_ids}")
-        res = self.__qmpc_request.delete_share(data_ids)
-        return {"is_ok": res.status == Status.OK}
+        self.__qmpc_request.delete_share(data_ids)
+        return {"is_ok": True}
 
     def mean(self, data_ids: List[str], src: List,
              *, debug_mode: bool = False) -> Dict:
@@ -88,7 +87,7 @@ class QMPC:
                     f"[src columns]={src} "
                     f"[debug_mode]={debug_mode}")
         res = self.__qmpc_request.mean(data_ids, src, debug_mode=debug_mode)
-        return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
+        return {"is_ok": True, "job_uuid": res.job_uuid}
 
     def variance(self, data_ids: List[str], src: List,
                  *, debug_mode: bool = False) -> Dict:
@@ -98,7 +97,7 @@ class QMPC:
                     f"[debug_mode]={debug_mode}")
         res = self.__qmpc_request.variance(
             data_ids, src, debug_mode=debug_mode)
-        return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
+        return {"is_ok": True, "job_uuid": res.job_uuid}
 
     def sum(self, data_ids: List[str], src: List,
             *, debug_mode: bool = False) -> Dict:
@@ -107,7 +106,7 @@ class QMPC:
                     f"[src columns]={src} "
                     f"[debug_mode]={debug_mode}")
         res = self.__qmpc_request.sum(data_ids, src, debug_mode=debug_mode)
-        return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
+        return {"is_ok": True, "job_uuid": res.job_uuid}
 
     def correl(self, data_ids: List[str], inp: Tuple[List[int], List[int]],
                *, debug_mode: bool = False) -> Dict:
@@ -118,7 +117,7 @@ class QMPC:
                     f"[debug_mode]={debug_mode}")
         res = self.__qmpc_request.correl(
             data_ids, inp[0], inp[1], debug_mode=debug_mode)
-        return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
+        return {"is_ok": True, "job_uuid": res.job_uuid}
 
     def meshcode(self, data_ids: List[str], src: List,
                  *, debug_mode: bool = False) -> Dict:
@@ -128,7 +127,7 @@ class QMPC:
                     f"[debug_mode]={debug_mode}")
         res = self.__qmpc_request.meshcode(
             data_ids, src, debug_mode=debug_mode)
-        return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
+        return {"is_ok": True, "job_uuid": res.job_uuid}
 
     def get_join_table(self, data_ids: List[str],
                        *, debug_mode: bool = False) -> Dict:
@@ -136,7 +135,7 @@ class QMPC:
                     f"[data_id list]={data_ids} "
                     f"[debug_mode]={debug_mode}")
         res = self.__qmpc_request.join(data_ids, debug_mode=debug_mode)
-        return {"is_ok": res.status == Status.OK, "job_uuid": res.job_uuid}
+        return {"is_ok": True, "job_uuid": res.job_uuid}
 
     def get_computation_result(self, job_uuid: str,
                                path: Optional[str] = None) -> Dict:
@@ -145,7 +144,7 @@ class QMPC:
                     f"[path]={path}")
         res = self.__qmpc_request.get_computation_result(job_uuid,
                                                          output_path=path)
-        return {"is_ok": res.status == Status.OK, "results": res.results}
+        return {"is_ok": True, "results": res.results}
 
     def demo_sharize(self, secrets: List) -> Dict:
         logger.info("demo_sharize request. "
@@ -157,7 +156,7 @@ class QMPC:
         logger.info("get_elapsed_time request. "
                     f"[job_uuid]={job_uuid}")
         res = self.__qmpc_request.get_elapsed_time(job_uuid)
-        return {"is_ok": res.status == Status.OK,
+        return {"is_ok": True,
                 "elapsed_time": res.elapsed_time}
 
     def restore(self, job_uuid: str, path: str):
@@ -170,14 +169,14 @@ class QMPC:
         logger.info("get_computation_status request. "
                     f"[job_uuid]={job_uuid}")
         res = self.__qmpc_request.get_computation_status(job_uuid)
-        return {"is_ok": res.status == Status.OK,
+        return {"is_ok": True,
                 "statuses": res.job_statuses, "progresses": res.progresses}
 
     def get_job_error_info(self, job_uuid: str) -> Dict:
         logger.info("get_job_error_info request. "
                     f"[job_uuid]={job_uuid}")
         res = self.__qmpc_request.get_job_error_info(job_uuid)
-        return {"is_ok": res.status == Status.OK,
+        return {"is_ok": True,
                 "job_error_info": res.job_error_info}
 
     @staticmethod

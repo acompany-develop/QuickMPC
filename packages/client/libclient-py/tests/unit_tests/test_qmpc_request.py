@@ -3,9 +3,9 @@ from typing import List, Optional
 import pandas as pd
 import pytest
 
+from quickmpc.exception import QMPCServerError
 from quickmpc.proto.common_types import common_types_pb2
 from quickmpc.qmpc_request import QMPCRequest
-from quickmpc.request.status import Status
 
 
 def data_frame(values: List[List] = [[1, 2], [3, 4]],
@@ -40,8 +40,7 @@ class TestQMPCRequest:
     )
     def test_send_shares(self, params,
                          run_server1, run_server2, run_server3):
-        response = self.qmpc_request.send_share(*params)
-        assert response.status == Status.OK
+        self.qmpc_request.send_share(*params)
 
     @pytest.mark.parametrize(
         ("params", "expected_exception"), [
@@ -70,58 +69,46 @@ class TestQMPCRequest:
             self.qmpc_request.send_share(*params)
 
     def test_sum(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.sum(["data_id1"], [1, 2, 3])
-        assert response.status == Status.OK
+        self.qmpc_request.sum(["data_id1"], [1, 2, 3])
 
     def test_mean(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.mean(["data_id1"], [1, 2, 3])
-        assert response.status == Status.OK
+        self.qmpc_request.mean(["data_id1"], [1, 2, 3])
 
     def test_variance(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.variance(["data_id1"], [1, 2, 3])
-        assert response.status == Status.OK
+        self.qmpc_request.variance(["data_id1"], [1, 2, 3])
 
     def test_correl(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.correl(["data_id1"], [1, 2, 3], [4])
-        assert response.status == Status.OK
+        self.qmpc_request.correl(["data_id1"], [1, 2, 3], [4])
 
     def test_meshcode(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.meshcode(["data_id1"], [1, 2, 3])
-        assert response.status == Status.OK
+        self.qmpc_request.meshcode(["data_id1"], [1, 2, 3])
 
     def test_join(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.join(["data_id1"])
-        assert response.status == Status.OK
+        self.qmpc_request.join(["data_id1"])
 
     def test_get_computation_result(self,
                                     run_server1, run_server2, run_server3):
-        response = self.qmpc_request.get_computation_result("job_uuid", None)
-        assert response.status == Status.OK
+        self.qmpc_request.get_computation_result("job_uuid", None)
 
     def test_get_computation_status(self,
                                     run_server1, run_server2, run_server3):
         response = self.qmpc_request.get_computation_status("test")
-        assert response.status == Status.OK
         assert response.job_statuses == [
             common_types_pb2.COMPLETED for _ in range(3)]
 
     def test_get_job_error_info(self, run_server1, run_server2, run_server3):
         response = self.qmpc_request.get_job_error_info("test")
-        assert response.status == Status.OK
         for res in response.job_error_info:
             assert res.what == "QMPCJobError"
 
     def test_get_elapsed_time(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.get_elapsed_time("job_uuid")
-        assert response.status == Status.OK
+        self.qmpc_request.get_elapsed_time("job_uuid")
 
     def test_delete_share(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.delete_share(["data_id"])
-        assert response.status == Status.OK
+        self.qmpc_request.delete_share(["data_id"])
 
     def test_add_share_data_frame(self, run_server1, run_server2, run_server3):
-        response = self.qmpc_request.add_share_data_frame("id1", "id2")
-        assert response.status == Status.OK
+        self.qmpc_request.add_share_data_frame("id1", "id2")
 
 
 class TestQMPCRequestFailed:
@@ -147,7 +134,6 @@ class TestQMPCRequestFailed:
     )
     def test_retry(self, function, argument, caplog,
                    run_server1, run_server2, run_server3):
-        print(argument, *argument)
-        # 10回の retry に失敗したら "All 10 times it was an error" が log に出るかをテスト
-        _ = function(*argument)
-        assert "channel の準備が出来ません" in caplog.text
+        with pytest.raises(QMPCServerError) as e:
+            _ = function(*argument)
+        assert str(e.value) == "channel の準備が出来ません"
