@@ -57,7 +57,7 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
 		for loopRequestId := uint32(0); loopRequestId < requestTimes; loopRequestId++ {
 			requestId := loopRequestId
-			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, int64(requestId))
+			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, requestId)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -120,7 +120,7 @@ func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type 
 		//tg.Db.ResetInstance()
 		tg.Db = &ts.SafeTripleStore{
 			Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
-			PreID: make(map[uint32](map[uint32](int64))),
+			PreID: make(map[uint32](map[uint32](uint32))),
 			PreAmount: make(map[uint32](map[uint32](uint32))),
 		}
 	})
