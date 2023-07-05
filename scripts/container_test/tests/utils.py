@@ -1,8 +1,8 @@
-import time
+import pandas as pd
+from quickmpc import QMPC, ShareDataFrame
+from quickmpc.qmpc_request import QMPCRequest
 
-from quickmpc import QMPC, JobStatus
-
-from container import Containers
+from .container import Containers
 
 """ 各種コンテナ """
 __cc_names = [
@@ -53,45 +53,10 @@ def all_containers() -> Containers:
 
 
 """ quickmpcへ簡易request群 """
-qmpc: QMPC = QMPC([
+qmpc: QMPC = QMPC(QMPCRequest([
     "http://localhost:50001",
     "http://localhost:50002",
     "http://localhost:50003",
-], retry_num=1, retry_wait_time=1)
+], 1, 1))
 
-
-def send_share() -> dict:
-    return qmpc.send_share_from_csv_data([["a", "b", "c"],
-                                          [1, 2, 3], [4, 5, 6]])
-
-
-def data_id() -> str:
-    res_ss = send_share()
-    assert res_ss["is_ok"]
-    return res_ss["data_id"]
-
-
-def execute_computation(data_id1: str, data_id2: str) -> dict:
-    return qmpc.get_join_table([data_id1, data_id2])
-
-
-def job_uuid() -> str:
-    res_ec = execute_computation(data_id(), data_id())
-    assert res_ec["is_ok"]
-    job_uuid_: str = res_ec["job_uuid"]
-    # 計算結果が保存されるまで待機する
-    for _ in range(10):
-        time.sleep(3)
-        try:
-            res = qmpc.get_computation_status(job_uuid_)
-        except Exception:
-            continue
-        if res["statuses"] is not None:
-            if all([status == JobStatus.COMPLETED
-                    for status in res["statuses"]]):
-                return job_uuid_
-    raise RuntimeError("`execute` is not completed.")
-
-
-def get_computation_result(job_uuid: str) -> dict:
-    return qmpc.get_computation_result(job_uuid)
+df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], columns=["a", "b", "c"])

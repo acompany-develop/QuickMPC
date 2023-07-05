@@ -1,8 +1,7 @@
 import pytest
 
-from container import Containers
-from utils import (all_containers, bts_p, cc_p, data_id, execute_computation,
-                   get_computation_result, job_uuid, mc_all, mc_p, send_share)
+from .container import Containers
+from .utils import all_containers, bts_p, cc_p, df, mc_all, mc_p, qmpc
 
 
 @pytest.mark.parametrize(
@@ -17,9 +16,7 @@ def test_success_send_share_with_restart(restart_container):
 
     # コンテナをrestartさせてからsend_shareを送る
     restart_container.restart()
-    res = send_share()
-
-    assert res["is_ok"]
+    qmpc.send_to(df)
 
 
 @pytest.mark.parametrize(
@@ -34,35 +31,11 @@ def test_success_execute_computation_with_restart(restart_container):
     all_containers().up()
 
     # コンテナを落とす前にsend_shareしておく
-    data_id1: str = data_id()
-    data_id2: str = data_id()
+    sdf: str = qmpc.send_to(df)
 
     # コンテナをrestartさせてからexecute_computationを送る
     restart_container.restart()
-    res = execute_computation(data_id1, data_id2)
-
-    assert res["is_ok"]
-
-
-@pytest.mark.parametrize(
-    ("restart_container"), [
-        (mc_p(1)), (cc_p(1)),
-    ]
-)
-def test_success_execute_computations_with_restart(restart_container):
-    # 特定のコンテナをrestartさせてexecute_computationを送れるか
-    Containers.down_all()
-    all_containers().up()
-
-    # コンテナを落とす前にsend_shareしておく
-    data_id1: str = data_id()
-    data_id2: str = data_id()
-
-    # コンテナをrestartさせてからexecute_computationを送る
-    restart_container.restart()
-    res = execute_computation(data_id1, data_id2)
-
-    assert res["is_ok"]
+    sdf.join(sdf)
 
 
 @pytest.mark.parametrize(
@@ -76,13 +49,13 @@ def test_success_get_computation_result_with_restart(restart_container):
     all_containers().up()
 
     # コンテナを落とす前にexecuteしておく
-    job_uuid1: str = job_uuid()
+    sdf = qmpc.send_to(df)
+    sdf_join = sdf.join(sdf)
+    sdf_join._wait_execute(progress=False)
 
     # コンテナをrestartさせてからget_compuation_resultを送る
     restart_container.restart()
-    res = get_computation_result(job_uuid1)
-
-    assert res["is_ok"]
+    sdf_join.to_data_frame()
 
 
 @pytest.mark.parametrize(
@@ -96,5 +69,6 @@ def test_success_execute_multiple_with_restart(restart_container):
     all_containers().up()
 
     for _ in range(3):
-        job_uuid()
+        sdf: str = qmpc.send_to(df)
+        sdf.join(sdf)._wait_execute(progress=False)
         restart_container.restart()
