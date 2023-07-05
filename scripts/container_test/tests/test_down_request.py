@@ -1,4 +1,5 @@
 import pytest
+from quickmpc.exception import QMPCServerError
 
 from container import Containers
 from utils import (all_containers, cc_p, data_id, execute_computation,
@@ -17,9 +18,8 @@ def test_failed_send_share_with_down(down_container):
 
     # コンテナをdownさせてからsend_shareを送る
     down_container.down()
-    res = send_share()
-
-    assert not res["is_ok"]
+    with pytest.raises(QMPCServerError):
+        send_share()
 
 
 @pytest.mark.parametrize(
@@ -39,9 +39,8 @@ def test_failed_execute_computation_with_down(down_container):
 
     # コンテナをdownさせてからexecute_computation(hjoin)を送る
     down_container.down()
-    res = execute_computation(data_id1, data_id2)
-
-    assert not res["is_ok"]
+    with pytest.raises(QMPCServerError):
+        execute_computation(data_id1, data_id2)
 
 
 @pytest.mark.parametrize(
@@ -59,6 +58,5 @@ def test_failed_get_computation_result_with_down(down_container):
 
     # コンテナをdownさせてからget_compuation_resultを送る
     down_container.down()
-    res = get_computation_result(job_uuid1)
-
-    assert not res["is_ok"]
+    with pytest.raises(QMPCServerError):
+        get_computation_result(job_uuid1)
