@@ -47,14 +47,14 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 		t.Fatal(err)
 	}
 
-	TS.Stock.Mux.Lock()
+	TS.Mux.Lock()
 
 	_, ok := TS.Stock[jobId]
 	if !ok{
 		TS.Stock[jobId] = make(map[uint32]([]*ts.Triple))
 	}
 
-	TS.Stock.Mux.UnLock()
+	TS.Mux.Unlock()
 
 	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
 		for requestId := uint32(0); requestId < requestTimes; requestId++ {
@@ -63,7 +63,7 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 				t.Fatal(err)
 			}
 
-			TS.Stock.Mux.Lock()
+			TS.Mux.Lock()
 
 			_, ok := TS.Stock[jobId][PartyId]
 			if ok {
@@ -72,7 +72,7 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 				Db.Triples[jobId][partyId] = triples
 			}
 
-			TS.Stock.Mux.UnLock()
+			TS.Mux.Unlock()
 		}
 	})
 }
