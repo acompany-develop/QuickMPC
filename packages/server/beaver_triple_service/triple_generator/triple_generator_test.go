@@ -13,15 +13,10 @@ import (
 )
 
 var Db *ts.SafeTripleStore
-var DbTest *ts.SafeTripleStore
+var TriplesStock map[uint32](map[uint32]([]*ts.Triple))
 
 func init() {
-	Db = ts.GetInstance()
-	DbTest = &ts.SafeTripleStore{
-		Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
-		PreID: make(map[uint32](map[uint32](int64))),
-		PreAmount: make(map[uint32](map[uint32](uint32))),
-	}
+	TriplesStock = make(map[uint32](map[uint32]([]*ts.Triple)))
 }
 
 func getClaims() (*jwt_types.Claim, error){
@@ -37,39 +32,53 @@ func getClaims() (*jwt_types.Claim, error){
 	return nil,fmt.Errorf("BTS TOKEN is not valified")
 }
 
-func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum uint32, triple_type pb.Type) {
+// 固定された (jobId, partyId) に対し requestTimes 回の（長さ amount の） Triples を作成
+func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, requestTimes uint32, triple_type pb.Type) {
+	t.Helper()
+
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Helper()
-	for jobId := uint32(0); jobId < jobNum; jobId++ {
-		t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
-			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, -1)
+	TriplesStock.Mux.Lock()
+
+	_, ok := TriplesStock[jobId]
+	if !ok{
+		TriplesStock[jobId] = make(map[uint32]([]*ts.Triple))
+	}
+
+	TriplesStock.Mux.UnLock()
+
+	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
+		for requestId := uint32(0); requestId < requestTimes; requestId++ {
+			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, requestId)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			DbTest.Mux.Lock()
+			TriplesStock.Mux.Lock()
 
-			if len(DbTest.Triples[jobId]) == 0 {
-				DbTest.Triples[jobId] = make(map[uint32]([]*ts.Triple))
+			_, ok := TriplesStock[jobId][PartyId]
+			if ok {
+				TriplesStock[jobId][PartyId] = append(TriplesStock[jobId][PartyId], triples)
+			} else {
+				Db.Triples[jobId][partyId] = triples
 			}
-			DbTest.Triples[jobId][partyId] = triples
-			DbTest.Mux.Unlock()
-		})
-	}
+
+			TriplesStock.Mux.UnLock()
+		}
+	})
 }
 
 func testValidityOfTriples(t *testing.T) {
-	for _, triples := range DbTest.Triples {
-		for i := 0; i < len(triples[1]); i++ {
+	for jobId, PartyToTriples := range TriplesStock {
+		for i := 0; i < len(PartyToTriples[1]); i++ {
 			aShareSum, bShareSum, cShareSum := int64(0), int64(0), int64(0)
-			for partyId := uint32(1); partyId <= uint32(len(triples)); partyId++ {
-				aShareSum += triples[partyId][i].A
-				bShareSum += triples[partyId][i].B
-				cShareSum += triples[partyId][i].C
+			for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
+				aShareSum += PartyToTriples[partyId][i].A
+				bShareSum += PartyToTriples[partyId][i].B
+				cShareSum += PartyToTriples[partyId][i].C
 			}
 			if aShareSum*bShareSum != cShareSum {
 				t.Fatal("a*b != c")
@@ -78,7 +87,7 @@ func testValidityOfTriples(t *testing.T) {
 	}
 }
 
-func testTripleGenerator(t *testing.T, amount uint32, jobNum uint32, triple_type pb.Type) {
+func parallelGetTriples(t *testing.T, amount uint32, jobNum uint32, requestTimes uint32, triple_type pb.Type) {
 	t.Helper()
 
 	t.Run("TestTripleGenerator", func(t *testing.T) {
@@ -87,70 +96,98 @@ func testTripleGenerator(t *testing.T, amount uint32, jobNum uint32, triple_type
 			t.Fatal(err)
 		}
 
-		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-			// NOTE: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
-			partyId := partyId
-			t.Run(fmt.Sprintf("TestTripleGenerator_Party%d", partyId), func(t *testing.T) {
-				t.Parallel()
-				getTriplesForParallel(t, partyId, amount, jobNum, triple_type)
-			})
+		for jobId := 0; jobId < jobNum; jobId++ {
+			for partyId := 1; partyId <= uint32(len(claims.PartyInfo)); jobId++ {
+				t.Parallel();
+				multiGetTriples(t, jobId, partyId, amount, requestTimes, triple_type)
+			}
 		}
 	})
+
 	t.Run("TestValidity", func(t *testing.T) {
 		testValidityOfTriples(t)
-		DbTest.Triples = make(map[uint32](map[uint32]([]*ts.Triple)))
+		TriplesStock = make(map[uint32](map[uint32]([]*ts.Triple)))
 	})
 }
 
-func TestTripleGenerator_1_1(t *testing.T)   { testTripleGenerator(t, 1, 1, pb.Type_TYPE_FIXEDPOINT) }   // 0s
-func TestTripleGenerator_1_100(t *testing.T) { testTripleGenerator(t, 1, 100, pb.Type_TYPE_FIXEDPOINT) } // 0.014s
-func TestTripleGenerator_1_10000(t *testing.T) {
-	testTripleGenerator(t, 1, 10000, pb.Type_TYPE_FIXEDPOINT)
-} // 5.0s
+func testParallelGetTriples_FP(t *testing.T, amount uint32, jobNum uint32, requestTimes uint32){
+	parallelGetTriples(t *testing.T, amount, jobNum, requestTimes, pb.Type_TYPE_FIXEDPOINT)
+}
 
-func TestTripleGenerator_100_1(t *testing.T) { testTripleGenerator(t, 100, 1, pb.Type_TYPE_FIXEDPOINT) } // 0.004s
-func TestTripleGenerator_100_100(t *testing.T) {
-	testTripleGenerator(t, 100, 100, pb.Type_TYPE_FIXEDPOINT)
-} // 0.12s
-func TestTripleGenerator_100_10000(t *testing.T) {
-	testTripleGenerator(t, 100, 10000, pb.Type_TYPE_FIXEDPOINT)
-} // 14s
+func testParallelGetTriples_Float(t *testing.T, amount uint32, jobNum uint32, requestTimes uint32){
+	parallelGetTriples(t *testing.T, amount, jobNum, requestTimes, pb.Type_TYPE_FLOAT)
+}
 
-func TestTripleGenerator_10000_1(t *testing.T) {
-	testTripleGenerator(t, 10000, 1, pb.Type_TYPE_FIXEDPOINT)
-} // 0.10s
-func TestTripleGenerator_10000_100(t *testing.T) {
-	testTripleGenerator(t, 10000, 100, pb.Type_TYPE_FIXEDPOINT)
-} // 9.3s
-// func TestTripleGenerator_10000_10000(t *testing.T) { testTripleGenerator(t, 10000, 10000,pb.Type_TYPE_FIXEDPOINT) } // TO(10分以上)
+// --- 以下呼ばれる関数群 ---
 
-func TestTripleGenerator_1000000_1(t *testing.T) {
-	testTripleGenerator(t, 1000000, 1, pb.Type_TYPE_FIXEDPOINT)
-} // 10s
-// func TestTripleGenerator_1000000_100(t *testing.T) { testTripleGenerator(t, 1000000, 100,pb.Type_TYPE_FIXEDPOINT) } // TO(10分以上)
+func TestParallelGetTriples_FP_1_1_1(t *testing.T){
+	testParallelGetTriples_FP(t, 1, 1, 1)
+}
+func TestParallelGetTriples_FP_10_10_10(t *testing.T){
+	testParallelGetTriples_FP(t, 10, 10, 10)
+}
+func TestParallelGetTriples_FP_100_100_100(t *testing.T){
+	testParallelGetTriples_FP(t, 100, 100, 100)
+}
 
-func TestTripleGenerator_Float_1_1(t *testing.T) { testTripleGenerator(t, 1, 1, pb.Type_TYPE_FLOAT) }
-func TestTripleGenerator_Float_1_100(t *testing.T) {
-	testTripleGenerator(t, 1, 100, pb.Type_TYPE_FLOAT)
+func TestParallelGetTriples_Float_1_1_1(t *testing.T){
+	testParallelGetTriples_Float(t, 1, 1, 1)
 }
-func TestTripleGenerator_Float_1_10000(t *testing.T) {
-	testTripleGenerator(t, 1, 10000, pb.Type_TYPE_FLOAT)
+func TestParallelGetTriples_Float_10_10_10(t *testing.T){
+	testParallelGetTriples_Float(t, 10, 10, 10)
 }
-func TestTripleGenerator_Float_100_1(t *testing.T) {
-	testTripleGenerator(t, 100, 1, pb.Type_TYPE_FLOAT)
+func TestParallelGetTriples_Float_100_100_100(t *testing.T){
+	testParallelGetTriples_Float(t, 100, 100, 100)
 }
-func TestTripleGenerator_Float_100_100(t *testing.T) {
-	testTripleGenerator(t, 100, 100, pb.Type_TYPE_FLOAT)
+
+func TestSameRequestId(t *testing.T){
+	t.Helper()
+
+	claims, err := getClaims()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// jobId が他の Test と被らないようにする
+	jobId := 12345678
+
+	for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
+		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if triples1 != triples2 {
+			t.Fatal("same requestId different triples")
+		}
+	}
 }
-func TestTripleGenerator_Float_100_10000(t *testing.T) {
-	testTripleGenerator(t, 100, 10000, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_10000_1(t *testing.T) {
-	testTripleGenerator(t, 10000, 1, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_10000_100(t *testing.T) {
-	testTripleGenerator(t, 10000, 100, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_1000000_1(t *testing.T) {
-	testTripleGenerator(t, 1000000, 1, pb.Type_TYPE_FLOAT)
+
+func TestDifferentRequestId(t *testing.T){
+	t.Helper()
+
+	claims, err := getClaims()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// jobId が他の Test と被らないようにする
+	jobId := 87654321
+
+	for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
+		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 2)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if triples1 == triples2 {
+			t.Fatal("different requestId same triples")
+		}
+	}
 }
