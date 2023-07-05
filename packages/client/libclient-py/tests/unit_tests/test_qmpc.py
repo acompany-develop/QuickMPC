@@ -5,7 +5,7 @@ import pandas as pd
 import pytest
 
 from quickmpc.exception import ArgumentError
-from quickmpc.qmpc_new import QMPC
+from quickmpc.qmpc import QMPC
 from quickmpc.qmpc_request import QMPCRequest
 from quickmpc.share_data_frame import ShareDataFrameStatus
 
