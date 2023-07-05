@@ -37,7 +37,7 @@ func getClaims() (*jwt_types.Claim, error){
 }
 
 // 固定された (jobId, partyId) に対し requestTimes 回の（長さ amount の） Triples を作成
-func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, requestTimes uint32, triple_type pb.Type) {
+func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestTimes uint32) {
 	t.Helper()
 
 	claims, err := getClaims()
@@ -55,7 +55,8 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 	TS.Mux.Unlock()
 
 	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
-		for requestId := uint32(0); requestId < requestTimes; requestId++ {
+		for loopRequestId := uint32(0); loopRequestId < requestTimes; loopRequestId++ {
+			requestId := loopRequestId
 			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, int64(requestId))
 			if err != nil {
 				t.Fatal(err)
@@ -92,7 +93,7 @@ func testValidityOfTriples(t *testing.T) {
 }
 
 
-func parallelGetTriples(t *testing.T, amount uint32, jobNum uint32, requestTimes uint32, triple_type pb.Type) {
+func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type pb.Type, requestTime uint32) {
 	t.Helper()
 
 	claims, err := getClaims()
@@ -100,28 +101,37 @@ func parallelGetTriples(t *testing.T, amount uint32, jobNum uint32, requestTimes
 		t.Fatal(err)
 	}
 
-	for jobId := uint32(0); jobId < jobNum; jobId++ {
-		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); jobId++ {
+	for loopJobId := uint32(0); loopJobId < jobNum; loopJobId++ {
+		for loopPartyId := uint32(1); loopPartyId <= uint32(len(claims.PartyInfo)); loopPartyId++ {
+			jobId := loopJobId
+			partyId := loopPartyId
 			t.Run("TestTripleGenerator", func(t *testing.T){
 				t.Parallel()
-				multiGetTriples(t, jobId, partyId, amount, requestTimes, triple_type)
+				multiGetTriples(t, jobId, partyId, amount, triple_type, requestTime)
 			})
 		}
 	}
 
-	t.Run("TestValidity", func(t *testing.T) {
+	t.Cleanup(func(){
 		testValidityOfTriples(t)
-		tg.Db = ts.GetInstance()
+
+		// 初期化
 		TS.Stock = make(map[uint32](map[uint32]([]*ts.Triple)))
+		//tg.Db.ResetInstance()
+		tg.Db = &ts.SafeTripleStore{
+			Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
+			PreID: make(map[uint32](map[uint32](int64))),
+			PreAmount: make(map[uint32](map[uint32](uint32))),
+		}
 	})
 }
 
-func testParallelGetTriples_FP(t *testing.T, amount uint32, jobNum uint32, requestTimes uint32){
-	parallelGetTriples(t, amount, jobNum, requestTimes, pb.Type_TYPE_FIXEDPOINT)
+func testParallelGetTriples_FP(t *testing.T, jobNum uint32, amount uint32, requestTime uint32){
+	parallelGetTriples(t, jobNum, amount, pb.Type_TYPE_FIXEDPOINT, requestTime)
 }
 
-func testParallelGetTriples_Float(t *testing.T, amount uint32, jobNum uint32, requestTimes uint32){
-	parallelGetTriples(t, amount, jobNum, requestTimes, pb.Type_TYPE_FLOAT)
+func testParallelGetTriples_Float(t *testing.T, jobNum uint32, amount uint32, requestTime uint32){
+	parallelGetTriples(t, jobNum, amount, pb.Type_TYPE_FLOAT, requestTime)
 }
 
 // --- 以下呼ばれる関数群 ---
@@ -142,7 +152,6 @@ func TestParallelGetTriples_Float_10_10_10(t *testing.T){
 
 func TestSameRequestId(t *testing.T){
 	t.Helper()
-
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
@@ -152,7 +161,6 @@ func TestSameRequestId(t *testing.T){
 	jobId := uint32(12345678)
 	amount := uint32(1000)
 	triple_type := pb.Type_TYPE_FIXEDPOINT
-
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
 		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
 		if err != nil {
@@ -172,7 +180,6 @@ func TestSameRequestId(t *testing.T){
 
 func TestDifferentRequestId(t *testing.T){
 	t.Helper()
-
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
@@ -182,7 +189,6 @@ func TestDifferentRequestId(t *testing.T){
 	jobId := uint32(87654321)
 	amount := uint32(1000)
 	triple_type := pb.Type_TYPE_FIXEDPOINT
-
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
 		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
 		if err != nil {
