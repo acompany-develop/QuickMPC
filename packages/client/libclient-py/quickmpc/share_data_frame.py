@@ -11,6 +11,7 @@ from .exception import QMPCJobError
 from .proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
 from .request.qmpc_request_interface import QMPCRequestInterface
 from .utils.overload_tools import Dim1, methoddispatch
+from .utils.progress import Progress
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +36,9 @@ def _wait_execute_decorator(func: Callable) -> Callable:
         デコレータ関数
     """
 
-    def wrapper(self: "ShareDataFrame", *args, **kwargs):
-        self._wait_execute()
+    def wrapper(self: "ShareDataFrame", *args,
+                progress: bool = False, **kwargs):
+        self._wait_execute(progress)
         return func(self, *args, **kwargs)
     update_wrapper(wrapper, func)
     return wrapper
@@ -63,14 +65,17 @@ class ShareDataFrame:
     __is_result: bool = False
     __status: ShareDataFrameStatus = ShareDataFrameStatus.OK
 
-    def _wait_execute(self):
+    def _wait_execute(self, progress: bool) -> None:
         if self.__status == ShareDataFrameStatus.ERROR:
             raise QMPCJobError("ShareDataFrame's status is `ERROR`")
         if self.__status == ShareDataFrameStatus.EXECUTE:
             logger.info("wait execute...")
             # TODO: 待機設定を指定できるようにする
+            p = Progress()
             while True:
                 res = self.__qmpc_request.get_computation_status(self.__id)
+                if progress:
+                    p.update(res)
                 # ERRORがあればraise
                 if any([s == JobStatus.ERROR for s in res.job_statuses]):
                     self.__status = ShareDataFrameStatus.ERROR
@@ -178,6 +183,8 @@ class ShareDataFrame:
         ----------
         output_path: str
             保存するファイルの絶対path
+        progress: bool
+            計算の進捗ログを出力するかどうか
 
         Returns
         ----------
@@ -193,6 +200,8 @@ class ShareDataFrame:
 
         Parameters
         ----------
+        progress: bool
+            計算の進捗ログを出力するかどうか
 
         Returns
         ----------
@@ -221,6 +230,8 @@ class ShareDataFrame:
 
         Parameters
         ----------
+        progress: bool
+            計算の進捗ログを出力するかどうか
 
         Returns
         ----------
