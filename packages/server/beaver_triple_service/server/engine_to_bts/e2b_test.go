@@ -187,7 +187,8 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1, RequestId: -1})
+	// RequestId が他と被らないようにする
+	_, err = client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1, RequestId: 57493543})
 
 	if err == nil {
 		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
