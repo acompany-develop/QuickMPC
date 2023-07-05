@@ -107,7 +107,7 @@ class QMPCRequest(QMPCRequestInterface):
                 except grpc.FutureTimeoutError as e:
                     logger.error(e)
             if not is_channel_ready:
-                raise RuntimeError("channel の準備が出来ません")
+                raise QMPCServerError("channel の準備が出来ません")
 
         for _ in range(self.__retry_num):
             # requestを送る
@@ -138,25 +138,20 @@ class QMPCRequest(QMPCRequestInterface):
             except Exception as e:
                 logger.error(e)
             time.sleep(self.__retry_wait_time)
-        raise RuntimeError(f"All {self.__retry_num} times it was an error")
+        raise QMPCServerError(f"All {self.__retry_num} times it was an error")
 
     @staticmethod
     def __futures_result(
             futures: Iterable, enable_progress_bar=True) -> Tuple[bool, List]:
         """ エラーチェックしてfutureのresultを得る """
-        is_ok: bool = True
-        response: List = []
         try:
             if enable_progress_bar:
                 futures = tqdm.tqdm(futures, desc='receive')
             response = [f.result() for f in futures]
-        except (QMPCJobError, QMPCServerError):
+        except Exception:
             raise
-        except Exception as e:
-            is_ok = False
-            logger.error(e)
-
-        return is_ok, response
+        # TODO: Trueを削除する
+        return True, response
 
     def send_share(self, df: pd.DataFrame, piece_size: int = 1_000_000) \
             -> SendShareResponse:
@@ -197,11 +192,8 @@ class QMPCRequest(QMPCRequestInterface):
                     futures.append(executor.submit(self.__retry,
                                                    stub.SendShares,
                                                    req))
-        is_ok, _ = QMPCRequest.__futures_result(futures)
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return SendShareResponse(Status.OK, data_id)
-        return SendShareResponse(Status.BadGateway, "")
+        QMPCRequest.__futures_result(futures)
+        return SendShareResponse(Status.OK, data_id)
 
     def __execute_computation(self, method_id: ComputationMethod.ValueType,
                               data_ids: List[str],
