@@ -61,7 +61,8 @@ qmpc: QMPC = QMPC([
 
 
 def send_share() -> dict:
-    return qmpc.send_share_from_csv_data([["a", "b", "c"], [1, 2, 3], [4, 5, 6]])
+    return qmpc.send_share_from_csv_data([["a", "b", "c"],
+                                          [1, 2, 3], [4, 5, 6]])
 
 
 def data_id() -> str:
@@ -82,7 +83,7 @@ def job_uuid() -> str:
     for _ in range(10):
         time.sleep(3)
         try:
-            res = qmpc.get_computation_result(job_uuid_)
+            res = qmpc.get_computation_status(job_uuid_)
         except Exception:
             continue
         if res["statuses"] is not None:
