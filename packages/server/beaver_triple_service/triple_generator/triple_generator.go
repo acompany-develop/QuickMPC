@@ -120,8 +120,7 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 	}
 
 	// 前回の request と異なる場合
-	// requestId が -1 の時は前回の request と異なると見なす
-	if ok && (pre_id != requestId || requestId == -1){
+	if ok && pre_id != requestId{
 		pre_amount := Db.PreAmount[jobId][partyId]
 		Db.Triples[jobId][partyId] = Db.Triples[jobId][partyId][pre_amount:]
 		Db.PreID[jobId][partyId] = requestId
