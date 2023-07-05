@@ -33,7 +33,7 @@ class GetJobErrorInfoResponse():
 @dataclass(frozen=True)
 class GetComputationStatusResponse():
     status: Status
-    job_statuses: List["JobStatus"]
+    job_statuses: List[JobStatus.ValueType]
     progresses: List[JobProgress]
 
 

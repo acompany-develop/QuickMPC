@@ -79,11 +79,11 @@ class ShareDataFrame:
                 # ERRORがあればraise
                 if any([s == JobStatus.ERROR for s in res.job_statuses]):
                     self.__status = ShareDataFrameStatus.ERROR
-                    res = self.__qmpc_request.get_job_error_info(self.__id)
-                    for info in res.job_error_info:
+                    res_err = self.__qmpc_request.get_job_error_info(self.__id)
+                    for info in res_err.job_error_info:
                         if info:
                             raise QMPCJobError(info)
-                    raise QMPCJobError()
+                    raise QMPCJobError("")
                 # 全てCOMPLETEDならreturn
                 if all([s == JobStatus.COMPLETED for s in res.job_statuses]):
                     self.__status = ShareDataFrameStatus.OK
