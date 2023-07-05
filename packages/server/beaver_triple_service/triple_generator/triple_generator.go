@@ -55,6 +55,11 @@ func sharize(data int64, size uint32, triple_type pb.Type) ([]int64, error) {
 
 func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type) (map[uint32]([]*ts.Triple), error) {
 	ret := make(map[uint32]([]*ts.Triple))
+	party_num := uint32(len(claims.PartyInfo))
+
+	for partyId := uint32(1); partyId <= party_num; partyId++ {
+		ret[partyId] = []*ts.Triple{}
+	}
 
 	for i := uint32(0); i < amount; i++ {
 		randInt64Slice, err := utils.GetRandInt64Slice(2, tripleRandMin, tripleRandMax)
@@ -68,7 +73,6 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type
 		b := randInt64Slice[1]
 		c := a * b
 
-		party_num := uint32(len(claims.PartyInfo))
 		aShares, err := sharize(a, party_num, triple_type)
 		if err != nil {
 			return nil, err
@@ -130,13 +134,12 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 		if err != nil {
 			return nil, err
 		}
-		// partyIdは1-index
-		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-			_, ok := Db.Triples[jobId][partyId]
+		for loopPartyId := uint32(1); loopPartyId <= uint32(len(claims.PartyInfo)); loopPartyId++ {
+			_, ok := Db.Triples[jobId][loopPartyId]
 			if ok {
-				Db.Triples[jobId][partyId] = append(Db.Triples[jobId][partyId], newTriples[partyId]...)
+				Db.Triples[jobId][loopPartyId] = append(Db.Triples[jobId][loopPartyId], newTriples[loopPartyId]...)
 			} else {
-				Db.Triples[jobId][partyId] = newTriples[partyId]
+				Db.Triples[jobId][loopPartyId] = newTriples[loopPartyId]
 			}
 		}
 	}
