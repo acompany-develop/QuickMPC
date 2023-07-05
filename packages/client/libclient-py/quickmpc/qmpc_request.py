@@ -346,10 +346,11 @@ class QMPCRequest(QMPCRequestInterface):
 
         results = if_present(results, Share.recons)
         results = if_present(results, Share.convert_type, schema)
-        if is_table:
+        if is_table and schema:
             results = {"schema": schema, "table": results}
-
-        return GetResultResponse(results=results)
+            schema = [s.name for s in schema]
+            return GetResultResponse(pd.DataFrame(results, columns=schema))
+        return GetResultResponse(pd.DataFrame(results))
 
     def get_computation_status(self, job_uuid: str) \
             -> GetComputationStatusResponse:

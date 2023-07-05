@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Any, List
 
+import pandas as pd
+
 from ..proto.common_types.common_types_pb2 import (JobErrorInfo,
                                                    JobProgress, JobStatus)
 
@@ -17,7 +19,7 @@ class ExecuteResponse():
 
 @dataclass(frozen=True)
 class GetResultResponse():
-    results: Any  # TODO: 適切な型を付ける
+    results: pd.DataFrame
 
 
 @dataclass(frozen=True)
