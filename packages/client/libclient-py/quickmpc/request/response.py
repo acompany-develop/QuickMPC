@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, List
 
 from ..proto.common_types.common_types_pb2 import (JobErrorInfo,
                                                    JobProgress, JobStatus)

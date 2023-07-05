@@ -20,8 +20,7 @@ from grpc_status import rpc_status  # type: ignore
 
 from .exception import ArgumentError, QMPCJobError, QMPCServerError
 from .proto.common_types.common_types_pb2 import (ComputationMethod,
-                                                  JobErrorInfo, JobStatus,
-                                                  Schema)
+                                                  JobErrorInfo, Schema)
 from .proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
                                        DeleteSharesRequest,
                                        ExecuteComputationRequest,
