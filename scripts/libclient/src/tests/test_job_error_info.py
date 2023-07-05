@@ -34,7 +34,9 @@ def test_job_error_info(param: tuple):
                      for status in res["statuses"]])
         if error:
             res = qmpc.get_job_error_info(job_uuid)
-            err_info = res["job_error_info"][0]
+            for info in res["job_error_info"]:
+                if info:
+                    err_info = info
             break
         time.sleep(5)
 
