@@ -20,7 +20,7 @@ message GetTriplesRequest{
     uint32 job_id = 1;
     uint32 amount = 2;
     Type triple_type = 3;
-    int64 request_id = 4;
+    uint32 request_id = 4;
 }
 
 message Triple{
