@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"testing"
 	"sync"
-	"errors"
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
@@ -231,7 +230,7 @@ func TestDifferentRequestId(t *testing.T){
 
 // 範囲外の PartyId が来た時にエラーを吐くか
 func TestOutRangePartyId(t *testing.T){
-	expected_err := errors.New("out range partyId")
+	expected_text := "out range partyId"
 	triple_type := pb.Type_TYPE_FIXEDPOINT
 	claims, err := getClaims()
 	if err != nil {
@@ -239,14 +238,12 @@ func TestOutRangePartyId(t *testing.T){
 	}
 
 	partyId := uint32(0)
-	_, err = tg.GetTriples(claims, 1, partyId, 1, triple_type, -1)
-	if err != expected_err{
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, triple_type, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 
 	partyId = uint32(len(claims.PartyInfo))  + uint32(1)
-	_, err = tg.GetTriples(claims, 1, partyId, 1, triple_type, -1)
-	if err != expected_err{
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, triple_type, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 }
