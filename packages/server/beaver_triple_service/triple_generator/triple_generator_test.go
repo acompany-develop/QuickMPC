@@ -19,8 +19,13 @@ type TriplesStock struct{
 }
 var TS TriplesStock
 
-func init() {
+func all_init() {
 	TS.Stock = make(map[uint32](map[uint32]([]*ts.Triple)))
+	tg.Db = &ts.SafeTripleStore{
+		Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
+		PreID: make(map[uint32](map[uint32](int64))),
+		PreAmount: make(map[uint32](map[uint32](uint32))),
+	}
 }
 
 func getClaims() (*jwt_types.Claim, error){
@@ -96,6 +101,8 @@ func testValidityOfTriples(t *testing.T) {
 func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type pb.Type, requestTime uint32) {
 	t.Helper()
 
+	all_init()
+
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
@@ -114,15 +121,6 @@ func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type 
 
 	t.Cleanup(func(){
 		testValidityOfTriples(t)
-
-		// 初期化
-		TS.Stock = make(map[uint32](map[uint32]([]*ts.Triple)))
-		//tg.Db.ResetInstance()
-		tg.Db = &ts.SafeTripleStore{
-			Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
-			PreID: make(map[uint32](map[uint32](int64))),
-			PreAmount: make(map[uint32](map[uint32](uint32))),
-		}
 	})
 }
 
@@ -135,12 +133,20 @@ func testParallelGetTriples_Float(t *testing.T, jobNum uint32, amount uint32, re
 }
 
 // --- 以下呼ばれる関数群 ---
-
 func TestParallelGetTriples_FP_1_1_1(t *testing.T){
 	testParallelGetTriples_FP(t, 1, 1, 1)
 }
 func TestParallelGetTriples_FP_10_10_10(t *testing.T){
 	testParallelGetTriples_FP(t, 10, 10, 10)
+}
+func TestParallelGetTriples_FP_10000_5_5(t *testing.T){
+	testParallelGetTriples_FP(t, 10000, 5, 5)
+}
+func TestParallelGetTriples_FP_5_10000_5(t *testing.T){
+	testParallelGetTriples_FP(t, 5, 10000, 5)
+}
+func TestParallelGetTriples_FP_5_5_10000(t *testing.T){
+	testParallelGetTriples_FP(t, 5, 5, 10000)
 }
 
 func TestParallelGetTriples_Float_1_1_1(t *testing.T){
@@ -149,9 +155,21 @@ func TestParallelGetTriples_Float_1_1_1(t *testing.T){
 func TestParallelGetTriples_Float_10_10_10(t *testing.T){
 	testParallelGetTriples_Float(t, 10, 10, 10)
 }
+func TestParallelGetTriples_Float_10000_5_5(t *testing.T){
+	testParallelGetTriples_Float(t, 10000, 5, 5)
+}
+func TestParallelGetTriples_Float_5_10000_5(t *testing.T){
+	testParallelGetTriples_Float(t, 5, 10000, 5)
+}
+func TestParallelGetTriples_Float_5_5_10000(t *testing.T){
+	testParallelGetTriples_Float(t, 5, 5, 10000)
+}
 
 func TestSameRequestId(t *testing.T){
 	t.Helper()
+
+	all_init()
+
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
@@ -180,6 +198,9 @@ func TestSameRequestId(t *testing.T){
 
 func TestDifferentRequestId(t *testing.T){
 	t.Helper()
+
+	all_init()
+
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
