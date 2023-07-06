@@ -223,5 +223,8 @@ services:
       - target: /libclient/src
         source: ./libclient/src
         type: bind
-    tty: true
+    command:
+      - /bin/bash
+      - '-c'
+      - pip list
     network_mode: host
