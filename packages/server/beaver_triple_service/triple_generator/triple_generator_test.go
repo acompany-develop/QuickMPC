@@ -164,6 +164,7 @@ func TestParallelGetTriples_Float_5_5_10000(t *testing.T){
 	testParallelGetTriples_Float(t, 5, 5, 10000)
 }
 
+// 同じ request ID は同じ Triple
 func TestSameRequestId(t *testing.T){
 	t.Helper()
 
@@ -195,6 +196,7 @@ func TestSameRequestId(t *testing.T){
 	}
 }
 
+// 異なる request ID は異なる Triple
 func TestDifferentRequestId(t *testing.T){
 	t.Helper()
 
@@ -223,5 +225,23 @@ func TestDifferentRequestId(t *testing.T){
 				t.Fatal("different requestId same triples")
 			}
 		}
+	}
+}
+
+// 範囲外の PartyId が来た時にエラーを吐くか
+func TestOutRangePartyId(t *testing.T){
+	expected_err := errors.New("out range partyId")
+	triple_type := pb.Type_TYPE_FIXEDPOINT
+
+	partyId := 0
+	_, err := tg.GetTriples(claims, 1, 1, 1, triple_type, -1)
+	if err != expected_err{
+		t.Fatal("does not output 'out range partyI'")
+	}
+
+	partyId = uint32(len(claims.PartyInfo)) + 1
+	_, err := tg.GetTriples(claims, 1, 1, 1, triple_type, -1)
+	if err != expected_err{
+		t.Fatal("does not output 'out range partyI'")
 	}
 }
