@@ -56,7 +56,7 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 
 	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
 		for loopRequestId := uint32(0); loopRequestId < requestTimes; loopRequestId++ {
-			requestId := loopRequestId
+			requestId := int64(loopRequestId)
 			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, requestId)
 			if err != nil {
 				t.Fatal(err)

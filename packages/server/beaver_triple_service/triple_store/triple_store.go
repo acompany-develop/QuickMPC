@@ -12,7 +12,7 @@ type Triple = pb.Triple
 
 type SafeTripleStore struct {
 	Triples map[uint32](map[uint32]([]*Triple))
-	PreID map[uint32](map[uint32](uint32))
+	PreID map[uint32](map[uint32](int64))
 	PreAmount map[uint32](map[uint32](uint32))
 	Mux     sync.Mutex
 }
@@ -25,7 +25,7 @@ func GetInstance() *SafeTripleStore {
 		logger.Info("new instance")
 		instance = &SafeTripleStore{
 			Triples: make(map[uint32](map[uint32]([]*Triple))),
-			PreID: make(map[uint32](map[uint32](uint32))),
+			PreID: make(map[uint32](map[uint32](int64))),
 			PreAmount: make(map[uint32](map[uint32](uint32))),
 		}
 	})
