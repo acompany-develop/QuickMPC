@@ -120,7 +120,7 @@ func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type 
 		//tg.Db.ResetInstance()
 		tg.Db = &ts.SafeTripleStore{
 			Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
-			PreID: make(map[uint32](map[uint32](uint32))),
+			PreID: make(map[uint32](map[uint32](int64))),
 			PreAmount: make(map[uint32](map[uint32](uint32))),
 		}
 	})
