@@ -97,7 +97,6 @@ func testValidityOfTriples(t *testing.T) {
 	}
 }
 
-
 func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type pb.Type, requestTime uint32) {
 	t.Helper()
 
