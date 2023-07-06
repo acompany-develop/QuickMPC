@@ -236,12 +236,12 @@ func TestOutRangePartyId(t *testing.T){
 	partyId := 0
 	_, err := tg.GetTriples(claims, 1, 1, 1, triple_type, -1)
 	if err != expected_err{
-		t.Fatal("does not output 'out range partyI'")
+		t.Fatal("does not output 'out range partyId'")
 	}
 
 	partyId = uint32(len(claims.PartyInfo)) + 1
 	_, err := tg.GetTriples(claims, 1, 1, 1, triple_type, -1)
 	if err != expected_err{
-		t.Fatal("does not output 'out range partyI'")
+		t.Fatal("does not output 'out range partyId'")
 	}
 }
