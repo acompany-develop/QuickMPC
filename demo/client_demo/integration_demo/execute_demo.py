@@ -92,9 +92,9 @@ if __name__ == '__main__':
             # 計算が終わるか100秒(1秒x100回)経つまで繰り返す
             get_status = qmpc.get_computation_status(job_uuid)
             if all([r == JobStatus.Value('COMPLETED')
-                    for r in get_res["statuses"]]):
+                    for r in get_status["statuses"]]):
                 break
-            statuses = make_statuses_detailed(get_res['statuses'])
+            statuses = make_statuses_detailed(get_status['statuses'])
             logger.info(f"statuses: {statuses}")
             time.sleep(1)
 
