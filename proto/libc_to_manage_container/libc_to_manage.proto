@@ -122,7 +122,7 @@ message GetElapsedTimeResponse {
 
 message GetJobErrorInfoResponse {
     optional pb_common_types.JobErrorInfo job_error_info = 1;
- }
+}
 
 message AddShareDataFrameRequest {
     string base_data_id = 1;
