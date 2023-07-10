@@ -66,7 +66,7 @@ func TestGetComputationResult(t *testing.T) {
 	defer conn.Close()
 	client := pb.NewLibcToManageClient(conn)
 
-	stream, err := client.GetComputationResult(context.Background(), &pb.GetComputationResultRequest{JobUuid: "id", Token: "token"})
+	stream, err := client.GetComputationResult(context.Background(), &pb.GetComputationRequest{JobUuid: "id", Token: "token"})
 
 	if err != nil {
 		t.Fatal(err)

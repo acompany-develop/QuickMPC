@@ -27,7 +27,8 @@ type LibcToManageClient interface {
 	DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetSchema(ctx context.Context, in *GetSchemaRequest, opts ...grpc.CallOption) (*GetSchemaResponse, error)
 	ExecuteComputation(ctx context.Context, in *ExecuteComputationRequest, opts ...grpc.CallOption) (*ExecuteComputationResponse, error)
-	GetComputationResult(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error)
+	GetComputationResult(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error)
+	GetComputationStatus(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (*GetComputationStatusResponse, error)
 	GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error)
 	GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error)
@@ -78,7 +79,7 @@ func (c *libcToManageClient) ExecuteComputation(ctx context.Context, in *Execute
 	return out, nil
 }
 
-func (c *libcToManageClient) GetComputationResult(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error) {
+func (c *libcToManageClient) GetComputationResult(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error) {
 	stream, err := c.cc.NewStream(ctx, &LibcToManage_ServiceDesc.Streams[0], "/libctomanage.LibcToManage/GetComputationResult", opts...)
 	if err != nil {
 		return nil, err
@@ -108,6 +109,15 @@ func (x *libcToManageGetComputationResultClient) Recv() (*GetComputationResultRe
 		return nil, err
 	}
 	return m, nil
+}
+
+func (c *libcToManageClient) GetComputationStatus(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (*GetComputationStatusResponse, error) {
+	out := new(GetComputationStatusResponse)
+	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetComputationStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *libcToManageClient) GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error) {
@@ -154,7 +164,8 @@ type LibcToManageServer interface {
 	DeleteShares(context.Context, *DeleteSharesRequest) (*emptypb.Empty, error)
 	GetSchema(context.Context, *GetSchemaRequest) (*GetSchemaResponse, error)
 	ExecuteComputation(context.Context, *ExecuteComputationRequest) (*ExecuteComputationResponse, error)
-	GetComputationResult(*GetComputationResultRequest, LibcToManage_GetComputationResultServer) error
+	GetComputationResult(*GetComputationRequest, LibcToManage_GetComputationResultServer) error
+	GetComputationStatus(context.Context, *GetComputationRequest) (*GetComputationStatusResponse, error)
 	GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error)
 	GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error)
 	GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error)
@@ -178,8 +189,11 @@ func (UnimplementedLibcToManageServer) GetSchema(context.Context, *GetSchemaRequ
 func (UnimplementedLibcToManageServer) ExecuteComputation(context.Context, *ExecuteComputationRequest) (*ExecuteComputationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteComputation not implemented")
 }
-func (UnimplementedLibcToManageServer) GetComputationResult(*GetComputationResultRequest, LibcToManage_GetComputationResultServer) error {
+func (UnimplementedLibcToManageServer) GetComputationResult(*GetComputationRequest, LibcToManage_GetComputationResultServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetComputationResult not implemented")
+}
+func (UnimplementedLibcToManageServer) GetComputationStatus(context.Context, *GetComputationRequest) (*GetComputationStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetComputationStatus not implemented")
 }
 func (UnimplementedLibcToManageServer) GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDataList not implemented")
@@ -279,7 +293,7 @@ func _LibcToManage_ExecuteComputation_Handler(srv interface{}, ctx context.Conte
 }
 
 func _LibcToManage_GetComputationResult_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetComputationResultRequest)
+	m := new(GetComputationRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -297,6 +311,24 @@ type libcToManageGetComputationResultServer struct {
 
 func (x *libcToManageGetComputationResultServer) Send(m *GetComputationResultResponse) error {
 	return x.ServerStream.SendMsg(m)
+}
+
+func _LibcToManage_GetComputationStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetComputationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LibcToManageServer).GetComputationStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libctomanage.LibcToManage/GetComputationStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LibcToManageServer).GetComputationStatus(ctx, req.(*GetComputationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _LibcToManage_GetDataList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -393,6 +425,10 @@ var LibcToManage_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ExecuteComputation",
 			Handler:    _LibcToManage_ExecuteComputation_Handler,
+		},
+		{
+			MethodName: "GetComputationStatus",
+			Handler:    _LibcToManage_GetComputationStatus_Handler,
 		},
 		{
 			MethodName: "GetDataList",

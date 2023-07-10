@@ -31,8 +31,12 @@ class LibcToManageStub:
         libc_to_manage_pb2.ExecuteComputationResponse,
     ]
     GetComputationResult: grpc.UnaryStreamMultiCallable[
-        libc_to_manage_pb2.GetComputationResultRequest,
+        libc_to_manage_pb2.GetComputationRequest,
         libc_to_manage_pb2.GetComputationResultResponse,
+    ]
+    GetComputationStatus: grpc.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.GetComputationRequest,
+        libc_to_manage_pb2.GetComputationStatusResponse,
     ]
     GetDataList: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.GetDataListRequest,
@@ -83,9 +87,15 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def GetComputationResult(
         self,
-        request: libc_to_manage_pb2.GetComputationResultRequest,
+        request: libc_to_manage_pb2.GetComputationRequest,
         context: grpc.ServicerContext,
     ) -> collections.abc.Iterator[libc_to_manage_pb2.GetComputationResultResponse]: ...
+    @abc.abstractmethod
+    def GetComputationStatus(
+        self,
+        request: libc_to_manage_pb2.GetComputationRequest,
+        context: grpc.ServicerContext,
+    ) -> libc_to_manage_pb2.GetComputationStatusResponse: ...
     @abc.abstractmethod
     def GetDataList(
         self,

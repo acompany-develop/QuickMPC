@@ -25,7 +25,7 @@ from .proto.common_types.common_types_pb2 import (ComputationMethod,
 from .proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
                                        DeleteSharesRequest,
                                        ExecuteComputationRequest,
-                                       GetComputationResultRequest,
+                                       GetComputationRequest,
                                        GetComputationResultResponse,
                                        GetDataListRequest,
                                        GetElapsedTimeRequest,
@@ -311,7 +311,7 @@ class QMPCRequest(QMPCRequestInterface):
             -> GetResultResponse:
         """ コンテナから結果を取得 """
         # リクエストパラメータを設定
-        req = GetComputationResultRequest(
+        req = GetComputationRequest(
             job_uuid=job_uuid,
             token=self.__token
         )

@@ -190,7 +190,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 }
 
 // DBから計算結果を得る
-func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream pb.LibcToManage_GetComputationResultServer) error {
+func (s *server) GetComputationResult(in *pb.GetComputationRequest, stream pb.LibcToManage_GetComputationResultServer) error {
 	AppLogger.Info("Get Computation Result;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 

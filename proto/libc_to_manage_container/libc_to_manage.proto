@@ -16,7 +16,8 @@ service LibcToManage {
     rpc DeleteShares(DeleteSharesRequest) returns (google.protobuf.Empty) {}                                // シェアの削除リクエスト
     rpc GetSchema(GetSchemaRequest) returns (GetSchemaResponse) {}                                          // スキーマ取得リクエスト
     rpc ExecuteComputation(ExecuteComputationRequest) returns (ExecuteComputationResponse) {}               // 計算リクエスト
-    rpc GetComputationResult(GetComputationResultRequest) returns (stream GetComputationResultResponse) {}  // 計算結果取得リクエスト
+    rpc GetComputationResult(GetComputationRequest) returns (stream GetComputationResultResponse) {}        // 計算結果取得リクエスト
+    rpc GetComputationStatus(GetComputationRequest) returns (GetComputationStatusResponse) {}        // 計算Status取得リクエスト
     rpc GetDataList(GetDataListRequest) returns (GetDataListResponse) {}                                    // data一覧取得リクエスト
     rpc GetElapsedTime(GetElapsedTimeRequest) returns (GetElapsedTimeResponse) {}                           // 計算時間取得リクエスト
     rpc GetJobErrorInfo(GetJobErrorInfoRequest) returns (GetJobErrorInfoResponse) {}                        // stacktrace取得リクエスト
@@ -87,7 +88,7 @@ message ExecuteComputationResponse {
 /**
  * the message of GetComputationResultRequest
 */
-message GetComputationResultRequest {
+message GetComputationRequest {
     string job_uuid = 1;
     string token = 2;
 }
@@ -106,6 +107,11 @@ message GetComputationResultResponse {
         bool is_dim2 = 9;
         bool is_schema = 10;
     }
+}
+
+message GetComputationStatusResponse {
+    pb_common_types.JobStatus status = 1;
+    optional pb_common_types.JobProgress progress = 2;
 }
 
 message GetDataListRequest {
