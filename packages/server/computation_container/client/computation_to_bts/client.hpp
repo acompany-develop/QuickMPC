@@ -12,6 +12,8 @@ namespace qmpc::ComputationToBts
 {
 using Triple = std::tuple<std::string, std::string, std::string>;
 
+thread_local static inline std::int64_t request_id_generator = 0;
+
 class Client
 {
 private:
@@ -35,6 +37,7 @@ public:
         enginetobts::GetTriplesRequest request;
         request.set_job_id(job_id);
         request.set_amount(amount);
+        request.set_request_id(request_id_generator++);
         if constexpr (std::is_same_v<SV, float>)
         {
             request.set_triple_type(enginetobts::Type::TYPE_FLOAT);
@@ -49,6 +52,7 @@ public:
 
         // リトライポリシーに従ってリクエストを送る
         auto retry_manager = RetryManager("BTS", "readTriples");
+
         do
         {
             grpc::ClientContext context;
@@ -69,24 +73,6 @@ public:
             triples.emplace_back(t);
         }
         return triples;
-    }
-
-    void deleteJobIdTriple(const unsigned int job_id)
-    {
-        grpc::Status status;
-        enginetobts::DeleteJobIdTripleRequest request;
-        request.set_job_id(job_id);
-        google::protobuf::Empty response;
-
-        // リトライポリシーに従ってリクエストを送る
-        auto retry_manager = RetryManager("BTS", "deleteJobIdTriple");
-        do
-        {
-            grpc::ClientContext context;
-            const std::string token = Config::getInstance()->cc_to_bts_token;
-            context.AddMetadata("authorization", "bearer " + token);
-            status = stub_->DeleteJobIdTriple(&context, request, &response);
-        } while (retry_manager.retry(status));
     }
 };
 }  // namespace qmpc::ComputationToBts

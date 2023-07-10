@@ -4,11 +4,8 @@ package enginetobts;
 
 option go_package = "github.com/acompany-develop/QuickMPC/proto/engine_to_bts";
 
-import "google/protobuf/empty.proto";
-
 service EngineToBts {
     rpc GetTriples(GetTriplesRequest) returns (GetTriplesResponse) {}
-    rpc DeleteJobIdTriple(DeleteJobIdTripleRequest) returns (google.protobuf.Empty) {}
 }
 
 enum Type{
@@ -21,6 +18,7 @@ message GetTriplesRequest{
     uint32 job_id = 1;
     uint32 amount = 2;
     Type triple_type = 3;
+    int64 request_id = 4;
 }
 
 message Triple{
@@ -31,8 +29,4 @@ message Triple{
 
 message GetTriplesResponse{
     repeated Triple triples = 1;
-}
-
-message DeleteJobIdTripleRequest{
-    uint32 job_id = 1;
 }

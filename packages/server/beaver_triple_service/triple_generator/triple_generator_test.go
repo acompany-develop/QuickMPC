@@ -4,6 +4,7 @@ import (
 	"os"
 	"fmt"
 	"testing"
+	"sync"
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
@@ -12,12 +13,19 @@ import (
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
-var Db *ts.SafeTripleStore
-var DbTest *ts.SafeTripleStore
+type TriplesStock struct{
+	Stock map[uint32](map[uint32]([]*ts.Triple))
+	Mux     sync.Mutex
+}
+var TS TriplesStock
 
-func init() {
-	Db = ts.GetInstance()
-	DbTest = &ts.SafeTripleStore{Triples: make(map[uint32](map[uint32]([]*ts.Triple)))}
+func all_init() {
+	TS.Stock = make(map[uint32](map[uint32]([]*ts.Triple)))
+	tg.Db = &ts.SafeTripleStore{
+		Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
+		PreID: make(map[uint32](map[uint32](int64))),
+		PreAmount: make(map[uint32](map[uint32](uint32))),
+	}
 }
 
 func getClaims() (*jwt_types.Claim, error){
@@ -33,54 +41,54 @@ func getClaims() (*jwt_types.Claim, error){
 	return nil,fmt.Errorf("BTS TOKEN is not valified")
 }
 
-func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum uint32, triple_type pb.Type) {
+// 固定された (jobId, partyId) に対し requestTimes 回の（長さ amount の） Triples を作成
+func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestTimes uint32) {
+	t.Helper()
+
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	t.Helper()
-	for jobId := uint32(0); jobId < jobNum; jobId++ {
-		t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
-			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type)
+	TS.Mux.Lock()
+
+	_, ok := TS.Stock[jobId]
+	if !ok{
+		TS.Stock[jobId] = make(map[uint32]([]*ts.Triple))
+	}
+
+	TS.Mux.Unlock()
+
+	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
+		for loopRequestId := uint32(0); loopRequestId < requestTimes; loopRequestId++ {
+			requestId := int64(loopRequestId)
+			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, requestId)
 			if err != nil {
 				t.Fatal(err)
 			}
 
-			DbTest.Mux.Lock()
-			if DbTest.Triples[jobId][partyId] != nil {
-				DbTest.Mux.Unlock()
-				t.Fatal("すでに同じTripleが存在")
+			TS.Mux.Lock()
+
+			_, ok := TS.Stock[jobId][partyId]
+			if ok {
+				TS.Stock[jobId][partyId] = append(TS.Stock[jobId][partyId], triples...)
+			} else {
+				TS.Stock[jobId][partyId] = triples
 			}
 
-			if len(DbTest.Triples[jobId]) == 0 {
-				DbTest.Triples[jobId] = make(map[uint32]([]*ts.Triple))
-			}
-			DbTest.Triples[jobId][partyId] = triples
-			DbTest.Mux.Unlock()
-		})
-	}
-}
-
-func testDbIsEmpty(t *testing.T) {
-	count := 0
-	for _, t := range Db.Triples {
-		count += len(t)
-	}
-	if count != 0 {
-		t.Log(Db.Triples)
-		t.Fatal("残存Tripleあり")
-	}
+			TS.Mux.Unlock()
+		}
+	})
 }
 
 func testValidityOfTriples(t *testing.T) {
-	for _, triples := range DbTest.Triples {
-		for i := 0; i < len(triples[1]); i++ {
+	for _, PartyToTriples := range TS.Stock {
+		for i := 0; i < len(PartyToTriples[1]); i++ {
 			aShareSum, bShareSum, cShareSum := int64(0), int64(0), int64(0)
-			for partyId := uint32(1); partyId <= uint32(len(triples)); partyId++ {
-				aShareSum += triples[partyId][i].A
-				bShareSum += triples[partyId][i].B
-				cShareSum += triples[partyId][i].C
+			for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
+				aShareSum += PartyToTriples[partyId][i].A
+				bShareSum += PartyToTriples[partyId][i].B
+				cShareSum += PartyToTriples[partyId][i].C
 			}
 			if aShareSum*bShareSum != cShareSum {
 				t.Fatal("a*b != c")
@@ -89,110 +97,153 @@ func testValidityOfTriples(t *testing.T) {
 	}
 }
 
-func testTripleGenerator(t *testing.T, amount uint32, jobNum uint32, triple_type pb.Type) {
+func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type pb.Type, requestTime uint32) {
 	t.Helper()
 
-	t.Run("TestTripleGenerator", func(t *testing.T) {
-		claims, err := getClaims()
-		if err != nil {
-			t.Fatal(err)
-		}
+	all_init()
 
-		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-			// NOTE: https://github.com/golang/go/wiki/CommonMistakes#using-goroutines-on-loop-iterator-variables
-			partyId := partyId
-			t.Run(fmt.Sprintf("TestTripleGenerator_Party%d", partyId), func(t *testing.T) {
-				t.Parallel()
-				getTriplesForParallel(t, partyId, amount, jobNum, triple_type)
-			})
-		}
-	})
-	t.Run("TestValidity", func(t *testing.T) {
-		testDbIsEmpty(t)
-		testValidityOfTriples(t)
-		DbTest.Triples = make(map[uint32](map[uint32]([]*ts.Triple)))
-	})
-}
-
-func TestTripleGenerator_1_1(t *testing.T)   { testTripleGenerator(t, 1, 1, pb.Type_TYPE_FIXEDPOINT) }   // 0s
-func TestTripleGenerator_1_100(t *testing.T) { testTripleGenerator(t, 1, 100, pb.Type_TYPE_FIXEDPOINT) } // 0.014s
-func TestTripleGenerator_1_10000(t *testing.T) {
-	testTripleGenerator(t, 1, 10000, pb.Type_TYPE_FIXEDPOINT)
-} // 5.0s
-
-func TestTripleGenerator_100_1(t *testing.T) { testTripleGenerator(t, 100, 1, pb.Type_TYPE_FIXEDPOINT) } // 0.004s
-func TestTripleGenerator_100_100(t *testing.T) {
-	testTripleGenerator(t, 100, 100, pb.Type_TYPE_FIXEDPOINT)
-} // 0.12s
-func TestTripleGenerator_100_10000(t *testing.T) {
-	testTripleGenerator(t, 100, 10000, pb.Type_TYPE_FIXEDPOINT)
-} // 14s
-
-func TestTripleGenerator_10000_1(t *testing.T) {
-	testTripleGenerator(t, 10000, 1, pb.Type_TYPE_FIXEDPOINT)
-} // 0.10s
-func TestTripleGenerator_10000_100(t *testing.T) {
-	testTripleGenerator(t, 10000, 100, pb.Type_TYPE_FIXEDPOINT)
-} // 9.3s
-// func TestTripleGenerator_10000_10000(t *testing.T) { testTripleGenerator(t, 10000, 10000,pb.Type_TYPE_FIXEDPOINT) } // TO(10分以上)
-
-func TestTripleGenerator_1000000_1(t *testing.T) {
-	testTripleGenerator(t, 1000000, 1, pb.Type_TYPE_FIXEDPOINT)
-} // 10s
-// func TestTripleGenerator_1000000_100(t *testing.T) { testTripleGenerator(t, 1000000, 100,pb.Type_TYPE_FIXEDPOINT) } // TO(10分以上)
-
-func TestTripleGenerator_Float_1_1(t *testing.T) { testTripleGenerator(t, 1, 1, pb.Type_TYPE_FLOAT) }
-func TestTripleGenerator_Float_1_100(t *testing.T) {
-	testTripleGenerator(t, 1, 100, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_1_10000(t *testing.T) {
-	testTripleGenerator(t, 1, 10000, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_100_1(t *testing.T) {
-	testTripleGenerator(t, 100, 1, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_100_100(t *testing.T) {
-	testTripleGenerator(t, 100, 100, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_100_10000(t *testing.T) {
-	testTripleGenerator(t, 100, 10000, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_10000_1(t *testing.T) {
-	testTripleGenerator(t, 10000, 1, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_10000_100(t *testing.T) {
-	testTripleGenerator(t, 10000, 100, pb.Type_TYPE_FLOAT)
-}
-func TestTripleGenerator_Float_1000000_1(t *testing.T) {
-	testTripleGenerator(t, 1000000, 1, pb.Type_TYPE_FLOAT)
-}
-
-func TestDeleteJobIdTriple(t *testing.T) {
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	jobNum := uint32(10)
-	partyId := uint32(1)
-	amount := uint32(10)
-	triple_type := pb.Type_TYPE_FLOAT
-	for jobId := uint32(0); jobId < jobNum; jobId++ {
-		_, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type)
-		if err != nil {
-			t.Fatal(err)
+	for loopJobId := uint32(0); loopJobId < jobNum; loopJobId++ {
+		for loopPartyId := uint32(1); loopPartyId <= uint32(len(claims.PartyInfo)); loopPartyId++ {
+			jobId := loopJobId
+			partyId := loopPartyId
+			t.Run("TestTripleGenerator", func(t *testing.T){
+				t.Parallel()
+				multiGetTriples(t, jobId, partyId, amount, triple_type, requestTime)
+			})
 		}
 	}
 
-	for jobId := uint32(0); jobId < jobNum; jobId++ {
-		err := tg.DeleteJobIdTriple(jobId)
+	t.Cleanup(func(){
+		testValidityOfTriples(t)
+	})
+}
+
+func testParallelGetTriples_FP(t *testing.T, jobNum uint32, amount uint32, requestTime uint32){
+	parallelGetTriples(t, jobNum, amount, pb.Type_TYPE_FIXEDPOINT, requestTime)
+}
+
+func testParallelGetTriples_Float(t *testing.T, jobNum uint32, amount uint32, requestTime uint32){
+	parallelGetTriples(t, jobNum, amount, pb.Type_TYPE_FLOAT, requestTime)
+}
+
+// --- 以下呼ばれる関数群 ---
+func TestParallelGetTriples_FP_1_1_1(t *testing.T){
+	testParallelGetTriples_FP(t, 1, 1, 1)
+}
+func TestParallelGetTriples_FP_10_10_10(t *testing.T){
+	testParallelGetTriples_FP(t, 10, 10, 10)
+}
+func TestParallelGetTriples_FP_10000_5_5(t *testing.T){
+	testParallelGetTriples_FP(t, 10000, 5, 5)
+}
+func TestParallelGetTriples_FP_5_10000_5(t *testing.T){
+	testParallelGetTriples_FP(t, 5, 10000, 5)
+}
+func TestParallelGetTriples_FP_5_5_10000(t *testing.T){
+	testParallelGetTriples_FP(t, 5, 5, 10000)
+}
+
+func TestParallelGetTriples_Float_1_1_1(t *testing.T){
+	testParallelGetTriples_Float(t, 1, 1, 1)
+}
+func TestParallelGetTriples_Float_10_10_10(t *testing.T){
+	testParallelGetTriples_Float(t, 10, 10, 10)
+}
+func TestParallelGetTriples_Float_10000_5_5(t *testing.T){
+	testParallelGetTriples_Float(t, 10000, 5, 5)
+}
+func TestParallelGetTriples_Float_5_10000_5(t *testing.T){
+	testParallelGetTriples_Float(t, 5, 10000, 5)
+}
+func TestParallelGetTriples_Float_5_5_10000(t *testing.T){
+	testParallelGetTriples_Float(t, 5, 5, 10000)
+}
+
+// 同じ request ID は同じ Triple
+func TestSameRequestId(t *testing.T){
+	t.Helper()
+
+	all_init()
+
+	claims, err := getClaims()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// jobId が他の Test と被らないようにする
+	jobId := uint32(12345678)
+	amount := uint32(1000)
+	triple_type := pb.Type_TYPE_FIXEDPOINT
+	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
+		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
-
-		if len(Db.Triples[jobId]) != 0 {
-			t.Log(Db.Triples[jobId])
-			t.Fatal("残存Tripleあり")
+		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		if err != nil {
+			t.Fatal(err)
 		}
+		for i := uint32(0); i < amount; i++ {
+			if triples1[i] != triples2[i] {
+				t.Fatal("same requestId different triples")
+			}
+		}
+	}
+}
+
+// 異なる request ID は異なる Triple
+func TestDifferentRequestId(t *testing.T){
+	t.Helper()
+
+	all_init()
+
+	claims, err := getClaims()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// jobId が他の Test と被らないようにする
+	jobId := uint32(87654321)
+	amount := uint32(1000)
+	triple_type := pb.Type_TYPE_FIXEDPOINT
+	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
+		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		if err != nil {
+			t.Fatal(err)
+		}
+		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 2)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for i := uint32(0); i < amount; i++ {
+			if triples1[i] == triples2[i] {
+				t.Fatal("different requestId same triples")
+			}
+		}
+	}
+}
+
+// 範囲外の PartyId が来た時にエラーを吐くか
+func TestOutRangePartyId(t *testing.T){
+	expected_text := "out range partyId"
+	triple_type := pb.Type_TYPE_FIXEDPOINT
+	claims, err := getClaims()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	partyId := uint32(0)
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, triple_type, -1); err.Error() != expected_text{
+		t.Fatal("does not output 'out range partyId'")
+	}
+
+	partyId = uint32(len(claims.PartyInfo))  + uint32(1)
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, triple_type, -1); err.Error() != expected_text{
+		t.Fatal("does not output 'out range partyId'")
 	}
 }

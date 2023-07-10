@@ -55,6 +55,11 @@ func sharize(data int64, size uint32, triple_type pb.Type) ([]int64, error) {
 
 func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type) (map[uint32]([]*ts.Triple), error) {
 	ret := make(map[uint32]([]*ts.Triple))
+	party_num := uint32(len(claims.PartyInfo))
+
+	for partyId := uint32(1); partyId <= party_num; partyId++ {
+		ret[partyId] = []*ts.Triple{}
+	}
 
 	for i := uint32(0); i < amount; i++ {
 		randInt64Slice, err := utils.GetRandInt64Slice(2, tripleRandMin, tripleRandMax)
@@ -68,7 +73,6 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type
 		b := randInt64Slice[1]
 		c := a * b
 
-		party_num := uint32(len(claims.PartyInfo))
 		aShares, err := sharize(a, party_num, triple_type)
 		if err != nil {
 			return nil, err
@@ -96,62 +100,57 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type
 	return ret, nil
 }
 
-func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type) ([]*ts.Triple, error) {
+func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestId int64) ([]*ts.Triple, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
-	if len(Db.Triples[jobId]) == 0 {
-		newTriples, err := GenerateTriples(claims, amount, triple_type)
-		if err != nil {
-			return nil, err
-		}
-
-		Db.Triples[jobId] = newTriples
-	}
-
-	var triples []*ts.Triple
-	_, ok := Db.Triples[jobId][partyId]
-
-	// とあるパーティの複数回目のリクエストが、他パーティより先行されても対応できるように全パーティに triple をappendする
-	if !ok {
-		newTriples, err := GenerateTriples(claims, amount, triple_type)
-		if err != nil {
-			return nil, err
-		}
-
-		// partyIdは1-index
-		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-			_, ok := Db.Triples[jobId][partyId]
-			if ok {
-				Db.Triples[jobId][partyId] = append(Db.Triples[jobId][partyId], newTriples[partyId]...)
-			} else {
-				Db.Triples[jobId][partyId] = newTriples[partyId]
-			}
-		}
-	}
-
-	triples = Db.Triples[jobId][partyId][:amount]
-	Db.Triples[jobId][partyId] = Db.Triples[jobId][partyId][amount:]
-	if len(Db.Triples[jobId][partyId]) == 0 {
-		delete(Db.Triples[jobId], partyId)
-	}
-
-	if len(triples) == 0 {
-		errText := "すでに取得済みのリソースがリクエストされた"
+	if partyId == 0 || partyId > uint32(len(claims.PartyInfo)){
+		errText := "out range partyId"
 		logger.Error(errText)
 		return nil, errors.New(errText)
 	}
 
-	// 全て配り終わったら削除
-	if len(Db.Triples[jobId]) == 0 {
-		delete(Db.Triples, jobId)
+	// jobId が初めての場合
+	if _, ok := Db.PreID[jobId]; !ok {
+		Db.Triples[jobId] = make(map[uint32]([]*pb.Triple))
+		Db.PreID[jobId] = make(map[uint32](int64))
+		Db.PreAmount[jobId] = make(map[uint32](uint32))
 	}
 
-	return triples, nil
-}
+	pre_id, ok := Db.PreID[jobId][partyId]
 
-func DeleteJobIdTriple(jobId uint32) error {
-	// jobIdに紐付いたTripleを削除
-	delete(Db.Triples, jobId)
-	return nil
+	// request が初めての場合
+	if !ok{
+		Db.PreID[jobId][partyId] = requestId
+		Db.PreAmount[jobId][partyId] = amount
+	}
+
+	// 前回の request と異なる場合
+	// requestId が -1 の場合は必ず前回と異なるとみなす（test用）
+	if ok && (pre_id != requestId || requestId == -1){
+		pre_amount := Db.PreAmount[jobId][partyId]
+		Db.Triples[jobId][partyId] = Db.Triples[jobId][partyId][pre_amount:]
+		Db.PreID[jobId][partyId] = requestId
+		Db.PreAmount[jobId][partyId] = amount
+	}
+
+	// 今回返す Triples がまだ生成されてない場合
+	if len(Db.Triples[jobId][partyId]) == 0{
+		newTriples, err := GenerateTriples(claims, amount, triple_type)
+		if err != nil {
+			return nil, err
+		}
+		for loopPartyId := uint32(1); loopPartyId <= uint32(len(claims.PartyInfo)); loopPartyId++ {
+			_, ok := Db.Triples[jobId][loopPartyId]
+			if ok {
+				Db.Triples[jobId][loopPartyId] = append(Db.Triples[jobId][loopPartyId], newTriples[loopPartyId]...)
+			} else {
+				Db.Triples[jobId][loopPartyId] = newTriples[loopPartyId]
+			}
+		}
+	}
+
+	triples := Db.Triples[jobId][partyId][:amount]
+
+	return triples, nil
 }

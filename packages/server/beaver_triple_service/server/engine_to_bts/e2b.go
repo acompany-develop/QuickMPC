@@ -23,7 +23,6 @@ import (
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 type server struct {
@@ -63,7 +62,7 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	}
 	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetTripleType())
 
-	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType())
+	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType(), in.GetRequestId())
 	if err != nil {
 		return nil, err
 	}
@@ -71,26 +70,6 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	return &pb.GetTriplesResponse{
 		Triples: triples,
 	}, nil
-}
-
-func (s *server) DeleteJobIdTriple(ctx context.Context, in *pb.DeleteJobIdTripleRequest) (*emptypb.Empty, error) {
-	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
-	if !ok {
-		return nil, status.Error(codes.Internal, "failed claims type assertions")
-	}
-
-	partyId, err := GetPartyIdFromClaims(claims)
-	if err != nil {
-		return nil, err
-	}
-	logger.Infof("jobId: %d, partyId: %d\n", in.GetJobId(), partyId)
-
-	err = tg.DeleteJobIdTriple(in.GetJobId())
-	if err != nil {
-		return nil, err
-	}
-
-	return &emptypb.Empty{}, err
 }
 
 func RunServer() {
