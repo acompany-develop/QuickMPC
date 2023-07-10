@@ -27,7 +27,6 @@ def test_job_error_info(param: tuple):
     err_info = None
     res = qmpc.sum(*param)
     job_uuid = res["job_uuid"]
-    print()
     for retry in range(10):
         res = qmpc.get_computation_status(job_uuid)
         error = any([status == JobStatus.ERROR
