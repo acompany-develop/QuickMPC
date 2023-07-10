@@ -90,7 +90,7 @@ if __name__ == '__main__':
 
         for _ in range(100):
             # 計算が終わるか100秒(1秒x100回)経つまで繰り返す
-            get_res = qmpc.get_computation_status(job_uuid)
+            get_status = qmpc.get_computation_status(job_uuid)
             if all([r == JobStatus.Value('COMPLETED')
                     for r in get_res["statuses"]]):
                 break
