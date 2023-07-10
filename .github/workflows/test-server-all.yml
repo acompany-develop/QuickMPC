@@ -189,7 +189,7 @@ jobs:
         test_name:
           [
             correl,
-            get_computation_result
+            get_computation_result,
             get_elapsed_time,
             job_error_info,
             join,
