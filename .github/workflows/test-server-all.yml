@@ -261,7 +261,6 @@ jobs:
           [
             send_share,
             execute_computation,
-            execute_computations,
             get_computation_result,
             execute_multiple
           ]
