@@ -1,46 +1,18 @@
+import pandas as pd
 import pytest
-from quickmpc import parse
-from utils import get_result, qmpc
-
-
-# tableデータを送信してdata_idとtable dataを得る
-def send_share(filename: str) -> str:
-    # データをシェア化し送信する
-    send_res = qmpc.send_share_from_csv_file(filename)
-    assert (send_res["is_ok"])
-    return send_res["data_id"]
+from utils import qmpc
 
 
 @pytest.mark.parametrize(
-    ("table_file"),
+    ("size"),
     [
-        # NOTE: テスト時間が長くなるためテストケースを一部省略
-        ("table_data_5x5"),
-        # ("table_data_10x10"),
-        # ("table_data_100x10"),
-        # ("table_data_1000x10"),
-        # ("table_data_10000x10"),
-        ("table_data_100x100"),
+        (1), (10), (100), (1000),
     ]
 )
-def test_get_elapsed_time(table_file: str):
-    filename = f"data/{table_file}.csv"
-
-    # share送信
-    data_id = send_share(filename)
-
-    # table情報と列指定情報を定義して計算
-    secrets, schema = parse(filename)
-    length = len(secrets[0])
-    inp = [i for i in range(2, length+1)]
-
-    response = qmpc.sum([data_id], inp)
-    res = get_result(response)
-    assert (res["is_ok"])
-    job_uuid = response["job_uuid"]
-
-    res = qmpc.get_elapsed_time(job_uuid)
-    assert (res["is_ok"])
-
-    # 冪等性のために消しておく
-    qmpc.delete_share([data_id])
+def test_sum(size: int):
+    df = pd.DataFrame([[1, 2, 3] for _ in range(size)],
+                      columns=["s1", "s2", "s3"])
+    sdf = qmpc.send_to(df)
+    sdf_res = sdf.sum([1, 2, 3])
+    tm = sdf_res.get_elapsed_time()
+    assert tm is not None
