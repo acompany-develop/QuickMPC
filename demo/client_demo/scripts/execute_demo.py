@@ -1,7 +1,6 @@
 import logging
 
 import quickmpc
-from quickmpc.qmpc_new import QMPC
 
 if __name__ == '__main__':
     """ Step 0. loggerの設定(任意) """
@@ -11,7 +10,7 @@ if __name__ == '__main__':
     quickmpc.get_logger().setLevel(level=logging.DEBUG)
 
     """ Step 1. QMPCの設定 """
-    qmpc: QMPC = QMPC(
+    qmpc = quickmpc.QMPC(
         ["http://localhost:50001",
          "http://localhost:50002",
          "http://localhost:50003"]
@@ -19,8 +18,11 @@ if __name__ == '__main__':
 
     """ Step 2. シェア送信 """
     data_dir: str = "../data/"
-    df = qmpc.read_csv(f"{data_dir}/data-meshcode.csv", index_col="id")
+    df = qmpc.read_csv(f"{data_dir}/data-statistic.csv", index_col="id")
     sdf = qmpc.send_to(df)
 
     """ Step 3. 各種統計演算 """
-    logger.info(sdf.meshcode([2, 3, 4, 5]).to_data_frame())
+    logger.info(sdf.sum([2, 3, 4]).to_data_frame())
+    logger.info(sdf.mean([2, 3, 4]).to_data_frame())
+    logger.info(sdf.variance([2, 3, 4]).to_data_frame())
+    logger.info(sdf.correl([2, 3, 4], [5]).to_data_frame())
