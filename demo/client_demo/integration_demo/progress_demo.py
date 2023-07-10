@@ -56,7 +56,7 @@ if __name__ == '__main__':
          "http://localhost:50003"]
     )
     # データ Setting
-    size = 50000
+    size = 20
     data_id1 = get_data_id(size, data_num=1)
     data_id2 = get_data_id(size, data_num=2)
 
@@ -73,11 +73,11 @@ if __name__ == '__main__':
     QMPC.set_log_level(logging.WARN)
 
     while True:
-        get_res = qmpc.get_computation_result(job_uuid)
+        get_status = qmpc.get_computation_status(job_uuid)
 
         """ Step 5. プログレスバーの作成・更新 """
-        if get_res['statuses'] is not None:
-            for party_id, status in enumerate(get_res['statuses']):
+        if get_status['statuses'] is not None:
+            for party_id, status in enumerate(get_status['statuses']):
                 key = (party_id, -1)
 
                 if key not in pbars:
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
                 pbars[key] = (pbar, status)
 
-        progresses = get_res['progresses']
+        progresses = get_status['progresses']
         if progresses is not None:
             for party_id, progress in enumerate(progresses):
                 if progress is None:
@@ -127,15 +127,17 @@ if __name__ == '__main__':
 
                     pbars[key] = (pbar, procedure.progress)
 
-        if get_res["results"] is not None:
-            for key in pbars:
-                pbar, prev = pbars[key]
-                if pbar is None:
-                    continue
-                pbar.update(100 - prev)
-                pbar.clear()
-                pbar.close()
-
+        if all([r == JobStatus.Value('COMPLETED')
+                for r in get_status["statuses"]]):
+            res = qmpc.get_computation_result(job_uuid)
+            if res["results"] is not None:
+                for key in pbars:
+                    pbar, prev = pbars[key]
+                    if pbar is None:
+                        continue
+                    pbar.update(100 - prev)
+                    pbar.clear()
+                    pbar.close()
             break
 
         time.sleep(1)

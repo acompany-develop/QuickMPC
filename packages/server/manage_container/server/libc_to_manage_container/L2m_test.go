@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	utils "github.com/acompany-develop/QuickMPC/packages/server/manage_container/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	pb "github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container"
 )
 
@@ -66,7 +67,7 @@ func TestGetComputationResult(t *testing.T) {
 	defer conn.Close()
 	client := pb.NewLibcToManageClient(conn)
 
-	stream, err := client.GetComputationResult(context.Background(), &pb.GetComputationResultRequest{JobUuid: "id", Token: "token"})
+	stream, err := client.GetComputationResult(context.Background(), &pb.GetComputationRequest{JobUuid: "id", Token: "token"})
 
 	if err != nil {
 		t.Fatal(err)
@@ -89,13 +90,33 @@ func TestGetComputationResult(t *testing.T) {
 	}
 }
 
+// Statusを取得できるかTest
+func TestGetComputationStatus(t *testing.T) {
+	conn := s.GetConn()
+	defer conn.Close()
+	client := pb.NewLibcToManageClient(conn)
+
+	result, err := client.GetComputationStatus(context.Background(), &pb.GetComputationRequest{
+		JobUuid: "id",
+		Token:   "token_dep",
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.Status != pb_types.JobStatus_COMPLETED {
+		t.Fatal("TestGetComputationStatusFailed")
+	}
+}
+
 // エラー情報を取得できるかTest
 func TestGetJobErrorInfo(t *testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
 	client := pb.NewLibcToManageClient(conn)
 
-	result, err := client.GetJobErrorInfo(context.Background(), &pb.GetJobErrorInfoRequest{
+	result, err := client.GetJobErrorInfo(context.Background(), &pb.GetComputationRequest{
 		JobUuid: "id",
 		Token:   "token_dep",
 	})
@@ -106,25 +127,6 @@ func TestGetJobErrorInfo(t *testing.T) {
 
 	if result.GetJobErrorInfo().GetWhat() != "test" {
 		t.Fatal("GetJobErrorInfo Failed")
-	}
-}
-
-func TestGetDataList(t *testing.T) {
-
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewLibcToManageClient(conn)
-
-	result, err := client.GetDataList(context.Background(), &pb.GetDataListRequest{
-		Token: "token_dep",
-	})
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if result.GetResult() != "result" {
-		t.Fatal("GetDataList Failed")
 	}
 }
 

@@ -145,13 +145,7 @@ class QMPC:
                     f"[path]={path}")
         res = self.__qmpc_request.get_computation_result(job_uuid,
                                                          output_path=path)
-        return {"is_ok": res.status == Status.OK, "statuses": res.job_statuses,
-                "results": res.results, "progresses": res.progresses}
-
-    def get_data_list(self) -> Dict:
-        logger.info("get_data_list request.")
-        res = self.__qmpc_request.get_data_list()
-        return {"is_ok": res.status == Status.OK, "results": res.data_ids}
+        return {"is_ok": res.status == Status.OK, "results": res.results}
 
     def demo_sharize(self, secrets: List) -> Dict:
         logger.info("demo_sharize request. "
@@ -171,6 +165,13 @@ class QMPC:
                     f"[job_uuid]={job_uuid} "
                     f"[path]={path}")
         return restore(job_uuid, path, self.__party_size)
+
+    def get_computation_status(self, job_uuid: str) -> Dict:
+        logger.info("get_computation_status request. "
+                    f"[job_uuid]={job_uuid}")
+        res = self.__qmpc_request.get_computation_status(job_uuid)
+        return {"is_ok": res.status == Status.OK,
+                "statuses": res.job_statuses, "progresses": res.progresses}
 
     def get_job_error_info(self, job_uuid: str) -> Dict:
         logger.info("get_job_error_info request. "

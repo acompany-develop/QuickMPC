@@ -33,30 +33,25 @@ qmpc_new: QMPC_new = QMPC_new(
 
 
 def __try_get_computation_result(job_uuid, is_limit, path='./result'):
-    try:
-        if not os.path.isdir(path):
-            os.mkdir(path)
-        get_res = qmpc.get_computation_result(job_uuid, path)
-    except:
+    res_status = qmpc.get_computation_status(job_uuid)
+    all_completed = all([status == JobStatus.COMPLETED
+                         for status in res_status["statuses"]])
+    if not all_completed:
         if is_limit:
             raise
         return None
 
-    all_completed = False
-    if get_res["statuses"] is not None:
-        all_completed = all([status == JobStatus.COMPLETED
-                             for status in get_res["statuses"]])
+    if not os.path.isdir(path):
+        os.mkdir(path)
 
-    if all_completed:
-        res = qmpc.restore(job_uuid, path)
-        get_res["results"] = res
-        # NOTE
-        # 計算結果取得時には含まれていないが，job_uuidがmodelの取得に使われるので
-        # このような処理をしている
-        get_res["job_uuid"] = job_uuid
-        return get_res
-
-    return None
+    get_res = qmpc.get_computation_result(job_uuid, path)
+    res = qmpc.restore(job_uuid, path)
+    get_res["results"] = res
+    # NOTE
+    # 計算結果取得時には含まれていないが，job_uuidがmodelの取得に使われるので
+    # このような処理をしている
+    get_res["job_uuid"] = job_uuid
+    return get_res
 
 
 def get_result(res, limit=20):

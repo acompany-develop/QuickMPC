@@ -39,23 +39,23 @@ class LibcToManageStub(object):
         )
         self.GetComputationResult = channel.unary_stream(
             '/libctomanage.LibcToManage/GetComputationResult',
-            request_serializer=libc__to__manage__pb2.GetComputationResultRequest.SerializeToString,
+            request_serializer=libc__to__manage__pb2.GetComputationRequest.SerializeToString,
             response_deserializer=libc__to__manage__pb2.GetComputationResultResponse.FromString,
         )
-        self.GetDataList = channel.unary_unary(
-            '/libctomanage.LibcToManage/GetDataList',
-            request_serializer=libc__to__manage__pb2.GetDataListRequest.SerializeToString,
-            response_deserializer=libc__to__manage__pb2.GetDataListResponse.FromString,
+        self.GetComputationStatus = channel.unary_unary(
+            '/libctomanage.LibcToManage/GetComputationStatus',
+            request_serializer=libc__to__manage__pb2.GetComputationRequest.SerializeToString,
+            response_deserializer=libc__to__manage__pb2.GetComputationStatusResponse.FromString,
+        )
+        self.GetJobErrorInfo = channel.unary_unary(
+            '/libctomanage.LibcToManage/GetJobErrorInfo',
+            request_serializer=libc__to__manage__pb2.GetComputationRequest.SerializeToString,
+            response_deserializer=libc__to__manage__pb2.GetJobErrorInfoResponse.FromString,
         )
         self.GetElapsedTime = channel.unary_unary(
             '/libctomanage.LibcToManage/GetElapsedTime',
             request_serializer=libc__to__manage__pb2.GetElapsedTimeRequest.SerializeToString,
             response_deserializer=libc__to__manage__pb2.GetElapsedTimeResponse.FromString,
-        )
-        self.GetJobErrorInfo = channel.unary_unary(
-            '/libctomanage.LibcToManage/GetJobErrorInfo',
-            request_serializer=libc__to__manage__pb2.GetJobErrorInfoRequest.SerializeToString,
-            response_deserializer=libc__to__manage__pb2.GetJobErrorInfoResponse.FromString,
         )
         self.AddShareDataFrame = channel.unary_unary(
             '/libctomanage.LibcToManage/AddShareDataFrame',
@@ -99,19 +99,19 @@ class LibcToManageServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def GetDataList(self, request, context):
-        """Missing associated documentation comment in .proto file."""
-        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-        context.set_details('Method not implemented!')
-        raise NotImplementedError('Method not implemented!')
-
-    def GetElapsedTime(self, request, context):
+    def GetComputationStatus(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def GetJobErrorInfo(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetElapsedTime(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -148,23 +148,23 @@ def add_LibcToManageServicer_to_server(servicer, server):
         ),
         'GetComputationResult': grpc.unary_stream_rpc_method_handler(
             servicer.GetComputationResult,
-            request_deserializer=libc__to__manage__pb2.GetComputationResultRequest.FromString,
+            request_deserializer=libc__to__manage__pb2.GetComputationRequest.FromString,
             response_serializer=libc__to__manage__pb2.GetComputationResultResponse.SerializeToString,
         ),
-        'GetDataList': grpc.unary_unary_rpc_method_handler(
-            servicer.GetDataList,
-            request_deserializer=libc__to__manage__pb2.GetDataListRequest.FromString,
-            response_serializer=libc__to__manage__pb2.GetDataListResponse.SerializeToString,
+        'GetComputationStatus': grpc.unary_unary_rpc_method_handler(
+            servicer.GetComputationStatus,
+            request_deserializer=libc__to__manage__pb2.GetComputationRequest.FromString,
+            response_serializer=libc__to__manage__pb2.GetComputationStatusResponse.SerializeToString,
+        ),
+        'GetJobErrorInfo': grpc.unary_unary_rpc_method_handler(
+            servicer.GetJobErrorInfo,
+            request_deserializer=libc__to__manage__pb2.GetComputationRequest.FromString,
+            response_serializer=libc__to__manage__pb2.GetJobErrorInfoResponse.SerializeToString,
         ),
         'GetElapsedTime': grpc.unary_unary_rpc_method_handler(
             servicer.GetElapsedTime,
             request_deserializer=libc__to__manage__pb2.GetElapsedTimeRequest.FromString,
             response_serializer=libc__to__manage__pb2.GetElapsedTimeResponse.SerializeToString,
-        ),
-        'GetJobErrorInfo': grpc.unary_unary_rpc_method_handler(
-            servicer.GetJobErrorInfo,
-            request_deserializer=libc__to__manage__pb2.GetJobErrorInfoRequest.FromString,
-            response_serializer=libc__to__manage__pb2.GetJobErrorInfoResponse.SerializeToString,
         ),
         'AddShareDataFrame': grpc.unary_unary_rpc_method_handler(
             servicer.AddShareDataFrame,
@@ -264,25 +264,42 @@ class LibcToManage(object):
                              timeout=None,
                              metadata=None):
         return grpc.experimental.unary_stream(request, target, '/libctomanage.LibcToManage/GetComputationResult',
-                                              libc__to__manage__pb2.GetComputationResultRequest.SerializeToString,
+                                              libc__to__manage__pb2.GetComputationRequest.SerializeToString,
                                               libc__to__manage__pb2.GetComputationResultResponse.FromString,
                                               options, channel_credentials,
                                               insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def GetDataList(request,
-                    target,
-                    options=(),
-                    channel_credentials=None,
-                    call_credentials=None,
-                    insecure=False,
-                    compression=None,
-                    wait_for_ready=None,
-                    timeout=None,
-                    metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/GetDataList',
-                                             libc__to__manage__pb2.GetDataListRequest.SerializeToString,
-                                             libc__to__manage__pb2.GetDataListResponse.FromString,
+    def GetComputationStatus(request,
+                             target,
+                             options=(),
+                             channel_credentials=None,
+                             call_credentials=None,
+                             insecure=False,
+                             compression=None,
+                             wait_for_ready=None,
+                             timeout=None,
+                             metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/GetComputationStatus',
+                                             libc__to__manage__pb2.GetComputationRequest.SerializeToString,
+                                             libc__to__manage__pb2.GetComputationStatusResponse.FromString,
+                                             options, channel_credentials,
+                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetJobErrorInfo(request,
+                        target,
+                        options=(),
+                        channel_credentials=None,
+                        call_credentials=None,
+                        insecure=False,
+                        compression=None,
+                        wait_for_ready=None,
+                        timeout=None,
+                        metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/GetJobErrorInfo',
+                                             libc__to__manage__pb2.GetComputationRequest.SerializeToString,
+                                             libc__to__manage__pb2.GetJobErrorInfoResponse.FromString,
                                              options, channel_credentials,
                                              insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
@@ -300,23 +317,6 @@ class LibcToManage(object):
         return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/GetElapsedTime',
                                              libc__to__manage__pb2.GetElapsedTimeRequest.SerializeToString,
                                              libc__to__manage__pb2.GetElapsedTimeResponse.FromString,
-                                             options, channel_credentials,
-                                             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
-
-    @staticmethod
-    def GetJobErrorInfo(request,
-                        target,
-                        options=(),
-                        channel_credentials=None,
-                        call_credentials=None,
-                        insecure=False,
-                        compression=None,
-                        wait_for_ready=None,
-                        timeout=None,
-                        metadata=None):
-        return grpc.experimental.unary_unary(request, target, '/libctomanage.LibcToManage/GetJobErrorInfo',
-                                             libc__to__manage__pb2.GetJobErrorInfoRequest.SerializeToString,
-                                             libc__to__manage__pb2.GetJobErrorInfoResponse.FromString,
                                              options, channel_credentials,
                                              insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

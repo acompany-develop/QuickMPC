@@ -27,10 +27,10 @@ type LibcToManageClient interface {
 	DeleteShares(ctx context.Context, in *DeleteSharesRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	GetSchema(ctx context.Context, in *GetSchemaRequest, opts ...grpc.CallOption) (*GetSchemaResponse, error)
 	ExecuteComputation(ctx context.Context, in *ExecuteComputationRequest, opts ...grpc.CallOption) (*ExecuteComputationResponse, error)
-	GetComputationResult(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error)
-	GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error)
+	GetComputationResult(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error)
+	GetComputationStatus(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (*GetComputationStatusResponse, error)
+	GetJobErrorInfo(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error)
 	GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error)
-	GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error)
 	AddShareDataFrame(ctx context.Context, in *AddShareDataFrameRequest, opts ...grpc.CallOption) (*AddShareDataFrameResponse, error)
 }
 
@@ -78,7 +78,7 @@ func (c *libcToManageClient) ExecuteComputation(ctx context.Context, in *Execute
 	return out, nil
 }
 
-func (c *libcToManageClient) GetComputationResult(ctx context.Context, in *GetComputationResultRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error) {
+func (c *libcToManageClient) GetComputationResult(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (LibcToManage_GetComputationResultClient, error) {
 	stream, err := c.cc.NewStream(ctx, &LibcToManage_ServiceDesc.Streams[0], "/libctomanage.LibcToManage/GetComputationResult", opts...)
 	if err != nil {
 		return nil, err
@@ -110,9 +110,18 @@ func (x *libcToManageGetComputationResultClient) Recv() (*GetComputationResultRe
 	return m, nil
 }
 
-func (c *libcToManageClient) GetDataList(ctx context.Context, in *GetDataListRequest, opts ...grpc.CallOption) (*GetDataListResponse, error) {
-	out := new(GetDataListResponse)
-	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetDataList", in, out, opts...)
+func (c *libcToManageClient) GetComputationStatus(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (*GetComputationStatusResponse, error) {
+	out := new(GetComputationStatusResponse)
+	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetComputationStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *libcToManageClient) GetJobErrorInfo(ctx context.Context, in *GetComputationRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error) {
+	out := new(GetJobErrorInfoResponse)
+	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetJobErrorInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -122,15 +131,6 @@ func (c *libcToManageClient) GetDataList(ctx context.Context, in *GetDataListReq
 func (c *libcToManageClient) GetElapsedTime(ctx context.Context, in *GetElapsedTimeRequest, opts ...grpc.CallOption) (*GetElapsedTimeResponse, error) {
 	out := new(GetElapsedTimeResponse)
 	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetElapsedTime", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *libcToManageClient) GetJobErrorInfo(ctx context.Context, in *GetJobErrorInfoRequest, opts ...grpc.CallOption) (*GetJobErrorInfoResponse, error) {
-	out := new(GetJobErrorInfoResponse)
-	err := c.cc.Invoke(ctx, "/libctomanage.LibcToManage/GetJobErrorInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -154,10 +154,10 @@ type LibcToManageServer interface {
 	DeleteShares(context.Context, *DeleteSharesRequest) (*emptypb.Empty, error)
 	GetSchema(context.Context, *GetSchemaRequest) (*GetSchemaResponse, error)
 	ExecuteComputation(context.Context, *ExecuteComputationRequest) (*ExecuteComputationResponse, error)
-	GetComputationResult(*GetComputationResultRequest, LibcToManage_GetComputationResultServer) error
-	GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error)
+	GetComputationResult(*GetComputationRequest, LibcToManage_GetComputationResultServer) error
+	GetComputationStatus(context.Context, *GetComputationRequest) (*GetComputationStatusResponse, error)
+	GetJobErrorInfo(context.Context, *GetComputationRequest) (*GetJobErrorInfoResponse, error)
 	GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error)
-	GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error)
 	AddShareDataFrame(context.Context, *AddShareDataFrameRequest) (*AddShareDataFrameResponse, error)
 	mustEmbedUnimplementedLibcToManageServer()
 }
@@ -178,17 +178,17 @@ func (UnimplementedLibcToManageServer) GetSchema(context.Context, *GetSchemaRequ
 func (UnimplementedLibcToManageServer) ExecuteComputation(context.Context, *ExecuteComputationRequest) (*ExecuteComputationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteComputation not implemented")
 }
-func (UnimplementedLibcToManageServer) GetComputationResult(*GetComputationResultRequest, LibcToManage_GetComputationResultServer) error {
+func (UnimplementedLibcToManageServer) GetComputationResult(*GetComputationRequest, LibcToManage_GetComputationResultServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetComputationResult not implemented")
 }
-func (UnimplementedLibcToManageServer) GetDataList(context.Context, *GetDataListRequest) (*GetDataListResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetDataList not implemented")
+func (UnimplementedLibcToManageServer) GetComputationStatus(context.Context, *GetComputationRequest) (*GetComputationStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetComputationStatus not implemented")
+}
+func (UnimplementedLibcToManageServer) GetJobErrorInfo(context.Context, *GetComputationRequest) (*GetJobErrorInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetJobErrorInfo not implemented")
 }
 func (UnimplementedLibcToManageServer) GetElapsedTime(context.Context, *GetElapsedTimeRequest) (*GetElapsedTimeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetElapsedTime not implemented")
-}
-func (UnimplementedLibcToManageServer) GetJobErrorInfo(context.Context, *GetJobErrorInfoRequest) (*GetJobErrorInfoResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetJobErrorInfo not implemented")
 }
 func (UnimplementedLibcToManageServer) AddShareDataFrame(context.Context, *AddShareDataFrameRequest) (*AddShareDataFrameResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddShareDataFrame not implemented")
@@ -279,7 +279,7 @@ func _LibcToManage_ExecuteComputation_Handler(srv interface{}, ctx context.Conte
 }
 
 func _LibcToManage_GetComputationResult_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(GetComputationResultRequest)
+	m := new(GetComputationRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -299,20 +299,38 @@ func (x *libcToManageGetComputationResultServer) Send(m *GetComputationResultRes
 	return x.ServerStream.SendMsg(m)
 }
 
-func _LibcToManage_GetDataList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetDataListRequest)
+func _LibcToManage_GetComputationStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetComputationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(LibcToManageServer).GetDataList(ctx, in)
+		return srv.(LibcToManageServer).GetComputationStatus(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/libctomanage.LibcToManage/GetDataList",
+		FullMethod: "/libctomanage.LibcToManage/GetComputationStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LibcToManageServer).GetDataList(ctx, req.(*GetDataListRequest))
+		return srv.(LibcToManageServer).GetComputationStatus(ctx, req.(*GetComputationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _LibcToManage_GetJobErrorInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetComputationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LibcToManageServer).GetJobErrorInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/libctomanage.LibcToManage/GetJobErrorInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LibcToManageServer).GetJobErrorInfo(ctx, req.(*GetComputationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -331,24 +349,6 @@ func _LibcToManage_GetElapsedTime_Handler(srv interface{}, ctx context.Context, 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(LibcToManageServer).GetElapsedTime(ctx, req.(*GetElapsedTimeRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _LibcToManage_GetJobErrorInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetJobErrorInfoRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(LibcToManageServer).GetJobErrorInfo(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/libctomanage.LibcToManage/GetJobErrorInfo",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LibcToManageServer).GetJobErrorInfo(ctx, req.(*GetJobErrorInfoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -395,16 +395,16 @@ var LibcToManage_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _LibcToManage_ExecuteComputation_Handler,
 		},
 		{
-			MethodName: "GetDataList",
-			Handler:    _LibcToManage_GetDataList_Handler,
-		},
-		{
-			MethodName: "GetElapsedTime",
-			Handler:    _LibcToManage_GetElapsedTime_Handler,
+			MethodName: "GetComputationStatus",
+			Handler:    _LibcToManage_GetComputationStatus_Handler,
 		},
 		{
 			MethodName: "GetJobErrorInfo",
 			Handler:    _LibcToManage_GetJobErrorInfo_Handler,
+		},
+		{
+			MethodName: "GetElapsedTime",
+			Handler:    _LibcToManage_GetElapsedTime_Handler,
 		},
 		{
 			MethodName: "AddShareDataFrame",

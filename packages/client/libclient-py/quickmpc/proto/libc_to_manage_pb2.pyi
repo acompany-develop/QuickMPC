@@ -9,7 +9,6 @@ import google.protobuf.descriptor
 import google.protobuf.internal.containers
 import google.protobuf.message
 import sys
-import typing
 
 if sys.version_info >= (3, 8):
     import typing as typing_extensions
@@ -18,6 +17,7 @@ else:
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
+@typing_extensions.final
 class SendSharesRequest(google.protobuf.message.Message):
     """*
     the message of SendSharesRequest
@@ -55,6 +55,7 @@ class SendSharesRequest(google.protobuf.message.Message):
 
 global___SendSharesRequest = SendSharesRequest
 
+@typing_extensions.final
 class DeleteSharesRequest(google.protobuf.message.Message):
     """*
     the message of DeleteSharesRequest
@@ -77,6 +78,7 @@ class DeleteSharesRequest(google.protobuf.message.Message):
 
 global___DeleteSharesRequest = DeleteSharesRequest
 
+@typing_extensions.final
 class GetSchemaRequest(google.protobuf.message.Message):
     """*
     the message of GetSchemaRequest
@@ -98,6 +100,7 @@ class GetSchemaRequest(google.protobuf.message.Message):
 
 global___GetSchemaRequest = GetSchemaRequest
 
+@typing_extensions.final
 class GetSchemaResponse(google.protobuf.message.Message):
     """*
     the message of GetSchemaResponse
@@ -117,6 +120,7 @@ class GetSchemaResponse(google.protobuf.message.Message):
 
 global___GetSchemaResponse = GetSchemaResponse
 
+@typing_extensions.final
 class JoinOrder(google.protobuf.message.Message):
     """*
     the message of ExecuteComputationRequest
@@ -139,6 +143,7 @@ class JoinOrder(google.protobuf.message.Message):
 
 global___JoinOrder = JoinOrder
 
+@typing_extensions.final
 class Input(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -158,6 +163,7 @@ class Input(google.protobuf.message.Message):
 
 global___Input = Input
 
+@typing_extensions.final
 class ExecuteComputationRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -184,6 +190,7 @@ class ExecuteComputationRequest(google.protobuf.message.Message):
 
 global___ExecuteComputationRequest = ExecuteComputationRequest
 
+@typing_extensions.final
 class ExecuteComputationResponse(google.protobuf.message.Message):
     """
     the message of ExecuteComputationResponse
@@ -202,7 +209,8 @@ class ExecuteComputationResponse(google.protobuf.message.Message):
 
 global___ExecuteComputationResponse = ExecuteComputationResponse
 
-class GetComputationResultRequest(google.protobuf.message.Message):
+@typing_extensions.final
+class GetComputationRequest(google.protobuf.message.Message):
     """*
     the message of GetComputationResultRequest
     """
@@ -221,8 +229,9 @@ class GetComputationResultRequest(google.protobuf.message.Message):
     ) -> None: ...
     def ClearField(self, field_name: typing_extensions.Literal["job_uuid", b"job_uuid", "token", b"token"]) -> None: ...
 
-global___GetComputationResultRequest = GetComputationResultRequest
+global___GetComputationRequest = GetComputationRequest
 
+@typing_extensions.final
 class GetComputationResultResponse(google.protobuf.message.Message):
     """*
     the message of GetComputationResultResponse
@@ -232,19 +241,14 @@ class GetComputationResultResponse(google.protobuf.message.Message):
 
     RESULT_FIELD_NUMBER: builtins.int
     COLUMN_NUMBER_FIELD_NUMBER: builtins.int
-    STATUS_FIELD_NUMBER: builtins.int
     PIECE_ID_FIELD_NUMBER: builtins.int
-    PROGRESS_FIELD_NUMBER: builtins.int
     IS_DIM1_FIELD_NUMBER: builtins.int
     IS_DIM2_FIELD_NUMBER: builtins.int
     IS_SCHEMA_FIELD_NUMBER: builtins.int
     @property
     def result(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
     column_number: builtins.int
-    status: common_types.common_types_pb2.JobStatus.ValueType
     piece_id: builtins.int
-    @property
-    def progress(self) -> common_types.common_types_pb2.JobProgress: ...
     is_dim1: builtins.bool
     is_dim2: builtins.bool
     is_schema: builtins.bool
@@ -253,50 +257,39 @@ class GetComputationResultResponse(google.protobuf.message.Message):
         *,
         result: collections.abc.Iterable[builtins.str] | None = ...,
         column_number: builtins.int = ...,
-        status: common_types.common_types_pb2.JobStatus.ValueType = ...,
         piece_id: builtins.int = ...,
-        progress: common_types.common_types_pb2.JobProgress | None = ...,
         is_dim1: builtins.bool = ...,
         is_dim2: builtins.bool = ...,
         is_schema: builtins.bool = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing_extensions.Literal["_progress", b"_progress", "is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "progress", b"progress", "result_type", b"result_type"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing_extensions.Literal["_progress", b"_progress", "column_number", b"column_number", "is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "piece_id", b"piece_id", "progress", b"progress", "result", b"result", "result_type", b"result_type", "status", b"status"]) -> None: ...
-    @typing.overload
-    def WhichOneof(self, oneof_group: typing_extensions.Literal["_progress", b"_progress"]) -> typing_extensions.Literal["progress"] | None: ...
-    @typing.overload
+    def HasField(self, field_name: typing_extensions.Literal["is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "result_type", b"result_type"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["column_number", b"column_number", "is_dim1", b"is_dim1", "is_dim2", b"is_dim2", "is_schema", b"is_schema", "piece_id", b"piece_id", "result", b"result", "result_type", b"result_type"]) -> None: ...
     def WhichOneof(self, oneof_group: typing_extensions.Literal["result_type", b"result_type"]) -> typing_extensions.Literal["is_dim1", "is_dim2", "is_schema"] | None: ...
 
 global___GetComputationResultResponse = GetComputationResultResponse
 
-class GetDataListRequest(google.protobuf.message.Message):
+@typing_extensions.final
+class GetComputationStatusResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    TOKEN_FIELD_NUMBER: builtins.int
-    token: builtins.str
+    STATUS_FIELD_NUMBER: builtins.int
+    PROGRESS_FIELD_NUMBER: builtins.int
+    status: common_types.common_types_pb2.JobStatus.ValueType
+    @property
+    def progress(self) -> common_types.common_types_pb2.JobProgress: ...
     def __init__(
         self,
         *,
-        token: builtins.str = ...,
+        status: common_types.common_types_pb2.JobStatus.ValueType = ...,
+        progress: common_types.common_types_pb2.JobProgress | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["token", b"token"]) -> None: ...
+    def HasField(self, field_name: typing_extensions.Literal["_progress", b"_progress", "progress", b"progress"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing_extensions.Literal["_progress", b"_progress", "progress", b"progress", "status", b"status"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing_extensions.Literal["_progress", b"_progress"]) -> typing_extensions.Literal["progress"] | None: ...
 
-global___GetDataListRequest = GetDataListRequest
+global___GetComputationStatusResponse = GetComputationStatusResponse
 
-class GetDataListResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    RESULT_FIELD_NUMBER: builtins.int
-    result: builtins.str
-    def __init__(
-        self,
-        *,
-        result: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["result", b"result"]) -> None: ...
-
-global___GetDataListResponse = GetDataListResponse
-
+@typing_extensions.final
 class GetElapsedTimeRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -314,6 +307,7 @@ class GetElapsedTimeRequest(google.protobuf.message.Message):
 
 global___GetElapsedTimeRequest = GetElapsedTimeRequest
 
+@typing_extensions.final
 class GetElapsedTimeResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -328,23 +322,7 @@ class GetElapsedTimeResponse(google.protobuf.message.Message):
 
 global___GetElapsedTimeResponse = GetElapsedTimeResponse
 
-class GetJobErrorInfoRequest(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    JOB_UUID_FIELD_NUMBER: builtins.int
-    TOKEN_FIELD_NUMBER: builtins.int
-    job_uuid: builtins.str
-    token: builtins.str
-    def __init__(
-        self,
-        *,
-        job_uuid: builtins.str = ...,
-        token: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing_extensions.Literal["job_uuid", b"job_uuid", "token", b"token"]) -> None: ...
-
-global___GetJobErrorInfoRequest = GetJobErrorInfoRequest
-
+@typing_extensions.final
 class GetJobErrorInfoResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -362,6 +340,7 @@ class GetJobErrorInfoResponse(google.protobuf.message.Message):
 
 global___GetJobErrorInfoResponse = GetJobErrorInfoResponse
 
+@typing_extensions.final
 class AddShareDataFrameRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
@@ -382,6 +361,7 @@ class AddShareDataFrameRequest(google.protobuf.message.Message):
 
 global___AddShareDataFrameRequest = AddShareDataFrameRequest
 
+@typing_extensions.final
 class AddShareDataFrameResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 

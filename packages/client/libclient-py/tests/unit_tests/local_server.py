@@ -55,30 +55,28 @@ class LibToManageServiceServicer(libc_to_manage_pb2_grpc.LibcToManageServicer):
     def GetComputationResult(self, request, context):
         yield libc_to_manage_pb2.GetComputationResultResponse(
             result=["1"],
-            status=common_types_pb2.COMPLETED,
             piece_id=1,
             column_number=2,
             is_dim1=True,
         )
         yield libc_to_manage_pb2.GetComputationResultResponse(
             result=["2"],
-            status=common_types_pb2.COMPLETED,
             piece_id=2,
             column_number=2,
             is_dim1=True,
         )
-
-    def GetDataList(self, request, context):
-        res = libc_to_manage_pb2.GetDataListResponse(
-            result="[]"
-        )
-        return res
 
     def GetJoinTable(self, request, context):
         res = libc_to_manage_pb2.GetJoinTableResponse(
             is_ok=True,
             result="['1']",
             schema=["s"]
+        )
+        return res
+
+    def GetComputationStatus(self, request, context):
+        res = libc_to_manage_pb2.GetComputationStatusResponse(
+            status=common_types_pb2.COMPLETED,
         )
         return res
 

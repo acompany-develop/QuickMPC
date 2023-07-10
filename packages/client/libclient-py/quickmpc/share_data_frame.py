@@ -7,6 +7,7 @@ from typing import Callable, List
 
 import pandas as pd
 
+from .exception import QMPCJobError
 from .proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
 from .request.qmpc_request_interface import QMPCRequestInterface
 from .utils.overload_tools import Dim1, methoddispatch
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 class ShareDataFrameStatus(Enum):
     OK = 1
     EXECUTE = 2
+    ERROR = 3
 
 
 def _wait_execute_decorator(func: Callable) -> Callable:
@@ -62,18 +64,26 @@ class ShareDataFrame:
     __status: ShareDataFrameStatus = ShareDataFrameStatus.OK
 
     def _wait_execute(self):
+        if self.__status == ShareDataFrameStatus.ERROR:
+            raise QMPCJobError("ShareDataFrame's status is `ERROR`")
         if self.__status == ShareDataFrameStatus.EXECUTE:
             logger.info("wait execute...")
             # TODO: 待機設定を指定できるようにする
             while True:
+                res = self.__qmpc_request.get_computation_status(self.__id)
+                # ERRORがあればraise
+                if any([s == JobStatus.ERROR for s in res.job_statuses]):
+                    self.__status = ShareDataFrameStatus.ERROR
+                    res = self.__qmpc_request.get_job_error_info(self.__id)
+                    for info in res.job_error_info:
+                        if info:
+                            raise QMPCJobError(info)
+                    raise QMPCJobError()
+                # 全てCOMPLETEDならreturn
+                if all([s == JobStatus.COMPLETED for s in res.job_statuses]):
+                    self.__status = ShareDataFrameStatus.OK
+                    return
                 time.sleep(1)
-                res = self.__qmpc_request.get_computation_result(self.__id)
-                all_completed = all([
-                    s == JobStatus.COMPLETED for s in res.job_statuses
-                ])
-                if all_completed:
-                    break
-            self.__status = ShareDataFrameStatus.OK
 
     def __add__(self, other: "ShareDataFrame") -> "ShareDataFrame":
         """テーブルを加算する．

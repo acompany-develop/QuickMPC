@@ -4,7 +4,7 @@ from typing import List, Optional
 import pandas as pd
 
 from .response import (AddShareDataFrameResponse, DeleteShareResponse,
-                       ExecuteResponse, GetDataListResponse,
+                       ExecuteResponse, GetComputationStatusResponse,
                        GetElapsedTimeResponse, GetJobErrorInfoResponse,
                        GetResultResponse, SendShareResponse)
 
@@ -53,10 +53,11 @@ class QMPCRequestInterface(ABC):
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse: ...
 
     @abstractmethod
-    def get_elapsed_time(self, job_uuid: str) -> GetElapsedTimeResponse: ...
+    def get_computation_status(self, job_uuid: str) \
+        -> GetComputationStatusResponse: ...
 
     @abstractmethod
-    def get_data_list(self) -> GetDataListResponse: ...
+    def get_elapsed_time(self, job_uuid: str) -> GetElapsedTimeResponse: ...
 
     @abstractmethod
     def delete_share(self, data_ids: List[str]) -> DeleteShareResponse: ...

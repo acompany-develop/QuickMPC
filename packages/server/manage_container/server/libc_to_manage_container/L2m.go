@@ -190,7 +190,7 @@ func (s *server) ExecuteComputation(ctx context.Context, in *pb.ExecuteComputati
 }
 
 // DBから計算結果を得る
-func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream pb.LibcToManage_GetComputationResultServer) error {
+func (s *server) GetComputationResult(in *pb.GetComputationRequest, stream pb.LibcToManage_GetComputationResultServer) error {
 	AppLogger.Info("Get Computation Result;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 
@@ -202,49 +202,16 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 		return errToken
 	}
 
-	progress, err := s.m2cclient.CheckProgress(JobUUID)
-
-	if err != nil {
-		st, ok := status.FromError(err)
-		if !ok {
-			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
-		}
-		// optional な情報のためロガーに残すのみでエラーを返さない
-		logger_func := func(template string, args ...interface{}) {}
-		switch st.Code() {
-		case codes.NotFound:
-			logger_func = AppLogger.Infof
-		case
-			codes.Internal,
-			codes.Unavailable:
-			logger_func = AppLogger.Warningf
-		default:
-			logger_func = AppLogger.Errorf
-		}
-		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
-	}
-
-	computationResults, computationErrInfo, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
-
+	computationResults, err := s.m2dbclient.GetComputationResult(JobUUID, []string{"dim1", "dim2", "schema"})
 	if err != nil {
 		return err
 	}
 
-	if computationErrInfo != nil {
-		status, err := status.New(codes.Unknown, "computation result has error info").WithDetails(computationErrInfo)
-		if err != nil {
-			return err
-		}
-		return status.Err()
-	}
-
 	for _, result := range computationResults {
 		response := pb.GetComputationResultResponse{
-			Status:       computationResults[0].Status,
 			Result:       result.Result,
 			ColumnNumber: result.Meta.ColumnNumber,
 			PieceId:      result.Meta.PieceID,
-			Progress:     progress,
 		}
 		if result.Meta.ResultType == "dim1" {
 			response.ResultType = &pb.GetComputationResultResponse_IsDim1{
@@ -263,25 +230,6 @@ func (s *server) GetComputationResult(in *pb.GetComputationResultRequest, stream
 	}
 
 	return nil
-}
-
-func (s *server) GetDataList(ctx context.Context, in *pb.GetDataListRequest) (*pb.GetDataListResponse, error) {
-	token := in.GetToken()
-
-	errToken := s.authorize(token, []string{"demo", "dep"})
-	if errToken != nil {
-		return nil, errToken
-	}
-
-	getDataList, err := s.m2dbclient.GetDataList()
-	if err != nil {
-		AppLogger.Error(err)
-		return nil, err
-	}
-
-	return &pb.GetDataListResponse{
-		Result: getDataList,
-	}, nil
 }
 
 func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeRequest) (*pb.GetElapsedTimeResponse, error) {
@@ -306,7 +254,49 @@ func (s *server) GetElapsedTime(ctx context.Context, in *pb.GetElapsedTimeReques
 	}, nil
 }
 
-func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequest) (*pb.GetJobErrorInfoResponse, error) {
+func (s *server) GetComputationStatus(ctx context.Context, in *pb.GetComputationRequest) (*pb.GetComputationStatusResponse, error) {
+	AppLogger.Info("Get Computation Status")
+	AppLogger.Info("jobUUID: " + in.GetJobUuid())
+	JobUUID := in.GetJobUuid()
+	token := in.GetToken()
+
+	errToken := s.authorize(token, []string{"demo", "dep"})
+	if errToken != nil {
+		return nil, errToken
+	}
+
+	progress, err := s.m2cclient.CheckProgress(JobUUID)
+	if err != nil {
+		st, ok := status.FromError(err)
+		if !ok {
+			AppLogger.Errorf("GRPC Error : Code [%d], Message [%s]", st.Code(), st.Message())
+		}
+		// optional な情報のためロガーに残すのみでエラーを返さない
+		logger_func := func(template string, args ...interface{}) {}
+		switch st.Code() {
+		case codes.NotFound:
+			logger_func = AppLogger.Infof
+		case
+			codes.Internal,
+			codes.Unavailable:
+			logger_func = AppLogger.Warningf
+		default:
+			logger_func = AppLogger.Errorf
+		}
+		logger_func("gRPC CheckProgress method with JobUUID: [%s] returns error: Code [%s](%d), Message [%s]", JobUUID, st.Code().String(), st.Code(), st.Message())
+	}
+
+	status, err := s.m2dbclient.GetComputationStatus(JobUUID)
+	if err != nil {
+		return &pb.GetComputationStatusResponse{}, err
+	}
+	return &pb.GetComputationStatusResponse{
+		Status:   status,
+		Progress: progress,
+	}, nil
+}
+
+func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetComputationRequest) (*pb.GetJobErrorInfoResponse, error) {
 	AppLogger.Info("Get Job Error Info;")
 	AppLogger.Info("jobUUID: " + in.GetJobUuid())
 	JobUUID := in.GetJobUuid()
@@ -317,11 +307,7 @@ func (s *server) GetJobErrorInfo(ctx context.Context, in *pb.GetJobErrorInfoRequ
 		return nil, errToken
 	}
 
-	errInfo, err := s.m2dbclient.GetJobErrorInfo(JobUUID)
-
-	if err != nil {
-		return nil, err
-	}
+	errInfo := s.m2dbclient.GetJobErrorInfo(JobUUID)
 
 	return &pb.GetJobErrorInfoResponse{
 		JobErrorInfo: errInfo,
