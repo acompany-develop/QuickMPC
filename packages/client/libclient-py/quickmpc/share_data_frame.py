@@ -212,17 +212,7 @@ class ShareDataFrame:
         if not self.__is_result:
             raise RuntimeError("Shareを取り出すことはできません．")
         res = self.__qmpc_request.get_computation_result(self.__id, None)
-        if res.results is None:
-            return pd.DataFrame()
-        # TODO: 型をつけて分岐できるようにする or そもそもdfで返す
-        if type(res.results) == dict:
-            if res.results["schema"] is None or res.results["table"] is None:
-                return pd.DataFrame()
-            schema = [s.name for s in res.results["schema"]]
-            df = pd.DataFrame(res.results["table"],
-                              columns=schema)
-            return df
-        return pd.DataFrame(res.results)
+        return res.results
 
     @_wait_execute_decorator
     def get_error_info(self) -> List[JobErrorInfo]:

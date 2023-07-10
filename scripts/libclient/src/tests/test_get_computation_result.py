@@ -53,7 +53,7 @@ def test_get_computation_result(param: tuple, expected: list):
         if get_res["results"] is None:
             continue
         # 正しく取得できたか確認
-        for x, y in zip(get_res["results"], expected):
+        for x, y in zip(get_res["results"][0], expected):
             assert (math.isclose(x, y, abs_tol=0.1))
         break
 

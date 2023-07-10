@@ -1,9 +1,9 @@
 import pytest
+
 from quickmpc.exception import QMPCServerError
 
-from container import Containers
-from utils import (all_containers, cc_p, data_id, execute_computation,
-                   get_computation_result, job_uuid, mc_all, mc_p, send_share)
+from .container import Containers
+from .utils import all_containers, cc_p, df, mc_all, mc_p, qmpc
 
 
 @pytest.mark.parametrize(
@@ -19,7 +19,7 @@ def test_failed_send_share_with_down(down_container):
     # コンテナをdownさせてからsend_shareを送る
     down_container.down()
     with pytest.raises(QMPCServerError):
-        send_share()
+        qmpc.send_to(df)
 
 
 @pytest.mark.parametrize(
@@ -34,13 +34,12 @@ def test_failed_execute_computation_with_down(down_container):
     all_containers().up()
 
     # コンテナを落とす前にsend_shareしておく
-    data_id1: str = data_id()
-    data_id2: str = data_id()
+    sdf: str = qmpc.send_to(df)
 
     # コンテナをdownさせてからexecute_computation(hjoin)を送る
     down_container.down()
     with pytest.raises(QMPCServerError):
-        execute_computation(data_id1, data_id2)
+        sdf.join(sdf)
 
 
 @pytest.mark.parametrize(
@@ -54,9 +53,11 @@ def test_failed_get_computation_result_with_down(down_container):
     all_containers().up()
 
     # コンテナを落とす前にexecuteしておく
-    job_uuid1: str = job_uuid()
+    sdf: str = qmpc.send_to(df)
+    sdf_join = sdf.join(sdf)
+    sdf_join._wait_execute(progress=False)
 
     # コンテナをdownさせてからget_compuation_resultを送る
     down_container.down()
     with pytest.raises(QMPCServerError):
-        get_computation_result(job_uuid1)
+        sdf_join.to_data_frame()

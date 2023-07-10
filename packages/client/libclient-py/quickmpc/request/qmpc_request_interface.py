@@ -3,8 +3,8 @@ from typing import List, Optional
 
 import pandas as pd
 
-from .response import (AddShareDataFrameResponse, DeleteShareResponse,
-                       ExecuteResponse, GetComputationStatusResponse,
+from .response import (AddShareDataFrameResponse, ExecuteResponse,
+                       GetComputationStatusResponse,
                        GetElapsedTimeResponse, GetJobErrorInfoResponse,
                        GetResultResponse, SendShareResponse)
 
@@ -60,7 +60,7 @@ class QMPCRequestInterface(ABC):
     def get_elapsed_time(self, job_uuid: str) -> GetElapsedTimeResponse: ...
 
     @abstractmethod
-    def delete_share(self, data_ids: List[str]) -> DeleteShareResponse: ...
+    def delete_share(self, data_ids: List[str]) -> None: ...
 
     @abstractmethod
     def add_share_data_frame(self, base_data_id: str, add_data_id: str) \

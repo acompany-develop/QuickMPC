@@ -30,11 +30,10 @@ from .proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
                                        SendSharesRequest)
 from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
 from .request.qmpc_request_interface import QMPCRequestInterface
-from .request.response import (AddShareDataFrameResponse, DeleteShareResponse,
-                               ExecuteResponse, GetComputationStatusResponse,
+from .request.response import (AddShareDataFrameResponse, ExecuteResponse,
+                               GetComputationStatusResponse,
                                GetElapsedTimeResponse, GetJobErrorInfoResponse,
                                GetResultResponse, SendShareResponse)
-from .request.status import Status
 from .share import Share
 from .utils.if_present import if_present
 from .utils.make_pieces import MakePiece
@@ -107,7 +106,7 @@ class QMPCRequest(QMPCRequestInterface):
                 except grpc.FutureTimeoutError as e:
                     logger.error(e)
             if not is_channel_ready:
-                raise RuntimeError("channel の準備が出来ません")
+                raise QMPCServerError("channel の準備が出来ません")
 
         for _ in range(self.__retry_num):
             # requestを送る
@@ -138,25 +137,19 @@ class QMPCRequest(QMPCRequestInterface):
             except Exception as e:
                 logger.error(e)
             time.sleep(self.__retry_wait_time)
-        raise RuntimeError(f"All {self.__retry_num} times it was an error")
+        raise QMPCServerError(f"All {self.__retry_num} times it was an error")
 
     @staticmethod
     def __futures_result(
-            futures: Iterable, enable_progress_bar=True) -> Tuple[bool, List]:
+            futures: Iterable, enable_progress_bar=True) -> List:
         """ エラーチェックしてfutureのresultを得る """
-        is_ok: bool = True
-        response: List = []
         try:
             if enable_progress_bar:
                 futures = tqdm.tqdm(futures, desc='receive')
             response = [f.result() for f in futures]
-        except (QMPCJobError, QMPCServerError):
+        except Exception:
             raise
-        except Exception as e:
-            is_ok = False
-            logger.error(e)
-
-        return is_ok, response
+        return response
 
     def send_share(self, df: pd.DataFrame, piece_size: int = 1_000_000) \
             -> SendShareResponse:
@@ -197,11 +190,8 @@ class QMPCRequest(QMPCRequestInterface):
                     futures.append(executor.submit(self.__retry,
                                                    stub.SendShares,
                                                    req))
-        is_ok, _ = QMPCRequest.__futures_result(futures)
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return SendShareResponse(Status.OK, data_id)
-        return SendShareResponse(Status.BadGateway, "")
+        QMPCRequest.__futures_result(futures)
+        return SendShareResponse(data_id)
 
     def __execute_computation(self, method_id: ComputationMethod.ValueType,
                               data_ids: List[str],
@@ -226,11 +216,8 @@ class QMPCRequest(QMPCRequestInterface):
                                 self.__client_stubs[0].ExecuteComputation,
                                 req)]
 
-        is_ok, response = QMPCRequest.__futures_result(futures)
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return ExecuteResponse(Status.OK, response[0].job_uuid)
-        return ExecuteResponse(Status.BadGateway, "")
+        response = QMPCRequest.__futures_result(futures)
+        return ExecuteResponse(response[0].job_uuid)
 
     def sum(self, data_ids: List[str], columns: List[int],
             *, debug_mode: bool = False) -> ExecuteResponse:
@@ -316,8 +303,8 @@ class QMPCRequest(QMPCRequestInterface):
                                        stub.GetComputationResult(req),
                                        job_uuid, party, output_path)
                        for party, stub in enumerate(self.__client_stubs)]
-        is_ok, response = QMPCRequest.__futures_result(
-            futures, enable_progress_bar=False)
+        response = QMPCRequest.__futures_result(futures,
+                                                enable_progress_bar=False)
         results_sorted = [sorted(res["responses"], key=lambda r: r.piece_id)
                           for res in response]
 
@@ -359,13 +346,10 @@ class QMPCRequest(QMPCRequestInterface):
 
         results = if_present(results, Share.recons)
         results = if_present(results, Share.convert_type, schema)
-        if is_table:
-            results = {"schema": schema, "table": results}
-
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return GetResultResponse(Status.OK, results=results)
-        return GetResultResponse(Status.BadGateway, results=results)
+        if is_table and schema:
+            columns = [s.name for s in schema]
+            return GetResultResponse(pd.DataFrame(results, columns=columns))
+        return GetResultResponse(pd.DataFrame(results))
 
     def get_computation_status(self, job_uuid: str) \
             -> GetComputationStatusResponse:
@@ -380,17 +364,13 @@ class QMPCRequest(QMPCRequestInterface):
                                        stub.GetComputationStatus,
                                        req)
                        for stub in self.__client_stubs]
-        is_ok, response = QMPCRequest.__futures_result(
-            futures, enable_progress_bar=False)
+        response = QMPCRequest.__futures_result(futures,
+                                                enable_progress_bar=False)
         statuses = [res.status for res in response]
         progresses = [res.progress if res.HasField("progress") else None
                       for res in response]
 
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return GetComputationStatusResponse(Status.OK,
-                                                statuses, progresses)
-        return GetComputationStatusResponse(Status.BadGateway, [], [])
+        return GetComputationStatusResponse(statuses, progresses)
 
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse:
         # リクエストパラメータを設定
@@ -402,17 +382,14 @@ class QMPCRequest(QMPCRequestInterface):
         with ThreadPoolExecutor() as executor:
             futures = [executor.submit(self.__retry, stub.GetJobErrorInfo, req)
                        for stub in self.__client_stubs]
-        is_ok, response = QMPCRequest.__futures_result(
+        response = QMPCRequest.__futures_result(
             futures, enable_progress_bar=False)
 
         job_error_info = [
             res.job_error_info if res.HasField("job_error_info") else None
             for res in response
         ]
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return GetJobErrorInfoResponse(Status.OK, job_error_info)
-        return GetJobErrorInfoResponse(Status.BadGateway, [])
+        return GetJobErrorInfoResponse(job_error_info)
 
     def get_elapsed_time(self, job_uuid: str) -> GetElapsedTimeResponse:
         # リクエストパラメータを設定
@@ -426,25 +403,17 @@ class QMPCRequest(QMPCRequestInterface):
                                        stub.GetElapsedTime,
                                        req)
                        for stub in self.__client_stubs]
-        is_ok, response = QMPCRequest.__futures_result(futures)
-        elapsed_time = max([res.elapsed_time
-                            for res in response]) if is_ok else None
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return GetElapsedTimeResponse(Status.OK, elapsed_time)
-        return GetElapsedTimeResponse(Status.BadGateway, [])
+        response = QMPCRequest.__futures_result(futures)
+        elapsed_time = max([res.elapsed_time for res in response])
+        return GetElapsedTimeResponse(elapsed_time)
 
-    def delete_share(self, data_ids: List[str]) -> DeleteShareResponse:
+    def delete_share(self, data_ids: List[str]) -> None:
         req = DeleteSharesRequest(dataIds=data_ids, token=self.__token)
         # 非同期にリクエスト送信
         with ThreadPoolExecutor() as executor:
             futures = [executor.submit(self.__retry, stub.DeleteShares, req)
                        for stub in self.__client_stubs]
-        is_ok, _ = QMPCRequest.__futures_result(futures)
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return DeleteShareResponse(Status.OK)
-        return DeleteShareResponse(Status.BadGateway)
+        QMPCRequest.__futures_result(futures)
 
     def add_share_data_frame(self, base_data_id: str, add_data_id: str) \
             -> AddShareDataFrameResponse:
@@ -456,9 +425,6 @@ class QMPCRequest(QMPCRequestInterface):
             futures = [executor.submit(self.__retry,
                                        stub.AddShareDataFrame, req)
                        for stub in self.__client_stubs]
-        is_ok, response = QMPCRequest.__futures_result(futures)
-        data_id = response[0].data_id if is_ok else ""
-        # TODO: __futures_resultの返り値を適切なものに変更する
-        if is_ok:
-            return AddShareDataFrameResponse(Status.OK, data_id)
-        return AddShareDataFrameResponse(Status.BadGateway, data_id)
+        response = QMPCRequest.__futures_result(futures)
+        data_id = response[0].data_id
+        return AddShareDataFrameResponse(data_id)
