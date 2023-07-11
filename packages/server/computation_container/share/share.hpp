@@ -11,7 +11,8 @@
 #include "logging/logger.hpp"
 #include "networking.hpp"
 #include "random/random.hpp"
-#include "triple_handler/triple_handler.hpp"
+#include "bts_handler/stock_bts.hpp"
+
 namespace qmpc::Share
 {
 template <typename SV>
@@ -75,7 +76,7 @@ public:
     Share &operator*=(const Share &obj)
     {
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::TripleHandler::TripleHandler::getInstance()->getTriple<SV>();
+        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get();
         Share a(std::get<0>(t[0])), b(std::get<1>(t[0])), c(std::get<2>(t[0]));
 
         // [d] = [x] - [a], [e] = [y] - [b] を計算する
@@ -244,7 +245,7 @@ public:
             );
         }
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::TripleHandler::TripleHandler::getInstance()->getTriple<SV>(n);
+        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get(n);
 
         std::vector<Share> a, b, c;
         a.reserve(n);
