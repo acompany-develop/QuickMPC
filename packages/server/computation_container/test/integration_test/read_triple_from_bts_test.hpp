@@ -22,10 +22,11 @@ void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
 {
     // triple read Test
     auto cc_to_bts = qmpc::ComputationToBts::Client::getInstance();
+    using Job = qmpc::BtsHandler::JobType::Triple<FixedPoint>;
     for (unsigned int jobId = 1; jobId <= jobIdMax; jobId++)
     {
         QMPC_LOG_INFO("jobId[{}]: ...", jobId);
-        auto triples = cc_to_bts->readTriples<FixedPoint>(jobId, amount);
+        auto triples = cc_to_bts->readRequest<Job>(amount);
         EXPECT_EQ(triples.size(), amount);
         // TODO: Party間で足並みを揃えてa*b=cのチェック
 
