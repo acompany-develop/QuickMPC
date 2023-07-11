@@ -50,7 +50,7 @@ var GetPartyIdFromClaims = func(claims *jwt_types.Claim) (uint32, error) {
 	return claims.PartyId, nil
 }
 
-func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
+func (s *server) GetTriples(ctx context.Context, in *pb.GetRequest) (*pb.GetTriplesResponse, error) {
 	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
@@ -60,9 +60,9 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	if err != nil {
 		return nil, err
 	}
-	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetTripleType())
+	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetType())
 
-	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType(), in.GetRequestId())
+	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetType(), in.GetRequestId())
 	if err != nil {
 		return nil, err
 	}
