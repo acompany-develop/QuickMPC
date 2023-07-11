@@ -39,6 +39,7 @@ private:
         }
         return request;
     }
+
 public:
     Client() noexcept;
     ~Client() noexcept = default;
