@@ -5,7 +5,8 @@ package enginetobts;
 option go_package = "github.com/acompany-develop/QuickMPC/proto/engine_to_bts";
 
 service EngineToBts {
-    rpc GetTriples(GetTriplesRequest) returns (GetTriplesResponse) {}
+    rpc GetTriples(GetRequest) returns (GetTriplesResponse) {}
+    rpc GetRandBits(GetRequest) returns (GetRandBitsResponse) {}
 }
 
 enum Type{
@@ -14,10 +15,10 @@ enum Type{
   TYPE_FIXEDPOINT = 2;
 }
 
-message GetTriplesRequest{
+message GetRequest{
     uint32 job_id = 1;
     uint32 amount = 2;
-    Type triple_type = 3;
+    Type type = 3;
     int64 request_id = 4;
 }
 
@@ -29,4 +30,8 @@ message Triple{
 
 message GetTriplesResponse{
     repeated Triple triples = 1;
+}
+
+message GetRandBitsResponse{
+    repeated int64 bit = 1;
 }
