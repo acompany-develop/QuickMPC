@@ -72,7 +72,7 @@ public:
             }
         }
         else
-            value = static_cast<T>(v * shift);
+            value = static_cast<T>(v) * shift;
     }
     FixedPointImpl(const std::string &str)
     {
