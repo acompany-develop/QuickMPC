@@ -345,15 +345,22 @@ auto _sqrt(const T &x)
 template <typename SV>
 Share<SV> getRandBitShare()
 {
-    auto t = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get();
-    return t[0];
+    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get();
+    return Share<SV>(bit[0]);
 }
 
 template <typename SV>
 std::vector<Share<SV>> getRandBitShare(std::size_t amount)
 {
-    auto t = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get(amount);
-    return t;
+    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get(amount);
+
+    std::vector<Share<SV>> ret(amount);
+    for (size_t i = 0; i < amount; i++)
+    {
+        ret[i] = Share<SV>(bit[i]);
+    }
+
+    return ret;
 }
 
 template <typename T>
