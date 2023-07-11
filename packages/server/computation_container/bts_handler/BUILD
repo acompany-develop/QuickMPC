@@ -1,8 +1,5 @@
 cc_library(
     name = "bts_handler",
-    srcs = [
-        "stock_bts.cpp"
-    ],
     hdrs = [
         "stock_bts.hpp"
     ],
