@@ -2,11 +2,12 @@
 
 #include <string>
 #include <vector>
+
 #include "client/helper/helper.hpp"
-#include "share/address_id.hpp"
 #include "config_parse/config_parse.hpp"
 #include "external/proto/engine_to_bts/engine_to_bts.grpc.pb.h"
 #include "logging/logger.hpp"
+#include "share/address_id.hpp"
 
 namespace qmpc::ComputationToBts
 {
@@ -21,7 +22,7 @@ private:
     Client(Client &&) noexcept = delete;
     Client &operator=(Client &&) noexcept = delete;
 
-    template<typename T>
+    template <typename T>
     enginetobts::GetRequest makeRequest(const unsigned int amount)
     {
         enginetobts::GetRequest request;
@@ -43,7 +44,7 @@ public:
     ~Client() noexcept = default;
     static std::shared_ptr<Client> getInstance();
 
-    template<class Job>
+    template <class Job>
     std::vector<typename Job::result_type> readRequest(const unsigned int amount)
     {
         using T = typename Job::value_type;
@@ -58,7 +59,7 @@ public:
             const std::string token = Config::getInstance()->cc_to_bts_token;
             context.AddMetadata("authorization", "bearer " + token);
             status = Job::request(stub_, context, request, response);
-        }while (retry_manager.retry(status));
+        } while (retry_manager.retry(status));
 
         return Job::getValue(response);
     }

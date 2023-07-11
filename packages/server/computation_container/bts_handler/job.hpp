@@ -8,10 +8,11 @@ namespace qmpc::BtsHandler::JobType
 {
 namespace etb = enginetobts;
 
-template<typename T>
-struct Triple{
+template <typename T>
+struct Triple
+{
     using value_type = T;
-    using result_type = std::tuple<T,T,T>;
+    using result_type = std::tuple<T, T, T>;
     using response_type = etb::GetTriplesResponse;
     static inline std::string op_name = "GetTriples";
 
@@ -22,7 +23,7 @@ struct Triple{
         response_type& response
     )
     {
-        return stub -> GetTriples(&context, request, &response);
+        return stub->GetTriples(&context, request, &response);
     }
 
     static std::vector<result_type> getValue(const etb::GetTriplesResponse& response)
@@ -30,7 +31,7 @@ struct Triple{
         size_t length = response.triples_size();
         std::vector<result_type> ret(length);
 
-        for(size_t i = 0; i < length; i++)
+        for (size_t i = 0; i < length; i++)
         {
             auto triple = response.triples(i);
             ret[i] = std::make_tuple(T(triple.a()), T(triple.b()), T(triple.c()));
@@ -40,7 +41,8 @@ struct Triple{
 };
 
 template<typename T>
-struct RandBit{
+struct RandBit
+{
     using value_type = T;
     using result_type = T;
     using response_type = etb::GetRandBitsResponse;
@@ -53,7 +55,7 @@ struct RandBit{
         response_type& response
     )
     {
-        return stub -> GetRandBits(&context, request, &response);
+        return stub->GetRandBits(&context, request, &response);
     }
 
     static std::vector<result_type> getValue(const etb::GetRandBitsResponse& response)
@@ -61,11 +63,11 @@ struct RandBit{
         size_t length = response.bit_size();
         std::vector<result_type> ret(length);
 
-        for(size_t i = 0; i < length; i++)
+        for (size_t i = 0; i < length; i++)
         {
             ret[i] = response.bit(i);
         }
         return ret;
     }
 };
-} // namespace qmpc::BtsHandler::JobType
+}  // namespace qmpc::BtsHandler::JobType

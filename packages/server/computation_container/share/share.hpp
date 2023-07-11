@@ -7,11 +7,11 @@
 #include <tuple>
 
 #include "address_id.hpp"
+#include "bts_handler/stock_bts.hpp"
 #include "config_parse/config_parse.hpp"
 #include "logging/logger.hpp"
 #include "networking.hpp"
 #include "random/random.hpp"
-#include "bts_handler/stock_bts.hpp"
 
 namespace qmpc::Share
 {
