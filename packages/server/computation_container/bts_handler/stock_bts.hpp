@@ -11,7 +11,7 @@ namespace qmpc::BtsHandler
 template<typename Job>
 class StockBTS
 {
-    const std::size_t threshold=3, M=3;
+    const std::size_t threshold=100000, M=100000;
 
     using Result = typename Job::result_type;
     std::queue<Result> stock;
