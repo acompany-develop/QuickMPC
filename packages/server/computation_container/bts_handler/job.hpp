@@ -1,8 +1,8 @@
 #pragma once
 #include "external/proto/engine_to_bts/engine_to_bts.grpc.pb.h"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 namespace qmpc::BtsHandler::JobType
 {
@@ -40,7 +40,7 @@ struct Triple
     }
 };
 
-template<typename T>
+template <typename T>
 struct RandBit
 {
     using value_type = T;

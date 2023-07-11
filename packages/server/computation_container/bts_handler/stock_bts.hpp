@@ -8,7 +8,7 @@
 
 namespace qmpc::BtsHandler
 {
-template<typename Job>
+template <typename Job>
 class StockBTS
 {
     const std::size_t threshold = 100000, M = 100000;
