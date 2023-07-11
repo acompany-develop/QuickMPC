@@ -20,6 +20,7 @@ import (
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
+	rbg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_generator"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
@@ -69,6 +70,34 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetRequest) (*pb.GetTrip
 
 	return &pb.GetTriplesResponse{
 		Triples: triples,
+	}, nil
+}
+
+func (s *server) GetRandBits(ctx context.Context, in *pb.GetRequest) (*pb.GetRandBitsResponse, error) {
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if !ok {
+		return nil, status.Error(codes.Internal, "failed claims type assertions")
+	}
+
+	partyId, err := GetPartyIdFromClaims(claims)
+	if err != nil {
+		return nil, err
+	}
+	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetType())
+
+	randBits, err := rbg.GetRandBits(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetType(), in.GetRequestId())
+	if err != nil {
+		return nil, err
+	}
+
+	// []*int64 を []int64 に変換
+	ret := make([]int64, len(randBits))
+	for i, val := range randBits {
+		ret[i] = *val
+	}
+
+	return &pb.GetRandBitsResponse{
+		Bits: ret,
 	}, nil
 }
 
