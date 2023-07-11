@@ -96,7 +96,7 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 			t.Fatal(err)
 		}
 
-		result, err := client.GetTriples(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT, RequestId: -1})
+		result, err := client.GetTriples(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, Type: pb.Type_TYPE_FIXEDPOINT, RequestId: -1})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -176,7 +176,7 @@ func TestGetTriples_10000_1(t *testing.T)   { testGetTriples(t, 10000, 1) }   //
 func TestGetTriples_10000_100(t *testing.T) { testGetTriples(t, 10000, 100) } // 10s
 // func TestGetTriples_10000_10000(t *testing.T) { testGetTriples(t, 10000, 10000) } // TO(10分以上)
 
-// TripleTypeを指定しない場合にエラーが出るかテスト
+// Typeを指定しない場合にエラーが出るかテスト
 func TestGetTriplesFailedUnknownType(t *testing.T) {
 	conn := s.GetConn()
 	defer conn.Close()
@@ -191,6 +191,6 @@ func TestGetTriplesFailedUnknownType(t *testing.T) {
 	_, err = client.GetTriples(ctx, &pb.GetRequest{JobId: 0, Amount: 1, RequestId: -1})
 
 	if err == nil {
-		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
+		t.Fatal("Typeの指定がないRequestはエラーを出す必要があります．")
 	}
 }
