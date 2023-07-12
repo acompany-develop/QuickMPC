@@ -1,5 +1,5 @@
-from .qmpc_request import QMPCRequest
-from .qmpc_request_interface import QMPCRequestInterface
+from quickmpc.request.qmpc_request import QMPCRequest
+from quickmpc.request.qmpc_request_interface import QMPCRequestInterface
 
 __all__ = [
     "QMPCRequest",
