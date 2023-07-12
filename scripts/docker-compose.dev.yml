@@ -105,7 +105,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container
+      - ./computation_container
     env_file:
       - ../config/computation_container/compute1/.env
     healthcheck:
@@ -139,7 +139,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container
+      - ./computation_container
     env_file:
       - ../config/computation_container/compute2/.env
     healthcheck:
@@ -173,7 +173,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container
+      - ./computation_container
     env_file:
       - ../config/computation_container/compute3/.env
     healthcheck:
@@ -261,7 +261,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./manage_container
+      - ./manage_container
     env_file:
       - ../config/manage_container/manage1/.env
     healthcheck:
@@ -295,7 +295,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./manage_container
+      - ./manage_container
     env_file:
       - ../config/manage_container/manage2/.env
     healthcheck:
@@ -329,7 +329,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./manage_container
+      - ./manage_container
     env_file:
       - ../config/manage_container/manage3/.env
     healthcheck:

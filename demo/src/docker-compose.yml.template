@@ -82,7 +82,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && /QuickMPC/scripts/wrapped_run.sh /QuickMPC/bazel-bin/computation_container
+      - /QuickMPC/scripts/wrapped_run.sh /QuickMPC/bazel-bin/computation_container
     env_file:
       - ./config/computation_container/.env
       - ./config/beaver_triple_service/client.sample.env
@@ -138,7 +138,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./manage_container
+      - ./manage_container
     env_file:
       - ./config/manage_container/.env
     healthcheck:

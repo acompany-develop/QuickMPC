@@ -28,7 +28,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container_benchmark
+      - ./computation_container_benchmark
     env_file:
       - ../config/computation_container/compute1/.env
     expose:
@@ -61,7 +61,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container_benchmark
+      - ./computation_container_benchmark
     env_file:
       - ../config/computation_container/compute2/.env
     expose:
@@ -94,7 +94,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container_benchmark
+      - ./computation_container_benchmark
     env_file:
       - ../config/computation_container/compute3/.env
     expose:
