@@ -42,7 +42,7 @@ func getClaims() (*jwt_types.Claim, error){
 }
 
 // 固定された (jobId, partyId) に対し requestTimes 回の（長さ amount の） RandBits を作成
-func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32, bit_type pb.Type, requestTimes uint32) {
+func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32, value_type pb.Type, requestTimes uint32) {
 	t.Helper()
 
 	claims, err := getClaims()
@@ -86,7 +86,7 @@ func testValidityOfRandBits(t *testing.T) {
 		for i := 0; i < len(PartyToRandBits[1]); i++ {
 			bitSum := int64(0)
 			for partyId := uint32(1); partyId <= uint32(len(PartyToRandBits)); partyId++ {
-				bitSum += PartyToRandBits[partyId]
+				bitSum += *PartyToRandBits[partyId]
 			}
 			if bitSum != 0 && bitSum != 1{
 				t.Fatal("This is not bit")
