@@ -129,7 +129,7 @@ func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount u
 		}
 	}
 
-	bits := Db.RandBits[jobId][partyId][:amount]
+	randbits := Db.RandBits[jobId][partyId][:amount]
 
-	return bits, nil
+	return randbits, nil
 }

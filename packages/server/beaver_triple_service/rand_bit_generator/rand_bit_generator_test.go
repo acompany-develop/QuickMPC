@@ -62,7 +62,7 @@ func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32,
 	t.Run(fmt.Sprintf("TestRandBitGenerator_Job%d", jobId), func(t *testing.T) {
 		for loopRequestId := uint32(0); loopRequestId < requestTimes; loopRequestId++ {
 			requestId := int64(loopRequestId)
-			bits, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, requestId)
+			randbits, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, requestId)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -71,9 +71,9 @@ func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32,
 
 			_, ok := RBS.Stock[jobId][partyId]
 			if ok {
-				RBS.Stock[jobId][partyId] = append(RBS.Stock[jobId][partyId], bits..)
+				RBS.Stock[jobId][partyId] = append(RBS.Stock[jobId][partyId], randbits..)
 			} else {
-				RBS.Stock[jobId][partyId] = bits
+				RBS.Stock[jobId][partyId] = randbits
 			}
 
 			RBS.Mux.Unlock()

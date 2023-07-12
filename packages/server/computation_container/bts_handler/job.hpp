@@ -60,12 +60,12 @@ struct RandBit
 
     static std::vector<result_type> getValue(const etb::GetRandBitsResponse& response)
     {
-        size_t length = response.bits_size();
+        size_t length = response.randbits_size();
         std::vector<result_type> ret(length);
 
         for (size_t i = 0; i < length; i++)
         {
-            ret[i] = response.bits(i);
+            ret[i] = response.randbits(i);
         }
         return ret;
     }
