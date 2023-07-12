@@ -71,7 +71,7 @@ func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32,
 
 			_, ok := RBS.Stock[jobId][partyId]
 			if ok {
-				RBS.Stock[jobId][partyId] = append(RBS.Stock[jobId][partyId], randbits..)
+				RBS.Stock[jobId][partyId] = append(RBS.Stock[jobId][partyId], randbits...)
 			} else {
 				RBS.Stock[jobId][partyId] = randbits
 			}
