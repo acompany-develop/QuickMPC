@@ -8,18 +8,12 @@ Refer to the **Debugging Method** in [QuickMPC/scripts/README.md](../../scripts/
 
 ### 2. Execute the following commands in this directory to establish the environment
 ```console
-$ pipenv install --skip-lock
-```
-If you want to check the execution on a machine other than Python 3.7, run the following command before installing.
-```console $ pipenv install --skip-lock
-$ pipenv --rm # Remove the current environment.
-$ pipenv --python=3.8 # For Python 3.8
-$ pipenv --python=3.9 # for Python 3.9
+$ pip install quickmpc
 ```
 
 ### 3. Navigate and run in the directory
 ```console
 $ cd scripts/
-$ pipenv run python execute_demo.py
-$ pipenv run python join_demo.py
+$ python execute_demo.py
+$ python join_demo.py
 ```
