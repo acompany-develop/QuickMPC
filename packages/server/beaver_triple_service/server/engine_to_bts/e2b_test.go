@@ -99,7 +99,7 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 			t.Fatal(err)
 		}
 
-		result, err := client.GetTriples(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, Type: pb.Type_TYPE_FIXEDPOINT, RequestId: -1})
+		result, err := client.GetTriples(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, RequestId: -1})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -179,25 +179,6 @@ func TestGetTriples_10000_1(t *testing.T)   { testGetTriples(t, 10000, 1) }   //
 func TestGetTriples_10000_100(t *testing.T) { testGetTriples(t, 10000, 100) } // 10s
 // func TestGetTriples_10000_10000(t *testing.T) { testGetTriples(t, 10000, 10000) } // TO(10分以上)
 
-// Typeを指定しない場合にエラーが出るかテスト
-func TestGetTriplesFailedUnknownType(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewEngineToBtsClient(conn)
-
-	ctx, err := getContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// RequestId が他と被らないようにする
-	_, err = client.GetTriples(ctx, &pb.GetRequest{JobId: 0, Amount: 1, RequestId: -1})
-
-	if err == nil {
-		t.Fatal("Typeの指定がないRequestはエラーを出す必要があります．")
-	}
-}
-
 // --- RandBit --- ファイル分けても良いかも
 
 func testGetRandBitsByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32, partyId uint32) {
@@ -210,7 +191,7 @@ func testGetRandBitsByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient,
 			t.Fatal(err)
 		}
 
-		result, err := client.GetRandBits(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, Type: pb.Type_TYPE_FIXEDPOINT, RequestId: -1})
+		result, err := client.GetRandBits(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, RequestId: -1})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -287,22 +268,3 @@ func TestGetRandBits_100_100(t *testing.T) { testGetRandBits(t, 100, 100) }
 func TestGetRandBits_10000_1(t *testing.T)   { testGetRandBits(t, 10000, 1) }
 func TestGetRandBits_10000_100(t *testing.T) { testGetRandBits(t, 10000, 100) }
 // func TestGetRandBits_10000_10000(t *testing.T) { testGetRandBits(t, 10000, 10000) }
-
-// Typeを指定しない場合にエラーが出るかテスト
-func TestGetRandBitsFailedUnknownType(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewEngineToBtsClient(conn)
-
-	ctx, err := getContext()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// RequestId が他と被らないようにする
-	_, err = client.GetRandBits(ctx, &pb.GetRequest{JobId: 0, Amount: 1, RequestId: -1})
-
-	if err == nil {
-		t.Fatal("Typeの指定がないRequestはエラーを出す必要があります．")
-	}
-}

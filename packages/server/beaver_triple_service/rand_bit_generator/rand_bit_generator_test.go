@@ -42,7 +42,7 @@ func getClaims() (*jwt_types.Claim, error){
 }
 
 // 固定された (jobId, partyId) に対し requestTimes 回の（長さ amount の） RandBits を作成
-func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32, value_type pb.Type, requestTimes uint32) {
+func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32, requestTimes uint32) {
 	t.Helper()
 
 	claims, err := getClaims()
@@ -62,7 +62,7 @@ func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32,
 	t.Run(fmt.Sprintf("TestRandBitGenerator_Job%d", jobId), func(t *testing.T) {
 		for loopRequestId := uint32(0); loopRequestId < requestTimes; loopRequestId++ {
 			requestId := int64(loopRequestId)
-			randbits, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, requestId)
+			randbits, err := rbg.GetRandBits(claims, jobId, partyId, amount, requestId)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -95,7 +95,7 @@ func testValidityOfRandBits(t *testing.T) {
 	}
 }
 
-func parallelGetRandBits(t *testing.T, jobNum uint32, amount uint32, value_type pb.Type, requestTime uint32) {
+func testParallelGetRandBits(t *testing.T, jobNum uint32, amount uint32, requestTime uint32) {
 	t.Helper()
 
 	all_init()
@@ -111,7 +111,7 @@ func parallelGetRandBits(t *testing.T, jobNum uint32, amount uint32, value_type 
 			partyId := loopPartyId
 			t.Run("TestRandBitGenerator", func(t *testing.T){
 				t.Parallel()
-				multiGetRandBits(t, jobId, partyId, amount, value_type, requestTime)
+				multiGetRandBits(t, jobId, partyId, amount, requestTime)
 			})
 		}
 	}
@@ -121,45 +121,21 @@ func parallelGetRandBits(t *testing.T, jobNum uint32, amount uint32, value_type 
 	})
 }
 
-func testParallelGetRandBits_FP(t *testing.T, jobNum uint32, amount uint32, requestTime uint32){
-	parallelGetRandBits(t, jobNum, amount, pb.Type_TYPE_FIXEDPOINT, requestTime)
-}
-
-func testParallelGetRandBits_Float(t *testing.T, jobNum uint32, amount uint32, requestTime uint32){
-	parallelGetRandBits(t, jobNum, amount, pb.Type_TYPE_FLOAT, requestTime)
-}
-
 // --- 以下呼ばれる関数群 ---
-func TestParallelGetRandBits_FP_1_1_1(t *testing.T){
-	testParallelGetRandBits_FP(t, 1, 1, 1)
+func TestParallelGetRandBits_1_1_1(t *testing.T){
+	testParallelGetRandBits(t, 1, 1, 1)
 }
-func TestParallelGetRandBits_FP_10_10_10(t *testing.T){
-	testParallelGetRandBits_FP(t, 10, 10, 10)
+func TestParallelGetRandBits_10_10_10(t *testing.T){
+	testParallelGetRandBits(t, 10, 10, 10)
 }
-func TestParallelGetRandBits_FP_10000_5_5(t *testing.T){
-	testParallelGetRandBits_FP(t, 10000, 5, 5)
+func TestParallelGetRandBits_10000_5_5(t *testing.T){
+	testParallelGetRandBits(t, 10000, 5, 5)
 }
-func TestParallelGetRandBits_FP_5_10000_5(t *testing.T){
-	testParallelGetRandBits_FP(t, 5, 10000, 5)
+func TestParallelGetRandBits_5_10000_5(t *testing.T){
+	testParallelGetRandBits(t, 5, 10000, 5)
 }
-func TestParallelGetRandBits_FP_5_5_10000(t *testing.T){
-	testParallelGetRandBits_FP(t, 5, 5, 10000)
-}
-
-func TestParallelGetRandBits_Float_1_1_1(t *testing.T){
-	testParallelGetRandBits_Float(t, 1, 1, 1)
-}
-func TestParallelGetRandBits_Float_10_10_10(t *testing.T){
-	testParallelGetRandBits_Float(t, 10, 10, 10)
-}
-func TestParallelGetRandBits_Float_10000_5_5(t *testing.T){
-	testParallelGetRandBits_Float(t, 10000, 5, 5)
-}
-func TestParallelGetRandBits_Float_5_10000_5(t *testing.T){
-	testParallelGetRandBits_Float(t, 5, 10000, 5)
-}
-func TestParallelGetRandBits_Float_5_5_10000(t *testing.T){
-	testParallelGetRandBits_Float(t, 5, 5, 10000)
+func TestParallelGetRandBits_5_5_10000(t *testing.T){
+	testParallelGetRandBits(t, 5, 5, 10000)
 }
 
 // 同じ request ID は同じ RandBit
@@ -176,13 +152,12 @@ func TestSameRequestId(t *testing.T){
 	// jobId が他の Test と被らないようにする
 	jobId := uint32(12345678)
 	amount := uint32(1000)
-	value_type := pb.Type_TYPE_FIXEDPOINT
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-		randbits1, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
+		randbits1, err := rbg.GetRandBits(claims, jobId, partyId, amount, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
-		randbits2, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
+		randbits2, err := rbg.GetRandBits(claims, jobId, partyId, amount, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -208,13 +183,12 @@ func TestDifferentRequestId(t *testing.T){
 	// jobId が他の Test と被らないようにする
 	jobId := uint32(87654321)
 	amount := uint32(1000)
-	value_type := pb.Type_TYPE_FIXEDPOINT
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-		randbits1, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
+		randbits1, err := rbg.GetRandBits(claims, jobId, partyId, amount, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
-		randbits2, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 2)
+		randbits2, err := rbg.GetRandBits(claims, jobId, partyId, amount, 2)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -229,19 +203,18 @@ func TestDifferentRequestId(t *testing.T){
 // 範囲外の PartyId が来た時にエラーを吐くか
 func TestOutRangePartyId(t *testing.T){
 	expected_text := "out range partyId"
-	value_type := pb.Type_TYPE_FIXEDPOINT
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	partyId := uint32(0)
-	if _, err := rbg.GetRandBits(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
+	if _, err := rbg.GetRandBits(claims, 1, partyId, 1, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 
 	partyId = uint32(len(claims.PartyInfo))  + uint32(1)
-	if _, err := rbg.GetRandBits(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
+	if _, err := rbg.GetRandBits(claims, 1, partyId, 1, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 }

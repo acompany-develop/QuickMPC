@@ -7,34 +7,17 @@ import (
 	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
 	rbs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_store"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
-	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 var Db *rbs.SafeRandBitStore
-
-// floatの場合の乱数範囲はエンジン側のgetRandShareに依存している
-// 他の用途で使用する場合は範囲を再検討，もしくは分岐を再設計する
-var sharizeRandMinMap = map[pb.Type]int64{
-	pb.Type_TYPE_FLOAT:      -1000,
-	pb.Type_TYPE_FIXEDPOINT: int64(-1 << 60),
-}
-var sharizeRandMaxMap = map[pb.Type]int64{
-	pb.Type_TYPE_FLOAT:      1000,
-	pb.Type_TYPE_FIXEDPOINT: int64(1 << 60),
-}
 
 func init() {
 	Db = rbs.GetInstance()
 }
 
-func sharize(data int64, size uint32, bit_type pb.Type) ([]int64, error) {
-	if bit_type == pb.Type_TYPE_UNKNOWN {
-		errText := "RequestにBitの型情報が含まれていません．"
-		logger.Error(errText)
-		return nil, errors.New(errText)
-	}
-	sharizeRandMin := sharizeRandMinMap[bit_type]
-	sharizeRandMax := sharizeRandMaxMap[bit_type]
+func sharize(data int64, size uint32) ([]int64, error) {
+	sharizeRandMin := - int64(1 << 60)
+	sharizeRandMax := int64(1 << 60)
 	shares, err := utils.GetRandInt64Slice(uint64(size-1), sharizeRandMin, sharizeRandMax)
 	if err != nil {
 		errText := "乱数取得に失敗"
@@ -51,7 +34,7 @@ func sharize(data int64, size uint32, bit_type pb.Type) ([]int64, error) {
 	return shares, nil
 }
 
-func GenerateRandBits(claims *jwt_types.Claim, amount uint32, bit_type pb.Type) (map[uint32]([]int64), error) {
+func GenerateRandBits(claims *jwt_types.Claim, amount uint32) (map[uint32]([]int64), error) {
 	ret := make(map[uint32]([]int64))
 	party_num := uint32(len(claims.PartyInfo))
 
@@ -66,7 +49,7 @@ func GenerateRandBits(claims *jwt_types.Claim, amount uint32, bit_type pb.Type) 
 
 	for i := uint32(0); i < amount; i++ {
 		b := randBits[i]
-		shares, err := sharize(b, party_num, bit_type)
+		shares, err := sharize(b, party_num)
 		if err != nil{
 			return nil, err
 		}
@@ -79,7 +62,7 @@ func GenerateRandBits(claims *jwt_types.Claim, amount uint32, bit_type pb.Type) 
 	return ret, nil
 }
 
-func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, bit_type pb.Type, requestId int64) ([]int64, error) {
+func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, requestId int64) ([]int64, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
@@ -115,7 +98,7 @@ func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount u
 
 	// 今回返す Bits がまだ生成されてない場合
 	if len(Db.RandBits[jobId][partyId]) == 0{
-		newBits, err := GenerateRandBits(claims, amount, bit_type)
+		newBits, err := GenerateRandBits(claims, amount)
 		if err != nil {
 			return nil, err
 		}

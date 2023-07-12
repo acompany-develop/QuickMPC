@@ -9,16 +9,10 @@ service EngineToBts {
     rpc GetRandBits(GetRequest) returns (GetRandBitsResponse) {}
 }
 
-enum Type{
-  TYPE_UNKNOWN = 0;
-  TYPE_FLOAT = 1;
-  TYPE_FIXEDPOINT = 2;
-}
-
 message GetRequest{
+    reserved 3;
     uint32 job_id = 1;
     uint32 amount = 2;
-    Type type = 3;
     int64 request_id = 4;
 }
 

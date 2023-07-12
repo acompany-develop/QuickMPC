@@ -61,9 +61,9 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetRequest) (*pb.GetTrip
 	if err != nil {
 		return nil, err
 	}
-	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetType())
+	logger.Infof("jobId: %d, partyId: %d\n", in.GetJobId(), partyId,)
 
-	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetType(), in.GetRequestId())
+	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetRequestId())
 	if err != nil {
 		return nil, err
 	}
@@ -83,9 +83,9 @@ func (s *server) GetRandBits(ctx context.Context, in *pb.GetRequest) (*pb.GetRan
 	if err != nil {
 		return nil, err
 	}
-	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetType())
+	logger.Infof("jobId: %d, partyId: %d\n", in.GetJobId(), partyId)
 
-	ret, err := rbg.GetRandBits(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetType(), in.GetRequestId())
+	ret, err := rbg.GetRandBits(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetRequestId())
 	if err != nil {
 		return nil, err
 	}

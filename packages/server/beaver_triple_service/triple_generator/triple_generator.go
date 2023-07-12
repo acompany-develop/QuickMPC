@@ -14,29 +14,13 @@ var Db *ts.SafeTripleStore
 var tripleRandMax = int64(1000)
 var tripleRandMin = int64(-1000)
 
-// floatの場合の乱数範囲はエンジン側のgetRandShareに依存している
-// 他の用途で使用する場合は範囲を再検討，もしくは分岐を再設計する
-var sharizeRandMinMap = map[pb.Type]int64{
-	pb.Type_TYPE_FLOAT:      -1000,
-	pb.Type_TYPE_FIXEDPOINT: int64(-1 << 60),
-}
-var sharizeRandMaxMap = map[pb.Type]int64{
-	pb.Type_TYPE_FLOAT:      1000,
-	pb.Type_TYPE_FIXEDPOINT: int64(1 << 60),
-}
-
 func init() {
 	Db = ts.GetInstance()
 }
 
-func sharize(data int64, size uint32, triple_type pb.Type) ([]int64, error) {
-	if triple_type == pb.Type_TYPE_UNKNOWN {
-		errText := "RequestにTripleの型情報が含まれていません．"
-		logger.Error(errText)
-		return nil, errors.New(errText)
-	}
-	sharizeRandMin := sharizeRandMinMap[triple_type]
-	sharizeRandMax := sharizeRandMaxMap[triple_type]
+func sharize(data int64, size uint32) ([]int64, error) {
+	sharizeRandMin := - int64(1 << 60)
+	sharizeRandMax := int64(1 << 60)
 	shares, err := utils.GetRandInt64Slice(uint64(size-1), sharizeRandMin, sharizeRandMax)
 	if err != nil {
 		errText := "乱数取得に失敗"
@@ -53,7 +37,7 @@ func sharize(data int64, size uint32, triple_type pb.Type) ([]int64, error) {
 	return shares, nil
 }
 
-func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type) (map[uint32]([]*ts.Triple), error) {
+func GenerateTriples(claims *jwt_types.Claim, amount uint32) (map[uint32]([]*ts.Triple), error) {
 	ret := make(map[uint32]([]*ts.Triple))
 	party_num := uint32(len(claims.PartyInfo))
 
@@ -73,15 +57,15 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type
 		b := randInt64Slice[1]
 		c := a * b
 
-		aShares, err := sharize(a, party_num, triple_type)
+		aShares, err := sharize(a, party_num)
 		if err != nil {
 			return nil, err
 		}
-		bShares, err := sharize(b, party_num, triple_type)
+		bShares, err := sharize(b, party_num)
 		if err != nil {
 			return nil, err
 		}
-		cShares, err := sharize(c, party_num, triple_type)
+		cShares, err := sharize(c, party_num)
 		if err != nil {
 			return nil, err
 		}
@@ -100,7 +84,7 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32, triple_type pb.Type
 	return ret, nil
 }
 
-func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestId int64) ([]*ts.Triple, error) {
+func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, requestId int64) ([]*ts.Triple, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
@@ -136,7 +120,7 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 
 	// 今回返す Triples がまだ生成されてない場合
 	if len(Db.Triples[jobId][partyId]) == 0{
-		newTriples, err := GenerateTriples(claims, amount, triple_type)
+		newTriples, err := GenerateTriples(claims, amount)
 		if err != nil {
 			return nil, err
 		}

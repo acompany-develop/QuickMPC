@@ -22,21 +22,12 @@ private:
     Client(Client &&) noexcept = delete;
     Client &operator=(Client &&) noexcept = delete;
 
-    template <typename T>
     enginetobts::GetRequest makeRequest(const unsigned int amount)
     {
         enginetobts::GetRequest request;
         request.set_job_id(qmpc::Share::AddressId::getThreadJobId());
         request.set_amount(amount);
         request.set_request_id(request_id_generator++);
-        if constexpr (std::is_same_v<T, float>)
-        {
-            request.set_type(enginetobts::Type::TYPE_FLOAT);
-        }
-        else
-        {
-            request.set_type(enginetobts::Type::TYPE_FIXEDPOINT);
-        }
         return request;
     }
 
@@ -45,24 +36,23 @@ public:
     ~Client() noexcept = default;
     static std::shared_ptr<Client> getInstance();
 
-    template <class Job>
-    std::vector<typename Job::result_type> readRequest(const unsigned int amount)
+    template <class BTSJob>
+    std::vector<typename BTSJob::result_type> readRequest(const unsigned int amount)
     {
-        using T = typename Job::value_type;
-        auto request = makeRequest<T>(amount);
-        typename Job::response_type response;
+        auto request = makeRequest(amount);
+        typename BTSJob::response_type response;
         grpc::Status status;
 
-        auto retry_manager = RetryManager("BTS", Job::op_name);
+        auto retry_manager = RetryManager("BTS", BTSJob::op_name);
         do
         {
             grpc::ClientContext context;
             const std::string token = Config::getInstance()->cc_to_bts_token;
             context.AddMetadata("authorization", "bearer " + token);
-            status = Job::request(stub_, context, request, response);
+            status = BTSJob::request(stub_, context, request, response);
         } while (retry_manager.retry(status));
 
-        return Job::getValue(response);
+        return BTSJob::getValue(response);
     }
 };
 }  // namespace qmpc::ComputationToBts
