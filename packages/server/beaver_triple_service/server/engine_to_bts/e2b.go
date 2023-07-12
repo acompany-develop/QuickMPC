@@ -97,7 +97,7 @@ func (s *server) GetRandBits(ctx context.Context, in *pb.GetRequest) (*pb.GetRan
 	}
 
 	return &pb.GetRandBitsResponse{
-		Bits: ret,
+		Randbits: ret,
 	}, nil
 }
 
