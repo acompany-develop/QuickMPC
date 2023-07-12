@@ -11,7 +11,7 @@ namespace qmpc::BtsHandler
 template <typename Job>
 class StockBTS
 {
-    const std::size_t threshold = 100000, M = 100000;
+    const std::size_t lowest_request_amount = 100000;
 
     using Result = typename Job::result_type;
     std::queue<Result> stock;
@@ -38,7 +38,7 @@ public:
     {
         if (stock.size() < amount)
         {
-            requestBTS(std::max(amount - stock.size(), M));
+            requestBTS(std::max(amount - stock.size(), lowest_request_amount));
         }
 
         std::vector<Result> ret(amount);
@@ -46,12 +46,6 @@ public:
         {
             x = stock.front();
             stock.pop();
-        }
-
-        // 要らないかも
-        if (stock.size() < threshold)
-        {
-            requestBTS(M);
         }
 
         return ret;
