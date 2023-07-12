@@ -91,7 +91,7 @@ func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount u
 
 	// jobId が初めての場合
 	if _, ok := Db.PreID[jobId]; !ok {
-		Db.Bits[jobId] = make(map[uint32]([]*int64))
+		Db.RandBits[jobId] = make(map[uint32]([]*int64))
 		Db.PreID[jobId] = make(map[uint32](int64))
 		Db.PreAmount[jobId] = make(map[uint32](uint32))
 	}
@@ -108,28 +108,28 @@ func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount u
 	// requestId が -1 の場合は必ず前回と異なるとみなす（test用）
 	if ok && (pre_id != requestId || requestId == -1){
 		pre_amount := Db.PreAmount[jobId][partyId]
-		Db.Bits[jobId][partyId] = Db.Bits[jobId][partyId][pre_amount:]
+		Db.RandBits[jobId][partyId] = Db.RandBits[jobId][partyId][pre_amount:]
 		Db.PreID[jobId][partyId] = requestId
 		Db.PreAmount[jobId][partyId] = amount
 	}
 
 	// 今回返す Bits がまだ生成されてない場合
-	if len(Db.Bits[jobId][partyId]) == 0{
+	if len(Db.RandBits[jobId][partyId]) == 0{
 		newBits, err := GenerateRandBits(claims, amount, bit_type)
 		if err != nil {
 			return nil, err
 		}
 		for loopPartyId := uint32(1); loopPartyId <= uint32(len(claims.PartyInfo)); loopPartyId++ {
-			_, ok := Db.Bits[jobId][loopPartyId]
+			_, ok := Db.RandBits[jobId][loopPartyId]
 			if ok {
-				Db.Bits[jobId][loopPartyId] = append(Db.Bits[jobId][loopPartyId], newBits[loopPartyId]...)
+				Db.RandBits[jobId][loopPartyId] = append(Db.RandBits[jobId][loopPartyId], newBits[loopPartyId]...)
 			} else {
-				Db.Bits[jobId][loopPartyId] = newBits[loopPartyId]
+				Db.RandBits[jobId][loopPartyId] = newBits[loopPartyId]
 			}
 		}
 	}
 
-	bits := Db.Bits[jobId][partyId][:amount]
+	bits := Db.RandBits[jobId][partyId][:amount]
 
 	return bits, nil
 }

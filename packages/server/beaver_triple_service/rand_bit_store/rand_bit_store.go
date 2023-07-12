@@ -7,7 +7,7 @@ import (
 )
 
 type SafeRandBitStore struct {
-	Bits map[uint32](map[uint32]([]*int64))
+	RandBits map[uint32](map[uint32]([]*int64))
 	PreID map[uint32](map[uint32](int64))
 	PreAmount map[uint32](map[uint32](uint32))
 	Mux     sync.Mutex
@@ -20,7 +20,7 @@ func GetInstance() *SafeRandBitStore {
 	once.Do(func() {
 		logger.Info("new instance")
 		instance = &SafeRandBitStore{
-			Bits: make(map[uint32](map[uint32]([]*int64))),
+			RandBits: make(map[uint32](map[uint32]([]*int64))),
 			PreID: make(map[uint32](map[uint32](int64))),
 			PreAmount: make(map[uint32](map[uint32](uint32))),
 		}
