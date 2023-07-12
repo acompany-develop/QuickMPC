@@ -33,5 +33,5 @@ message GetTriplesResponse{
 }
 
 message GetRandBitsResponse{
-    repeated int64 bits = 1;
+    repeated int64 randbits = 1;
 }
