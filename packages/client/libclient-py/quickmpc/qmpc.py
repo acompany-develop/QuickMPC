@@ -3,7 +3,8 @@ from typing import List, Union
 
 import pandas as pd
 
-from .pandas.share_data_frame import ShareDataFrame
+import quickmpc.pandas as qpd
+
 from .request.qmpc_request import QMPCRequest
 from .request.qmpc_request_interface import QMPCRequestInterface
 from .share.restore import restore
@@ -41,7 +42,7 @@ class QMPC:
         # mydispatchを改造してinterfaceでオーバーロードさせる
         object.__setattr__(self, "_QMPC__qmpc_request", qmpc_request)
 
-    def send_to(self, df: pd.DataFrame) -> ShareDataFrame:
+    def send_to(self, df: pd.DataFrame) -> qpd.ShareDataFrame:
         """QuickMPCサーバにデータを送信する．
 
         Parameters
@@ -51,14 +52,14 @@ class QMPC:
 
         Returns
         ----------
-        ShareDataFrame
+        quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
         # send_shareできる形式に変換
         res = self.__qmpc_request.send_share(df, piece_size=1_000_000)
-        return ShareDataFrame(res.data_id, self.__qmpc_request)
+        return qpd.ShareDataFrame(res.data_id, self.__qmpc_request)
 
-    def load_from(self, data_id: str) -> ShareDataFrame:
+    def load_from(self, data_id: str) -> qpd.ShareDataFrame:
         """既に送信してあるデータを参照する．
 
         Parameters
@@ -68,14 +69,14 @@ class QMPC:
 
         Returns
         ----------
-        ShareDataFrame
+        quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
-        return ShareDataFrame(data_id, self.__qmpc_request)
+        return qpd.ShareDataFrame(data_id, self.__qmpc_request)
 
     # TODO: job_uuidとparty_sizeは指定しなくても良いようにしたい
     def restore(self, job_uuid: str, filepath: str, party_size: int) \
-            -> ShareDataFrame:
+            -> qpd.ShareDataFrame:
         """既に送信してあるデータを参照する．
 
         Parameters
@@ -87,7 +88,7 @@ class QMPC:
 
         Returns
         ----------
-        ShareDataFrame
+        quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
         # TODO: get_computation_resultと同じ処理なのでうまくまとめる

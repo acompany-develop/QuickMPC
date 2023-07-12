@@ -18,8 +18,9 @@ import pandas as pd
 import tqdm  # type: ignore
 from grpc_status import rpc_status  # type: ignore
 
+import quickmpc.pandas as qpd
+
 from ..exception import ArgumentError, QMPCJobError, QMPCServerError
-from ..pandas.parser import parse
 from ..proto.common_types.common_types_pb2 import (ComputationMethod,
                                                    JobErrorInfo, Schema)
 from ..proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
@@ -164,7 +165,7 @@ class QMPCRequest(QMPCRequestInterface):
         df = df.sort_index()
         table = [df.columns.values.tolist()] + \
                 [row.tolist() for row in df.values]
-        secrets, schema = parse(table, matching_column=1)
+        secrets, schema = qpd.parse(table, matching_column=1)
 
         # pieceに分けてシェア化
         pieces: list = MakePiece.make_pieces(
