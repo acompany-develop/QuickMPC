@@ -41,7 +41,7 @@ func init() {
 	}
 
 	DbTripleTest = &ts.SafeTripleStore{Triples: make(map[uint32](map[uint32]([]*ts.Triple)))}
-	DbRandBitTest = &ts.SafeRandBitStore{RandBits: make(map[uint32](map[uint32]([]*int64)))}
+	DbRandBitTest = &rbs.SafeRandBitStore{RandBits: make(map[uint32](map[uint32]([]*int64)))}
 
 	s = &utils.TestServer{}
 	pb.RegisterEngineToBtsServer(s.GetServer(), &server{})
