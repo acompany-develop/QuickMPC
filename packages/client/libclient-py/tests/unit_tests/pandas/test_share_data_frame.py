@@ -10,7 +10,7 @@ import pytest
 
 from quickmpc.pandas.share_data_frame import (ShareDataFrame,
                                               ShareDataFrameStatus)
-from quickmpc.qmpc_request import QMPCRequest
+from quickmpc.request.qmpc_request import QMPCRequest
 
 
 def to_string_io(data: List[List]) -> io.StringIO:

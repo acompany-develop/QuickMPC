@@ -1,4 +1,3 @@
-import io
 from typing import List, Optional
 
 import pandas as pd
@@ -7,7 +6,7 @@ import pytest
 from quickmpc.exception import ArgumentError
 from quickmpc.pandas.share_data_frame import ShareDataFrameStatus
 from quickmpc.qmpc import QMPC
-from quickmpc.qmpc_request import QMPCRequest
+from quickmpc.request.qmpc_request import QMPCRequest
 
 
 def data_frame(values: List[List] = [[1, 2], [3, 4]],

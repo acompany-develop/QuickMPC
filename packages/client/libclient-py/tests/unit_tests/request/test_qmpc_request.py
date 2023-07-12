@@ -5,7 +5,7 @@ import pytest
 
 from quickmpc.exception import QMPCServerError
 from quickmpc.proto.common_types import common_types_pb2
-from quickmpc.qmpc_request import QMPCRequest
+from quickmpc.request.qmpc_request import QMPCRequest
 
 
 def data_frame(values: List[List] = [[1, 2], [3, 4]],

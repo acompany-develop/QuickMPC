@@ -18,26 +18,26 @@ import pandas as pd
 import tqdm  # type: ignore
 from grpc_status import rpc_status  # type: ignore
 
-from .exception import ArgumentError, QMPCJobError, QMPCServerError
-from .pandas.parser import parse
-from .proto.common_types.common_types_pb2 import (ComputationMethod,
-                                                  JobErrorInfo, Schema)
-from .proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
-                                       DeleteSharesRequest,
-                                       ExecuteComputationRequest,
-                                       GetComputationRequest,
-                                       GetComputationResultResponse,
-                                       GetElapsedTimeRequest, Input, JoinOrder,
-                                       SendSharesRequest)
-from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
-from .request.qmpc_request_interface import QMPCRequestInterface
-from .request.response import (AddShareDataFrameResponse, ExecuteResponse,
-                               GetComputationStatusResponse,
-                               GetElapsedTimeResponse, GetJobErrorInfoResponse,
-                               GetResultResponse, SendShareResponse)
-from .share import Share
-from .utils.if_present import if_present
-from .utils.make_pieces import MakePiece
+from ..exception import ArgumentError, QMPCJobError, QMPCServerError
+from ..pandas.parser import parse
+from ..proto.common_types.common_types_pb2 import (ComputationMethod,
+                                                   JobErrorInfo, Schema)
+from ..proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
+                                        DeleteSharesRequest,
+                                        ExecuteComputationRequest,
+                                        GetComputationRequest,
+                                        GetComputationResultResponse,
+                                        GetElapsedTimeRequest, Input,
+                                        JoinOrder, SendSharesRequest)
+from ..proto.libc_to_manage_pb2_grpc import LibcToManageStub
+from ..share import Share
+from ..utils.if_present import if_present
+from ..utils.make_pieces import MakePiece
+from .qmpc_request_interface import QMPCRequestInterface
+from .response import (AddShareDataFrameResponse, ExecuteResponse,
+                       GetComputationStatusResponse,
+                       GetElapsedTimeResponse, GetJobErrorInfoResponse,
+                       GetResultResponse, SendShareResponse)
 
 logger = logging.getLogger(__name__)
 

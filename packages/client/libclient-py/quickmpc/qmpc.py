@@ -4,7 +4,7 @@ from typing import List, Union
 import pandas as pd
 
 from .pandas.share_data_frame import ShareDataFrame
-from .qmpc_request import QMPCRequest
+from .request.qmpc_request import QMPCRequest
 from .request.qmpc_request_interface import QMPCRequestInterface
 from .restore import restore
 from .utils.overload_tools import Dim1, methoddispatch
