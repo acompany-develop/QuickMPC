@@ -26,7 +26,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container_test
+      - ./computation_container_test
     env_file:
       - ../config/computation_container/compute1/.env
     expose:
@@ -57,7 +57,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container_test
+      - ./computation_container_test
     env_file:
       - ../config/computation_container/compute2/.env
     expose:
@@ -88,7 +88,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && ./computation_container_test
+      - ./computation_container_test
     env_file:
       - ../config/computation_container/compute3/.env
     expose:
@@ -118,7 +118,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && go test ./integration_test/... -v -cover
+      - go test ./integration_test/... -v -cover
     env_file:
       - ../config/manage_container/manage1/.env
     expose:
@@ -147,7 +147,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && go test ./integration_test/... -v -cover
+      - go test ./integration_test/... -v -cover
     env_file:
       - ../config/manage_container/manage2/.env
     expose:
@@ -176,7 +176,7 @@ services:
     command:
       - /bin/bash
       - '-c'
-      - printenv && go test ./integration_test/... -v -cover
+      - go test ./integration_test/... -v -cover
     env_file:
       - ../config/manage_container/manage3/.env
     expose:
