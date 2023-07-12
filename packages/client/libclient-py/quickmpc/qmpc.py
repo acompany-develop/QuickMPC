@@ -5,8 +5,8 @@ import pandas as pd
 
 import quickmpc.pandas as qpd
 from quickmpc.request import QMPCRequest, QMPCRequestInterface
+from quickmpc.share import restore
 
-from .share.restore import restore
 from .utils.overload_tools import Dim1, methoddispatch
 
 
