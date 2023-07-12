@@ -1,13 +1,13 @@
+import math
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from decimal import Decimal
 from typing import ClassVar, List
-import math
 
 from nacl.utils import random, randombytes_deterministic
 
 from ..exception import ArgumentError
-from .overload_tools import methoddispatch
+from ..utils.overload_tools import methoddispatch
 
 
 # 乱数生成のインタフェース

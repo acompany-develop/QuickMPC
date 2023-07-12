@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from quickmpc.exception import ArgumentError
-from quickmpc.share import Share
+from quickmpc.share.share import Share
 
 
 class TestQMPC:

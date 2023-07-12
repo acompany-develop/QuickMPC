@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from quickmpc.utils.random import ChaCha20, RandomInterface
+from quickmpc.share.random import ChaCha20, RandomInterface
 
 
 class TestCsprng:

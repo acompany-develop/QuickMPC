@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from quickmpc.exception import ArgumentError
-from quickmpc.share import Share
+from quickmpc.share.share import Share
 
 
 def sharize_params(secrets=[1], party_size=3):
