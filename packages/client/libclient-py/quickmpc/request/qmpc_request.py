@@ -163,7 +163,9 @@ class QMPCRequest(QMPCRequestInterface):
         sort_index_name = "__qmpc_sort_index__"
         if sort_index_name not in df.columns:
             raise RuntimeError("規定されたフォーマットでないデータです．"
-                               f"columnsに{sort_index_name}が含まれてる必要があります．")
+                               "quickmpc.pandas.read_csvで読み込んだデータか，"
+                               f"columnsに{sort_index_name}が含まれたデータ"
+                               "でなければならないです．")
 
         # TODO: 無駄に一度tableを再構成しているのでparse関数を書き直す
         df = df.sort_values(by=sort_index_name)

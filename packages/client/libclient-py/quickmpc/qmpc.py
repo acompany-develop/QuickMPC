@@ -43,6 +43,10 @@ class QMPC:
     def send_to(self, df: pd.DataFrame) -> qpd.ShareDataFrame:
         """QuickMPCサーバにデータを送信する．
 
+        `quickmpc.pandas.read_csv()`により読み込んだデータをQuickMPCサーバに送信する．
+        `quickmpc.pandas.read_csv()`では``__qmpc_sort_index__``と呼ばれるデータの順序を保持した列がcolumnsに追加されており，send_shareではこの列があることを要求している．
+        `quickmpc.pandas.read_csv()`を経由せずにsend_shareする場合は，あらかじめデータ順序を求めて``__qmpc_sort_index__``列を追加しておく必要がある．
+
         Parameters
         ----------
         df: df.DataFrame
@@ -53,7 +57,6 @@ class QMPC:
         quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
-        # send_shareできる形式に変換
         res = self.__qmpc_request.send_share(df, piece_size=1_000_000)
         return qpd.ShareDataFrame(res.data_id, self.__qmpc_request)
 
