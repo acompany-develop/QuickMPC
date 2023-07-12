@@ -1,12 +1,11 @@
 import os
 
-import pandas as pd
 import pytest
 from quickmpc.exception import QMPCServerError
 from quickmpc.qmpc import QMPC
-from utils import get_endpoints, qmpc
+from utils import data_frame, get_endpoints, qmpc
 
-df = pd.DataFrame([[1, 2], [3, 4]], columns=["s1", "s2"])
+df = data_frame([[1, 2], [3, 4]], columns=["s1", "s2"])
 
 
 # テスト用に正しいtokenで送信して得られたインスタンス

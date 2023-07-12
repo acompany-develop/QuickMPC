@@ -2,9 +2,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
 import pytest
-from utils import qmpc
+from utils import data_frame, qmpc
 
-df = pd.DataFrame([[1, 2], [3, 4]], columns=["s1", "s2"])
+df = data_frame([[1, 2], [3, 4]], columns=["s1", "s2"])
 
 
 @pytest.fixture(scope="module")

@@ -1,5 +1,7 @@
 import os
+from typing import List
 
+import pandas as pd
 from quickmpc import QMPC
 
 
@@ -23,3 +25,9 @@ def get_endpoints():
 qmpc: QMPC = QMPC(
     get_endpoints()
 )
+
+
+def data_frame(values: List[List], columns=None):
+    df = pd.DataFrame(values, columns=columns)
+    df["__qmpc_sort_index__"] = df.index
+    return df

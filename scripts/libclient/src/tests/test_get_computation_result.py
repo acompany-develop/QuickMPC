@@ -1,16 +1,15 @@
 import os
 import shutil
-from typing import Callable
 
 import pandas as pd
 import pytest
-from utils import qmpc
+from utils import data_frame, qmpc
 
 
 @pytest.fixture(scope="module")
 def sdf():
-    return qmpc.send_to(pd.DataFrame([[1, 2], [3, 4]],
-                                     columns=["s1", "s2"]))
+    return qmpc.send_to(data_frame([[1, 2], [3, 4]],
+                                   columns=["s1", "s2"]))
 
 
 @pytest.mark.parametrize(
