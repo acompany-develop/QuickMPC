@@ -1,18 +1,29 @@
+import io
 from typing import List, Optional
 
 import pandas as pd
 import pytest
 
+import quickmpc.pandas as qpd
 from quickmpc.exception import QMPCServerError
 from quickmpc.proto.common_types import common_types_pb2
 from quickmpc.request.qmpc_request import QMPCRequest
 
 
-def data_frame(values: List[List] = [[1, 2], [3, 4]],
-               columns: Optional[List[str]] = None) -> pd.DataFrame:
+def to_string_io(data: List[List]) -> io.StringIO:
+    text_data = "\n".join([",".join(map(str, row)) for row in data])
+    return io.StringIO(text_data)
+
+
+def data_frame(values: List[List] = [[1, 2, 3], [3, 4, 5]],
+               columns: Optional[List[str]] = None,
+               exist_sort_index: bool = True
+               ) -> pd.DataFrame:
     if columns is None:
         columns = [f"c{i}" for i in range(len(values[0]))] \
             if len(values) > 0 else []
+    if columns and exist_sort_index:
+        columns[-1] = "__qmpc_sort_index__"
     return pd.DataFrame(values, columns=columns)
 
 
@@ -29,13 +40,18 @@ class TestQMPCRequest:
 
     @pytest.mark.parametrize(
         ("params"), [
+            # 通常ケース
             (send_share_param()),
-            (send_share_param(df=data_frame([[1], [2], [3]]))),
             (send_share_param(df=data_frame([[0, 0, 0]]))),
+            # 境界ケース
             (send_share_param(df=data_frame([[1e10, 1e10, 1e10]]))),
             (send_share_param(df=data_frame([[-1e10, -1e10, -1e10]]))),
             (send_share_param(df=data_frame([[1e-10, 1e-10, 1e-10]]))),
             (send_share_param(df=data_frame([[-1e-10, -1e-10, -1e-10]]))),
+            (send_share_param(df=data_frame([[-1e-10, -1e-10, -1e-10]]))),
+            # quickmpc.pandasのread_csv経由
+            (send_share_param(df=qpd.read_csv(
+                to_string_io([["id", "c"], ["a", 1]]), index_col="id"))),
         ]
     )
     def test_send_shares(self, params,
@@ -53,13 +69,24 @@ class TestQMPCRequest:
             (send_share_param(df=data_frame([])),
              RuntimeError),
             # schemaに同じものが含まれる
-            (send_share_param(df=data_frame(columns=["a1", "a1"])),
+            (send_share_param(df=data_frame(columns=["a1", "a1", "a2"])),
              RuntimeError),
             # 列数が異なる
             (send_share_param(df=data_frame([[1, 1, 2], [2, 3]])),
              RuntimeError),
             # Noneが含まれる
             (send_share_param(df=data_frame([[None, 2, 3]])),
+             RuntimeError),
+            # __qmpc_sort_index__が含まれない
+            (send_share_param(df=data_frame([[1, 2], [3, 4]],
+                                            exist_sort_index=False)),
+             RuntimeError),
+            # __qmpc_sort_index__しかない
+            (send_share_param(df=data_frame([[0], [1]])),
+             RuntimeError),
+            # pandasのread_csv経由
+            (send_share_param(df=pd.read_csv(to_string_io([["id", "c"],
+                                                           ["a", 1]]))),
              RuntimeError),
         ]
     )

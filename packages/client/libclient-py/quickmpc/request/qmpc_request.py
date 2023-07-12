@@ -160,9 +160,14 @@ class QMPCRequest(QMPCRequestInterface):
                 "piece_size must be in the range of 1000 to 1000000")
         if df.isnull().values.sum() != 0:
             raise RuntimeError("規定されたフォーマットでないデータです．")
+        sort_index_name = "__qmpc_sort_index__"
+        if sort_index_name not in df.columns:
+            raise RuntimeError("規定されたフォーマットでないデータです．"
+                               f"columnsに{sort_index_name}が含まれてる必要があります．")
 
         # TODO: 無駄に一度tableを再構成しているのでparse関数を書き直す
-        df = df.sort_index()
+        df = df.sort_values(by=sort_index_name)
+        df = df.drop(sort_index_name, axis=1)
         table = [df.columns.values.tolist()] + \
                 [row.tolist() for row in df.values]
         secrets, schema = qpd.parse(table, matching_column=1)

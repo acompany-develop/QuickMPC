@@ -14,24 +14,21 @@ def to_string_io(data: List[List]) -> io.StringIO:
 
 @pytest.mark.parametrize(
     ("data", "index_col", "expected"), [
-        # 通常パターン
+        # IDの順序がそのまま
         ([["id", "c"], ["a", 1], ["b", 2]],
          "id",
-         pd.DataFrame([[32772040.0, 1], [86407020.0, 2]],
-                      columns=["id", "c"],
-                      index=[0, 1])),
-        # 座圧されたID列がindexにあるかどうか
+         pd.DataFrame([[32772040.0, 1, 0], [86407020.0, 2, 1]],
+                      columns=["id", "c", "__qmpc_sort_index__"])),
+        # IDの順序が逆
         ([["id", "c"], ["b", 2], ["a", 1]],
          "id",
-         pd.DataFrame([[86407020.0, 2], [32772040.0, 1]],
-                      columns=["id", "c"],
-                      index=[1, 0])),
+         pd.DataFrame([[86407020.0, 2, 1], [32772040.0, 1, 0]],
+                      columns=["id", "c", "__qmpc_sort_index__"])),
         # 1列目以外をID列に指定した場合
         ([["id", "c"], ["a", 1], ["b", 2]],
          "c",
-         pd.DataFrame([["a", 1.0], ["b", 2.0]],
-                      columns=["id", "c"],
-                      index=[0, 1])),
+         pd.DataFrame([["a", 1.0, 0], ["b", 2.0, 1]],
+                      columns=["id", "c", "__qmpc_sort_index__"])),
     ]
 )
 def test_read_csv(data, index_col, expected,

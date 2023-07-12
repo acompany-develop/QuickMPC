@@ -25,10 +25,10 @@ def read_csv(*args, index_col: str, **kwargs) -> pd.DataFrame:
     # ID列を数値化
     df[index_col] = df[index_col].map(lambda x: to_float(x))
     # join時にQMPCのCC側でID列でsortできる様に、座圧を行いindexに設定しておく
-    df["original_index"] = df.index
+    df["__qmpc_sort_index__"] = df.index
     df = df.sort_values(by=index_col)
     df = df.reset_index(drop=True)
-    df = df.sort_values(by="original_index")
-    df = df.drop('original_index', axis=1)
-    df.set_index(index_col)
+    df = df.sort_values(by="__qmpc_sort_index__")
+    df["__qmpc_sort_index__"] = df.index
+    df = df.reset_index(drop=True)
     return df
