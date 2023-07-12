@@ -4,14 +4,13 @@
 #include <string>
 #include <vector>
 
-namespace qmpc::BtsHandler::JobType
+namespace qmpc::BtsHandler::BTSJobType
 {
 namespace etb = enginetobts;
 
 template <typename T>
 struct Triple
 {
-    using value_type = T;
     using result_type = std::tuple<T, T, T>;
     using response_type = etb::GetTriplesResponse;
     static inline std::string op_name = "GetTriples";
@@ -43,7 +42,6 @@ struct Triple
 template <typename T>
 struct RandBit
 {
-    using value_type = T;
     using result_type = T;
     using response_type = etb::GetRandBitsResponse;
     static inline std::string op_name = "GetRandBits";
@@ -70,4 +68,4 @@ struct RandBit
         return ret;
     }
 };
-}  // namespace qmpc::BtsHandler::JobType
+}  // namespace qmpc::BtsHandler::BTSJobType

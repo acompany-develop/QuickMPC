@@ -8,19 +8,19 @@
 
 namespace qmpc::BtsHandler
 {
-template <typename Job>
+template <typename BTSJob>
 class StockBTS
 {
     const std::size_t lowest_request_amount = 100000;
 
-    using Result = typename Job::result_type;
+    using Result = typename BTSJob::result_type;
     thread_local static inline std::queue<Result> stock;
 
     // stock に n 個追加
     void requestBTS(const std::size_t amount)
     {
         auto client = ComputationToBts::Client::getInstance();
-        std::vector<Result> ret = client->readRequest<Job>(amount);
+        std::vector<Result> ret = client->readRequest<BTSJob>(amount);
 
         for (const Result &x : ret)
         {
@@ -29,9 +29,9 @@ class StockBTS
     }
 
 public:
-    static std::shared_ptr<StockBTS<Job>> getInstance()
+    static std::shared_ptr<StockBTS<BTSJob>> getInstance()
     {
-        static auto instance = std::make_shared<StockBTS<Job>>();
+        static auto instance = std::make_shared<StockBTS<BTSJob>>();
         return instance;
     }
     std::vector<Result> get(std::size_t amount = 1)
@@ -53,8 +53,8 @@ public:
 };
 
 template <typename T>
-using StockTriple = StockBTS<JobType::Triple<T>>;
+using StockTriple = StockBTS<BTSJobType::Triple<T>>;
 
 template <typename T>
-using StockRandBit = StockBTS<JobType::RandBit<T>>;
+using StockRandBit = StockBTS<BTSJobType::RandBit<T>>;
 }  // namespace qmpc::BtsHandler
