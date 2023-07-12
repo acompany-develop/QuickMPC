@@ -5,14 +5,14 @@ import (
 	"fmt"
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
-	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	rbs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_store"
 	"testing"
 )
 
-var Db *ts.SafeRandBitStore
+var Db *rbs.SafeRandBitStore
 
 func init() {
-	Db = ts.GetInstance()
+	Db = rbs.GetInstance()
 }
 
 func getClaims() (*jwt_types.Claim, error) {

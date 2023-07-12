@@ -21,7 +21,7 @@ var RBS RandBitsStock
 
 func all_init() {
 	RBS.Stock = make(map[uint32](map[uint32]([]*int64)))
-	tg.Db = &ts.SafeRandBitStore{
+	rbg.Db = &rbs.SafeRandBitStore{
 		RandBits: make(map[uint32](map[uint32]([]*int64))),
 		PreID: make(map[uint32](map[uint32](int64))),
 		PreAmount: make(map[uint32](map[uint32](uint32))),
@@ -71,7 +71,7 @@ func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32,
 
 			_, ok := RBS.Stock[jobId][partyId]
 			if ok {
-				RBS.Stock[jobId][partyId] = append(RBS.Stock[jobId][partyId], bits...)
+				RBS.Stock[jobId][partyId] = append(RBS.Stock[jobId][partyId], bits..)
 			} else {
 				RBS.Stock[jobId][partyId] = bits
 			}
@@ -178,11 +178,11 @@ func TestSameRequestId(t *testing.T){
 	amount := uint32(1000)
 	value_type := pb.Type_TYPE_FIXEDPOINT
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-		randbits1, err := tg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
+		randbits1, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
-		randbits2, err := tg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
+		randbits2, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -210,11 +210,11 @@ func TestDifferentRequestId(t *testing.T){
 	amount := uint32(1000)
 	value_type := pb.Type_TYPE_FIXEDPOINT
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-		randbits1, err := tg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
+		randbits1, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
-		randbits2, err := tg.GetRandBits(claims, jobId, partyId, amount, value_type, 2)
+		randbits2, err := rbg.GetRandBits(claims, jobId, partyId, amount, value_type, 2)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -236,12 +236,12 @@ func TestOutRangePartyId(t *testing.T){
 	}
 
 	partyId := uint32(0)
-	if _, err := tg.GetRandBits(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
+	if _, err := rbg.GetRandBits(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 
 	partyId = uint32(len(claims.PartyInfo))  + uint32(1)
-	if _, err := tg.GetRandBits(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
+	if _, err := rbg.GetRandBits(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 }
