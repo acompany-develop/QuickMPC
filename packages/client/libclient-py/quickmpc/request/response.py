@@ -3,8 +3,9 @@ from typing import List
 
 import pandas as pd
 
-from ..proto.common_types.common_types_pb2 import (JobErrorInfo,
-                                                   JobProgress, JobStatus)
+from quickmpc.proto.common_types.common_types_pb2 import (JobErrorInfo,
+                                                          JobProgress,
+                                                          JobStatus)
 
 
 @dataclass(frozen=True)

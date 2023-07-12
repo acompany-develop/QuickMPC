@@ -6,10 +6,9 @@ import google.protobuf.json_format
 import numpy as np
 from natsort import natsorted
 
+from quickmpc.proto.common_types.common_types_pb2 import Schema
+from quickmpc.share.share import Share
 from quickmpc.utils import if_present
-
-from ..proto.common_types.common_types_pb2 import Schema
-from .share import Share
 
 
 def get_meta(job_uuid: str, path: str):

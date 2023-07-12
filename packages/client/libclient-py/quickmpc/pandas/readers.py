@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .parser import to_float
+from quickmpc.pandas.parser import to_float
 
 
 def read_csv(*args, index_col: str, **kwargs) -> pd.DataFrame:

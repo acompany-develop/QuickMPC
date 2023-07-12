@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Union
 
-from .proto.common_types.common_types_pb2 import JobErrorInfo
+from quickmpc.proto.common_types.common_types_pb2 import JobErrorInfo
 
 
 @dataclass(frozen=True)

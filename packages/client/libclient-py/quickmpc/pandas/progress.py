@@ -4,8 +4,8 @@ from typing import Optional, OrderedDict, Tuple
 
 import tqdm
 
-from ..proto.common_types.common_types_pb2 import JobStatus
-from ..request.response import GetComputationStatusResponse
+from quickmpc.proto.common_types.common_types_pb2 import JobStatus
+from quickmpc.request.response import GetComputationStatusResponse
 
 
 @dataclass

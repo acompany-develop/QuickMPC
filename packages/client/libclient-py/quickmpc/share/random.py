@@ -6,9 +6,8 @@ from typing import ClassVar, List
 
 from nacl.utils import random, randombytes_deterministic
 
+from quickmpc.exception import ArgumentError
 from quickmpc.utils import methoddispatch
-
-from ..exception import ArgumentError
 
 
 # 乱数生成のインタフェース
