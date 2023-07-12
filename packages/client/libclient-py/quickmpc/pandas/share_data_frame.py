@@ -7,9 +7,10 @@ from typing import Callable, List
 
 import pandas as pd
 
+from quickmpc.request import QMPCRequestInterface
+
 from ..exception import QMPCJobError
 from ..proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
-from ..request.qmpc_request_interface import QMPCRequestInterface
 from ..utils.overload_tools import Dim1, methoddispatch
 from .progress import Progress
 
@@ -52,7 +53,7 @@ class ShareDataFrame:
     ----------
     __id: str
         データのID
-    __qmpc_request: QMPCClientInterface
+    __qmpc_request: quickmpc.request.QMPCClientInterface
         QuickMPCとの通信を担うClient
     __is_result: bool
         send由来のDataFrame(False)なのかexecute由来のDataFrameなのか(True)

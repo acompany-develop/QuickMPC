@@ -4,9 +4,8 @@ from typing import List, Union
 import pandas as pd
 
 import quickmpc.pandas as qpd
+from quickmpc.request import QMPCRequest, QMPCRequestInterface
 
-from .request.qmpc_request import QMPCRequest
-from .request.qmpc_request_interface import QMPCRequestInterface
 from .share.restore import restore
 from .utils.overload_tools import Dim1, methoddispatch
 
