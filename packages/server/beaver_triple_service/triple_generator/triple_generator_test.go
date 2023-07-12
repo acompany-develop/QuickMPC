@@ -42,7 +42,7 @@ func getClaims() (*jwt_types.Claim, error){
 }
 
 // 固定された (jobId, partyId) に対し requestTimes 回の（長さ amount の） Triples を作成
-func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, triple_type pb.Type, requestTimes uint32) {
+func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, value_type pb.Type, requestTimes uint32) {
 	t.Helper()
 
 	claims, err := getClaims()
@@ -62,7 +62,7 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 	t.Run(fmt.Sprintf("TestTripleGenerator_Job%d", jobId), func(t *testing.T) {
 		for loopRequestId := uint32(0); loopRequestId < requestTimes; loopRequestId++ {
 			requestId := int64(loopRequestId)
-			triples, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, requestId)
+			triples, err := tg.GetTriples(claims, jobId, partyId, amount, value_type, requestId)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -97,7 +97,7 @@ func testValidityOfTriples(t *testing.T) {
 	}
 }
 
-func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type pb.Type, requestTime uint32) {
+func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, value_type pb.Type, requestTime uint32) {
 	t.Helper()
 
 	all_init()
@@ -113,7 +113,7 @@ func parallelGetTriples(t *testing.T, jobNum uint32, amount uint32, triple_type 
 			partyId := loopPartyId
 			t.Run("TestTripleGenerator", func(t *testing.T){
 				t.Parallel()
-				multiGetTriples(t, jobId, partyId, amount, triple_type, requestTime)
+				multiGetTriples(t, jobId, partyId, amount, value_type, requestTime)
 			})
 		}
 	}
@@ -178,13 +178,13 @@ func TestSameRequestId(t *testing.T){
 	// jobId が他の Test と被らないようにする
 	jobId := uint32(12345678)
 	amount := uint32(1000)
-	triple_type := pb.Type_TYPE_FIXEDPOINT
+	value_type := pb.Type_TYPE_FIXEDPOINT
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, value_type, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
-		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, value_type, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -210,13 +210,13 @@ func TestDifferentRequestId(t *testing.T){
 	// jobId が他の Test と被らないようにする
 	jobId := uint32(87654321)
 	amount := uint32(1000)
-	triple_type := pb.Type_TYPE_FIXEDPOINT
+	value_type := pb.Type_TYPE_FIXEDPOINT
 	for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
-		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 1)
+		triples1, err := tg.GetTriples(claims, jobId, partyId, amount, value_type, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
-		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, triple_type, 2)
+		triples2, err := tg.GetTriples(claims, jobId, partyId, amount, value_type, 2)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -231,19 +231,19 @@ func TestDifferentRequestId(t *testing.T){
 // 範囲外の PartyId が来た時にエラーを吐くか
 func TestOutRangePartyId(t *testing.T){
 	expected_text := "out range partyId"
-	triple_type := pb.Type_TYPE_FIXEDPOINT
+	value_type := pb.Type_TYPE_FIXEDPOINT
 	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	partyId := uint32(0)
-	if _, err := tg.GetTriples(claims, 1, partyId, 1, triple_type, -1); err.Error() != expected_text{
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 
 	partyId = uint32(len(claims.PartyInfo))  + uint32(1)
-	if _, err := tg.GetTriples(claims, 1, partyId, 1, triple_type, -1); err.Error() != expected_text{
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, value_type, -1); err.Error() != expected_text{
 		t.Fatal("does not output 'out range partyId'")
 	}
 }
