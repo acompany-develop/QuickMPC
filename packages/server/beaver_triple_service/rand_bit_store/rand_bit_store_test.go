@@ -29,23 +29,23 @@ func getClaims() (*jwt_types.Claim, error) {
 	return nil,fmt.Errorf("BTS TOKEN is not valified")
 }
 
-func generateRandBits(amount uint32) map[uint32]([]*int64) {
-	ret := make(map[uint32]([]*int64))
+func generateRandBits(amount uint32) map[uint32]([]int64) {
+	ret := make(map[uint32]([]int64))
 	for i := uint32(0); i < amount; i++ {
 		b1 := int64(10)
-		ret[1] = append(ret[1], &b1)
+		ret[1] = append(ret[1], b1)
 
 		b2 := int64(-10)
-		ret[2] = append(ret[2], &b2)
+		ret[2] = append(ret[2], b2)
 
 		b3 := int64(i % 2) - b1 - b2
-		ret[3] = append(ret[3], &b3)
+		ret[3] = append(ret[3], b3)
 	}
 
 	return ret
 }
 
-func getRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32) []*int64 {
+func getRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32) []int64 {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 

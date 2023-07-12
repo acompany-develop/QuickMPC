@@ -51,12 +51,12 @@ func sharize(data int64, size uint32, bit_type pb.Type) ([]int64, error) {
 	return shares, nil
 }
 
-func GenerateRandBits(claims *jwt_types.Claim, amount uint32, bit_type pb.Type) (map[uint32]([]*int64), error) {
-	ret := make(map[uint32]([]*int64))
+func GenerateRandBits(claims *jwt_types.Claim, amount uint32, bit_type pb.Type) (map[uint32]([]int64), error) {
+	ret := make(map[uint32]([]int64))
 	party_num := uint32(len(claims.PartyInfo))
 
 	for partyId := uint32(1); partyId <= party_num; partyId++ {
-		ret[partyId] = []*int64{}
+		ret[partyId] = []int64{}
 	}
 
 	randBits, err := utils.GetRandInt64Slice(uint64(amount), 0, 1)
@@ -73,13 +73,13 @@ func GenerateRandBits(claims *jwt_types.Claim, amount uint32, bit_type pb.Type) 
 
 		// partyIdは1-index
 		for partyId := uint32(1); partyId <= party_num; partyId++ {
-			ret[partyId] = append(ret[partyId], &shares[partyId-1])
+			ret[partyId] = append(ret[partyId], shares[partyId-1])
 		}
 	}
 	return ret, nil
 }
 
-func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, bit_type pb.Type, requestId int64) ([]*int64, error) {
+func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount uint32, bit_type pb.Type, requestId int64) ([]int64, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
@@ -91,7 +91,7 @@ func GetRandBits(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount u
 
 	// jobId が初めての場合
 	if _, ok := Db.PreID[jobId]; !ok {
-		Db.RandBits[jobId] = make(map[uint32]([]*int64))
+		Db.RandBits[jobId] = make(map[uint32]([]int64))
 		Db.PreID[jobId] = make(map[uint32](int64))
 		Db.PreAmount[jobId] = make(map[uint32](uint32))
 	}

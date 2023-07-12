@@ -14,15 +14,15 @@ import (
 )
 
 type RandBitsStock struct{
-	Stock map[uint32](map[uint32]([]*int64))
+	Stock map[uint32](map[uint32]([]int64))
 	Mux     sync.Mutex
 }
 var RBS RandBitsStock
 
 func all_init() {
-	RBS.Stock = make(map[uint32](map[uint32]([]*int64)))
+	RBS.Stock = make(map[uint32](map[uint32]([]int64)))
 	rbg.Db = &rbs.SafeRandBitStore{
-		RandBits: make(map[uint32](map[uint32]([]*int64))),
+		RandBits: make(map[uint32](map[uint32]([]int64))),
 		PreID: make(map[uint32](map[uint32](int64))),
 		PreAmount: make(map[uint32](map[uint32](uint32))),
 	}
@@ -54,7 +54,7 @@ func multiGetRandBits(t *testing.T, jobId uint32, partyId uint32, amount uint32,
 
 	_, ok := RBS.Stock[jobId]
 	if !ok{
-		RBS.Stock[jobId] = make(map[uint32]([]*int64))
+		RBS.Stock[jobId] = make(map[uint32]([]int64))
 	}
 
 	RBS.Mux.Unlock()
@@ -86,7 +86,7 @@ func testValidityOfRandBits(t *testing.T) {
 		for i := 0; i < len(PartyToRandBits[1]); i++ {
 			bitSum := int64(0)
 			for partyId := uint32(1); partyId <= uint32(len(PartyToRandBits)); partyId++ {
-				bitSum += *PartyToRandBits[partyId][i]
+				bitSum += PartyToRandBits[partyId][i]
 			}
 			if bitSum != 0 && bitSum != 1{
 				t.Fatal("This is not bit")

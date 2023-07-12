@@ -41,7 +41,7 @@ func init() {
 	}
 
 	DbTripleTest = &ts.SafeTripleStore{Triples: make(map[uint32](map[uint32]([]*ts.Triple)))}
-	DbRandBitTest = &rbs.SafeRandBitStore{RandBits: make(map[uint32](map[uint32]([]*int64)))}
+	DbRandBitTest = &rbs.SafeRandBitStore{RandBits: make(map[uint32](map[uint32]([]int64)))}
 
 	s = &utils.TestServer{}
 	pb.RegisterEngineToBtsServer(s.GetServer(), &server{})
@@ -222,9 +222,9 @@ func testGetRandBitsByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient,
 		}
 
 		if len(DbRandBitTest.RandBits[jobId]) == 0 {
-			DbRandBitTest.RandBits[jobId] = make(map[uint32]([]*int64))
+			DbRandBitTest.RandBits[jobId] = make(map[uint32]([]int64))
 		}
-		DbRandBitTest.RandBits[jobId][partyId] = result.RandBits
+		DbRandBitTest.RandBits[jobId][partyId] = result.Randbits
 		DbRandBitTest.Mux.Unlock()
 	})
 }
@@ -247,11 +247,11 @@ func testGetRandBitsByJobId(t *testing.T, client pb.EngineToBtsClient, amount ui
 func testValidityOfRandBits(t *testing.T) {
 	for _, randbits := range DbRandBitTest.RandBits {
 		for i := 0; i < len(randbits[1]); i++ {
-			bSum := int64(0)
+			bitSum := int64(0)
 			for partyId := uint32(1); partyId <= uint32(len(randbits)); partyId++ {
-				bSum += *randbits[partyId][i]
+				bitSum += randbits[partyId][i]
 			}
-			if bSum != 0 && bSum != 1 {
+			if bitSum != 0 && bitSum != 1 {
 				t.Fatal("This is not bit")
 			}
 		}
@@ -272,7 +272,7 @@ func testGetRandBits(t *testing.T, amount uint32, jobNum uint32) {
 
 	t.Run("TestValidity", func(t *testing.T) {
 		testValidityOfRandBits(t)
-		DbRandBitTest.RandBits = make(map[uint32](map[uint32]([]*int64)))
+		DbRandBitTest.RandBits = make(map[uint32](map[uint32]([]int64)))
 	})
 }
 

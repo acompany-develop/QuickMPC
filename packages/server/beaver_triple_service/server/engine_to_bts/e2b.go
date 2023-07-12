@@ -85,15 +85,9 @@ func (s *server) GetRandBits(ctx context.Context, in *pb.GetRequest) (*pb.GetRan
 	}
 	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetType())
 
-	randBits, err := rbg.GetRandBits(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetType(), in.GetRequestId())
+	ret, err := rbg.GetRandBits(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetType(), in.GetRequestId())
 	if err != nil {
 		return nil, err
-	}
-
-	// []*int64 を []int64 に変換
-	ret := make([]int64, len(randBits))
-	for i, val := range randBits {
-		ret[i] = *val
 	}
 
 	return &pb.GetRandBitsResponse{
