@@ -1,8 +1,8 @@
 import pandas as pd
-from quickmpc import QMPC, ShareDataFrame
-from quickmpc.qmpc_request import QMPCRequest
+from quickmpc import QMPC
+from quickmpc.request import QMPCRequest
 
-from .container import Containers
+from tests.container import Containers
 
 """ 各種コンテナ """
 __cc_names = [
@@ -59,4 +59,5 @@ qmpc: QMPC = QMPC(QMPCRequest([
     "http://localhost:50003",
 ], 1, 1))
 
-df = pd.DataFrame([[1, 2, 3], [4, 5, 6]], columns=["a", "b", "c"])
+df = pd.DataFrame([[1, 2, 3, 0], [4, 5, 6, 1]],
+                  columns=["a", "b", "c", "__qmpc_sort_index__"])
