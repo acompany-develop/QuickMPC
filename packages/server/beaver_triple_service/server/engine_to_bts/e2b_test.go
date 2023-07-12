@@ -276,17 +276,17 @@ func testGetRandBits(t *testing.T, amount uint32, jobNum uint32) {
 	})
 }
 
-func TestGetRandBits_1_1(t *testing.T)     { testGetRandBits(t, 1, 1) }     // 0.008s
-func TestGetRandBits_1_100(t *testing.T)   { testGetRandBits(t, 1, 100) }   // 0.05s
-func TestGetRandBits_1_10000(t *testing.T) { testGetRandBits(t, 1, 10000) } // 8.0s
+func TestGetRandBits_1_1(t *testing.T)     { testGetRandBits(t, 1, 1) }
+func TestGetRandBits_1_100(t *testing.T)   { testGetRandBits(t, 1, 100) }
+func TestGetRandBits_1_10000(t *testing.T) { testGetRandBits(t, 1, 10000) }
 
-func TestGetRandBits_100_1(t *testing.T)   { testGetRandBits(t, 100, 1) }   // 0.01s
-func TestGetRandBits_100_100(t *testing.T) { testGetRandBits(t, 100, 100) } // 0.17s
-// func TestGetRandBits_100_10000(t *testing.T) { testGetRandBits(t, 100, 10000) } // 17s
+func TestGetRandBits_100_1(t *testing.T)   { testGetRandBits(t, 100, 1) }
+func TestGetRandBits_100_100(t *testing.T) { testGetRandBits(t, 100, 100) }
+// func TestGetRandBits_100_10000(t *testing.T) { testGetRandBits(t, 100, 10000) }
 
-func TestGetRandBits_10000_1(t *testing.T)   { testGetRandBits(t, 10000, 1) }   // 0.1s
-func TestGetRandBits_10000_100(t *testing.T) { testGetRandBits(t, 10000, 100) } // 10s
-// func TestGetRandBits_10000_10000(t *testing.T) { testGetRandBits(t, 10000, 10000) } // TO(10分以上)
+func TestGetRandBits_10000_1(t *testing.T)   { testGetRandBits(t, 10000, 1) }
+func TestGetRandBits_10000_100(t *testing.T) { testGetRandBits(t, 10000, 100) }
+// func TestGetRandBits_10000_10000(t *testing.T) { testGetRandBits(t, 10000, 10000) }
 
 // Typeを指定しない場合にエラーが出るかテスト
 func TestGetRandBitsFailedUnknownType(t *testing.T) {
