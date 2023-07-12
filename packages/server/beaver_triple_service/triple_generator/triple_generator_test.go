@@ -10,7 +10,6 @@ import (
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
-	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 type TriplesStock struct{
