@@ -14,7 +14,7 @@ class StockBTS
     const std::size_t lowest_request_amount = 100000;
 
     using Result = typename Job::result_type;
-    std::queue<Result> stock;
+    thread_local static inline std::queue<Result> stock;
 
     // stock に n 個追加
     void requestBTS(const std::size_t amount)
