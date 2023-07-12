@@ -3,12 +3,11 @@ from typing import List, Union
 
 import pandas as pd
 
+from .pandas.share_data_frame import ShareDataFrame
 from .qmpc_request import QMPCRequest
 from .request.qmpc_request_interface import QMPCRequestInterface
 from .restore import restore
-from .share_data_frame import ShareDataFrame
 from .utils.overload_tools import Dim1, methoddispatch
-from .utils.parse_csv import to_float
 
 
 @dataclass(frozen=True)
@@ -41,36 +40,6 @@ class QMPC:
     def __post_init__original(self, qmpc_request: QMPCRequest):
         # mydispatchを改造してinterfaceでオーバーロードさせる
         object.__setattr__(self, "_QMPC__qmpc_request", qmpc_request)
-
-    def read_csv(self, *args, index_col: str, **kwargs) -> pd.DataFrame:
-        """csvからテーブルデータを読み込む．
-
-        テーブル結合処理に用いる列がどの列かを`index_col`で指定する必要がある．
-        `index_col`以外の引数は全てpandasのread_csvと同じ．
-
-        Parameters
-        ----------
-        filepath_or_buffer: str, path object or file-like object
-            らしい
-        index_col: str
-            ID列としたいカラム名
-
-        Returns
-        ----------
-        pd.DataFrame
-            読み込んだテーブルデータ
-        """
-        df = pd.read_csv(*args, **kwargs)
-        # ID列を数値化
-        df[index_col] = df[index_col].map(lambda x: to_float(x))
-        # join時にQMPCのCC側でID列でsortできる様に、座圧を行いindexに設定しておく
-        df["original_index"] = df.index
-        df = df.sort_values(by=index_col)
-        df = df.reset_index(drop=True)
-        df = df.sort_values(by="original_index")
-        df = df.drop('original_index', axis=1)
-        df.set_index(index_col)
-        return df
 
     def send_to(self, df: pd.DataFrame) -> ShareDataFrame:
         """QuickMPCサーバにデータを送信する．

@@ -7,11 +7,11 @@ from typing import Callable, List
 
 import pandas as pd
 
-from .exception import QMPCJobError
-from .proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
-from .request.qmpc_request_interface import QMPCRequestInterface
-from .utils.overload_tools import Dim1, methoddispatch
-from .utils.progress import Progress
+from ..exception import QMPCJobError
+from ..proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
+from ..request.qmpc_request_interface import QMPCRequestInterface
+from ..utils.overload_tools import Dim1, methoddispatch
+from .progress import Progress
 
 logger = logging.getLogger(__name__)
 
