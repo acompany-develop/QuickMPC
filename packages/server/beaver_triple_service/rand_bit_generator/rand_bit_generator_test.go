@@ -86,7 +86,7 @@ func testValidityOfRandBits(t *testing.T) {
 		for i := 0; i < len(PartyToRandBits[1]); i++ {
 			bitSum := int64(0)
 			for partyId := uint32(1); partyId <= uint32(len(PartyToRandBits)); partyId++ {
-				bitSum += *(PartyToRandBits[partyId])
+				bitSum += *PartyToRandBits[partyId][i]
 			}
 			if bitSum != 0 && bitSum != 1{
 				t.Fatal("This is not bit")
