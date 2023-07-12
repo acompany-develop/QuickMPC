@@ -10,7 +10,6 @@ import (
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	rbg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_generator"
 	rbs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_store"
-	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 type RandBitsStock struct{
