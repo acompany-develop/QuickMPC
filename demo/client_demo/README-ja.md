@@ -18,9 +18,7 @@ $ pipenv --python=3.8 # Python3.8の場合
 $ pipenv --python=3.9 # Python3.9の場合
 ```
 ### 3. ディレクトリを移動して実行する
-各操作ごとのデモは`unit_demo/`，全体のデモは`integration_demo/`で実行可能．
-また，`send_share.py`，`send_asss_share.py`，`demo_sharize.py`はコマンドライン引数にファイルのpathを指定する必要がある. <br>
-また、[ステップ1](#1-コンテナを立ちあげる)にてGCPで立ち上げた場合は実行ファイルの接続情報を書き換える.
+[ステップ1](#1-コンテナを立ちあげる)にてGCPで立ち上げた場合は実行ファイルの接続情報を書き換える.
 
 ```
 qmpc: QMPC = QMPC(
@@ -30,8 +28,7 @@ qmpc: QMPC = QMPC(
 ```
 
 ```console
-$ cd unit_demo/
-$ pipenv run python send_share.py [file_path] # シェア送信のデモを実行
-$ pipenv run python execute_computation.py # 計算リクエストのデモを実行
+$ cd scripts/
+$ pipenv run python execute_demo.py # 統計演算のデモを実行
+$ pipenv run python join_demo.py # 横結合のデモを実行
 ```
-なお，`unit_demo/execute_computation.py`などの一部のunit_demoは，動作がsend_shareなどから得られるID情報に依存するため，適宜IDを書き換える必要がある．

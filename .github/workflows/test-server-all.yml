@@ -189,6 +189,7 @@ jobs:
         test_name:
           [
             correl,
+            get_computation_result,
             get_elapsed_time,
             job_error_info,
             join,
@@ -199,7 +200,6 @@ jobs:
             sum,
             token,
             variance,
-            get_computation_result
           ]
     steps:
       - name: Checkout
@@ -222,49 +222,6 @@ jobs:
 
       - name: Run container test
         run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests/test_${{ matrix.test_name }}.py -s -v -log-cli-level=DEBUG
-        working-directory: ./scripts
-
-  medium_test_libclient_new:
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        test_name:
-          [
-            correl,
-            get_elapsed_time,
-            job_error_info,
-            join,
-            mean,
-            parallel,
-            send_share,
-            string,
-            sum,
-            token,
-            variance,
-            get_computation_result
-          ]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_REPOSITORY_ACCESS_TOKEN }}
-          submodules: true
-
-      - name: Update .bazelrc for using remote cache
-        run: |
-          eval "echo \"$(cat ./.github/workflows/.bazelrc_for_ci)\"" >> ./packages/server/computation_container/.bazelrc
-        env:
-          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
-
-      - name: Log into registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.repository_owner }} --password-stdin
-
-      - uses: ./.github/actions/prepare_libclient_test
-
-      - name: Run container test
-        run: docker-compose ${{ env.COMPOSE_FILES_OPT }} run medium-libc pytest src/tests_new/test_${{ matrix.test_name }}.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts
 
   medium_test_container_up:
@@ -304,7 +261,6 @@ jobs:
           [
             send_share,
             execute_computation,
-            execute_computations,
             get_computation_result,
             execute_multiple
           ]

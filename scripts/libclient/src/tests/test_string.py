@@ -1,10 +1,9 @@
 import string
 from random import Random
 
+import pandas as pd
 import pytest
-from utils import get_result, qmpc
-
-import tests.common
+from utils import qmpc
 
 
 def generate_random_string(seed: int, length: int) -> str:
@@ -50,12 +49,8 @@ def generate_random_string(seed: int, length: int) -> str:
     ]
 )
 def test_restor_string(secret: str):
-    secrets = [['0', secret]]
-    schema = ['id', 'str']
-
-    data_id = tests.common.data_id(secrets, schema)
-
-    res = get_result(qmpc.get_join_table([data_id]))
-    assert (res["is_ok"])
-
-    assert res['results']['table'] == [[secret]]
+    df = pd.DataFrame([[0, secret]], columns=["id", "str"])
+    sdf = qmpc.send_to(df)
+    result = sdf.join([]).to_data_frame()
+    expected = pd.DataFrame([[secret]], columns=["str"])
+    pd.testing.assert_frame_equal(result, expected)

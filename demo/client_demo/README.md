@@ -18,11 +18,8 @@ $ pipenv --python=3.9 # for Python 3.9
 ```
 
 ### 3. Navigate and run in the directory
-Demos for each operation can be run in `unit_demo/` and for the whole demo in `integration_demo/`.
-Also, `send_share.py`, `send_asss_share.py` and `demo_sharize.py` require the file path to be specified in the command line argument.
 ```console
-$ cd unit_demo/
-$ pipenv run python send_share.py [file_path] # Run the demo of sending share
-$ pipenv run python execute_computation.py # Run the demo of executing computation
+$ cd scripts/
+$ pipenv run python execute_demo.py
+$ pipenv run python join_demo.py
 ```
-Note that some unit_demos such as ``unit_demo/execute_computation.py`` depend on ID information obtained from send_share, etc., so you need to rewrite the ID accordingly.

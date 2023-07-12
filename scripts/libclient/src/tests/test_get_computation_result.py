@@ -1,110 +1,62 @@
-import math
 import os
-import time
+import shutil
+from typing import Callable
 
+import pandas as pd
 import pytest
-from quickmpc import JobStatus
-from utils import get_result, qmpc
-
-from tests.common import data_id
+from utils import qmpc
 
 
-def execute_computation_param(dataIds=[data_id([[1, 2, 3], [4, 5, 6]])],
-                              src=[1, 2, 3]):
-    return (dataIds, src)
+@pytest.fixture(scope="module")
+def sdf():
+    return qmpc.send_to(pd.DataFrame([[1, 2], [3, 4]],
+                                     columns=["s1", "s2"]))
 
 
 @pytest.mark.parametrize(
-    ("param", "expected"),
+    ("method", "args", "expected"),
     [
-        # usually case
-        (execute_computation_param(),
-         [5, 7, 9]),
-
-        # small table size case
-        (execute_computation_param(dataIds=[data_id([[1]])],
-                                   src=[1]),
-         [1]),
-
-        # large data case
-        (execute_computation_param(dataIds=[data_id([[10**18], [10**18]])],
-                                   src=[1]),
-            [2*10**18]),
-
-        # small data case
-        (execute_computation_param(dataIds=[data_id([[10**-10], [10**-10]])],
-                                   src=[1]),
-            [2*10**-10]),
-
-        # duplicated src case
-        (execute_computation_param(src=[1, 2, 2, 3, 3, 3]),
-         [5, 7, 7, 9, 9, 9]),
+        # 1次元結果の取得
+        ("sum", ([1, 2],),
+         pd.DataFrame([4.0, 6.0])),
+        # 2次元結果の取得
+        ("correl", ([1, 2], [1, 2]),
+         pd.DataFrame([[1.0, 1.0], [1.0, 1.0]])),
+        # テーブルデータの取得
+        ("join", ([],),
+         pd.DataFrame([[2.0], [4.0]], columns=["s2"])),
     ]
 )
-def test_get_computation_result(param: tuple, expected: list):
-    # 総和計算リクエスト送信
-    res = qmpc.sum(*param)
-    assert (res["is_ok"])
-    for i in range(10000):
-        time.sleep(i+1)
-        get_res = qmpc.get_computation_result(res["job_uuid"])
-        assert (get_res["is_ok"])
-
-        if get_res["results"] is None:
-            continue
-        # 正しく取得できたか確認
-        for x, y in zip(get_res["results"][0], expected):
-            assert (math.isclose(x, y, abs_tol=0.1))
-        break
+def test_to_data_frame(method: str, args: dict, expected: pd.DataFrame,
+                       sdf):
+    result = getattr(sdf, method)(*args).to_data_frame()
+    pd.testing.assert_frame_equal(result, expected)
 
 
 @pytest.mark.parametrize(
-    ("param", "expected"),
+    ("method", "args", "expected"),
     [
-        # usually case
-        (execute_computation_param(),
-         [5, 7, 9]),
-
-        # small table size case
-        (execute_computation_param(dataIds=[data_id([[1]])],
-                                   src=[1]),
-         [1]),
-
-        # large data case
-        (execute_computation_param(dataIds=[data_id([[10**18], [10**18]])],
-                                   src=[1]),
-            [2*10**18]),
-
-        # small data case
-        (execute_computation_param(dataIds=[data_id([[10**-10], [10**-10]])],
-                                   src=[1]),
-            [2*10**-10]),
-
-        # duplicated src case
-        (execute_computation_param(src=[1, 2, 2, 3, 3, 3]),
-         [5, 7, 7, 9, 9, 9]),
+        # 1次元結果の取得
+        ("sum", ([1, 2],),
+         pd.DataFrame([4.0, 6.0])),
+        # 2次元結果の取得
+        ("correl", ([1, 2], [1, 2]),
+         pd.DataFrame([[1.0, 1.0], [1.0, 1.0]])),
+        # テーブルデータの取得
+        ("join", ([],),
+         pd.DataFrame([[2.0], [4.0]], columns=["s2"])),
     ]
 )
-def test_restore(param: tuple, expected: list):
+def test_restore(method: str, args: dict, expected: pd.DataFrame,
+                 sdf):
     path = "./result"
-    if not os.path.isdir(path):
-        os.mkdir(path)
+    if os.path.isdir(path):
+        shutil.rmtree(path)
+    os.mkdir(path)
 
-    res = qmpc.sum(*param)
-    assert (res["is_ok"])
-    for i in range(10000):
-        time.sleep(i+1)
-        res_status = qmpc.get_computation_status(res["job_uuid"])
-        assert (res_status["is_ok"])
-        all_completed = all([status == JobStatus.COMPLETED
-                             for status in res_status["statuses"]])
-        if not all_completed:
-            continue
+    sdf_result = getattr(sdf, method)(*args)
+    sdf_result.to_csv(path)
+    result = qmpc.restore(sdf_result.get_id(), path, 3)
+    pd.testing.assert_frame_equal(result, expected)
 
-        get_res = qmpc.get_computation_result(res["job_uuid"], path)
-        assert (get_res["is_ok"])
-        res = qmpc.restore(res["job_uuid"], path)
-        # 正しく取得できたか確認
-        for x, y in zip(res, expected):
-            assert (math.isclose(x, y, abs_tol=0.1))
-        break
+    shutil.rmtree(path)
