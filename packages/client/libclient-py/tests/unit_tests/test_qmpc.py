@@ -9,11 +9,13 @@ from quickmpc.qmpc import QMPC
 from quickmpc.request.qmpc_request import QMPCRequest
 
 
-def data_frame(values: List[List] = [[1, 2], [3, 4]],
+def data_frame(values: List[List] = [[1, 2, 3], [3, 4, 5]],
                columns: Optional[List[str]] = None) -> pd.DataFrame:
     if columns is None:
         columns = [f"c{i}" for i in range(len(values[0]))] \
             if len(values) > 0 else []
+    if columns:
+        columns[-1] = "__qmpc_sort_index__"
     return pd.DataFrame(values, columns=columns)
 
 
