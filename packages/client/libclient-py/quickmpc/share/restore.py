@@ -6,8 +6,9 @@ import google.protobuf.json_format
 import numpy as np
 from natsort import natsorted
 
+from quickmpc.utils import if_present
+
 from ..proto.common_types.common_types_pb2 import Schema
-from ..utils.if_present import if_present
 from .share import Share
 
 

@@ -6,8 +6,7 @@ import pandas as pd
 import quickmpc.pandas as qpd
 from quickmpc.request import QMPCRequest, QMPCRequestInterface
 from quickmpc.share import restore
-
-from .utils.overload_tools import Dim1, methoddispatch
+from quickmpc.utils import Dim1, methoddispatch
 
 
 @dataclass(frozen=True)

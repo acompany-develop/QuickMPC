@@ -8,10 +8,10 @@ from typing import Callable, List
 import pandas as pd
 
 from quickmpc.request import QMPCRequestInterface
+from quickmpc.utils import Dim1, methoddispatch
 
 from ..exception import QMPCJobError
 from ..proto.common_types.common_types_pb2 import JobErrorInfo, JobStatus
-from ..utils.overload_tools import Dim1, methoddispatch
 from .progress import Progress
 
 logger = logging.getLogger(__name__)

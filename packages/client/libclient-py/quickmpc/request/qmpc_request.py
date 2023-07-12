@@ -20,6 +20,7 @@ from grpc_status import rpc_status  # type: ignore
 
 import quickmpc.pandas as qpd
 from quickmpc.share import Share
+from quickmpc.utils import if_present, MakePiece
 
 from ..exception import ArgumentError, QMPCJobError, QMPCServerError
 from ..proto.common_types.common_types_pb2 import (ComputationMethod,
@@ -32,8 +33,6 @@ from ..proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
                                         GetElapsedTimeRequest, Input,
                                         JoinOrder, SendSharesRequest)
 from ..proto.libc_to_manage_pb2_grpc import LibcToManageStub
-from ..utils.if_present import if_present
-from ..utils.make_pieces import MakePiece
 from .qmpc_request_interface import QMPCRequestInterface
 from .response import (AddShareDataFrameResponse, ExecuteResponse,
                        GetComputationStatusResponse,
