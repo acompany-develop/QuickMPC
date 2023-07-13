@@ -3,10 +3,12 @@ from typing import List, Optional
 
 import pandas as pd
 
-from .response import (AddShareDataFrameResponse, ExecuteResponse,
-                       GetComputationStatusResponse,
-                       GetElapsedTimeResponse, GetJobErrorInfoResponse,
-                       GetResultResponse, SendShareResponse)
+from quickmpc.request.response import (AddShareDataFrameResponse,
+                                       ExecuteResponse,
+                                       GetComputationStatusResponse,
+                                       GetElapsedTimeResponse,
+                                       GetJobErrorInfoResponse,
+                                       GetResultResponse, SendShareResponse)
 
 
 class QMPCRequestInterface(ABC):

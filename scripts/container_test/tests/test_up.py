@@ -1,6 +1,6 @@
 import pytest
 
-from .container import Containers
+from tests.container import Containers
 
 
 @pytest.mark.parametrize(

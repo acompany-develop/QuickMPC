@@ -1,38 +1,38 @@
 import pandas as pd
 import pytest
-from utils import qmpc
+from utils import data_frame, qmpc
 
 
 @pytest.mark.parametrize(
     ("df", "columns", "expected"),
     [
         # usually case
-        (pd.DataFrame([[1, 2, 3], [4, 7, 10]], columns=["s1", "s2", "s3"]),
+        (data_frame([[1, 2, 3], [4, 7, 10]], columns=["s1", "s2", "s3"]),
          [1, 2, 3],
          pd.DataFrame([2.25, 6.25, 12.25])),
 
         # small table size case
-        (pd.DataFrame([[1]], columns=["s1"]),
+        (data_frame([[1]], columns=["s1"]),
          [1],
          pd.DataFrame([0.0])),
 
         # large data case
-        (pd.DataFrame([[10**9], [10**9+10]], columns=["s1"]),
+        (data_frame([[10**9], [10**9+10]], columns=["s1"]),
          [1],
          pd.DataFrame([25.0])),
 
         # small data case
-        (pd.DataFrame([[10**-9], [10**-9+10]], columns=["s1"]),
+        (data_frame([[10**-9], [10**-9+10]], columns=["s1"]),
          [1],
          pd.DataFrame([25.0])),
 
         # duplicated src case
-        (pd.DataFrame([[1, 2, 3], [4, 7, 10]], columns=["s1", "s2", "s3"]),
+        (data_frame([[1, 2, 3], [4, 7, 10]], columns=["s1", "s2", "s3"]),
          [1, 2, 2, 3, 3, 3],
          pd.DataFrame([2.25, 6.25, 6.25, 12.25, 12.25, 12.25])),
 
         # variance is 0 case
-        (pd.DataFrame([[1], [1], [1]], columns=["s1"]),
+        (data_frame([[1], [1], [1]], columns=["s1"]),
          [1],
          pd.DataFrame([0.0])),
     ]

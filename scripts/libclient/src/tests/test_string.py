@@ -3,7 +3,7 @@ from random import Random
 
 import pandas as pd
 import pytest
-from utils import qmpc
+from utils import data_frame, qmpc
 
 
 def generate_random_string(seed: int, length: int) -> str:
@@ -49,7 +49,7 @@ def generate_random_string(seed: int, length: int) -> str:
     ]
 )
 def test_restor_string(secret: str):
-    df = pd.DataFrame([[0, secret]], columns=["id", "str"])
+    df = data_frame([[0, secret]], columns=["id", "str"])
     sdf = qmpc.send_to(df)
     result = sdf.join([]).to_data_frame()
     expected = pd.DataFrame([[secret]], columns=["str"])

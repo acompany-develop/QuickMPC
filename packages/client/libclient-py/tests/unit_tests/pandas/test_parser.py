@@ -5,9 +5,9 @@ from typing import List
 import numpy as np
 import pytest
 
+from quickmpc.pandas.parser import parse, parse_csv
 from quickmpc.proto.common_types.common_types_pb2 import (Schema,
                                                           ShareValueTypeEnum)
-from quickmpc.utils.parse_csv import parse, parse_csv
 
 
 def schema_fp(name: str):

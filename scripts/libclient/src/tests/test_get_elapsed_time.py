@@ -1,6 +1,5 @@
-import pandas as pd
 import pytest
-from utils import qmpc
+from utils import data_frame, qmpc
 
 
 @pytest.mark.parametrize(
@@ -10,8 +9,8 @@ from utils import qmpc
     ]
 )
 def test_sum(size: int):
-    df = pd.DataFrame([[1, 2, 3] for _ in range(size)],
-                      columns=["s1", "s2", "s3"])
+    df = data_frame([[1, 2, 3] for _ in range(size)],
+                    columns=["s1", "s2", "s3"])
     sdf = qmpc.send_to(df)
     sdf_res = sdf.sum([1, 2, 3])
     tm = sdf_res.get_elapsed_time()

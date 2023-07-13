@@ -18,26 +18,27 @@ import pandas as pd
 import tqdm  # type: ignore
 from grpc_status import rpc_status  # type: ignore
 
-from .exception import ArgumentError, QMPCJobError, QMPCServerError
-from .proto.common_types.common_types_pb2 import (ComputationMethod,
-                                                  JobErrorInfo, Schema)
-from .proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
-                                       DeleteSharesRequest,
-                                       ExecuteComputationRequest,
-                                       GetComputationRequest,
-                                       GetComputationResultResponse,
-                                       GetElapsedTimeRequest, Input, JoinOrder,
-                                       SendSharesRequest)
-from .proto.libc_to_manage_pb2_grpc import LibcToManageStub
-from .request.qmpc_request_interface import QMPCRequestInterface
-from .request.response import (AddShareDataFrameResponse, ExecuteResponse,
-                               GetComputationStatusResponse,
-                               GetElapsedTimeResponse, GetJobErrorInfoResponse,
-                               GetResultResponse, SendShareResponse)
-from .share import Share
-from .utils.if_present import if_present
-from .utils.make_pieces import MakePiece
-from .utils.parse_csv import parse
+import quickmpc.pandas as qpd
+from quickmpc.exception import ArgumentError, QMPCJobError, QMPCServerError
+from quickmpc.proto.common_types.common_types_pb2 import (ComputationMethod,
+                                                          JobErrorInfo, Schema)
+from quickmpc.proto.libc_to_manage_pb2 import (AddShareDataFrameRequest,
+                                               DeleteSharesRequest,
+                                               ExecuteComputationRequest,
+                                               GetComputationRequest,
+                                               GetComputationResultResponse,
+                                               GetElapsedTimeRequest, Input,
+                                               JoinOrder, SendSharesRequest)
+from quickmpc.proto.libc_to_manage_pb2_grpc import LibcToManageStub
+from quickmpc.request.qmpc_request_interface import QMPCRequestInterface
+from quickmpc.request.response import (AddShareDataFrameResponse,
+                                       ExecuteResponse,
+                                       GetComputationStatusResponse,
+                                       GetElapsedTimeResponse,
+                                       GetJobErrorInfoResponse,
+                                       GetResultResponse, SendShareResponse)
+from quickmpc.share import Share
+from quickmpc.utils import if_present, MakePiece
 
 logger = logging.getLogger(__name__)
 
@@ -159,12 +160,19 @@ class QMPCRequest(QMPCRequestInterface):
                 "piece_size must be in the range of 1000 to 1000000")
         if df.isnull().values.sum() != 0:
             raise RuntimeError("規定されたフォーマットでないデータです．")
+        sort_index_name = "__qmpc_sort_index__"
+        if sort_index_name not in df.columns:
+            raise RuntimeError("規定されたフォーマットでないデータです．"
+                               "quickmpc.pandas.read_csvで読み込んだデータか，"
+                               f"columnsに{sort_index_name}が含まれたデータ"
+                               "でなければならないです．")
 
         # TODO: 無駄に一度tableを再構成しているのでparse関数を書き直す
-        df = df.sort_index()
+        df = df.sort_values(by=sort_index_name)
+        df = df.drop(sort_index_name, axis=1)
         table = [df.columns.values.tolist()] + \
                 [row.tolist() for row in df.values]
-        secrets, schema = parse(table, matching_column=1)
+        secrets, schema = qpd.parse(table, matching_column=1)
 
         # pieceに分けてシェア化
         pieces: list = MakePiece.make_pieces(

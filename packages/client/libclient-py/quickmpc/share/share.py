@@ -5,12 +5,13 @@ from typing import (Any, Callable, ClassVar, List,
 
 import numpy as np
 
-from .exception import ArgumentError
-from .proto.common_types.common_types_pb2 import Schema, ShareValueTypeEnum
-from .qmpc_logging import get_logger
-from .utils.overload_tools import (DictList, DictList2, Dim1,
-                                   Dim2, Dim3, methoddispatch)
-from .utils.random import ChaCha20, RandomInterface
+from quickmpc.exception import ArgumentError
+from quickmpc.proto.common_types.common_types_pb2 import (Schema,
+                                                          ShareValueTypeEnum)
+from quickmpc.qmpc_logging import get_logger
+from quickmpc.share.random import ChaCha20, RandomInterface
+from quickmpc.utils import (DictList, DictList2, Dim1,
+                            Dim2, Dim3, methoddispatch)
 
 logger = get_logger()
 

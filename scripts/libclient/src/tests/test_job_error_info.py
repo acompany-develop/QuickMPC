@@ -1,7 +1,6 @@
-import pandas as pd
 import pytest
 from quickmpc.exception import QMPCJobError
-from utils import qmpc
+from utils import data_frame, qmpc
 
 
 @pytest.mark.parametrize(
@@ -15,8 +14,8 @@ from utils import qmpc
     ]
 )
 def test_job_error_info(column: int):
-    sdf = qmpc.send_to(pd.DataFrame([[1, 2], [3, 4]],
-                                    columns=["s1", "s2"]))
+    sdf = qmpc.send_to(data_frame([[1, 2], [3, 4]],
+                                  columns=["s1", "s2"]))
 
     err_info = None
     try:

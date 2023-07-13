@@ -2,13 +2,13 @@ import csv
 import glob
 from typing import Any
 
+import google.protobuf.json_format
 import numpy as np
 from natsort import natsorted
 
-import google.protobuf.json_format
-from .proto.common_types.common_types_pb2 import Schema
-from .share import Share
-from .utils.if_present import if_present
+from quickmpc.proto.common_types.common_types_pb2 import Schema
+from quickmpc.share.share import Share
+from quickmpc.utils import if_present
 
 
 def get_meta(job_uuid: str, path: str):

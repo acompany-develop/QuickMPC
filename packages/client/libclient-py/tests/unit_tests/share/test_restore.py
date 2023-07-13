@@ -1,8 +1,8 @@
 import pandas as pd
 
+from quickmpc.pandas.share_data_frame import ShareDataFrame
 from quickmpc.qmpc import QMPC
-from quickmpc.qmpc_request import QMPCRequest
-from quickmpc.share_data_frame import ShareDataFrame
+from quickmpc.request.qmpc_request import QMPCRequest
 
 
 class TestQMPC:

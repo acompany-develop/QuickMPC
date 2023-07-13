@@ -1,8 +1,8 @@
 import pytest
 from quickmpc.exception import QMPCServerError
 
-from .container import Containers
-from .utils import all_containers, cc_p, df, mc_all, mc_p, qmpc
+from tests.container import Containers
+from tests.utils import all_containers, cc_p, df, mc_all, mc_p, qmpc
 
 
 @pytest.mark.parametrize(

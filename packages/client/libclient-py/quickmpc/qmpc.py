@@ -3,12 +3,10 @@ from typing import List, Union
 
 import pandas as pd
 
-from .qmpc_request import QMPCRequest
-from .request.qmpc_request_interface import QMPCRequestInterface
-from .restore import restore
-from .share_data_frame import ShareDataFrame
-from .utils.overload_tools import Dim1, methoddispatch
-from .utils.parse_csv import to_float
+import quickmpc.pandas as qpd
+from quickmpc.request import QMPCRequest, QMPCRequestInterface
+from quickmpc.share import restore
+from quickmpc.utils import Dim1, methoddispatch
 
 
 @dataclass(frozen=True)
@@ -42,38 +40,12 @@ class QMPC:
         # mydispatchを改造してinterfaceでオーバーロードさせる
         object.__setattr__(self, "_QMPC__qmpc_request", qmpc_request)
 
-    def read_csv(self, *args, index_col: str, **kwargs) -> pd.DataFrame:
-        """csvからテーブルデータを読み込む．
-
-        テーブル結合処理に用いる列がどの列かを`index_col`で指定する必要がある．
-        `index_col`以外の引数は全てpandasのread_csvと同じ．
-
-        Parameters
-        ----------
-        filepath_or_buffer: str, path object or file-like object
-            らしい
-        index_col: str
-            ID列としたいカラム名
-
-        Returns
-        ----------
-        pd.DataFrame
-            読み込んだテーブルデータ
-        """
-        df = pd.read_csv(*args, **kwargs)
-        # ID列を数値化
-        df[index_col] = df[index_col].map(lambda x: to_float(x))
-        # join時にQMPCのCC側でID列でsortできる様に、座圧を行いindexに設定しておく
-        df["original_index"] = df.index
-        df = df.sort_values(by=index_col)
-        df = df.reset_index(drop=True)
-        df = df.sort_values(by="original_index")
-        df = df.drop('original_index', axis=1)
-        df.set_index(index_col)
-        return df
-
-    def send_to(self, df: pd.DataFrame) -> ShareDataFrame:
+    def send_to(self, df: pd.DataFrame) -> qpd.ShareDataFrame:
         """QuickMPCサーバにデータを送信する．
+
+        `quickmpc.pandas.read_csv()`により読み込んだデータをQuickMPCサーバに送信する．
+        `quickmpc.pandas.read_csv()`では``__qmpc_sort_index__``と呼ばれるデータの順序を保持した列がcolumnsに追加されており，send_shareではこの列があることを要求している．
+        `quickmpc.pandas.read_csv()`を経由せずにsend_shareする場合は，あらかじめデータ順序を求めて``__qmpc_sort_index__``列を追加しておく必要がある．
 
         Parameters
         ----------
@@ -82,14 +54,13 @@ class QMPC:
 
         Returns
         ----------
-        ShareDataFrame
+        quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
-        # send_shareできる形式に変換
         res = self.__qmpc_request.send_share(df, piece_size=1_000_000)
-        return ShareDataFrame(res.data_id, self.__qmpc_request)
+        return qpd.ShareDataFrame(res.data_id, self.__qmpc_request)
 
-    def load_from(self, data_id: str) -> ShareDataFrame:
+    def load_from(self, data_id: str) -> qpd.ShareDataFrame:
         """既に送信してあるデータを参照する．
 
         Parameters
@@ -99,14 +70,14 @@ class QMPC:
 
         Returns
         ----------
-        ShareDataFrame
+        quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
-        return ShareDataFrame(data_id, self.__qmpc_request)
+        return qpd.ShareDataFrame(data_id, self.__qmpc_request)
 
     # TODO: job_uuidとparty_sizeは指定しなくても良いようにしたい
     def restore(self, job_uuid: str, filepath: str, party_size: int) \
-            -> ShareDataFrame:
+            -> qpd.ShareDataFrame:
         """既に送信してあるデータを参照する．
 
         Parameters
@@ -118,7 +89,7 @@ class QMPC:
 
         Returns
         ----------
-        ShareDataFrame
+        quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
         # TODO: get_computation_resultと同じ処理なのでうまくまとめる

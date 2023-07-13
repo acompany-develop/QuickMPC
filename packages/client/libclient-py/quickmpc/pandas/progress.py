@@ -4,8 +4,8 @@ from typing import Optional, OrderedDict, Tuple
 
 import tqdm
 
-from ..proto.common_types.common_types_pb2 import JobStatus
-from ..request.response import GetComputationStatusResponse
+from quickmpc.proto.common_types.common_types_pb2 import JobStatus
+from quickmpc.request.response import GetComputationStatusResponse
 
 
 @dataclass
@@ -14,6 +14,7 @@ class Progress:
                        Tuple[Optional[tqdm.tqdm], float]] \
         = field(default_factory=collections.OrderedDict)
 
+    # TODO: statusとprogreassを受け取るようにする(疎にするため)
     def update(self, res: GetComputationStatusResponse):
         if res.job_statuses is not None:
             for party_id, status in enumerate(res.job_statuses):

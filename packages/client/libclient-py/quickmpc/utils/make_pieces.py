@@ -3,8 +3,8 @@ import operator
 from dataclasses import dataclass
 from typing import List
 
-from ..exception import ArgumentError
-from .overload_tools import Dim1, Dim2, methoddispatch
+from quickmpc.exception import ArgumentError
+from quickmpc.utils.overload_tools import Dim1, Dim2, methoddispatch
 
 
 @dataclass(frozen=True)

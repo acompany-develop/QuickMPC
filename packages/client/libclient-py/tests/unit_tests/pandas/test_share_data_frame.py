@@ -8,8 +8,9 @@ from typing import List, Optional
 import pandas as pd
 import pytest
 
-from quickmpc.qmpc_request import QMPCRequest
-from quickmpc.share_data_frame import ShareDataFrame, ShareDataFrameStatus
+from quickmpc.pandas.share_data_frame import (ShareDataFrame,
+                                              ShareDataFrameStatus)
+from quickmpc.request.qmpc_request import QMPCRequest
 
 
 def to_string_io(data: List[List]) -> io.StringIO:

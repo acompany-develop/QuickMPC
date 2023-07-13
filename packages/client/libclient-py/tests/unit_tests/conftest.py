@@ -7,7 +7,7 @@ import os
 
 import pytest
 
-from .local_server import serve
+from tests.unit_tests.local_server import serve
 
 
 @pytest.fixture(scope='session')
