@@ -20,6 +20,7 @@ import (
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
+	rbg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_generator"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
@@ -50,7 +51,7 @@ var GetPartyIdFromClaims = func(claims *jwt_types.Claim) (uint32, error) {
 	return claims.PartyId, nil
 }
 
-func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.GetTriplesResponse, error) {
+func (s *server) GetTriples(ctx context.Context, in *pb.GetRequest) (*pb.GetTriplesResponse, error) {
 	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
 	if !ok {
 		return nil, status.Error(codes.Internal, "failed claims type assertions")
@@ -60,15 +61,37 @@ func (s *server) GetTriples(ctx context.Context, in *pb.GetTriplesRequest) (*pb.
 	if err != nil {
 		return nil, err
 	}
-	logger.Infof("jobId: %d, partyId: %d Type: %v\n", in.GetJobId(), partyId, in.GetTripleType())
+	logger.Infof("jobId: %d, partyId: %d\n", in.GetJobId(), partyId,)
 
-	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetTripleType(), in.GetRequestId())
+	triples, err := tg.GetTriples(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetRequestId())
 	if err != nil {
 		return nil, err
 	}
 
 	return &pb.GetTriplesResponse{
 		Triples: triples,
+	}, nil
+}
+
+func (s *server) GetRandBits(ctx context.Context, in *pb.GetRequest) (*pb.GetRandBitsResponse, error) {
+	claims, ok := ctx.Value("claims").(*jwt_types.Claim)
+	if !ok {
+		return nil, status.Error(codes.Internal, "failed claims type assertions")
+	}
+
+	partyId, err := GetPartyIdFromClaims(claims)
+	if err != nil {
+		return nil, err
+	}
+	logger.Infof("jobId: %d, partyId: %d\n", in.GetJobId(), partyId)
+
+	ret, err := rbg.GetRandBits(claims, in.GetJobId(), partyId, in.GetAmount(), in.GetRequestId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.GetRandBitsResponse{
+		Randbits: ret,
 	}, nil
 }
 

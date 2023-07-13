@@ -7,8 +7,8 @@ cc_library(
     ],
     deps = [
         "//server/computation_to_computation_container:server",
-        "//triple_handler:triple_handler",
-        "//random:random"
+        "//bts_handler:bts_handler",
+        "//random:random",
     ],
     visibility = ["//visibility:public"],
 )
@@ -23,10 +23,9 @@ cc_library(
     ],
     deps = [
         "//server/computation_to_computation_container:server",
-        "//triple_handler:triple_handler",
         "//random:random",
         "//share:share",
-        "//logging:log"
+        "//logging:log",
     ],
     visibility = ["//visibility:public"],
 )

@@ -47,7 +47,7 @@ cc_library(
     copts = ["-Iexternal/gtest/googletest/include"],
     deps = [
         "@gtest//:main",
-        "//triple_handler:triple_handler",
+        "//bts_handler:bts_handler",
         "//logging:log",
     ],
     visibility = ["//visibility:public"],

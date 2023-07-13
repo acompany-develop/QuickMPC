@@ -59,7 +59,7 @@ func TestSuccessToken(t *testing.T) {
 			if errCtx != nil {
 				t.Fatal(errCtx)
 			}
-			_, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 1, Amount: 1, TripleType: pb.Type_TYPE_FIXEDPOINT, RequestId: -1})
+			_, err := client.GetTriples(ctx, &pb.GetRequest{JobId: 1, Amount: 1, RequestId: -1})
 
 			// 正しく通信できたか確認
 			if err != nil {
@@ -116,7 +116,7 @@ func TestFailedIllegalToken(t *testing.T) {
 			if errCtx != nil {
 				t.Fatal(errCtx)
 			}
-			_, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 1, Amount: 1, TripleType: pb.Type_TYPE_FIXEDPOINT, RequestId: -1})
+			_, err := client.GetTriples(ctx, &pb.GetRequest{JobId: 1, Amount: 1, RequestId: -1})
 
 			// エラーしたかチェック
 			// NOTE: error messageがunixtimeに依存するものがあるためcontainsで比較している

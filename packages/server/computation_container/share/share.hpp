@@ -7,11 +7,12 @@
 #include <tuple>
 
 #include "address_id.hpp"
+#include "bts_handler/stock_bts.hpp"
 #include "config_parse/config_parse.hpp"
 #include "logging/logger.hpp"
 #include "networking.hpp"
 #include "random/random.hpp"
-#include "triple_handler/triple_handler.hpp"
+
 namespace qmpc::Share
 {
 template <typename SV>
@@ -75,7 +76,7 @@ public:
     Share &operator*=(const Share &obj)
     {
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::TripleHandler::TripleHandler::getInstance()->getTriple<SV>();
+        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get();
         Share a(std::get<0>(t[0])), b(std::get<1>(t[0])), c(std::get<2>(t[0]));
 
         // [d] = [x] - [a], [e] = [y] - [b] を計算する
@@ -244,7 +245,7 @@ public:
             );
         }
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::TripleHandler::TripleHandler::getInstance()->getTriple<SV>(n);
+        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get(n);
 
         std::vector<Share> a, b, c;
         a.reserve(n);
@@ -341,84 +342,24 @@ auto _sqrt(const T &x)
     }
 }
 
-template <typename T, typename BT = float>
-Share<T> getRandBitShare()
+template <typename SV>
+Share<SV> getRandBitShare()
 {
-    while (true)
-    {
-        auto r_int = []()
-        {
-            Config *conf = Config::getInstance();
-            auto sgn = (RandGenerator::getInstance()->getRand<int>(0, 2) << 1) - 1;
-            auto r = (RandGenerator::getInstance()->getRand<int>(0, 6) << 1);
-            // SPは奇数，それ以外は偶数とする
-            if (conf->party_id == conf->sp_id)
-            {
-                ++r;
-            }
-            return sgn * r;
-        }();
-        auto r = Share<BT>(BT(r_int));
-
-        auto square_r = r * r;
-        open(square_r);
-        auto square_r_rec = recons(square_r);
-        if (!_isZero(square_r_rec))
-        {
-            auto r_dash = _sqrt(square_r_rec);
-            auto inv_r_dash = BT(1.0) / r_dash;
-            auto r0_bt = BT(0.5) * (inv_r_dash * r + BT(1.0));
-            auto r0 = Share<T>(T(r0_bt.getVal()));
-            return r0;
-        }
-    }
+    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get();
+    return Share<SV>(bit[0]);
 }
 
-template <typename T, typename BT = float>
-std::vector<Share<T>> getRandBitShare(int n)
+template <typename SV>
+std::vector<Share<SV>> getRandBitShare(std::size_t amount)
 {
-    std::vector<Share<BT>> r;
-    r.reserve(n);
-    for (int _ = 0; _ < n; ++_)
+    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get(amount);
+
+    std::vector<Share<SV>> ret(amount);
+    for (size_t i = 0; i < amount; i++)
     {
-        auto r_int = []()
-        {
-            Config *conf = Config::getInstance();
-            auto sgn = (RandGenerator::getInstance()->getRand<int>(0, 2) << 1) - 1;
-            auto r = (RandGenerator::getInstance()->getRand<int>(0, 6) << 1);
-            // SPは奇数，それ以外は偶数とする
-            if (conf->party_id == conf->sp_id)
-            {
-                ++r;
-            }
-            return sgn * r;
-        }();
-        r.emplace_back(BT(r_int));
+        ret[i] = Share<SV>(bit[i]);
     }
 
-    auto square_r = r * r;
-    open(square_r);
-    auto square_r_rec = recons(square_r);
-
-    std::vector<Share<T>> ret;
-    ret.reserve(n);
-    for (int i = 0; i < n; i++)
-    {
-        if (!_isZero(square_r_rec[i]))
-        {
-            auto r_dash = _sqrt(square_r_rec[i]);
-            auto inv_r_dash = BT(1.0) / r_dash;
-            auto r0_bt = BT(0.5) * (inv_r_dash * r[i] + BT(1.0));
-            auto r0 = Share<T>(T(r0_bt.getVal()));
-            ret.emplace_back(r0);
-        }
-        else
-        {
-            // もし square_r_rec[i] の値が 0
-            // である場合は、再度乱数ビットシェアを生成する
-            ret.emplace_back(getRandBitShare<T, BT>());
-        }
-    }
     return ret;
 }
 

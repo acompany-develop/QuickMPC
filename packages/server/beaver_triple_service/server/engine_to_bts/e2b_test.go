@@ -9,6 +9,7 @@ import (
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	rbs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_store"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 
@@ -21,7 +22,8 @@ type partyIdConuter struct {
 }
 
 var Pic partyIdConuter
-var DbTest *ts.SafeTripleStore
+var DbTripleTest *ts.SafeTripleStore
+var DbRandBitTest *rbs.SafeRandBitStore
 
 // Test用のサーバを起動(CC)
 var s *utils.TestServer
@@ -38,7 +40,8 @@ func init() {
 		return Pic.partyId, nil
 	}
 
-	DbTest = &ts.SafeTripleStore{Triples: make(map[uint32](map[uint32]([]*ts.Triple)))}
+	DbTripleTest = &ts.SafeTripleStore{Triples: make(map[uint32](map[uint32]([]*ts.Triple)))}
+	DbRandBitTest = &rbs.SafeRandBitStore{RandBits: make(map[uint32](map[uint32]([]int64)))}
 
 	s = &utils.TestServer{}
 	pb.RegisterEngineToBtsServer(s.GetServer(), &server{})
@@ -96,22 +99,22 @@ func testGetTriplesByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, 
 			t.Fatal(err)
 		}
 
-		result, err := client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: jobId, Amount: amount, TripleType: pb.Type_TYPE_FIXEDPOINT, RequestId: -1})
+		result, err := client.GetTriples(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, RequestId: -1})
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		DbTest.Mux.Lock()
-		if DbTest.Triples[jobId][partyId] != nil {
-			DbTest.Mux.Unlock()
+		DbTripleTest.Mux.Lock()
+		if DbTripleTest.Triples[jobId][partyId] != nil {
+			DbTripleTest.Mux.Unlock()
 			t.Fatal("すでに同じTripleが存在")
 		}
 
-		if len(DbTest.Triples[jobId]) == 0 {
-			DbTest.Triples[jobId] = make(map[uint32]([]*ts.Triple))
+		if len(DbTripleTest.Triples[jobId]) == 0 {
+			DbTripleTest.Triples[jobId] = make(map[uint32]([]*ts.Triple))
 		}
-		DbTest.Triples[jobId][partyId] = result.Triples
-		DbTest.Mux.Unlock()
+		DbTripleTest.Triples[jobId][partyId] = result.Triples
+		DbTripleTest.Mux.Unlock()
 	})
 }
 
@@ -131,7 +134,7 @@ func testGetTriplesByJobId(t *testing.T, client pb.EngineToBtsClient, amount uin
 }
 
 func testValidityOfTriples(t *testing.T) {
-	for _, triples := range DbTest.Triples {
+	for _, triples := range DbTripleTest.Triples {
 		for i := 0; i < len(triples[1]); i++ {
 			aShareSum, bShareSum, cShareSum := int64(0), int64(0), int64(0)
 			for partyId := uint32(1); partyId <= uint32(len(triples)); partyId++ {
@@ -160,7 +163,7 @@ func testGetTriples(t *testing.T, amount uint32, jobNum uint32) {
 
 	t.Run("TestValidity", func(t *testing.T) {
 		testValidityOfTriples(t)
-		DbTest.Triples = make(map[uint32](map[uint32]([]*ts.Triple)))
+		DbTripleTest.Triples = make(map[uint32](map[uint32]([]*ts.Triple)))
 	})
 }
 
@@ -176,21 +179,92 @@ func TestGetTriples_10000_1(t *testing.T)   { testGetTriples(t, 10000, 1) }   //
 func TestGetTriples_10000_100(t *testing.T) { testGetTriples(t, 10000, 100) } // 10s
 // func TestGetTriples_10000_10000(t *testing.T) { testGetTriples(t, 10000, 10000) } // TO(10分以上)
 
-// TripleTypeを指定しない場合にエラーが出るかテスト
-func TestGetTriplesFailedUnknownType(t *testing.T) {
-	conn := s.GetConn()
-	defer conn.Close()
-	client := pb.NewEngineToBtsClient(conn)
+// --- RandBit --- ファイル分けても良いかも
 
-	ctx, err := getContext()
+func testGetRandBitsByJobIdAndPartyId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32, partyId uint32) {
+	t.Run(fmt.Sprintf("testGetRandBits_Party%d", partyId), func(t *testing.T) {
+		t.Helper()
+		t.Parallel()
+
+		ctx, err := getContext()
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		result, err := client.GetRandBits(ctx, &pb.GetRequest{JobId: jobId, Amount: amount, RequestId: -1})
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		DbRandBitTest.Mux.Lock()
+		if DbRandBitTest.RandBits[jobId][partyId] != nil {
+			DbRandBitTest.Mux.Unlock()
+			t.Fatal("すでに同じRandBitが存在")
+		}
+
+		if len(DbRandBitTest.RandBits[jobId]) == 0 {
+			DbRandBitTest.RandBits[jobId] = make(map[uint32]([]int64))
+		}
+		DbRandBitTest.RandBits[jobId][partyId] = result.Randbits
+		DbRandBitTest.Mux.Unlock()
+	})
+}
+
+func testGetRandBitsByJobId(t *testing.T, client pb.EngineToBtsClient, amount uint32, jobId uint32) {
+	claims, err := getClaims()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	// RequestId が他と被らないようにする
-	_, err = client.GetTriples(ctx, &pb.GetTriplesRequest{JobId: 0, Amount: 1, RequestId: -1})
+	t.Run(fmt.Sprintf("testGetRandBits_Job%d", jobId), func(t *testing.T) {
+		t.Helper()
+		for partyId := uint32(1); partyId <= uint32(len(claims.PartyInfo)); partyId++ {
+			partyId := partyId
+			testGetRandBitsByJobIdAndPartyId(t, client, amount, jobId, partyId)
+		}
+	})
+}
 
-	if err == nil {
-		t.Fatal("TripleTypeの指定がないRequestはエラーを出す必要があります．")
+func testValidityOfRandBits(t *testing.T) {
+	for _, randbits := range DbRandBitTest.RandBits {
+		for i := 0; i < len(randbits[1]); i++ {
+			bitSum := int64(0)
+			for partyId := uint32(1); partyId <= uint32(len(randbits)); partyId++ {
+				bitSum += randbits[partyId][i]
+			}
+			if bitSum != 0 && bitSum != 1 {
+				t.Fatal("This is not bit")
+			}
+		}
 	}
 }
+
+func testGetRandBits(t *testing.T, amount uint32, jobNum uint32) {
+	t.Run("TestGetTriple", func(t *testing.T) {
+		conn := s.GetConn()
+		defer conn.Close()
+		client := pb.NewEngineToBtsClient(conn)
+
+		for jobId := uint32(0); jobId < jobNum; jobId++ {
+			jobId := jobId
+			testGetRandBitsByJobId(t, client, amount, jobId)
+		}
+	})
+
+	t.Run("TestValidity", func(t *testing.T) {
+		testValidityOfRandBits(t)
+		DbRandBitTest.RandBits = make(map[uint32](map[uint32]([]int64)))
+	})
+}
+
+func TestGetRandBits_1_1(t *testing.T)     { testGetRandBits(t, 1, 1) }
+func TestGetRandBits_1_100(t *testing.T)   { testGetRandBits(t, 1, 100) }
+func TestGetRandBits_1_10000(t *testing.T) { testGetRandBits(t, 1, 10000) }
+
+func TestGetRandBits_100_1(t *testing.T)   { testGetRandBits(t, 100, 1) }
+func TestGetRandBits_100_100(t *testing.T) { testGetRandBits(t, 100, 100) }
+// func TestGetRandBits_100_10000(t *testing.T) { testGetRandBits(t, 100, 10000) }
+
+func TestGetRandBits_10000_1(t *testing.T)   { testGetRandBits(t, 10000, 1) }
+func TestGetRandBits_10000_100(t *testing.T) { testGetRandBits(t, 10000, 100) }
+// func TestGetRandBits_10000_10000(t *testing.T) { testGetRandBits(t, 10000, 10000) }
