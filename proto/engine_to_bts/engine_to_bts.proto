@@ -10,10 +10,9 @@ service EngineToBts {
 }
 
 message GetRequest{
-    reserved 3;
     uint32 job_id = 1;
     uint32 amount = 2;
-    int64 request_id = 4;
+    int64 request_id = 3;
 }
 
 message Triple{
