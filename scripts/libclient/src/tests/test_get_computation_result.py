@@ -46,6 +46,27 @@ def test_to_data_frame(method: str, args: dict, expected: pd.DataFrame,
          pd.DataFrame([[2.0], [4.0]], columns=["s2"])),
     ]
 )
+def test_load_job_uuid(method: str, args: dict, expected: pd.DataFrame,
+                       sdf):
+    sdf = getattr(sdf, method)(*args)
+    result = qmpc.load_from(sdf.get_id()).to_data_frame()
+    pd.testing.assert_frame_equal(result, expected)
+
+
+@pytest.mark.parametrize(
+    ("method", "args", "expected"),
+    [
+        # 1次元結果の取得
+        ("sum", ([1, 2],),
+         pd.DataFrame([4.0, 6.0])),
+        # 2次元結果の取得
+        ("correl", ([1, 2], [1, 2]),
+         pd.DataFrame([[1.0, 1.0], [1.0, 1.0]])),
+        # テーブルデータの取得
+        ("join", ([],),
+         pd.DataFrame([[2.0], [4.0]], columns=["s2"])),
+    ]
+)
 def test_restore(method: str, args: dict, expected: pd.DataFrame,
                  sdf):
     path = "./result"
