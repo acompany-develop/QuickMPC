@@ -4,6 +4,7 @@ import pandas as pd
 import pytest
 
 from quickmpc.exception import ArgumentError
+from quickmpc.pandas import ShareDataFrame
 from quickmpc.pandas.share_data_frame import ShareDataFrameStatus
 from quickmpc.qmpc import QMPC
 from quickmpc.request.qmpc_request import QMPCRequest
@@ -27,7 +28,8 @@ ip_list = [
 
 
 class TestQMPC:
-    qmpc: QMPC = QMPC(ip_list)
+    request = QMPCRequest(ip_list)
+    qmpc: QMPC = QMPC(request)
 
     @pytest.mark.parametrize(
         ("arg"), [
@@ -64,10 +66,51 @@ class TestQMPC:
         assert not sdf._ShareDataFrame__is_result
         assert sdf._ShareDataFrame__status == ShareDataFrameStatus.OK
 
-    def test_load_from(self,
+    @pytest.mark.parametrize(
+        ("id_str", "expected"), [
+            # data_id
+            ("f8a6f7c7155476d54e98c45a633f152a"
+             "b24368bc5f23292cef94a67df4f7aa7a",
+             ShareDataFrame("f8a6f7c7155476d54e98c45a633f152a"
+                            "b24368bc5f23292cef94a67df4f7aa7a",
+                            request, False, ShareDataFrameStatus.OK)),
+            # job_uuid
+            ("b58a2037-d7d9-44f3-9858-ea8717a888dc",
+             ShareDataFrame("b58a2037-d7d9-44f3-9858-ea8717a888dc",
+                            request, True, ShareDataFrameStatus.EXECUTE)),
+        ]
+    )
+    def test_load_from(self, id_str, expected,
                        run_server1, run_server2, run_server3):
-        data_id = "data_id"
-        sdf = self.qmpc.load_from(data_id)
-        assert sdf._ShareDataFrame__id == data_id
-        assert not sdf._ShareDataFrame__is_result
-        assert sdf._ShareDataFrame__status == ShareDataFrameStatus.OK
+        sdf = self.qmpc.load_from(id_str)
+        assert sdf == expected
+
+    @pytest.mark.parametrize(
+        ("id_str"), [
+            # hashだが桁が異なる
+            ("f8a6f7c7155476d5"),
+            ("f8a6f7c7155476d54e98c45a633f152a"),
+            ("f8a6f7c7155476d54e98c45a633f152a"
+             "b24368bc5f23292cef94a67df4f7aa7a"
+             "f8a6f7c7155476d54e98c45a633f152a"
+             "b24368bc5f23292cef94a67df4f7aa7a"),
+            # uuidみたいだが桁が異なる
+            ("b58a2037-d7d9-44f3-9858-ea8717a888d"),
+            ("b58a2037-d7d9-44f3-985-ea8717a888dc"),
+            ("b58a2037-d7d9-44f-9858-ea8717a888dc"),
+            ("b58a2037-d7d-44f3-9858-ea8717a888dc"),
+            ("b58a203-d7d9-44f3-9858-ea8717a888dc"),
+            # 大文字が含まれる
+            ("F8a6f7c7155476d54e98c45a633f152a"
+             "b24368bc5f23292cef94a67df4f7aa7a"),
+            ("B58a2037-d7d9-44f3-9858-ea8717a888dc"),
+            # 記号が含まれる
+            ("@8a6f7c7155476d54e98c45a633f152a"
+             "b24368bc5f23292cef94a67df4f7aa7a"),
+            ("=58a2037-d7d9-44f3-9858-ea8717a888dc"),
+        ]
+    )
+    def test_load_from_raise(self, id_str,
+                             run_server1, run_server2, run_server3):
+        with pytest.raises(RuntimeError):
+            self.qmpc.load_from(id_str)
