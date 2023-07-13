@@ -1,9 +1,11 @@
+import re
 from dataclasses import dataclass, field, InitVar
 from typing import List, Union
 
 import pandas as pd
 
 import quickmpc.pandas as qpd
+from quickmpc.pandas.share_data_frame import ShareDataFrameStatus
 from quickmpc.request import QMPCRequest, QMPCRequestInterface
 from quickmpc.share import restore
 from quickmpc.utils import Dim1, methoddispatch
@@ -60,20 +62,28 @@ class QMPC:
         res = self.__qmpc_request.send_share(df, piece_size=1_000_000)
         return qpd.ShareDataFrame(res.data_id, self.__qmpc_request)
 
-    def load_from(self, data_id: str) -> qpd.ShareDataFrame:
+    def load_from(self, id_str: str) -> qpd.ShareDataFrame:
         """既に送信してあるデータを参照する．
 
         Parameters
         ----------
-        data_id: str
-            既に送信してあるデータのID
+        id_str: str
+            既に送信してあるデータのIDか計算で発行したID
 
         Returns
         ----------
         quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
         """
-        return qpd.ShareDataFrame(data_id, self.__qmpc_request)
+        # data_id (256bit hash)
+        if re.fullmatch(r'[a-z0-9]{64}', id_str):
+            return qpd.ShareDataFrame(id_str, self.__qmpc_request)
+        # job_uuid (uuid)
+        if re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-'
+                        r'[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', id_str):
+            return qpd.ShareDataFrame(id_str, self.__qmpc_request,
+                                      True, ShareDataFrameStatus.EXECUTE)
+        raise RuntimeError("id must be `data_id` or `job_uuid`.")
 
     # TODO: job_uuidとparty_sizeは指定しなくても良いようにしたい
     def restore(self, job_uuid: str, filepath: str, party_size: int) \
