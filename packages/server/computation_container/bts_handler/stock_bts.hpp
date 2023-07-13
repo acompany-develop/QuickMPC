@@ -16,7 +16,7 @@ class StockBTS
     using Result = typename BTSJob::result_type;
     thread_local static inline std::queue<Result> stock;
 
-    // stock に n 個追加
+    // stock に amount 個追加
     void requestBTS(const std::size_t amount)
     {
         auto client = ComputationToBts::Client::getInstance();
