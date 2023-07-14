@@ -39,7 +39,10 @@ class ElapsedTimeDict:
             elapsed_time_m = elapsed_time_s / 60
             data.append([*key, elapsed_time_s, elapsed_time_m])
         data.sort()
-        print("\n"+tabulate(data, headers=headers, tablefmt='fancy_grid'))
+        # NOTE: CIでのbenchmarkの際に、`Start of Table`から`End of Table`までがslackに送信される
+        print("\n============================= Start of Table =============================")
+        print(tabulate(data, headers=headers, tablefmt='fancy_grid'))
+        print("============================= End of Table =============================")
 
 
 @pytest.fixture(scope='module')
