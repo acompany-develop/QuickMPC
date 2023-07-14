@@ -4,6 +4,7 @@ import pytest
 from utils import qmpc
 
 from benchmark.metrics import Timer, print_elapsed_time
+import quickmpc.pandas as qpd
 
 # types: (iterate_num, path)
 # testに使うファイルを指定
@@ -28,11 +29,12 @@ def get_sdf(print_elapsed_time):
     def get(path: str):
         if path in sdf_dict:
             return sdf_dict[path]
-        df = qmpc.read_csv(path, index_col="id")
+        df = qpd.read_csv(path, index_col="id")
         with Timer() as tm:
             sdf = qmpc.send_to(df)
         print_elapsed_time(tm.elapsed_time(), "send_share", path)
-        sdf_dict[path] = (sdf, len(df.columns))
+        # NOTE: index用の列が追加されているためschema_sizeは-1しておく
+        sdf_dict[path] = (sdf, len(df.columns) - 1)
         return sdf_dict[path]
     return lambda path: get(path)
 
