@@ -15,7 +15,7 @@ latest_tag=$(git tag --list | grep -E '[0-9]+\.[0-9]+\.[0-9]+' | tail -1)
 function finally() {
     # logをslackに送信
     # 更新日 2023/06/30
-    curl -F initial_comment="QuickMPC version: $latest_tag \`\`\`$( sed -n '/Start of Table/,/End of Table/p' /home/ubuntu/log/result-$runner_id.log | sed 's/\[0-9][0-9]*m//g')\`\`\`" -F file=@/home/ubuntu/log/result-$runner_id.log -F channels=$channel_id -H "Authorization: Bearer $slack_token" https://slack.com/api/files.upload
+    curl -F initial_comment="QuickMPC version: $latest_tag \`\`\`$( sed -n '/Start of Table/,/End of Table/p' /home/ubuntu/log/result-$runner_id.log | sed 's/\[[0-9][0-9]*m//g')\`\`\`" -F file=@/home/ubuntu/log/result-$runner_id.log -F channels=$channel_id -H "Authorization: Bearer $slack_token" https://slack.com/api/files.upload
     # post processing
     # NOTE: `WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!`の回避のためknown_hostsを毎回削除する
     rm ~/.ssh/known_hosts
