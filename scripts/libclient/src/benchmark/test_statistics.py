@@ -33,7 +33,8 @@ def get_sdf(print_elapsed_time):
         with Timer() as tm:
             sdf = qmpc.send_to(df)
         print_elapsed_time(tm.elapsed_time(), "send_share", path)
-        sdf_dict[path] = (sdf, len(df.columns))
+        # NOTE: index用の列が追加されているためschema_sizeは-1しておく
+        sdf_dict[path] = (sdf, len(df.columns) - 1)
         return sdf_dict[path]
     return lambda path: get(path)
 
