@@ -11,16 +11,18 @@ namespace qmpc::BtsHandler
 template <typename BTSJob>
 class StockBTS
 {
-    const std::size_t lowest_request_amount = 100000;
+    const std::size_t request_num = 100000;
 
     using Result = typename BTSJob::result_type;
     thread_local static inline std::queue<Result> stock;
 
-    // stock に amount 個追加
-    void requestBTS(const std::size_t amount)
+    // stock に request_num 個追加
+    void requestBTS()
     {
         auto client = ComputationToBts::Client::getInstance();
-        std::vector<Result> ret = client->readRequest<BTSJob>(amount);
+        std::vector<Result> ret = client->readRequest<BTSJob>(request_num);
+
+        assert(ret.size() == request_num);
 
         for (const Result &x : ret)
         {
@@ -36,9 +38,9 @@ public:
     }
     std::vector<Result> get(std::size_t amount = 1)
     {
-        if (stock.size() < amount)
+        while (stock.size() < amount)
         {
-            requestBTS(std::max(amount - stock.size(), lowest_request_amount));
+            requestBTS();
         }
 
         std::vector<Result> ret(amount);
