@@ -20,7 +20,7 @@ jobs:
         run: echo ${{ secrets.RUNNER_SECRET_KEY }} | base64 -d > secret && chmod 600 secret
 
       - name: mkdir ${{ github.run_number }}
-        run: ssh ubuntu@${{ secrets.RUNNER_IP }} -i secret "mkdir ${{ github.run_number }}"
+        run: ssh -oStrictHostKeyChecking=no ubuntu@${{ secrets.RUNNER_IP }} -i secret "mkdir ${{ github.run_number }}"
 
       - name: clone QuickMPC
         run: ssh ubuntu@${{ secrets.RUNNER_IP }} -i secret "cd ${{ github.run_number }} && git clone https://github.com/acompany-develop/QuickMPC"
