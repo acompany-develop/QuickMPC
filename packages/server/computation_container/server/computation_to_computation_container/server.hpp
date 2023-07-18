@@ -13,7 +13,6 @@
 #include <sstream>  // 文字列分割を実装する際に用いる
 #include <string>
 #include <tuple>
-#include <unordered_map>
 #include <vector>
 
 #include "client/computation_to_computation_container/client.hpp"
@@ -34,18 +33,11 @@ class Server final : public computationtocomputation::ComputationToComputation::
     ~Server() noexcept {}
 
 public:
-    grpc::Status ExchangeShare(
-        grpc::ServerContext *context,
-        const computationtocomputation::Share *share,
-        google::protobuf::Empty *response
-    ) override;
     grpc::Status ExchangeShares(
         grpc::ServerContext *context,
         grpc::ServerReader<computationtocomputation::Shares> *stream,
         google::protobuf::Empty *response
     ) override;
-    // 受け取ったシェアをgetするメソッド
-    std::string getShare(int party_id, qmpc::Share::AddressId share_id);
     std::vector<std::string> getShares(
         int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
     );
@@ -76,7 +68,6 @@ private:
     using address = std::tuple<int, int, unsigned int, int>;
     // 受け取ったシェアを保存する変数
     // party_id, share_idをキーとして保存
-    std::map<address, std::string> shares;
     std::map<address, std::vector<std::string>> shares_vec;
 };
 

@@ -19,58 +19,6 @@ Server::Server() noexcept
         }
     }
 }
-// 他のccから
-// 単一シェアをexchangeする場合
-grpc::Status Server::ExchangeShare(
-    grpc::ServerContext *context,
-    const computationtocomputation::Share *share,
-    google::protobuf::Empty *response
-)
-{
-    std::lock_guard<std::mutex> lock(mtx);  // mutex発動
-    // QMPC_LOG_INFO("log: server get share_id is {}, party_id is {}, value is {}",
-    //              share->share_id(),
-    //              share->party_id(),
-    //              share->value());
-    auto address = share->address_id();
-    switch (share->value_case())
-    {
-        using cs = computationtocomputation::Share;
-        case (cs::ValueCase::kFlag):
-            shares[std::make_tuple(
-                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
-            )] = std::to_string(share->flag());
-            break;
-        case (cs::ValueCase::kNum):
-            shares[std::make_tuple(
-                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
-            )] = std::to_string(share->num());
-            break;
-        case (cs::ValueCase::kNum64):
-            shares[std::make_tuple(
-                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
-            )] = std::to_string(share->num64());
-            break;
-        case (cs::ValueCase::kF):
-            shares[std::make_tuple(
-                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
-            )] = std::to_string(share->f());
-            break;
-        case (cs::ValueCase::kD):
-            shares[std::make_tuple(
-                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
-            )] = std::to_string(share->d());
-            break;
-        case (cs::ValueCase::kByte):
-        case (cs::ValueCase::VALUE_NOT_SET):
-            shares[std::make_tuple(
-                share->party_id(), address.share_id(), address.job_id(), address.thread_id()
-            )] = share->byte();
-            break;
-    }
-    cond.notify_all();  // 通知
-    return grpc::Status::OK;
-}
 
 static std::string share_to_str(const computationtocomputation::Shares_Share &share)
 {
@@ -133,26 +81,6 @@ grpc::Status Server::ExchangeShares(
 
     cond.notify_all();  // 通知
     return grpc::Status::OK;
-}
-// 単一シェアget用
-std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
-{
-    Config *conf = Config::getInstance();
-    std::unique_lock<std::mutex> lock(mtx);  // mutex発動
-    auto key = std::make_tuple(
-        party_id, share_id.getShareId(), share_id.getJobId(), share_id.getThreadId()
-    );
-    if (!cond.wait_for(
-            lock,
-            std::chrono::seconds(conf->getshare_time_limit),
-            [&] { return shares_vec.count(key) == 1; }
-        ))  // 待機
-    {
-        qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
-    }
-    auto share = shares_vec[key];
-    shares_vec.erase(key);
-    return share[0];
 }
 
 // 複数シェアget用
