@@ -220,32 +220,4 @@ auto recons(const T &share)
 
     return ret;
 }
-template <typename SV>
-SV receive(int sp_id, AddressId address_id)
-{
-    ComputationToComputation::Server *server = ComputationToComputation::Server::getServer();
-    if constexpr (std::is_constructible_v<SV, std::string>)
-    {
-        SV received_value(server->getShare(sp_id, address_id));
-        return received_value;
-    }
-    else
-    {
-        SV received_value(std::stoi(server->getShare(sp_id, address_id)));
-        return received_value;
-    }
-}
-template <typename SV>
-std::vector<SV> receive(int sp_id, const std::vector<AddressId> &address_ids)
-{
-    ComputationToComputation::Server *server = ComputationToComputation::Server::getServer();
-    int n = address_ids.size();
-    std::vector<SV> ret(n);
-    auto shares = server->getShares(sp_id, address_ids);
-    for (int i = 0; i < n; ++i)
-    {
-        ret[i] = stosv<SV>(shares[i]);
-    }
-    return ret;
-}
 }  // namespace qmpc::Share
