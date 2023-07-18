@@ -29,8 +29,6 @@ static std::string share_to_str(const computationtocomputation::Shares_Share &sh
             return std::to_string(share.flag());
         case (cs::ValueCase::kNum):
             return std::to_string(share.num());
-        case (cs::ValueCase::kF):
-            return std::to_string(share.f());
         case (cs::ValueCase::kByte):
         case (cs::ValueCase::VALUE_NOT_SET):
             return share.byte();
@@ -80,6 +78,27 @@ grpc::Status Server::ExchangeShares(
 
     cond.notify_all();  // 通知
     return grpc::Status::OK;
+}
+
+// 単一シェアget用
+std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
+{
+    Config *conf = Config::getInstance();
+    std::unique_lock<std::mutex> lock(mtx);  // mutex発動
+    auto key = std::make_tuple(
+        party_id, share_id.getShareId(), share_id.getJobId(), share_id.getThreadId()
+    );
+    if (!cond.wait_for(
+            lock,
+            std::chrono::seconds(conf->getshare_time_limit),
+            [&] { return shares_vec.count(key) == 1; }
+        ))  // 待機
+    {
+        qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
+    }
+    auto share = shares_vec[key];
+    shares_vec.erase(key);
+    return share[0];
 }
 
 // 複数シェアget用
