@@ -65,10 +65,10 @@ public:
 
 private:
     // party_id,share_id,job_id,thread_id
-    using address = std::tuple<int, int, unsigned int, int>;
+    using address_type = std::tuple<int, int, unsigned int, int>;
     // 受け取ったシェアを保存する変数
     // party_id, share_idをキーとして保存
-    std::map<address, std::vector<std::string>> shares_vec;
+    std::map<address_type, std::vector<std::string>> shares_vec;
 };
 
 }  // namespace qmpc::ComputationToComputation
