@@ -120,10 +120,6 @@ auto stosv(const std::string &str_value)
     {
         return std::stoi(str_value);
     }
-    else if constexpr (std::is_floating_point_v<T>)
-    {
-        return std::stod(str_value);
-    }
     else  // TODO: constructable or convertible
     {
         return T(str_value);
@@ -161,10 +157,6 @@ auto recons(const T &share)
             else if constexpr (std::is_integral_v<Result>)
             {
                 ret += Result{std::stoi(s)};
-            }
-            else if constexpr (std::is_floating_point_v<Result>)
-            {
-                ret += Result{std::stof(s)};
             }
             else
             {
@@ -217,10 +209,6 @@ auto recons(const T &share)
                 else if constexpr (std::is_integral_v<Result>)
                 {
                     ret[i] += Result(std::stoi(values[i]));
-                }
-                else if constexpr (std::is_floating_point_v<Result>)
-                {
-                    ret[i] += Result(std::stod(values[i]));
                 }
                 else
                 {

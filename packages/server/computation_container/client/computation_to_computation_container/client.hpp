@@ -60,25 +60,16 @@ private:
             }
             size = size + value_size;
             computationtocomputation::Shares_Share *multiple_shares = s.add_share_list();
-            if constexpr (std::is_same_v<std::decay_t<T>, bool>)
+
+            using rawT = std::decay_t<T>;
+
+            if constexpr (std::is_same_v<rawT, bool>)
             {
                 multiple_shares->set_flag(values[i]);
             }
-            else if constexpr (std::is_same_v<std::decay_t<T>, int>)
+            else if constexpr (std::is_integral_v<rawT> && sizeof(rawT) <= 8)
             {
                 multiple_shares->set_num(values[i]);
-            }
-            else if constexpr (std::is_same_v<std::decay_t<T>, long>)
-            {
-                multiple_shares->set_num64(values[i]);
-            }
-            else if constexpr (std::is_same_v<std::decay_t<T>, float>)
-            {
-                multiple_shares->set_f(values[i]);
-            }
-            else if constexpr (std::is_same_v<std::decay_t<T>, double>)
-            {
-                multiple_shares->set_d(values[i]);
             }
             else
             {
