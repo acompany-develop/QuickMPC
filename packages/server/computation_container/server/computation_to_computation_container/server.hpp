@@ -38,6 +38,8 @@ public:
         grpc::ServerReader<computationtocomputation::Shares> *stream,
         google::protobuf::Empty *response
     ) override;
+    // 受け取ったシェアをgetするメソッド
+    std::string getShare(int party_id, qmpc::Share::AddressId share_id);
     std::vector<std::string> getShares(
         int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
     );

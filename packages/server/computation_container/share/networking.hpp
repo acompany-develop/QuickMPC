@@ -149,7 +149,7 @@ auto recons(const T &share)
         }
         else
         {
-            auto s = server->getShares(pt_id, std::vector<qmpc::Share::AddressId>{share.getId()});
+            auto s = server->getShare(pt_id, share.getId());
             if constexpr (std::is_same_v<Result, bool>)
             {
                 ret ^= Result{s == "1"};
