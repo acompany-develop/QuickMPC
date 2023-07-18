@@ -109,7 +109,7 @@ TEST(CtoC_Test, GetShareThrowExceptionTest)
     qmpc::Share::AddressId share_id;
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    EXPECT_ANY_THROW(server->getShares(conf->party_id, share_id));
+    EXPECT_ANY_THROW(server->getShare(conf->party_id, share_id));
 }
 
 TEST(CtoC_Test, GetSharesThrowExceptionTest)
