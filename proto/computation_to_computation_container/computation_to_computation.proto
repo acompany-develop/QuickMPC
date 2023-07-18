@@ -10,7 +10,6 @@ import "google/protobuf/empty.proto";
 */
 service ComputationToComputation {
     // send share to another computation container
-    rpc ExchangeShare(Share) returns(google.protobuf.Empty) {}
     rpc ExchangeShares(stream Shares) returns(google.protobuf.Empty) {}
 }
 /**
@@ -24,21 +23,6 @@ message Address{
     int32 thread_id = 3;
     int32 party_id = 4; // the id of party(0, 1, 2)
 }
-/**
- * the message of share
-*/
-message Share {
-    oneof value{
-        int32 num = 4;
-        int64 num64 = 5;
-        bytes byte = 6;
-        float f = 7;
-        double d = 8;
-        bool flag = 9;
-    }
-    Address address_id = 2; // the id of share
-    int32 party_id = 3; // the id of party(0, 1, 2)
-}
 
 /**
  * the message of shares
@@ -46,12 +30,9 @@ message Share {
 message Shares {
     message Share{
         oneof value{
-            int32 num = 4;
-            int64 num64 = 5;
-            bytes byte = 6;
-            float f = 7;
-            double d = 8;
-            bool flag = 9;
+            int64 num = 1;
+            bytes byte = 2;
+            bool flag = 3;
         }
     }
     repeated Share share_list = 1;
