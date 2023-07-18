@@ -29,12 +29,8 @@ static std::string share_to_str(const computationtocomputation::Shares_Share &sh
             return std::to_string(share.flag());
         case (cs::ValueCase::kNum):
             return std::to_string(share.num());
-        case (cs::ValueCase::kNum64):
-            return std::to_string(share.num64());
         case (cs::ValueCase::kF):
             return std::to_string(share.f());
-        case (cs::ValueCase::kD):
-            return std::to_string(share.d());
         case (cs::ValueCase::kByte):
         case (cs::ValueCase::VALUE_NOT_SET):
             return share.byte();
@@ -77,7 +73,10 @@ grpc::Status Server::ExchangeShares(
     }
 
     std::lock_guard<std::mutex> lock(mtx);  // mutex発動
-    shares_vec[std::make_tuple(party_id, share_id, job_id, thread_id)] = share_str_vec;
+    if(first)
+    {
+        shares_vec[std::make_tuple(party_id, share_id, job_id, thread_id)] = share_str_vec;
+    }
 
     cond.notify_all();  // 通知
     return grpc::Status::OK;
