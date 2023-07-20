@@ -16,8 +16,8 @@ func init() {
 }
 
 func sharize(data int64, size uint32) ([]int64, error) {
-	sharizeRandMin := - int64(1 << 60)
-	sharizeRandMax := int64(1 << 60)
+	sharizeRandMin := - int64(1 << 30)
+	sharizeRandMax := int64(1 << 30)
 	shares, err := utils.GetRandInt64Slice(uint64(size-1), sharizeRandMin, sharizeRandMax)
 	if err != nil {
 		errText := "乱数取得に失敗"

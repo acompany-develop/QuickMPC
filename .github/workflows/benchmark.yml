@@ -1,10 +1,10 @@
 name: QuickMPC Benchmark
 
-on:
-  workflow_run:
-    workflows: ['Push CC, MC, BTS Image']
-    types:
-      - completed
+# on:
+#   workflow_run:
+#     workflows: ['Push CC, MC, BTS Image']
+#     types:
+#       - completed
 
 jobs:
   benchmark-test:
