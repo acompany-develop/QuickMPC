@@ -18,8 +18,7 @@ Share<mp_int> right_shift(const Share<mp_int>&x)
     Share<mp_int> r = getRandBitShare<mp_int>();
     Share<bool> b(((x.getVal() ^ r.getVal()) & 1) == 1);
 
-    open(b);
-    int sum = recons(b);
+    int sum = open_and_recons(b);
     bool c = sum & 1;
 
     Share<mp_int> y = x - r + (c ? 2*r : Share<mp_int>(0)) - Share<mp_int>(b.getVal());
@@ -40,8 +39,7 @@ std::vector<Share<mp_int>> right_shift(const std::vector<Share<mp_int>>&x)
         b[i] = ((x[i].getVal() ^ r[i].getVal()) & 1) == 1;
     }
 
-    open(b);
-    std::vector<int> sum = recons(b);
+    std::vector<int> sum = open_and_recons(b);
     std::vector<bool> c(n);
     for(size_t i=0;i<n;i++)
     {
@@ -69,8 +67,7 @@ bool LTZ(Share<mp_int> x)
         x = right_shift(x);
     }
     Share<FixedPoint> x_fp(x.getVal());
-    open(x_fp);
-    FixedPoint res = recons(x_fp);
+    FixedPoint res = open_and_recons(x_fp);
     assert(res == 0 || res == 1);
     return res == 0;
 }
@@ -92,8 +89,7 @@ std::vector<bool> LTZ(std::vector<Share<mp_int>> x)
     {
         x_fp[i] = Share<FixedPoint>(x[i].getVal());
     }
-    open(x_fp);
-    std::vector<FixedPoint> res = recons(x_fp);
+    std::vector<FixedPoint> res = open_and_recons(x_fp);
     std::vector<bool> b(n);
     for(size_t i=0;i<n;i++)
     {
