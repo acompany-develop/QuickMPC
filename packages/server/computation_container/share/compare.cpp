@@ -4,33 +4,35 @@
 #include "config_parse/config_parse.hpp"
 #include "logging/logger.hpp"
 
-using ll = long long;
+using lint = long long;
+const int bit_length = 50;
 
 namespace qmpc::Share
 {
 
-Share<ll> right_shift(const Share<ll>&x)
+Share<lint> right_shift(const Share<lint>&x)
 {
-    Share<ll> r = getRandBitShare<ll>();
+    Share<lint> r = getRandBitShare<lint>();
     Share<bool> b((x.getVal() ^ r.getVal()) & 1);
 
     open(b);
     int sum = recons(b);
     bool c = sum & 1;
 
-    Share<ll> y = x - r + (c ? 2*r : 0) - Share<ll>(b.getVal());
+    Share<lint> y = x - r + (c ? 2*r : Share<lint>(0)) - Share<lint>(b.getVal());
     Config *conf = Config::getInstance();
     if (conf->party_id == conf->sp_id)
     {
-        y += ll(sum - c);
+        y += lint(sum - c);
     }
+    assert(y.getVal() % 2 == 0);
     return y / 2;
 }
 
-std::vector<Share<ll>> right_shift(const std::vector<Share<ll>>&x)
+std::vector<Share<lint>> right_shift(const std::vector<Share<lint>>&x)
 {
     size_t n=x.size();
-    std::vector<Share<ll>> r = getRandBitShare<ll>(n);
+    std::vector<Share<lint>> r = getRandBitShare<lint>(n);
 
     std::vector<Share<bool>> b(n);
     for(int i=0;i<n;i++)
@@ -47,55 +49,54 @@ std::vector<Share<ll>> right_shift(const std::vector<Share<ll>>&x)
     }
 
     Config *conf = Config::getInstance();
-    std::vector<Share<ll>> y(n);
+    std::vector<Share<lint>> y(n);
     for(int i=0;i<n;i++)
     {
-        y[i] = x[i] - r[i] + (c[i] ? 2*r[i] : 0) - Share<ll>(b[i].getVal());
+        y[i] = x[i] - r[i] + (c[i] ? 2*r[i] : Share<lint>(0)) - Share<lint>(b[i].getVal());
         if (conf->party_id == conf->sp_id)
         {
-            y[i] += ll(sum[i] - c[i]);
+            y[i] += lint(sum[i] - c[i]);
         }
+        assert(y[i].getVal() % 2 == 0);
         y[i] /= 2;
     }
 
     return y;
 }
 
-bool LTZ(Share<ll> x)
+bool LTZ(Share<lint> x)
 {
-    int k = 48;
-    x += 1LL << k;
-    for(int i=0;i<k;i++)
+    x += 1LL << bit_length;
+    for(int i=0;i<bit_length;i++)
     {
         x = right_shift(x);
     }
     open(x);
-    ll res = recons(x);
+    lint res = recons(x);
     assert(res == 0 || res == 1);
     return res;
 }
 
-std::vector<bool> LTZ(std::vector<Share<ll>> x)
+std::vector<bool> LTZ(std::vector<Share<lint>> x)
 {
-    int k = 48;
     size_t n = x.size();
     for(int i=0;i<n;i++)
     {
-        x[i] += 1LL<<k;
+        x[i] += 1LL << bit_length;
     }
 
-    for(int i=0;i<k;i++)
+    for(int i=0;i<bit_length;i++)
     {
         x = right_shift(x);
     }
     open(x);
-    std::vector<ll> res = recons(x);
+    std::vector<lint> res = recons(x);
     std::vector<bool> b(n);
     for(int i=0;i<n;i++)
     {
         if(!(res[i]==0 || res[i]==1))
         {
-            for(int i=0;i<n;i++)std::cerr<<res[i]<<" ";std::cerr<<std::endl;
+            //for(int i=0;i<n;i++)std::cerr<<res[i]<<" ";std::cerr<<std::endl;
             assert(false);
         }
         b[i] = res[i]==0;
@@ -108,15 +109,15 @@ std::vector<bool> allLess(
 )
 {
     size_t n = left.size();
-    std::vector<Share<ll>> v(n);
+    std::vector<Share<lint>> v(n);
     for(int i=0;i<n;i++)
     {
         v[i] = (left[i] - right[i]).getDoubleVal();
     }
     for(int i=0;i<n;i++){
         open(v[i]);
-        ll a = recons(v[i]);
-        assert((-1LL<<48) <= a && a < (1LL<<48));
+        lint a = recons(v[i]);
+        assert((-1LL<<bit_length) <= a && a < (1LL<<bit_length));
     }
     return LTZ(v);
 }
