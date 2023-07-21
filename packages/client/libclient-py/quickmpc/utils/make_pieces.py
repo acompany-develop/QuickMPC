@@ -33,7 +33,6 @@ class MakePiece:
 
     @staticmethod
     def check_max_size(max_size: int):
-        # NOTE: Couchbaseのアイテムサイズ上限:1MB
         # NOTE: grpcの送受信データサイズ上限:4MB
         lower_limit_size: int = 1
         upper_limit_size: int = 1_000_000
