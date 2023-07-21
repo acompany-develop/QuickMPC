@@ -9,42 +9,6 @@ using ll = long long;
 namespace qmpc::Share
 {
 
-auto convertFpToBool(const FixedPoint &fp, const std::string &op_name)
-{
-    if (fp.getDoubleVal() > 0.95)
-    {
-        return true;
-    }
-    else if (fp.getDoubleVal() >= 0.5)
-    {
-        QMPC_LOG_ERROR(
-            "This operation (%s) determined to be true, but it could be false.", op_name
-        );
-        QMPC_LOG_ERROR(
-            "If you want to ignore the error and continue the calculation, replace 'exit' with "
-            "'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return true;
-    }
-    else if (fp.getDoubleVal() >= 0.05)
-    {
-        QMPC_LOG_ERROR(
-            "This operation (%s) determined to be false, but it could be true.", op_name
-        );
-        QMPC_LOG_ERROR(
-            "If you want to ignore the error and continue the calculation, replace 'exit' with "
-            "'return false;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return false;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 Share<ll> right_shift(const Share<ll>&x)
 {
     Share<ll> r = getRandBitShare<ll>();
@@ -54,7 +18,7 @@ Share<ll> right_shift(const Share<ll>&x)
     int sum = recons(b);
     bool c = sum & 1;
 
-    Share<ll> y = x - r + (c ? 2*r : 0) - ll(b.getVal());
+    Share<ll> y = x - r + (c ? 2*r : 0) - Share<ll>(b.getVal());
     Config *conf = Config::getInstance();
     if (conf->party_id == conf->sp_id)
     {
