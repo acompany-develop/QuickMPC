@@ -23,7 +23,7 @@ jobs:
         run: ssh -oStrictHostKeyChecking=no ubuntu@${{ secrets.RUNNER_IP }} -i secret "mkdir ${{ github.run_number }}"
 
       - name: clone QuickMPC
-        run: ssh ubuntu@${{ secrets.RUNNER_IP }} -i secret "cd ${{ github.run_number }} && git clone https://github.com/acompany-develop/QuickMPC"
+        run: ssh ubuntu@${{ secrets.RUNNER_IP }} -i secret "cd ${{ github.run_number }} && git clone https://github.com/acompany-develop/QuickMPC && git checkout ecoLTZ"
 
       - name: run benchmark
         run: ssh ubuntu@${{ secrets.RUNNER_IP }} -i secret 'nohup bash -c "cd ${{ github.run_number }}/QuickMPC/benchmark_src && chmod +x benchmark_runner.sh && ./benchmark_runner.sh ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }} ${{ secrets.GCP_PROJECT_ID }} ${{ github.run_number }} ${{ secrets.SLACK_CHANNEL_ID }} ${{ secrets.SLACK_API_TOKEN }} && sudo rm -r ~/${{ github.run_number }}" &> /home/ubuntu/log/runner-${{ github.run_number }}.log &'
