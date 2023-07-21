@@ -112,7 +112,8 @@ std::vector<bool> allLess(
     std::vector<Share<lint>> v(n);
     for(int i=0;i<n;i++)
     {
-        v[i] = (left[i] - right[i]).getDoubleVal();
+        v[i] = lint((left[i] - right[i]).getVal().getRoundValue());
+        //std::cerr<<v[i].getVal()<<" "<<left[i].getVal()<<" "<<right[i].getVal()<<std::endl;
     }
     for(int i=0;i<n;i++){
         open(v[i]);
