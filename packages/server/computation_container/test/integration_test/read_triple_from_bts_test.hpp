@@ -14,8 +14,7 @@ void sync()
     fixed_triples.emplace_back(Share(1));
     fixed_triples.emplace_back(Share(1));
 
-    open(fixed_triples);
-    auto _ = recons(fixed_triples);
+    auto _ = open_and_recons(fixed_triples);
 }
 
 void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
@@ -40,8 +39,7 @@ void readTriplesTest(const unsigned int jobIdMax, const unsigned int amount)
             fixed_triples.emplace_back(b);
             fixed_triples.emplace_back(c);
         }
-        open(fixed_triples);
-        auto triple_rec = recons(fixed_triples);
+        auto triple_rec = open_and_recons(fixed_triples);
         for (unsigned int i = 0; i < amount * 3; i += 3)
         {
             auto a_rec = triple_rec[i];

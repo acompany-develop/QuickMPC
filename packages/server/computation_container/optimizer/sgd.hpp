@@ -32,8 +32,7 @@ class SGD : public qmpc::Optimizer::OptInterface
         size_t sz = std::size(theta);
         auto next_theta = theta;
         auto dfx = f.df(batch_size, theta);
-        open(dfx);
-        auto test_dfx = recons(dfx);
+        auto test_dfx = open_and_recons(dfx);
         for (size_t i = 0; i < sz; ++i)
         {
             next_theta[i] -= alpha * dfx[i];

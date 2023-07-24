@@ -85,11 +85,9 @@ public:
         Share e;
         e = obj - b;
         std::vector<Share> de = {(*this) - a, obj - b};
-        // [d], [e] を全パーティに送信
-        open(de);
 
-        // d, e を受け取って復元する
-        std::vector<SV> de_rec = recons(de);
+        // d, e を送受信し復元する
+        std::vector<SV> de_rec = open_and_recons(de);
 
         // [xy] = [c] + d[b] + e[a] + de を計算する
         Share v;
@@ -265,11 +263,7 @@ public:
             de[i + n] = obj2[i] - b[i];
         }
 
-        // [d], [e] を全パーティに送信
-        open(de);
-
-        // d, e を受け取って復元する
-        std::vector<SV> de_rec = recons(de);
+        std::vector<SV> de_rec = open_and_recons(de);
 
         // [xy] = [c] + d[b] + e[a] + de を計算する
         std::vector<Share> v(n);
@@ -369,8 +363,7 @@ Share<T> getLSBShare(const Share<T> &y)
     Share<T> r0 = getRandBitShare<T>();
     Share<T> r_dash = Share(RandGenerator::getInstance()->getRand<T>(1, 1000));
     Share<T> t = y + r0 + T(2) * r_dash;
-    open(t);
-    T c = recons(t);
+    T c = open_and_recons(t);
     c = T(c.getRoundValue()) % T(2);
     Share<T> b = c + r0 - T(2) * c * r0;
     return b;
@@ -382,8 +375,7 @@ std::vector<Share<T>> getLSBShare(const std::vector<Share<T>> &y)
     std::vector<Share<T>> r0 = getRandBitShare<T>(static_cast<int>(y.size()));
     std::vector<Share<T>> r_dash = getRandShares<T>(1, 1000, static_cast<int>(y.size()));
     std::vector<Share<T>> t = y + r0 + T(2) * r_dash;
-    open(t);
-    std::vector<T> c = recons(t);
+    std::vector<T> c = open_and_recons(t);
     std::vector<Share<T>> b;
     b.reserve(y.size());
     for (int j = 0; j < static_cast<int>(c.size()); ++j)

@@ -19,8 +19,7 @@ TEST(MathTest, Smean)
 
     Share avg;
     avg = qmpc::Math::smean(v);
-    open(avg);
-    FixedPoint avg_rec = recons(avg);
+    FixedPoint avg_rec = open_and_recons(avg);
 
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
@@ -43,8 +42,7 @@ TEST(MathTest, Smean2)
 
     Share avg;
     avg = qmpc::Math::smean(v);
-    open(avg);
-    FixedPoint avg_rec = recons(avg);
+    FixedPoint avg_rec = open_and_recons(avg);
 
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
@@ -66,8 +64,7 @@ TEST(MathTest, Variance)
 
     Share var;
     var = qmpc::Math::variance(v);
-    open(var);
-    FixedPoint var_rec = recons(var);
+    FixedPoint var_rec = open_and_recons(var);
 
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
@@ -100,8 +97,7 @@ TEST(MathTest, Variance2)
 
     Share var;
     var = qmpc::Math::variance(v);
-    open(var);
-    FixedPoint var_rec = recons(var);
+    FixedPoint var_rec = open_and_recons(var);
 
     Config *conf = Config::getInstance();
     int n_parties = conf->n_parties;
@@ -157,8 +153,7 @@ TEST(MathTest, Correl)
     std::vector<Share> x = {FixedPoint("1.0"), FixedPoint("2.0"), FixedPoint("5.0")};
     std::vector<Share> y = {FixedPoint("10.0"), FixedPoint("5.0"), FixedPoint("6.0")};
     Share correl_rec = qmpc::Math::correl(x, y);
-    open(correl_rec);
-    FixedPoint target = recons(correl_rec);
+    FixedPoint target = open_and_recons(correl_rec);
 
     FixedPoint expected("-0.54470478");
 
@@ -171,8 +166,7 @@ TEST(MathTest, Correl_0div)
     std::vector<Share> y = {FixedPoint("10.0"), FixedPoint("10.0"), FixedPoint("10.0")};
 
     Share correl_rec = qmpc::Math::correl(x, y);
-    open(correl_rec);
-    FixedPoint target = recons(correl_rec);
+    FixedPoint target = open_and_recons(correl_rec);
     EXPECT_NEAR(target.getDoubleVal(), 0.0, 0.001);
 }
 
@@ -219,8 +213,7 @@ TEST(MathTest, Correl_large)
     auto start = std::chrono::system_clock::now();
 
     Share correl = qmpc::Math::correl(x, y);
-    open(correl);
-    FixedPoint correl_rec = recons(correl);
+    FixedPoint correl_rec = open_and_recons(correl);
 
     auto end = std::chrono::system_clock::now();
     auto dur = end - start;
@@ -243,8 +236,7 @@ TEST(MathTest, ExpTest)
 
     auto exp_n = qmpc::Math::exp(x);
     double expect = std::exp(n_parties);
-    open(exp_n);
-    auto exp_n_rec = recons(exp_n);
+    auto exp_n_rec = open_and_recons(exp_n);
     auto end = std::chrono::system_clock::now();
     auto dur = end - start;
 

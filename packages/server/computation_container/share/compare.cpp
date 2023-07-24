@@ -49,8 +49,7 @@ bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
 {
     Share<FixedPoint> s = left - right;
     Share s_ltz = LTZ(s);
-    open(s_ltz);
-    auto ret = recons(s_ltz);
+    auto ret = open_and_recons(s_ltz);
     return convertFpToBool(ret, "Share < Share");
 }
 
@@ -69,8 +68,7 @@ bool operator<(const Share<FixedPoint> &left, const FixedPoint &right)
 {
     Share<FixedPoint> s = left - right;
     Share s_ltz = LTZ(s);
-    open(s_ltz);
-    auto ret = recons(s_ltz);
+    auto ret = open_and_recons(s_ltz);
     return convertFpToBool(ret, "Share < FixedPoint");
 }
 
@@ -88,8 +86,7 @@ std::vector<bool> allLess(
 {
     auto s = left - right;
     auto s_ltz = LTZ(s);
-    open(s_ltz);
-    auto fpv = recons(s_ltz);
+    auto fpv = open_and_recons(s_ltz);
     std::vector<bool> ret;
     ret.reserve(fpv.size());
     for (const auto &fp : fpv)
@@ -105,8 +102,7 @@ std::vector<bool> allGreater(
 {
     auto s = right - left;
     auto s_ltz = LTZ(s);
-    open(s_ltz);
-    auto fpv = recons(s_ltz);
+    auto fpv = open_and_recons(s_ltz);
     std::vector<bool> ret;
     ret.reserve(fpv.size());
     for (const auto &fp : fpv)

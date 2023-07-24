@@ -408,11 +408,9 @@ ValueTable hjoin(const ValueTable &table1, const ValueTable &table2)
 
     // joinしたidsのindexリストを構築
     auto ids_share1 = toShare(table1.getIdColumn());
-    open(ids_share1);
-    auto ids1 = recons(ids_share1);
+    auto ids1 = open_and_recons(ids_share1);
     auto ids_share2 = toShare(table2.getIdColumn());
-    open(ids_share2);
-    auto ids2 = recons(ids_share2);
+    auto ids2 = open_and_recons(ids_share2);
     auto [ids_it1, ids_it2] = intersectionValueIndex(ids1, ids2);
 
     // tableをjoinして保存

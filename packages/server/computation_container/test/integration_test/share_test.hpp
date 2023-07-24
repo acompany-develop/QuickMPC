@@ -34,8 +34,7 @@ TEST(ShareTest, AddBetweenShares)
     Share a(FixedPoint("1.0"));
     Share b(FixedPoint("2.0"));
     a = a + b;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(3.0 * n_parties)));
 }
 
@@ -46,8 +45,7 @@ TEST(ShareTest, SubBetweenShares)
     Share a(FixedPoint("2.0"));
     Share b(FixedPoint("1.0"));
     a = a - b;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(n_parties)));
 }
 
@@ -58,8 +56,7 @@ TEST(ShareTest, MulBetweenShares)
     Share a(FixedPoint("3.0"));
     Share b(FixedPoint("3.0"));
     a = a * b;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     QMPC_LOG_INFO("a_rec = {}", a_rec.getDoubleVal());
     EXPECT_EQ(a_rec, FixedPoint(std::to_string((3.0 * n_parties) * (3.0 * n_parties))));
 }
@@ -71,8 +68,7 @@ TEST(ShareTest, AddBetweenShareAndFixedPoint)
     Share a(FixedPoint("1.0"));
     FixedPoint b("2.0");
     a = a + b;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(n_parties + 2.0)));
 }
 
@@ -83,8 +79,7 @@ TEST(ShareTest, SubBetweenShareAndFixedPoint)
     Share a(FixedPoint("10.0"));
     FixedPoint b("2.0");
     a = a - b;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(10.0 * n_parties - 2.0)));
 }
 
@@ -95,8 +90,7 @@ TEST(ShareTest, MulBetweenShareAndFixedPoint)
     Share a(FixedPoint("2.0"));
     FixedPoint b("3.0");
     a = a * b;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(2.0 * n_parties * 3.0)));
 }
 
@@ -107,8 +101,7 @@ TEST(ShareTest, DivBetweenShareAndFixedPoint)
     Share a(FixedPoint("1.0"));
     FixedPoint b("2.0");
     a = a / b;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(n_parties / 2.0)));
 }
 
@@ -126,8 +119,7 @@ TEST(ShareTest, GetAdditiveInvVec)
     a = getAdditiveInvVec(a);
     std::vector<FixedPoint> expected = {
         (-5.0 * n_parties), (-3.6 * n_parties), (6.0 * n_parties), (4.2 * n_parties), 0};
-    open(a);
-    std::vector<FixedPoint> ret = recons(a);
+    std::vector<FixedPoint> ret = open_and_recons(a);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_EQ(expected[i], ret[i].getDoubleVal());
@@ -150,16 +142,14 @@ TEST(ShareTest, AddBetweenSharesAndFixedPoint)
         -6.0 * n_parties + 2.0,
         -4.2 * n_parties + 2.0};
     std::vector<Share> c = a + b;
-    open(c);
-    std::vector<FixedPoint> ret = recons(c);
+    std::vector<FixedPoint> ret = open_and_recons(c);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
     }
 
     c = b + a;
-    open(c);
-    ret = recons(c);
+    ret = open_and_recons(c);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
@@ -182,16 +172,14 @@ TEST(ShareTest, SubBetweenSharesAndFixedPoint)
         -6.0 * n_parties - 2.0,
         -4.2 * n_parties - 2.0};
     std::vector<Share> c = a - b;
-    open(c);
-    std::vector<FixedPoint> ret = recons(c);
+    std::vector<FixedPoint> ret = open_and_recons(c);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
     }
 
     c = b - a;
-    open(c);
-    ret = recons(c);
+    ret = open_and_recons(c);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(-expected[i], ret[i].getDoubleVal(), 0.1);
@@ -214,16 +202,14 @@ TEST(ShareTest, MulBetweenSharesAndFixedPoint)
         -6.0 * n_parties * 2.0,
         -4.2 * n_parties * 2.0};
     std::vector<Share> c = a * b;
-    open(c);
-    std::vector<FixedPoint> ret = recons(c);
+    std::vector<FixedPoint> ret = open_and_recons(c);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
     }
 
     c = b * a;
-    open(c);
-    ret = recons(c);
+    ret = open_and_recons(c);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
@@ -246,8 +232,7 @@ TEST(ShareTest, DivBetweenSharesAndFixedPoint)
         -6.0 * n_parties / 2.0,
         -4.2 * n_parties / 2.0};
     std::vector<Share> c = a / b;
-    open(c);
-    std::vector<FixedPoint> ret = recons(c);
+    std::vector<FixedPoint> ret = open_and_recons(c);
     for (int i = 0; i < static_cast<int>(a.size()); ++i)
     {
         EXPECT_NEAR(expected[i], ret[i].getDoubleVal(), 0.1);
@@ -261,8 +246,7 @@ TEST(ShareTest, AddBetweenFixedPointAndShare)
     Share a(FixedPoint("1.0"));
     FixedPoint b("2.0");
     a = b + a;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(2 + n_parties)));
 }
 
@@ -273,8 +257,7 @@ TEST(ShareTest, SubBetweenFixedPointAndShare)
     Share a(FixedPoint("2.0"));
     FixedPoint b("10.0");
     a = b - a;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(10 - (2 * n_parties))));
 }
 
@@ -285,8 +268,7 @@ TEST(ShareTest, MulBetweenFixedPointAndShare)
     Share a(FixedPoint("2.0"));
     FixedPoint b("3.0");
     a = b * a;
-    open(a);
-    FixedPoint a_rec = recons(a);
+    FixedPoint a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, FixedPoint(std::to_string(3 * (2 * n_parties))));
 }
 TEST(ShareTest, RandBitShare)
@@ -295,8 +277,7 @@ TEST(ShareTest, RandBitShare)
     for (int i = 0; i < N; ++i)
     {
         Share a = qmpc::Share::getRandBitShare<FixedPoint>();
-        open(a);
-        FixedPoint a_rec = recons(a);
+        FixedPoint a_rec = open_and_recons(a);
         QMPC_LOG_INFO("RandBit = {}", a_rec.getDoubleVal());
         bool left = (-0.01 < a_rec.getDoubleVal()) && (a_rec.getDoubleVal() < 0.01);
         bool right = (0.99 < a_rec.getDoubleVal()) && (a_rec.getDoubleVal() < 1.01);
@@ -309,8 +290,7 @@ TEST(ShareTest, BulkRandBitShare)
 {
     int N = 5;
     std::vector<Share> a = qmpc::Share::getRandBitShare<FixedPoint>(N);
-    open(a);
-    std::vector<FixedPoint> a_rec = recons(a);
+    std::vector<FixedPoint> a_rec = open_and_recons(a);
     for (int i = 0; i < N; ++i)
     {
         QMPC_LOG_INFO("RandBit = {}", a_rec[i].getDoubleVal());
@@ -338,8 +318,7 @@ TEST(ShareTest, LSBShare)
     for (int i = 0; i < static_cast<int>(s.size()); ++i)
     {
         Share lsb = qmpc::Share::getLSBShare(s[i]);
-        open(lsb);
-        FixedPoint lsb_rec = recons(lsb);
+        FixedPoint lsb_rec = open_and_recons(lsb);
         QMPC_LOG_INFO("LSB({}) = {}", expected[i][0], lsb_rec.getDoubleVal());
         EXPECT_NEAR(expected[i][1], lsb_rec.getDoubleVal(), error);
     }
@@ -363,8 +342,7 @@ TEST(ShareTest, BulkLSBShare)
     double error = 0.0001;
 
     std::vector<Share> lsb = qmpc::Share::getLSBShare(s);
-    open(lsb);
-    std::vector<FixedPoint> lsb_rec = recons(lsb);
+    std::vector<FixedPoint> lsb_rec = open_and_recons(lsb);
     for (int i = 0; i < static_cast<int>(s.size()); ++i)
     {
         QMPC_LOG_INFO("LSB({}) = {}", expected[i][0], lsb_rec[i].getDoubleVal());
@@ -406,8 +384,7 @@ TEST(ShareTest, Floor)
     for (int i = 0; i < static_cast<int>(s.size()); ++i)
     {
         Share s_floor = qmpc::Share::getFloor(s[i]);
-        open(s_floor);
-        FixedPoint result = recons(s_floor);
+        FixedPoint result = open_and_recons(s_floor);
         QMPC_LOG_INFO("floor({}) = {}", expected[i][0], result);
         EXPECT_NEAR(expected[i][1], result.getDoubleVal(), error);
     }
@@ -446,8 +423,7 @@ TEST(ShareTest, BulkFloor)
     double error = 0.0001;
 
     std::vector<Share> s_floor = qmpc::Share::getFloor(s);
-    open(s_floor);
-    std::vector<FixedPoint> result = recons(s_floor);
+    std::vector<FixedPoint> result = open_and_recons(s_floor);
     for (int i = 0; i < static_cast<int>(s.size()); ++i)
     {
         QMPC_LOG_INFO("floor({}) = {}", expected[i][0], result[i]);
@@ -492,8 +468,7 @@ TEST(ShareTest, LTZ)
     for (int i = 0; i < static_cast<int>(s.size()); ++i)
     {
         Share s_ltz = qmpc::Share::LTZ(s[i]);
-        open(s_ltz);
-        FixedPoint result = recons(s_ltz);
+        FixedPoint result = open_and_recons(s_ltz);
         QMPC_LOG_INFO("[{}<0] {}", expected[i][0], result);
         EXPECT_NEAR(result.getDoubleVal(), expected[i][1], error);
     }
@@ -533,8 +508,7 @@ TEST(ShareTest, LTZBulk)
     };
     double error = 0.00001;
     auto s_ltz = qmpc::Share::LTZ(s);
-    open(s_ltz);
-    auto result = recons(s_ltz);
+    auto result = open_and_recons(s_ltz);
     for (int i = 0; i < static_cast<int>(s.size()); ++i)
     {
         QMPC_LOG_INFO("[{}<0] {}", expected[i][0], result[i]);
@@ -644,13 +618,11 @@ TEST(ShareTest, RandomComparisonOperation)
     {
         // Share と Share の比較
         Share a_share(RandGenerator::getInstance()->getRand<FixedPoint>(-10000, 10000));
-        open(a_share);
         Share b_share(RandGenerator::getInstance()->getRand<FixedPoint>(-10000, 10000));
-        open(b_share);
         QMPC_LOG_INFO("a_share is {}", a_share.getVal());
         QMPC_LOG_INFO("b_share is {}", b_share.getVal());
-        FixedPoint a_rec = recons(a_share);
-        FixedPoint b_rec = recons(b_share);
+        FixedPoint a_rec = open_and_recons(a_share);
+        FixedPoint b_rec = open_and_recons(b_share);
 
         if (a_rec < b_rec)
         {
@@ -669,8 +641,7 @@ TEST(ShareTest, RandomComparisonOperation)
     // Share と FixedPoint の比較
     {
         Share a_share(RandGenerator::getInstance()->getRand<FixedPoint>(1, 1000));
-        open(a_share);
-        FixedPoint a_rec = recons(a_share);
+        FixedPoint a_rec = open_and_recons(a_share);
         FixedPoint target = FixedPoint("0");
         QMPC_LOG_INFO("a_rec = \t{}", a_rec.getVal());
         QMPC_LOG_INFO("target = \t{}", target.getVal());
@@ -691,8 +662,7 @@ TEST(ShareTest, RandomComparisonOperation)
     // FixedPoint と Share の比較
     {
         Share a_share(RandGenerator::getInstance()->getRand<FixedPoint>(1, 1000));
-        open(a_share);
-        FixedPoint a_rec = recons(a_share);
+        FixedPoint a_rec = open_and_recons(a_share);
         FixedPoint target = FixedPoint("0");
         QMPC_LOG_INFO("a_rec = \t{}", a_rec.getVal());
         QMPC_LOG_INFO("target = \t{}", target.getVal());
@@ -716,12 +686,11 @@ TEST(ShareTest, ConstantShare)
 {
     auto fp = FixedPoint("12");
     auto s = qmpc::Share::getConstantShare(fp);
-    open(s);
-    auto fp_r = recons(s);
+    auto fp_r = open_and_recons(s);
     EXPECT_EQ(fp, fp_r);
 }
 
-// 一括open,reconsテスト
+// 一括open_and_reconsテスト
 TEST(ShareTest, ReconsBulk)
 {
     Config *conf = Config::getInstance();
@@ -731,8 +700,7 @@ TEST(ShareTest, ReconsBulk)
         FixedPoint(std::to_string(n_parties)),
         FixedPoint(std::to_string(2.0 * n_parties)),
         FixedPoint(std::to_string(3.0 * n_parties))};
-    open(t);
-    auto target = recons(t);
+    auto target = open_and_recons(t);
     bool ng = false;
 
     for (int i = 0; i < static_cast<int>(t.size()); ++i)
@@ -759,8 +727,7 @@ TEST(ShareTest, AddBulk)
         FixedPoint(std::to_string(4.0 * n_parties)),
         FixedPoint(std::to_string(6.0 * n_parties))};
     auto ret = a + b;
-    open(ret);
-    auto target = recons(ret);
+    auto target = open_and_recons(ret);
 
     QMPC_LOG_INFO("AddBulk End !!");
     EXPECT_EQ(target, expected);
@@ -778,8 +745,7 @@ TEST(ShareTest, SubBulk)
         FixedPoint(std::to_string(-4.0 * n_parties)),
         FixedPoint(std::to_string(6.0 * n_parties))};
     auto ret = a - b;
-    open(ret);
-    auto target = recons(ret);
+    auto target = open_and_recons(ret);
 
     QMPC_LOG_INFO("SubBulk End !!");
     EXPECT_EQ(target, expected);
@@ -797,8 +763,7 @@ TEST(ShareTest, MulBulk)
         FixedPoint(std::to_string((2.0 * n_parties) * (2.0 * n_parties))),
         FixedPoint(std::to_string((3.0 * n_parties) * (3.0 * n_parties)))};
     auto ret = a * b;
-    open(ret);
-    auto target = recons(ret);
+    auto target = open_and_recons(ret);
     bool ng = false;
 
     QMPC_LOG_INFO("MulBulk End !!");
@@ -826,8 +791,7 @@ TEST(ShareTest, SameShareId)
         {
             qmpc::Share::AddressId::setJobId(0);
             Share a(1);
-            open(a);
-            ret1 = recons(a);
+            ret1 = open_and_recons(a);
             QMPC_LOG_INFO("Firset thread is {}", ret1.getVal());
             QMPC_LOG_INFO("First ID is {}", a.getId());
         }
@@ -837,8 +801,7 @@ TEST(ShareTest, SameShareId)
         {
             qmpc::Share::AddressId::setJobId(1);
             Share a(0);
-            open(a);
-            ret2 = recons(a);
+            ret2 = open_and_recons(a);
             QMPC_LOG_INFO("Second thread is {}", ret2.getVal());
             QMPC_LOG_INFO("Second ID is {}", a.getId());
         }
@@ -874,8 +837,7 @@ TEST(ShareTest, Sort)
     auto dsec = std::chrono::duration_cast<std::chrono::milliseconds>(diff).count();
 
     QMPC_LOG_INFO("share sorting time is : {}", dsec);
-    open(y);
-    auto y_rec = recons(y);
+    auto y_rec = open_and_recons(y);
 
     start = std::chrono::system_clock::now();
     std::sort(y_rec.begin(), y_rec.end());
@@ -890,8 +852,7 @@ TEST(ShareTest, Sort)
     // {
     //     QMPC_LOG_INFO("{}",aa.getVal());
     // }
-    open(x);
-    auto x_rec = recons(x);
+    auto x_rec = open_and_recons(x);
     for (int i = 0; i < N; ++i)
     {
         // QMPC_LOG_INFO("X is {}",x_rec[i]);
@@ -911,8 +872,7 @@ TEST(StreamTest, ReconsBulk)
         t[i] = FixedPoint("1.0");
         expected[i] = FixedPoint("3.0");
     }
-    open(t);
-    auto target = recons(t);
+    auto target = open_and_recons(t);
     for (int i = 0; i < static_cast<int>(t.size()); ++i)
     {
         EXPECT_NEAR(target[i].getDoubleVal(), expected[i].getDoubleVal(), 0.00001);
@@ -923,8 +883,7 @@ TEST(ShareTest, GenericSendShare)
     {
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<bool> a{};
-        open(a);
-        [[maybe_unused]] auto _ = recons(a);
+        [[maybe_unused]] auto _ = open_and_recons(a);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -933,8 +892,7 @@ TEST(ShareTest, GenericSendShare)
     {
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<int> b(4);
-        open(b);
-        [[maybe_unused]] auto _ = recons(b);
+        [[maybe_unused]] auto _ = open_and_recons(b);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -943,8 +901,7 @@ TEST(ShareTest, GenericSendShare)
     {
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<long> c(4);
-        open(c);
-        [[maybe_unused]] auto _ = recons(c);
+        [[maybe_unused]] auto _ = open_and_recons(c);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -953,8 +910,7 @@ TEST(ShareTest, GenericSendShare)
     {
         const auto clock_start = std::chrono::system_clock::now();
         qmpc::Share::Share<FixedPoint> f{};
-        open(f);
-        [[maybe_unused]] auto _ = recons(f);
+        [[maybe_unused]] auto _ = open_and_recons(f);
         const auto clock_end = std::chrono::system_clock::now();
         const auto elapsed_time_ms =
             std::chrono::duration_cast<std::chrono::microseconds>(clock_end - clock_start).count();
@@ -969,8 +925,7 @@ TEST(ShareTest, addIntShare)
     qmpc::Share::Share<int> b(4);
     a = a + b;  // 21
     std::cout << a.getVal() << std::endl;
-    open(a);
-    auto a_rec = recons(a);
+    auto a_rec = open_and_recons(a);
     std::cout << "addint share is " << a_rec << std::endl;
     EXPECT_EQ(a_rec, n_parties * 3 + n_parties * 4);
 }
@@ -983,8 +938,7 @@ TEST(ShareTest, subIntShare)
     qmpc::Share::Share<int> b(4);
     a = a - b;
     std::cout << a.getVal() << std::endl;
-    open(a);
-    auto a_rec = recons(a);
+    auto a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, n_parties * 3 - n_parties * 4);
 }
 TEST(ShareTest, mulIntShare)
@@ -995,27 +949,23 @@ TEST(ShareTest, mulIntShare)
     qmpc::Share::Share<int> b(4);
     a = a * b;
     std::cout << a.getVal() << std::endl;
-    open(a);
-    auto a_rec = recons(a);
+    auto a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, (n_parties * 3) * (n_parties * 4));
 }
 TEST(ShareTest, boolLarge)
 {
     std::vector<qmpc::Share::Share<bool>> a(50000, true);
-    open(a);
-    auto target = recons(a);
+    auto target = open_and_recons(a);
 }
 TEST(ShareTest, IntLarge)
 {
     std::vector<qmpc::Share::Share<int>> a(50000, 1);
-    open(a);
-    auto target = recons(a);
+    auto target = open_and_recons(a);
 }
 TEST(ShareTest, FPLarge)
 {
     std::vector<qmpc::Share::Share<FixedPoint>> a(50000, FixedPoint("1"));
-    open(a);
-    auto target = recons(a);
+    auto target = open_and_recons(a);
 }
 TEST(ShareTest, IntMulLarge)
 {
@@ -1024,8 +974,7 @@ TEST(ShareTest, IntMulLarge)
     std::vector<qmpc::Share::Share<int>> a(20000, 1);
     std::vector<qmpc::Share::Share<int>> b(20000, 1);
     a = a * b;
-    open(a);
-    auto rec = recons(a);
+    auto rec = open_and_recons(a);
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
 TEST(ShareTest, FPMulLarge)
@@ -1035,8 +984,7 @@ TEST(ShareTest, FPMulLarge)
     std::vector<qmpc::Share::Share<FixedPoint>> a(20000, FixedPoint("1"));
     std::vector<qmpc::Share::Share<FixedPoint>> b(20000, FixedPoint("1"));
     a = a * b;
-    open(a);
-    auto rec = recons(a);
+    auto rec = open_and_recons(a);
 
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
@@ -1048,8 +996,7 @@ TEST(ShareTest, IntMulExtraLarge)
     std::vector<qmpc::Share::Share<int>> a(100000, 1);
     std::vector<qmpc::Share::Share<int>> b(100000, 1);
     a = a * b;
-    open(a);
-    auto rec = recons(a);
+    auto rec = open_and_recons(a);
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
 
@@ -1062,8 +1009,7 @@ TEST(ShareTest, doubleMulExtraLarge)
     std::vector<qmpc::Share::Share<double>> a(100000, 1.0);
     std::vector<qmpc::Share::Share<double>> b(100000, 1.0);
     a = a * b;
-    open(a);
-    auto rec = recons(a);
+    auto rec = open_and_recons(a);
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
 TEST(ShareTest, floatMulExtraLarge)
@@ -1073,8 +1019,7 @@ TEST(ShareTest, floatMulExtraLarge)
     std::vector<qmpc::Share::Share<float>> a(100000, 1);
     std::vector<qmpc::Share::Share<float>> b(100000, 1);
     a = a * b;
-    open(a);
-    auto rec = recons(a);
+    auto rec = open_and_recons(a);
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
 */
@@ -1086,8 +1031,7 @@ TEST(ShareTest, FPMulExtraLarge)
     std::vector<qmpc::Share::Share<FixedPoint>> a(100000, FixedPoint("1"));
     std::vector<qmpc::Share::Share<FixedPoint>> b(100000, FixedPoint("1"));
     a = a * b;
-    open(a);
-    auto rec = recons(a);
+    auto rec = open_and_recons(a);
 
     EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
 }
