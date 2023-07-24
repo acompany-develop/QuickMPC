@@ -19,7 +19,7 @@ logger = get_logger()
 @dataclass(frozen=True)
 class Share:
     __share_random_range: ClassVar[Tuple[Decimal, Decimal]] =\
-        (Decimal(-(1 << 50)), Decimal(1 << 50))
+        (Decimal(-(1 << 64)), Decimal(1 << 64))
 
     @methoddispatch(is_static_method=True)
     @staticmethod

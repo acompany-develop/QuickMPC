@@ -1,62 +1,59 @@
 
 #include "compare.hpp"
 
+#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/operators.hpp>
 #include "config_parse/config_parse.hpp"
 #include "logging/logger.hpp"
 
-using lint = long long;
-const int bit_length = 50;
-
 namespace qmpc::Share
 {
+const int bit_length = 48;
+using mp_int = boost::multiprecision::cpp_int;
 
-Share<lint> right_shift(const Share<lint>&x)
+Share<mp_int> right_shift(const Share<mp_int>&x)
 {
-    Share<lint> r = getRandBitShare<lint>();
-    Share<bool> b((x.getVal() ^ r.getVal()) & 1);
+    Share<mp_int> r = getRandBitShare<mp_int>();
+    Share<bool> b(((x.getVal() ^ r.getVal()) & 1) == 1);
 
     open(b);
     int sum = recons(b);
     bool c = sum & 1;
 
-    Share<lint> y = x - r + (c ? 2*r : Share<lint>(0)) - Share<lint>(b.getVal());
+    Share<mp_int> y = x - r + (c ? 2*r : Share<mp_int>(0)) - Share<mp_int>(b.getVal());
     Config *conf = Config::getInstance();
-    if (conf->party_id == conf->sp_id)
-    {
-        y += lint(sum - c);
-    }
+    y += mp_int(sum - c);
     assert(y.getVal() % 2 == 0);
     return y / 2;
 }
 
-std::vector<Share<lint>> right_shift(const std::vector<Share<lint>>&x)
+std::vector<Share<mp_int>> right_shift(const std::vector<Share<mp_int>>&x)
 {
     size_t n=x.size();
-    std::vector<Share<lint>> r = getRandBitShare<lint>(n);
+    std::vector<Share<mp_int>> r = getRandBitShare<mp_int>(n);
 
     std::vector<Share<bool>> b(n);
-    for(int i=0;i<n;i++)
+    for(size_t i=0;i<n;i++)
     {
-        b[i] = (x[i].getVal() ^ r[i].getVal()) & 1;
+        b[i] = ((x[i].getVal() ^ r[i].getVal()) & 1) == 1;
     }
 
     open(b);
     std::vector<int> sum = recons(b);
     std::vector<bool> c(n);
-    for(int i=0;i<n;i++)
+    for(size_t i=0;i<n;i++)
     {
         c[i] = sum[i] & 1;
     }
 
     Config *conf = Config::getInstance();
-    std::vector<Share<lint>> y(n);
-    for(int i=0;i<n;i++)
+    std::vector<Share<mp_int>> y(n);
+    for(size_t i=0;i<n;i++)
     {
-        y[i] = x[i] - r[i] + (c[i] ? 2*r[i] : Share<lint>(0)) - Share<lint>(b[i].getVal());
-        if (conf->party_id == conf->sp_id)
-        {
-            y[i] += lint(sum[i] - c[i]);
-        }
+        y[i] = x[i] - r[i] + (c[i] ? 2*r[i] : Share<mp_int>(0)) - Share<mp_int>(b[i].getVal());
+        y[i] += mp_int(sum[i] - c[i]);
         assert(y[i].getVal() % 2 == 0);
         y[i] /= 2;
     }
@@ -64,23 +61,24 @@ std::vector<Share<lint>> right_shift(const std::vector<Share<lint>>&x)
     return y;
 }
 
-bool LTZ(Share<lint> x)
+bool LTZ(Share<mp_int> x)
 {
     x += 1LL << bit_length;
     for(int i=0;i<bit_length;i++)
     {
         x = right_shift(x);
     }
-    open(x);
-    lint res = recons(x);
+    Share<FixedPoint> x_fp(x.getVal());
+    open(x_fp);
+    FixedPoint res = recons(x_fp);
     assert(res == 0 || res == 1);
-    return res;
+    return res == 0;
 }
 
-std::vector<bool> LTZ(std::vector<Share<lint>> x)
+std::vector<bool> LTZ(std::vector<Share<mp_int>> x)
 {
     size_t n = x.size();
-    for(int i=0;i<n;i++)
+    for(size_t i=0;i<n;i++)
     {
         x[i] += 1LL << bit_length;
     }
@@ -89,10 +87,15 @@ std::vector<bool> LTZ(std::vector<Share<lint>> x)
     {
         x = right_shift(x);
     }
-    open(x);
-    std::vector<lint> res = recons(x);
+    std::vector<Share<FixedPoint>> x_fp(n);
+    for(size_t i=0;i<n;i++)
+    {
+        x_fp[i] = Share<FixedPoint>(x[i].getVal());
+    }
+    open(x_fp);
+    std::vector<FixedPoint> res = recons(x_fp);
     std::vector<bool> b(n);
-    for(int i=0;i<n;i++)
+    for(size_t i=0;i<n;i++)
     {
         if(!(res[i]==0 || res[i]==1))
         {
@@ -109,16 +112,11 @@ std::vector<bool> allLess(
 )
 {
     size_t n = left.size();
-    std::vector<Share<lint>> v(n);
-    for(int i=0;i<n;i++)
+    std::vector<Share<mp_int>> v(n);
+    for(size_t i=0;i<n;i++)
     {
-        v[i] = lint((left[i] - right[i]).getVal().getRoundValue());
+        v[i] = mp_int((left[i] - right[i]).getVal().getRoundValue());
         //std::cerr<<v[i].getVal()<<" "<<left[i].getVal()<<" "<<right[i].getVal()<<std::endl;
-    }
-    for(int i=0;i<n;i++){
-        open(v[i]);
-        lint a = recons(v[i]);
-        assert((-1LL<<bit_length) <= a && a < (1LL<<bit_length));
     }
     return LTZ(v);
 }
@@ -135,7 +133,7 @@ std::vector<bool> allLessEq(
 )
 {
     auto res = allGreater(left,right);
-    for(int i=0;i<res.size();i++)res[i] = !res[i];
+    for(size_t i=0;i<res.size();i++)res[i] = !res[i];
     return res;
 }
 
