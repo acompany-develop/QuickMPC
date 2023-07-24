@@ -92,21 +92,21 @@ void open(const T &share)
     }
 }
 
-template <typename T>
-T stosv(const std::string &str_value)
+template <typename SV>
+SV stosv(const std::string &str_value)
 {
-    if constexpr (std::is_same_v<T, bool>)
+    if constexpr (std::is_same_v<SV, bool>)
     {
         assert(str_value == "0" || str_value == "1");
         return str_value == "1";
     }
-    else if constexpr (std::is_integral_v<T>)
+    else if constexpr (std::is_integral_v<SV>)
     {
         return std::stoll(str_value);
     }
     else  // TODO: constructable or convertible
     {
-        return T(str_value);
+        return SV(str_value);
     }
 }
 
