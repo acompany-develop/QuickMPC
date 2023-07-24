@@ -91,30 +91,32 @@ void open(const T &share)
         std::rethrow_exception(ep);
     }
 }
+
 template <typename T>
-auto stosv(const std::string &str_value)
+T stosv(const std::string &str_value)
 {
     if constexpr (std::is_same_v<T, bool>)
     {
-        return std::stoi(str_value);
+        assert(str_value == "0" || str_value == "1");
+        return str_value == "1";
     }
     else if constexpr (std::is_integral_v<T>)
     {
-        return std::stoi(str_value);
+        return std::stoll(str_value);
     }
     else  // TODO: constructable or convertible
     {
         return T(str_value);
     }
 }
-template <typename T, std::enable_if_t<is_share<T>::value, std::nullptr_t> = nullptr>
-auto recons(const T &share)
+
+template <typename SV>
+auto recons(const Share<SV> &share)
 {
     Config *conf = Config::getInstance();
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
     // 単一
-    using Result = typename T::value_type;
     Result ret{};
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
