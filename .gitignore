@@ -30,3 +30,5 @@ __pycache__
 !**/db/**/.gitkeep
 
 scripts/.env
+
+docs/*/build/**
