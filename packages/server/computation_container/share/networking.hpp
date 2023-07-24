@@ -16,39 +16,34 @@
 namespace qmpc::Share
 {
 using std::to_string;
-template <typename T>
-class Share;
 
-
-template <typename T>
-void send(const T &shares, const int &pt_id)
+template <typename SV>
+void send(const Share<SV>&share, const int&pt_id)
 {
+    Config *conf = Config::getInstance();
+    auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
+    std::vector<SV> str_value = {shares.getVal()};
+    std::vector<qmpc::Share::AddressId> share_id = {shares.getId()};
+    client->exchangeShares(str_value, share_id, 1, conf->party_id);
+}
+
+template <typename SV>
+void send(const std::vector<Share<SV>>&shares, const int &pt_id){
     // pt_idで指定されたパーティにシェアの値を送信する
     Config *conf = Config::getInstance();
     auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
 
-    if constexpr (std::disjunction_v<std::is_array<T>, is_share_vector<T>>)
+    size_t length = std::size(shares);
+    std::vector<SV> str_values(length);
+    std::vector<qmpc::Share::AddressId> share_ids(length);
+    for (unsigned int i = 0; i < length; i++)
     {
-        using SV = typename T::value_type::value_type;
-        size_t length = std::size(shares);
-        std::vector<SV> str_values(length);
-        std::vector<qmpc::Share::AddressId> share_ids(length);
-        for (unsigned int i = 0; i < length; i++)
-        {
-            str_values[i] = shares[i].getVal();
-            share_ids[i] = shares[i].getId();
-        }
-        client->exchangeShares(str_values, share_ids, length, conf->party_id);
+        str_values[i] = shares[i].getVal();
+        share_ids[i] = shares[i].getId();
     }
-    else if constexpr (is_share<T>::value)
-    {
-        using SV = typename T::value_type;
-        // pt_idで指定されたパーティにシェアの値を送信する
-        std::vector<SV> str_value = {shares.getVal()};
-        std::vector<qmpc::Share::AddressId> share_id = {shares.getId()};
-        client->exchangeShares(str_value, share_id, 1, conf->party_id);
-    }
+    client->exchangeShares(str_values, share_ids, length, conf->party_id);
 }
+
 template <class SV>
 void send(const SV &share_value, const AddressId &share_id, int pt_id)
 {
@@ -56,6 +51,8 @@ void send(const SV &share_value, const AddressId &share_id, int pt_id)
     auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
     client->exchangeShare(share_value, share_id, conf->party_id);
 }
+
+// T = Share<SV> or vector<Share<SV>>
 template <typename T>
 void open(const T &share)
 {
