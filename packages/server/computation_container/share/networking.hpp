@@ -117,49 +117,31 @@ auto recons(const Share<SV> &share)
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
     // 単一
+    using Result = std::conditional_t<is_same_v<SV,bool>, int, SV>;
     Result ret{};
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
         if (pt_id == conf->party_id)
         {
-            if constexpr (std::is_same_v<Result, bool>)
-            {
-                ret ^= share.getVal();
-            }
-            else
-            {
-                ret += share.getVal();
-            }
+            ret += share.getVal();
         }
         else
         {
-            auto s = server->getShare(pt_id, share.getId());
-            if constexpr (std::is_same_v<Result, bool>)
-            {
-                ret ^= Result{s == "1"};
-            }
-            else if constexpr (std::is_integral_v<Result>)
-            {
-                ret += Result{std::stoi(s)};
-            }
-            else
-            {
-                Result received_value{s};
-                ret += received_value;
-            }
+            std::string s = server->getShare(pt_id, share.getId());
+            ret += stosv(s);
         }
     }
     return ret;
 }
-template <typename T, std::enable_if_t<is_share_vector<T>::value, std::nullptr_t> = nullptr>
-auto recons(const T &share)
+template <typename SV>
+auto recons(const std::vector<Share<SV>> &share)
 {
     Config *conf = Config::getInstance();
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
     // 一括部分
-    using Result = typename T::value_type::value_type;
     size_t length = std::size(share);
+    using Result = std::conditional_t<is_same_v<SV,bool>, int, SV>;
     std::vector<Result> ret(length);
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
@@ -173,12 +155,7 @@ auto recons(const T &share)
         {
             for (unsigned int i = 0; i < length; i++)
             {
-                if constexpr (std::is_same_v<Result, bool>)
-                {
-                    ret[i] = ret[i] ^ share[i].getVal();
-                }
-                else
-                    ret[i] += share[i].getVal();
+                ret[i] += share[i].getVal();
             }
         }
         else
@@ -186,18 +163,7 @@ auto recons(const T &share)
             std::vector<std::string> values = server->getShares(pt_id, ids_list);
             for (unsigned int i = 0; i < length; i++)
             {
-                if constexpr (std::is_same_v<Result, bool>)
-                {
-                    ret[i] = ret[i] ^ Result(std::stoi(values[i]));
-                }
-                else if constexpr (std::is_integral_v<Result>)
-                {
-                    ret[i] += Result(std::stoi(values[i]));
-                }
-                else
-                {
-                    ret[i] += Result(values[i]);
-                }
+                ret[i] += stosv(values[i]);
             }
         }
     }
