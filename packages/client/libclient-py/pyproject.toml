@@ -2,6 +2,26 @@
 requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
+[project]
+name = "quickmpc"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [ {name = "Acompany"} ]
+requires-python = ">=3.7"
+dependencies = [
+    "numpy",
+    "grpcio-tools",
+    "grpcio-status",
+    "pynacl",
+    "tqdm",
+    "natsort",
+    "pandas",
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+package-dir = {"quickmpc" = "quickmpc"}
+
 [tool.setuptools_scm]
 write_to = "packages/client/libclient-py/quickmpc/_version.py"
 root = "../../../"
