@@ -1,143 +1,143 @@
 
 #include "compare.hpp"
 
+#include <boost/math/special_functions/fpclassify.hpp>
+#include <boost/multiprecision/cpp_dec_float.hpp>
+#include <boost/multiprecision/cpp_int.hpp>
+#include <boost/operators.hpp>
 #include "config_parse/config_parse.hpp"
 #include "logging/logger.hpp"
 
 namespace qmpc::Share
 {
+const int bit_length = 48;
+using mp_int = boost::multiprecision::cpp_int;
 
-auto convertFpToBool(const FixedPoint &fp, const std::string &op_name)
+Share<mp_int> right_shift(const Share<mp_int>&x)
 {
-    if (fp.getDoubleVal() > 0.95)
-    {
-        return true;
-    }
-    else if (fp.getDoubleVal() >= 0.5)
-    {
-        QMPC_LOG_ERROR(
-            "This operation (%s) determined to be true, but it could be false.", op_name
-        );
-        QMPC_LOG_ERROR(
-            "If you want to ignore the error and continue the calculation, replace 'exit' with "
-            "'return true;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return true;
-    }
-    else if (fp.getDoubleVal() >= 0.05)
-    {
-        QMPC_LOG_ERROR(
-            "This operation (%s) determined to be false, but it could be true.", op_name
-        );
-        QMPC_LOG_ERROR(
-            "If you want to ignore the error and continue the calculation, replace 'exit' with "
-            "'return false;'. "
-        );
-        std::exit(EXIT_FAILURE);
-        // return false;
-    }
-    else
-    {
-        return false;
-    }
+    Share<mp_int> r = getRandBitShare<mp_int>();
+    Share<bool> b(((x.getVal() ^ r.getVal()) & 1) == 1);
+
+    int sum = open_and_recons(b);
+    bool c = sum & 1;
+
+    Share<mp_int> y = x - r + (c ? 2*r : Share<mp_int>(0)) - Share<mp_int>(b.getVal());
+    Config *conf = Config::getInstance();
+    y += mp_int(sum - c);
+    assert(y.getVal() % 2 == 0);
+    return y / 2;
 }
 
-// アルゴリズムの詳細はこちら:
-// docs/faster-comparison-operators.md
-bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
+std::vector<Share<mp_int>> right_shift(const std::vector<Share<mp_int>>&x)
 {
-    Share<FixedPoint> s = left - right;
-    Share s_ltz = LTZ(s);
-    auto ret = open_and_recons(s_ltz);
-    return convertFpToBool(ret, "Share < Share");
+    size_t n=x.size();
+    std::vector<Share<mp_int>> r = getRandBitShare<mp_int>(n);
+
+    std::vector<Share<bool>> b(n);
+    for(size_t i=0;i<n;i++)
+    {
+        b[i] = ((x[i].getVal() ^ r[i].getVal()) & 1) == 1;
+    }
+
+    std::vector<int> sum = open_and_recons(b);
+    std::vector<bool> c(n);
+    for(size_t i=0;i<n;i++)
+    {
+        c[i] = sum[i] & 1;
+    }
+
+    Config *conf = Config::getInstance();
+    std::vector<Share<mp_int>> y(n);
+    for(size_t i=0;i<n;i++)
+    {
+        y[i] = x[i] - r[i] + (c[i] ? 2*r[i] : Share<mp_int>(0)) - Share<mp_int>(b[i].getVal());
+        y[i] += mp_int(sum[i] - c[i]);
+        assert(y[i].getVal() % 2 == 0);
+        y[i] /= 2;
+    }
+
+    return y;
 }
 
-// [left == right] <=> [not (left < right)] and [not (right < left)]
-// アルゴリズムの詳細はこちら:
-// docs/faster-comparison-operators.md
-bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right)
+bool LTZ(Share<mp_int> x)
 {
-    auto x_ret = (left < right);
-    auto y_ret = (right < left);
-    auto ret = (FixedPoint(1) - x_ret) * (FixedPoint(1) - y_ret);
-    return convertFpToBool(ret, "Share == Share");
+    x += 1LL << bit_length;
+    for(int i=0;i<bit_length;i++)
+    {
+        x = right_shift(x);
+    }
+    Share<FixedPoint> x_fp(x.getVal());
+    FixedPoint res = open_and_recons(x_fp);
+    assert(res == 0 || res == 1);
+    return res == 0;
 }
 
-bool operator<(const Share<FixedPoint> &left, const FixedPoint &right)
+std::vector<bool> LTZ(std::vector<Share<mp_int>> x)
 {
-    Share<FixedPoint> s = left - right;
-    Share s_ltz = LTZ(s);
-    auto ret = open_and_recons(s_ltz);
-    return convertFpToBool(ret, "Share < FixedPoint");
-}
+    size_t n = x.size();
+    for(size_t i=0;i<n;i++)
+    {
+        x[i] += 1LL << bit_length;
+    }
 
-bool operator==(const Share<FixedPoint> &left, const FixedPoint &right)
-{
-    auto x_ret = (left < right);
-    auto y_ret = (right < left);
-    auto ret = (FixedPoint(1) - x_ret) * (FixedPoint(1) - y_ret);
-    return convertFpToBool(ret, "Share == FixedPoint");
+    for(int i=0;i<bit_length;i++)
+    {
+        x = right_shift(x);
+    }
+    std::vector<Share<FixedPoint>> x_fp(n);
+    for(size_t i=0;i<n;i++)
+    {
+        x_fp[i] = Share<FixedPoint>(x[i].getVal());
+    }
+    std::vector<FixedPoint> res = open_and_recons(x_fp);
+    std::vector<bool> b(n);
+    for(size_t i=0;i<n;i++)
+    {
+        if(!(res[i]==0 || res[i]==1))
+        {
+            //for(int i=0;i<n;i++)std::cerr<<res[i]<<" ";std::cerr<<std::endl;
+            assert(false);
+        }
+        b[i] = res[i]==0;
+    }
+    return b;
 }
 
 std::vector<bool> allLess(
     const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
 )
 {
-    auto s = left - right;
-    auto s_ltz = LTZ(s);
-    auto fpv = open_and_recons(s_ltz);
-    std::vector<bool> ret;
-    ret.reserve(fpv.size());
-    for (const auto &fp : fpv)
+    size_t n = left.size();
+    std::vector<Share<mp_int>> v(n);
+    for(size_t i=0;i<n;i++)
     {
-        ret.emplace_back(convertFpToBool(fp, "Share < Share"));
+        v[i] = mp_int((left[i] - right[i]).getVal().getRoundValue());
+        //std::cerr<<v[i].getVal()<<" "<<left[i].getVal()<<" "<<right[i].getVal()<<std::endl;
     }
-    return ret;
+    return LTZ(v);
 }
 
 std::vector<bool> allGreater(
     const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
 )
 {
-    auto s = right - left;
-    auto s_ltz = LTZ(s);
-    auto fpv = open_and_recons(s_ltz);
-    std::vector<bool> ret;
-    ret.reserve(fpv.size());
-    for (const auto &fp : fpv)
-    {
-        ret.emplace_back(convertFpToBool(fp, "Share > Share"));
-    }
-    return ret;
+    return allLess(right, left);
 }
 
 std::vector<bool> allLessEq(
     const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
 )
 {
-    auto gtv = allGreater(left, right);
-    std::vector<bool> ret;
-    ret.reserve(gtv.size());
-    for (const auto &gt : gtv)
-    {
-        ret.emplace_back(gt ^ true);
-    }
-    return ret;
+    auto res = allGreater(left,right);
+    for(size_t i=0;i<res.size();i++)res[i] = !res[i];
+    return res;
 }
 
 std::vector<bool> allGreaterEq(
     const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
 )
 {
-    auto ltv = allLess(left, right);
-    std::vector<bool> ret;
-    ret.reserve(ltv.size());
-    for (const auto &lt : ltv)
-    {
-        ret.emplace_back(lt ^ true);
-    }
-    return ret;
+    return allLessEq(right, left);
 }
 
 std::vector<bool> allEq(
@@ -154,46 +154,4 @@ std::vector<bool> allEq(
     }
     return ret;
 }
-
-// Less Than Zero ([s < 0])
-// アルゴリズムの詳細はこちら:
-// docs/faster-comparison-operators.md
-Share<FixedPoint> LTZ(const Share<FixedPoint> &s)
-{
-    // Experimented and adjusted.
-    int m = 20;
-    int k = 48;
-
-    // s に 2^m をかけて整数化を試みる
-    Share<FixedPoint> x = s * FixedPoint(std::to_string(1LL << m));
-    Share<FixedPoint> y = FixedPoint(std::to_string(1LL << k)) + x;
-    Share<FixedPoint> z = getLSBShare(y);
-    y = (y - z) * FixedPoint(0.5);
-    for (int i = 1; i < k; ++i)
-    {
-        Share<FixedPoint> b = getLSBShare(y);
-        z += (b * FixedPoint(std::to_string(1LL << i)));
-        y = (y - b) * FixedPoint(0.5);
-    }
-    return (z - x) / FixedPoint(std::to_string(1LL << k));
 }
-
-std::vector<Share<FixedPoint>> LTZ(const std::vector<Share<FixedPoint>> &s)
-{
-    // Experimented and adjusted.
-    int m = 20;
-    int k = 48;
-
-    auto x = s * FixedPoint(std::to_string(1LL << m));
-    auto y = FixedPoint(std::to_string(1LL << k)) + x;
-    auto z = getLSBShare(y);
-    y = (y - z) * FixedPoint(0.5);
-    for (int i = 1; i < k; ++i)
-    {
-        auto b = getLSBShare(y);
-        z = z + (b * FixedPoint(std::to_string(1LL << i)));
-        y = (y - b) * FixedPoint(0.5);
-    }
-    return (z - x) / FixedPoint(std::to_string(1LL << k));
-}
-}  // namespace qmpc::Share

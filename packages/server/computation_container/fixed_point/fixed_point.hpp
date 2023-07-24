@@ -72,7 +72,16 @@ public:
             }
         }
         else
-            value = static_cast<T>(v) * shift;
+        {
+            if constexpr(std::is_same_v<U,T>)
+            {
+                value = v * shift;
+            }
+            else
+            {
+                value = static_cast<T>(v) * shift;
+            }
+        }
     }
     FixedPointImpl(const std::string &str)
     {

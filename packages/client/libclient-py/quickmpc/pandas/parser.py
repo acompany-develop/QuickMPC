@@ -75,11 +75,12 @@ def to_float(val: str) -> float:
         # Due to the limitation of comparison operation,
         # k bits are taken out and divided by 2^m.
         k: int = 48
-        m: int = 20
+        # m: int = 20
         hs: str = sha512(val.encode()).hexdigest()
         val_int: int = int(hs[:(k >> 2)], 16)
-        val_float: float = val_int / pow(2, m)
-        return val_float
+        # val_float: float = val_int / pow(2, m)
+        # return val_float
+        return val_int
 
 
 def to_int(val: str, encoding='utf-8') -> int:

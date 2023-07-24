@@ -71,6 +71,7 @@ grpc::Status Server::ExchangeShares(
     }
 
     std::lock_guard<std::mutex> lock(mtx);  // mutex発動
+    assert(!first);
     if (!first)
     {
         shares_vec[std::make_tuple(party_id, share_id, job_id, thread_id)] = share_str_vec;

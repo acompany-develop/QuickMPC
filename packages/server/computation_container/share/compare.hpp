@@ -29,6 +29,6 @@ std::vector<bool> allEq(
     const std::vector<Share<FixedPoint>> &left, const std::vector<Share<FixedPoint>> &right
 );
 
-Share<FixedPoint> LTZ(const Share<FixedPoint> &s);
-std::vector<Share<FixedPoint>> LTZ(const std::vector<Share<FixedPoint>> &s);
+bool LTZ(const Share<FixedPoint> &s);
+std::vector<bool> LTZ(const std::vector<Share<FixedPoint>> &s);
 }  // namespace qmpc::Share

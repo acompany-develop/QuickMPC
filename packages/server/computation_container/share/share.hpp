@@ -184,10 +184,10 @@ public:
         ret += left;
         return ret;
     }
-    friend bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
-    friend bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
-    friend bool operator<(const Share<FixedPoint> &left, const FixedPoint &right);
-    friend bool operator==(const Share<FixedPoint> &left, const FixedPoint &right);
+    //friend bool operator<(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
+    //friend bool operator==(const Share<FixedPoint> &left, const Share<FixedPoint> &right);
+    //friend bool operator<(const Share<FixedPoint> &left, const FixedPoint &right);
+    //friend bool operator==(const Share<FixedPoint> &left, const FixedPoint &right);
 
     friend std::vector<Share> operator+(
         const std::vector<Share> &obj1, const std::vector<Share> &obj2
