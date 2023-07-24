@@ -19,7 +19,7 @@ template <typename SV>
 class Share;
 
 template <typename SV>
-void send(const Share<SV>&share, const int&pt_id)
+void send(const Share<SV> &share, const int &pt_id)
 {
     Config *conf = Config::getInstance();
     auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
@@ -29,7 +29,8 @@ void send(const Share<SV>&share, const int&pt_id)
 }
 
 template <typename SV>
-void send(const std::vector<Share<SV>>&shares, const int &pt_id){
+void send(const std::vector<Share<SV>> &shares, const int &pt_id)
+{
     // pt_idで指定されたパーティにシェアの値を送信する
     Config *conf = Config::getInstance();
     auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
@@ -174,7 +175,7 @@ auto recons(const std::vector<Share<SV>> &share)
 
 // T : Share<SV> || vector<Share<SV>>
 template <typename T>
-auto open_and_recons(const T& share)
+auto open_and_recons(const T &share)
 {
     open(share);
     return recons(share);
