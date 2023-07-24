@@ -438,8 +438,7 @@ TEST(ShareBenchmark, Sort)
     constexpr auto N = 5;
     measureExecTime("Sort.Share", N, [&]() { std::sort(x.begin(), x.end()); });
 
-    open(y);
-    auto y_rec = recons(y);
+    auto y_rec = open_and_recons(y);
 
     measureExecTime("Sort.Svalue", N, [&]() { std::sort(y_rec.begin(), y_rec.end()); });
 }
@@ -449,8 +448,7 @@ TEST(ShareBench, unarySend)
     for (int i = 0; i < 1000; ++i)
     {
         Share a = Share(FixedPoint("2.0"));
-        open(a);
-        auto rec = recons(a);
+        auto rec = open_and_recons(a);
     }
     measureExecTime(
         "unaryMulti",
@@ -460,8 +458,7 @@ TEST(ShareBench, unarySend)
             for (int i = 0; i < 1000; ++i)
             {
                 Share a = Share(FixedPoint("2.0"));
-                open(a);
-                auto rec = recons(a);
+                auto rec = open_and_recons(a);
             }
         }
     );
@@ -477,8 +474,7 @@ TEST(ShareBench, vecOpen)
         {
             a.emplace_back(FixedPoint("3"));
         }
-        open(a);
-        auto a_rec = recons(a);
+        auto a_rec = open_and_recons(a);
     }
 
     measureExecTime(
@@ -495,8 +491,7 @@ TEST(ShareBench, vecOpen)
                 b.emplace_back(FixedPoint("4"));  // 12
             }
             auto c = a * b;  // 108
-            open(c);
-            auto c_rec = recons(c);
+            auto c_rec = open_and_recons(c);
         }
     );
 }

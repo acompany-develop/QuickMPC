@@ -59,9 +59,7 @@ FixedPoint stdev(std::vector<Share> &v)
     Share var;
     var = variance(v);
 
-    open(var);
-
-    FixedPoint stdev = recons(var);
+    FixedPoint stdev = open_and_recons(var);
     auto value = boost::multiprecision::cpp_dec_float_100(stdev.getStrVal());
     if (value < 0)
     {

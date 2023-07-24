@@ -65,8 +65,7 @@ TEST(MeshCodeTest, BulkMeshCode)
 
     for (const auto &meshcode : ret)
     {
-        open(meshcode);
-        std::vector<FixedPoint> result = recons(meshcode);
+        std::vector<FixedPoint> result = open_and_recons(meshcode);
         for (int i = 0; i < N; ++i)
         {
             EXPECT_NEAR(result[0].getDoubleVal(), expected[i][0], error);
