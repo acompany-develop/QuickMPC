@@ -15,7 +15,8 @@
 #include "server/computation_to_computation_container/server.hpp"
 namespace qmpc::Share
 {
-using std::to_string;
+template <typename T>
+class Share;
 
 template <typename SV>
 void send(const Share<SV>&share, const int&pt_id)
