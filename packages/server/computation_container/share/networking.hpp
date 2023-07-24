@@ -128,7 +128,7 @@ auto recons(const Share<SV> &share)
         else
         {
             std::string s = server->getShare(pt_id, share.getId());
-            ret += stosv(s);
+            ret += stosv<SV>(s);
         }
     }
     return ret;
@@ -163,7 +163,7 @@ auto recons(const std::vector<Share<SV>> &share)
             std::vector<std::string> values = server->getShares(pt_id, ids_list);
             for (unsigned int i = 0; i < length; i++)
             {
-                ret[i] += stosv(values[i]);
+                ret[i] += stosv<SV>(values[i]);
             }
         }
     }
