@@ -52,7 +52,7 @@ void send(const SV &share_value, const AddressId &share_id, int pt_id)
     client->exchangeShare(share_value, share_id, conf->party_id);
 }
 
-// T = Share<SV> or vector<Share<SV>>
+// T : Share<SV> || vector<Share<SV>>
 template <typename T>
 void open(const T &share)
 {
@@ -169,5 +169,13 @@ auto recons(const std::vector<Share<SV>> &share)
     }
 
     return ret;
+}
+
+// T : Share<SV> || vector<Share<SV>>
+template <typename T>
+auto open_and_recons(const T& share)
+{
+    open(share);
+    return recons(share);
 }
 }  // namespace qmpc::Share
