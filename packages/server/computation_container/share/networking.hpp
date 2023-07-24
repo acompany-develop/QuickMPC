@@ -123,22 +123,17 @@ auto recons(const Share<SV> &share)
     Result ret{};
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
-        int ret = 0;
-        for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
+        if (pt_id == conf->party_id)
         {
             ret += share.getVal();
         }
-        return ret;
-    }
-    else{
-        Result ret{};
-        for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
+        else
         {
             std::string s = server->getShare(pt_id, share.getId());
             ret += stosv<SV>(s);
         }
-        return ret;
     }
+    return ret;
 }
 template <typename SV>
 auto recons(const std::vector<Share<SV>> &share)
@@ -158,35 +153,24 @@ auto recons(const std::vector<Share<SV>> &share)
             ids_list[i] = share[i].getId();
         }
 
-    if constexpr (std::is_same_v<Result, bool>)
-    {
-        std::vector<int> ret(length, 0);
-        for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
+        if (pt_id == conf->party_id)
         {
-            std::vector<qmpc::Share::AddressId> ids_list(length);  // 複数シェアのidリスト
             for (unsigned int i = 0; i < length; i++)
             {
                 ret[i] += share[i].getVal();
             }
         }
-        return ret;
-    }
-    else
-    {
-        std::vector<Result> ret(length);
-        for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
+        else
         {
-            std::vector<qmpc::Share::AddressId> ids_list(length);  // 複数シェアのidリスト
+            std::vector<std::string> values = server->getShares(pt_id, ids_list);
             for (unsigned int i = 0; i < length; i++)
             {
                 ret[i] += stosv<SV>(values[i]);
             }
         }
-        return ret;
     }
 
-
-
+    return ret;
 }
 
 // T : Share<SV> || vector<Share<SV>>
