@@ -63,22 +63,23 @@ void open(const T &share)
     // 全パーティにシェアの値を送信する
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
-        if (pt_id != conf->party_id)
+        if (pt_id == conf->party_id)
         {
-            threads.emplace_back((
-                [=, &share, &ep]()
-                {
-                    try
-                    {
-                        send(share, pt_id);
-                    }
-                    catch (...)
-                    {
-                        ep = std::current_exception();
-                    }
-                }
-            ));
+            continue;
         }
+        threads.emplace_back((
+            [=, &share, &ep]()
+            {
+                try
+                {
+                    send(share, pt_id);
+                }
+                catch (...)
+                {
+                    ep = std::current_exception();
+                }
+            }
+        ));
     }
 
     for (auto &th : threads)
