@@ -19,23 +19,7 @@ using std::to_string;
 template <typename T>
 class Share;
 
-template <typename>
-struct is_share_vector : std::false_type
-{
-};
-template <typename T, typename ALLOCATOR>
-struct is_share_vector<std::vector<Share<T>, ALLOCATOR>> : std::true_type
-{
-};
 
-template <typename>
-struct is_share : std::false_type
-{
-};
-template <typename T>
-struct is_share<Share<T>> : std::true_type
-{
-};
 template <typename T>
 void send(const T &shares, const int &pt_id)
 {
