@@ -15,7 +15,7 @@
 #include "server/computation_to_computation_container/server.hpp"
 namespace qmpc::Share
 {
-template <typename T>
+template <typename SV>
 class Share;
 
 template <typename SV>
@@ -23,8 +23,8 @@ void send(const Share<SV>&share, const int&pt_id)
 {
     Config *conf = Config::getInstance();
     auto client = ComputationToComputation::Server::getServer()->getClient(pt_id);
-    std::vector<SV> str_value = {shares.getVal()};
-    std::vector<qmpc::Share::AddressId> share_id = {shares.getId()};
+    std::vector<SV> str_value = {share.getVal()};
+    std::vector<qmpc::Share::AddressId> share_id = {share.getId()};
     client->exchangeShares(str_value, share_id, 1, conf->party_id);
 }
 
@@ -118,7 +118,7 @@ auto recons(const Share<SV> &share)
     // シェア保有者が使うrecons関数
     auto server = ComputationToComputation::Server::getServer();
     // 単一
-    using Result = std::conditional_t<is_same_v<SV,bool>, int, SV>;
+    using Result = std::conditional_t<std::is_same_v<SV, bool>, int, SV>;
     Result ret{};
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
@@ -142,7 +142,7 @@ auto recons(const std::vector<Share<SV>> &share)
     auto server = ComputationToComputation::Server::getServer();
     // 一括部分
     size_t length = std::size(share);
-    using Result = std::conditional_t<is_same_v<SV,bool>, int, SV>;
+    using Result = std::conditional_t<std::is_same_v<SV, bool>, int, SV>;
     std::vector<Result> ret(length);
     for (int pt_id = 1; pt_id <= conf->n_parties; pt_id++)
     {
