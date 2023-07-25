@@ -9,9 +9,9 @@ Quickstart
 まだquickmpc-libclient-pyをinstallしていない方は :ref:`Installation <installation>` を参考にinstallをしてください．
 
 csvデータの操作
--------------
+---------------
 quickmpc-libclient-pyは `pandas`_ likeなinterfaceを提供します．
-例えばcsvファイルの読み取りはpandasと同じように :ref:`read_csv関数 <quickmpc.pandas>` により実現できます．
+例えばcsvファイルの読み取りはpandasと同じように :py:func:`read_csv関数 <quickmpc.pandas.read_csv>` により実現できます．
 また， 返り値はpandas.DataFrameになっており，pandasと同じように加工することができます．
 
 .. code-block:: python3
@@ -24,7 +24,7 @@ quickmpc-libclient-pyは `pandas`_ likeなinterfaceを提供します．
 
 MPCの開始
 ---------
-:ref:`qmpcクラス <quickmpc>` を使用して，あらかじめ用意した2つ以上のQuickMPCサーバに接続します．
+:py:class:`QMPCクラス <quickmpc.QMPC>` を使用して，あらかじめ用意した2つ以上のQuickMPCサーバに接続します．
 
 .. code-block:: python3
 
