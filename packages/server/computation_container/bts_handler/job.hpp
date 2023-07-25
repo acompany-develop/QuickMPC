@@ -7,11 +7,11 @@
 namespace qmpc::BtsHandler::BTSJobType
 {
 namespace etb = enginetobts;
+using BigIntByte = std::pair<bool, std::string>;
 
-template <typename T>
 struct Triple
 {
-    using result_type = std::tuple<T, T, T>;
+    using result_type = std::tuple<BigIntByte, BigIntByte, BigIntByte>;
     using response_type = etb::GetTriplesResponse;
     static inline std::string op_name = "GetTriples";
 
@@ -33,16 +33,19 @@ struct Triple
         for (size_t i = 0; i < length; i++)
         {
             auto triple = response.triples(i);
-            ret[i] = std::make_tuple(T(triple.a()), T(triple.b()), T(triple.c()));
+            ret[i] = std::make_tuple(
+                std::make_pair(triple.a().sgn(), triple.a().byte()),
+                std::make_pair(triple.b().sgn(), triple.b().byte()),
+                std::make_pair(triple.c().sgn(), triple.c().byte())
+            );
         }
         return ret;
     }
 };
 
-template <typename T>
 struct RandBit
 {
-    using result_type = T;
+    using result_type = std::int64_t;
     using response_type = etb::GetRandBitsResponse;
     static inline std::string op_name = "GetRandBits";
 
