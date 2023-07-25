@@ -9,6 +9,5 @@ __all__ = [
     "QMPC",
     "QMPCJobError",
     "QMPCServerError",
-    "ShareDataFrame",
     "get_logger",
 ]

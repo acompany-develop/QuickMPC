@@ -19,6 +19,7 @@ release = quickmpc.__version__
 
 extensions = [
     'sphinx.ext.autodoc',  # docstringから自動で取り込めるように
+    "sphinx.ext.autosummary",  # summaryのリストを生成する
     'sphinx.ext.napoleon',  # numpy styleを取り込めるように
     'sphinx_rtd_theme',  # pageのテーマ
 ]
@@ -32,3 +33,13 @@ exclude_patterns = []
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+
+
+# -- Extension configuration -------------------------------------------------
+autosummary_generate = True
+autodoc_typehints = "description"
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": True,
+    "exclude-members": "with_traceback",
+}

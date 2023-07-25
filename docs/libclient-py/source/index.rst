@@ -10,6 +10,7 @@ Welcome to quickmpc-libclient-py's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   reference/index
 
 
 Indices and tables

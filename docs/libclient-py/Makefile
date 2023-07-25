@@ -4,9 +4,10 @@
 # You can set these variables from the command line, and also
 # from the environment for the first two.
 SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
+SPHINXBUILD   = sphinx-build
 SOURCEDIR     = source
-BUILDDIR      = build
+BUILDDIR      = _build
+APIDIR        = ../../packages/client/libclient-py/quickmpc
 
 # Put it first so that "make" without argument is like "make help".
 help:
@@ -18,3 +19,12 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+.PHONY: apidoc
+apidoc:
+	sphinx-apidoc -e -f -T -o $(SOURCEDIR)/reference $(APIDIR)
+
+.PHONY: autobuild
+autobuild:
+	sphinx-autobuild $(SOURCEDIR) $(BUILDDIR)/html
+

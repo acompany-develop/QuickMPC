@@ -31,4 +31,5 @@ __pycache__
 
 scripts/.env
 
-docs/*/build/**
+docs/**/_build/**
+docs/**/_generated/**
