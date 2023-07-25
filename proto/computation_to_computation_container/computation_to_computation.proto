@@ -24,17 +24,23 @@ message Address{
     int32 party_id = 4; // the id of party(0, 1, 2)
 }
 
+message BigIntByte{
+    bool sgn = 1;
+    bytes byte = 2;
+}
+
+message Share{
+    oneof value{
+        int64 num = 1;
+        BigIntByte fp = 2;
+        bool flag = 3;
+    }
+}
+
 /**
  * the message of shares
 */
 message Shares {
-    message Share{
-        oneof value{
-            int64 num = 1;
-            bytes byte = 2;
-            bool flag = 3;
-        }
-    }
     repeated Share share_list = 1;
     Address address_id = 2;
 }
