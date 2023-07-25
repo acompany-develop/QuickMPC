@@ -3,13 +3,16 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
+import quickmpc  # noqa
+
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'quickmpc-libclient-py'
 copyright = '2023, Acompany Co., Ltd.'
 author = 'Acompany Co., Ltd.'
-release = '1.0.0'
+version = quickmpc.__version__
+release = quickmpc.__version__
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

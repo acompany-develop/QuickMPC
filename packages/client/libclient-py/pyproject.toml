@@ -4,7 +4,6 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "quickmpc"
-readme = "README.md"
 license = {file = "LICENSE"}
 authors = [ {name = "Acompany"} ]
 requires-python = ">=3.7"
@@ -18,6 +17,13 @@ dependencies = [
     "pandas",
 ]
 dynamic = ["version"]
+
+[project.optional-dependencies]
+document = [
+  "sphinx",
+  "sphinx-autobuild",
+  "sphinx-rtd-theme",
+]
 
 [tool.setuptools]
 package-dir = {"quickmpc" = "quickmpc"}
