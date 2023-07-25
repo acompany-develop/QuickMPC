@@ -1,3 +1,5 @@
+.. _quickmpc.pandas:
+
 .. module:: quickmpc.pandas
 
 quickmpc.pandas

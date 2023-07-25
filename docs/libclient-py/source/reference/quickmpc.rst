@@ -1,3 +1,5 @@
+.. _quickmpc:
+
 .. module:: quickmpc
 
 quickmpc

@@ -11,6 +11,7 @@ quickmpc-libclient-py's documentation
    :caption: Contents:
 
    installation
+   quickstart
    reference/index
 
 
