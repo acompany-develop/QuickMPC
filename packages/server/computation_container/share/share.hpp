@@ -76,8 +76,11 @@ public:
     Share &operator*=(const Share &obj)
     {
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get();
-        Share a(std::get<0>(t[0])), b(std::get<1>(t[0])), c(std::get<2>(t[0]));
+        // Todo : 乗算を別ファイルに分ける
+        static_assert(std::is_same_v<SV, FixedPoint>, "乗算は FixedPoint 限定");
+        auto t = qmpc::BtsHandler::StockTriple::getInstance()->get();
+        auto [a_, b_ ,c_] = t[0];
+        Share a(a_), b(b_), c(c_);
 
         // [d] = [x] - [a], [e] = [y] - [b] を計算する
         Share d;
@@ -235,6 +238,8 @@ public:
         const std::vector<Share> &obj1, const std::vector<Share> &obj2
     )
     {
+        // Todo : 乗算を別ファイルに分ける
+        static_assert(std::is_same_v<SV, FixedPoint>, "乗算は FixedPoint 限定");
         size_t n = obj1.size();
         if (n != obj2.size())
         {
@@ -243,17 +248,18 @@ public:
             );
         }
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get(n);
+        auto ts = qmpc::BtsHandler::StockTriple::getInstance()->get(n);
 
         std::vector<Share> a, b, c;
         a.reserve(n);
         b.reserve(n);
         c.reserve(n);
-        for (size_t i = 0; i < n; ++i)
+        for(const auto&t:ts)
         {
-            a.emplace_back(Share(std::get<0>(t[i])));
-            b.emplace_back(Share(std::get<1>(t[i])));
-            c.emplace_back(Share(std::get<2>(t[i])));
+            auto [a_, b_, c_] = t;
+            a.emplace_back(Share(a_));
+            b.emplace_back(Share(b_));
+            c.emplace_back(Share(c_));
         }
         // [d] = [x] - [a], [e] = [y] - [b] を計算する
         std::vector<Share> de(n * 2);
@@ -339,14 +345,14 @@ auto _sqrt(const T &x)
 template <typename SV>
 Share<SV> getRandBitShare()
 {
-    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get();
+    auto bit = qmpc::BtsHandler::StockRandBit::getInstance()->get();
     return Share<SV>(bit[0]);
 }
 
 template <typename SV>
 std::vector<Share<SV>> getRandBitShare(std::size_t amount)
 {
-    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get(amount);
+    auto bit = qmpc::BtsHandler::StockRandBit::getInstance()->get(amount);
 
     std::vector<Share<SV>> ret(amount);
     for (size_t i = 0; i < amount; i++)
