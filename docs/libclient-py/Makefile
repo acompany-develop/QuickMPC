@@ -20,11 +20,15 @@ help:
 %: Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
-.PHONY: apidoc
-apidoc:
-	sphinx-apidoc -e -f -T -o $(SOURCEDIR)/reference $(APIDIR)
-
 .PHONY: autobuild
 autobuild:
 	sphinx-autobuild $(SOURCEDIR) $(BUILDDIR)/html
 
+.PHONY: autogen
+autogen:
+	sphinx-autogen source/**/*.rst
+
+.PHONY: clean
+clean:
+	rm -rf $(BUILDDIR)/*
+	rm -rf $(SOURCEDIR)/reference/_generated/
