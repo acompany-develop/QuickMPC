@@ -97,26 +97,6 @@ void open(const T &share)
 using CtoCShare = computationtocomputation::Shares_Share;
 
 template <typename SV>
-SV toSV(const CtoCShare &share_value)
-{
-    if constexpr (std::is_same_v<SV, bool>)
-    {
-        assert(share_value.has_flag());
-        return share_value.flag();
-    }
-    else if constexpr (std::is_integral_v<SV>)
-    {
-        assert(share_value.has_num());
-        return share_value.num();
-    }
-    else
-    {
-        assert(share_value.has_byte());
-        return SV(share_value.byte());
-    }
-}
-
-template <typename SV>
 auto recons(const Share<SV> &share)
 {
     Config *conf = Config::getInstance();
@@ -133,8 +113,7 @@ auto recons(const Share<SV> &share)
         }
         else
         {
-            CtoCShare s = server->getShare(pt_id, share.getId());
-            ret += toSV<SV>(s);
+            ret += server->getShare<SV>(pt_id, share.getId());
         }
     }
     return ret;
@@ -166,10 +145,10 @@ auto recons(const std::vector<Share<SV>> &share)
         }
         else
         {
-            std::vector<CtoCShare> values = server->getShares(pt_id, ids_list);
+            std::vector<SV> values = server->getShares(pt_id, ids_list);
             for (unsigned int i = 0; i < length; i++)
             {
-                ret[i] += toSV<SV>(values[i]);
+                ret[i] += values[i];
             }
         }
     }
