@@ -65,63 +65,6 @@ grpc::Status Server::ExchangeShares(
     return grpc::Status::OK;
 }
 
-// 単一シェアget用
-CtoCShare Server::getShare(int party_id, qmpc::Share::AddressId share_id)
-{
-    Config *conf = Config::getInstance();
-    std::unique_lock<std::mutex> lock(mtx);  // mutex発動
-    auto key = std::make_tuple(
-        party_id, share_id.getShareId(), share_id.getJobId(), share_id.getThreadId()
-    );
-    if (!cond.wait_for(
-            lock,
-            std::chrono::seconds(conf->getshare_time_limit),
-            [&] { return shares_vec.count(key) == 1; }
-        ))  // 待機
-    {
-        qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
-    }
-    auto share = shares_vec[key];
-    shares_vec.erase(key);
-    return share[0];
-}
-
-// 複数シェアget用
-std::vector<CtoCShare> Server::getShares(
-    int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
-)
-{
-    const std::size_t length = share_ids.size();
-    if (length == 0)
-    {
-        return std::vector<CtoCShare>{};
-    }
-
-    Config *conf = Config::getInstance();
-    // std::cout << "party share job thread"
-    //           << " " << party_id << " " << share_ids[0].getShareId() << " "
-    //           << share_ids[0].getJobId() << " " << share_ids[0].getThreadId() << std::endl;
-    std::vector<CtoCShare> str_values;
-    str_values.reserve(length);
-    auto key = std::make_tuple(
-        party_id, share_ids[0].getShareId(), share_ids[0].getJobId(), share_ids[0].getThreadId()
-    );
-    std::unique_lock<std::mutex> lock(mtx);  // mutex発動
-
-    if (!cond.wait_for(
-            lock,
-            std::chrono::seconds(conf->getshare_time_limit * length),
-            [&] { return shares_vec.count(key) == 1; }
-        ))  // 待機
-    {
-        qmpc::Log::throw_with_trace(std::runtime_error("getShares is timeout"));
-    }
-    auto local_str_shares = shares_vec[key];
-    shares_vec.erase(key);
-    assert(local_str_shares.size() == length);
-    return local_str_shares;
-}
-
 void Server::runServer(std::string endpoint)
 {
     auto server = Server::getServer();
