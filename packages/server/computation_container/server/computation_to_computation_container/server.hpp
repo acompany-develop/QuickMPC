@@ -39,8 +39,8 @@ public:
         google::protobuf::Empty *response
     ) override;
     // 受け取ったシェアをgetするメソッド
-    std::string getShare(int party_id, qmpc::Share::AddressId share_id);
-    std::vector<std::string> getShares(
+    computationtocomputation::Share getShare(int party_id, qmpc::Share::AddressId share_id);
+    std::vector<computationtocomputation::Share> getShares(
         int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
     );
     Server(Server &&) noexcept = delete;
@@ -70,7 +70,7 @@ private:
     using address_type = std::tuple<int, int, unsigned int, int>;
     // 受け取ったシェアを保存する変数
     // party_id, share_idをキーとして保存
-    std::map<address_type, std::vector<std::string>> shares_vec;
+    std::map<address_type, std::vector<computationtocomputation::Share>> shares_vec;
 };
 
 }  // namespace qmpc::ComputationToComputation

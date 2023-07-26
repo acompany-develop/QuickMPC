@@ -59,7 +59,7 @@ private:
                 s = computationtocomputation::Shares{};
             }
             size = size + value_size;
-            computationtocomputation::Shares_Share *multiple_shares = s.add_share_list();
+            auto *multiple_shares = s.add_share_list();
 
             using rawT = std::decay_t<T>;
 
@@ -73,7 +73,9 @@ private:
             }
             else
             {
-                multiple_shares->set_byte(to_string(values[i]));
+                //static_assert(std::is_same_v<rawT, FixedPoint>);
+                computationtocomputation::BigIntByte* fp = multiple_shares->mutable_fp();
+                fp = values[i].getBytes();
             }
         }
         share_vec.push_back(s);

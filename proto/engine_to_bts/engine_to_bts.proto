@@ -15,10 +15,15 @@ message GetRequest{
     int64 request_id = 3;
 }
 
+message BigIntByte{
+    bool sgn = 1;
+    bytes byte = 2;
+}
+
 message Triple{
-    int64 a = 2;
-    int64 b = 3;
-    int64 c = 4;
+    BigIntByte a = 2;
+    BigIntByte b = 3;
+    BigIntByte c = 4;
 }
 
 message GetTriplesResponse{
