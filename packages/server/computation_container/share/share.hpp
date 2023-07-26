@@ -323,18 +323,6 @@ auto _isZero(const T &x)
         return x == 0.0;
     }
 }
-template <class T>
-auto _sqrt(const T &x)
-{
-    if constexpr (std::is_same_v<T, FixedPoint>)
-    {
-        return T(x.getSqrtValue());
-    }
-    else
-    {
-        return std::sqrt(x);
-    }
-}
 
 template <typename SV>
 Share<SV> getRandBitShare()
