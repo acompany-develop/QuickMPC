@@ -28,8 +28,7 @@ public:
     template <
         typename T,
         std::enable_if_t<
-            std::is_arithmetic_v <std::remove_reference_t<T>>,
-            std::nullptr_t> = nullptr>
+            std::is_arithmetic_v<std::remove_reference_t<T>>, std::nullptr_t> = nullptr>
     FixedPoint(const T &v)
     {
         mp_float tmp = static_cast<mp_float>(v);
