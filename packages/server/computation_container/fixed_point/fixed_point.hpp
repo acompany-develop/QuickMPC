@@ -106,13 +106,8 @@ public:
     }
     FixedPoint &operator/=(const FixedPoint &obj)
     {
-        D inv{obj.getVal<D>()};
-        if (boost::math::isinf(inv))
-        {
-            inv = static_cast<D>(maxInt);
-        }
-        D v = (this->getVal<D>() / inv) * shift;
-        value = v.template convert_to<T>();
+        value *= shift;
+        value /= obj.value;
         return *this;
     }
     FixedPoint &operator%=(const FixedPoint &obj)
@@ -147,7 +142,7 @@ public:
     {
         os << std::fixed;
         os << std::setprecision(10);
-        os << fp.value.template convert_to<D>() / shift;
+        os << fp.value.template convert_to<mp_float>() / shift;
         os << std::resetiosflags(std::ios_base::floatfield);
         return os;
     }
@@ -169,4 +164,4 @@ std::string to_string(const FixedPoint<T> &fp)
     return fp.getStrVal();
 }
 }  // namespace qmpc::Utils
-using FixedPoint = qmpc::Utils::FixedPoint<>;
+using FixedPoint = qmpc::Utils::FixedPoint;
