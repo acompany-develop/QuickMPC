@@ -29,27 +29,58 @@ func getClaims() (*jwt_types.Claim, error) {
 	return nil,fmt.Errorf("BTS TOKEN is not valified")
 }
 
+func convertToBigIntByte(a int64)(e2b.BigIntByte, error){
+	sgn := bool(a < 0)
+	buf := new(bytes.Buffer)
+	err := binary.Write(buf, binary.BigEndian, a)
+	if err != nil {
+        return nil, err
+    }
+    byteSlice := buf.Bytes()
+	return e2b.BigIntByte{
+		Sgn : sgn,
+		byteSlice : byte,
+	}, nil
+}
+
+func convertToTriple(a,b,c int64)(e2b.Triple, error){
+	a_, err := convertToBigIntByte(a)
+	if err != nil{
+		return nil, err
+	}
+	b_, err := convertToBigIntByte(b)
+	if err != nil{
+		return nil, err
+	}
+	c_, err := convertToBigIntByte(c)
+	if err != nil{
+		return nil, err
+	}
+	return e2b.Triple{
+		A : a_,
+		B : b_,
+		C : c_,
+	}, nil
+}
+
 func generateTriples(amount uint32) map[uint32]([]*ts.Triple) {
 	ret := make(map[uint32]([]*ts.Triple))
 	for i := uint32(0); i < amount; i++ {
-		t := ts.Triple{
-			A: 1,
-			B: 1,
-			C: 3,
+		t, err := convertToTriple(1, 1, 3)
+		if err != nil{
+			return nil, err
 		}
 		ret[1] = append(ret[1], &t)
 
-		t = ts.Triple{
-			A: 2,
-			B: 2,
-			C: 6,
+		t, err = convertToTriple(2, 2, 6)
+		if err != nil{
+			return nil, err
 		}
 		ret[2] = append(ret[2], &t)
 
-		t = ts.Triple{
-			A: 3,
-			B: 3,
-			C: 9,
+		t, err = convertToTriple(3, 3, 9)
+		if err != nil{
+			return nil, err
 		}
 		ret[3] = append(ret[3], &t)
 	}

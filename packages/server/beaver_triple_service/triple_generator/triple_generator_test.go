@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"testing"
 	"sync"
+	"math/big"
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 type TriplesStock struct{
@@ -80,14 +82,24 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 	})
 }
 
+func convertToBigInt(b &pb.BigIntByte)(big.Int){
+	var ret big.Int
+	bytes := b.Byte
+	ret.SetBytes(bytes)
+	if b.sgn{
+		ret *= -1
+	}
+	return ret
+}
+
 func testValidityOfTriples(t *testing.T) {
 	for _, PartyToTriples := range TS.Stock {
 		for i := 0; i < len(PartyToTriples[1]); i++ {
-			aShareSum, bShareSum, cShareSum := int64(0), int64(0), int64(0)
+			aShareSum, bShareSum, cShareSum := big.NewInt(0), big.NewInt(0), big.NewInt(0)
 			for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
-				aShareSum += PartyToTriples[partyId][i].A
-				bShareSum += PartyToTriples[partyId][i].B
-				cShareSum += PartyToTriples[partyId][i].C
+				aShareSum += convertToBigInt(PartyToTriples[partyId][i].A)
+				bShareSum += convertToBigInt(PartyToTriples[partyId][i].B)
+				cShareSum += convertToBigInt(PartyToTriples[partyId][i].C)
 			}
 			if aShareSum*bShareSum != cShareSum {
 				t.Fatal("a*b != c")

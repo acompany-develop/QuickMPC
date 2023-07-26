@@ -58,7 +58,8 @@ cc_test(
         "//config_parse:config_parse",
         "@proto//computation_to_computation_container:computation_to_computation_cc_grpc",
         "//share:address",
-        "//logging:log"
+        "//logging:log",
+        "//fixed_point:fixed_point"
     ],
     linkopts = ["-pthread"],
 )

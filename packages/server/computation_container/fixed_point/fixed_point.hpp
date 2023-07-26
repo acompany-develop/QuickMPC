@@ -8,12 +8,13 @@
 #include <iomanip>
 #include <iostream>
 #include <type_traits>
+#include "external/proto/computation_to_computation_container/computation_to_computation.grpc.pb.h"
 
 namespace qmpc::Utils
 {
 using mp_int = boost::multiprecision::cpp_int;
 using mp_float = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<50>>;
-using BigIntByte = std::pair<bool, std::string>;
+using BIB = computationtocomputation::BigIntByte;
 
 class FixedPoint : private boost::operators<FixedPoint>
 {
@@ -38,16 +39,17 @@ public:
         mp_float v_{str};
         value = static_cast<mp_int>(v_ * shift);
     }
-    FixedPoint(const BigIntByte &P)
+    FixedPoint(const BIB &P)
     {
-        const auto&[sgn, bytes] = P;
+        std::string bytes = P.byte();
         import_bits(value, bytes.begin(), bytes.end(), 8);
-        if(sgn)
+        if(P.sgn())
         {
             value *= -1;
         }
     }
 
+    // shift をかけずに代入する i.e., raw(1) は実質的に 10^-8 を代入することに対応
     template <typename T>
     static FixedPoint raw(const T &v)
     {
@@ -92,12 +94,19 @@ public:
         ret /= shift;
         return ret.str(20, std::ios_base::fixed);
     }
-    BigIntByte getBytes() const
+    BIB getBytes() const
     {
-        bool sgn = value < 0;
+        BIB ret;
+        ret.set_sgn(value < 0);
         std::string bytes;
         export_bits(value, std::back_inserter(bytes), 8);
-        return {sgn, bytes};
+        ret.set_byte(bytes);
+        return ret;
+    }
+    void setShare(computationtocomputation::Share& share) const
+    {
+        auto fp = share->mutable_fp();
+        fp = (*this).getBytes();
     }
 
     FixedPoint operator-() const

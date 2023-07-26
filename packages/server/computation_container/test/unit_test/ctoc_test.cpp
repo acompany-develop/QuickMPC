@@ -15,6 +15,7 @@
 #include "logging/logger.hpp"
 #include "server/computation_to_computation_container/server.hpp"
 #include "share/address_id.hpp"
+#include "fixed_point/fixed_point.hpp"
 
 void runServer(std::string endpoint)
 {
@@ -41,13 +42,13 @@ TEST(CtoC_Test, EXCHANGESHARE)
     std::vector<qmpc::Share::AddressId> share_id(1);
     computationtocomputation::Shares share;
     std::cout << "exchangeshare id " << share_id[0] << std::endl;
-    std::string value = "10";
     auto a = share.mutable_address_id();
     a->set_share_id(share_id[0].getShareId());
     a->set_job_id(share_id[0].getJobId());
     a->set_party_id(conf->party_id);
-    computationtocomputation::Shares_Share *multiple_shares = share.add_share_list();
-    multiple_shares->set_byte(value);
+    auto *multiple_shares = share.add_share_list();
+    FixedPoint value("10");
+    value.setShare(multiple_shares);
 
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")
@@ -71,7 +72,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     Config *conf = Config::getInstance();
     unsigned int length = 2;
     std::vector<qmpc::Share::AddressId> share_ids(length);
-    std::vector<std::string> values = {"10", "11"};
+    std::vector<FixedPoint> values = {"10", "11"};
     computationtocomputation::Shares shares;
     auto a = shares.mutable_address_id();
     a->set_share_id(share_ids[0].getShareId());
@@ -80,7 +81,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     for (unsigned int i = 0; i < length; i++)
     {
         computationtocomputation::Shares_Share *multiple_shares = shares.add_share_list();
-        multiple_shares->set_byte(values[i]);
+        value[i].setShare(multiple_shares);
     }
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")

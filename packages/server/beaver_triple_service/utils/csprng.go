@@ -11,7 +11,7 @@ import (
 
 // [0, 2^{bitLength}) の乱数を amount 個生成
 func GetRandBigInts(bitLength uint32, amount uint32) ([]big.Int, error) {
-	var byteLength uint32 = (bitLength + 4 - 1) / 4
+	var byteLength uint32 = (bitLength + 8 - 1) / 8
 
 	bSlice := make([]byte, byteLength * amount)
 	_, err := rand.Read(bSlice)
@@ -49,6 +49,9 @@ func GetRandInt64Slice(sliceSize uint64, randMin int64, randMax int64) ([]int64,
 		err := binary.Read(buf, binary.LittleEndian, &n)
 		if err != nil {
 			return nil, err
+		}
+		if n < 0{
+			n = -n
 		}
 
 		tmp := n % (randMax-randMin+1)
