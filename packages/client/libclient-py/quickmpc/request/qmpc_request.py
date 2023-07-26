@@ -44,6 +44,27 @@ logger = logging.getLogger(__name__)
 
 
 def _create_grpc_channel(endpoint: str) -> grpc.Channel:
+    """gppcのchannnelを生成する
+
+    入力形式をパースして自動で適切なチャンネルを生成する．
+    現在サポートしているのはhttpとhttpsの2つで，
+    いずれも `http://~~~` という文字列である必要がある．
+
+    Parameters
+    ----------
+    endpoint: str
+        endpointのIP
+
+    Returns
+    --------
+    grpc.channel
+        grpcのchannel
+
+    Raises
+    -------
+    ArgumentError
+        サポートしていないプロトコルを指定した場合
+    """
     channel: grpc.Channel = None
     o = urlparse(endpoint)
     if o.scheme == 'http':
@@ -66,12 +87,29 @@ def _create_grpc_channel(endpoint: str) -> grpc.Channel:
 class QMPCRequest(QMPCRequestInterface):
     """QuickMPCサーバと通信を行う
 
+    Args
+    ----
+    endpoints: List[str]
+        各PartyのIP
+    _QMPCRequest__retry_num: int
+        通信のretry回数
+    _QMPCRequest__retry_wait_time : int
+        通信のretry待機時間
+
     Attributes
     ----------
-    __endpoints: List[url]
-        QuickMPCサーバのURL
+    __client_stubs: Tuple[LibcToManageStub]
+        各Partyのgrpcのstub
+    __client_channels: Tuple[grpc.Channel]
+        各Partyのgrpcのchannnel
+    __party_size: int
+        Partyの数
     __token: str
-        QuickMPCサーバへの通信を担う
+        MPCサーバへの通信のtoken
+    __retry_num: int
+        通信のretry回数
+    __retry_wait_time: int
+        通信のretry待機時間
     """
 
     endpoints: InitVar[List[str]]
@@ -95,6 +133,27 @@ class QMPCRequest(QMPCRequestInterface):
         object.__setattr__(self, "_QMPCRequest__token", token)
 
     def __retry(self, f: Callable, *request: Any) -> Any:
+        """リトライポリシーに従って特定の関数を実行する
+
+        Parameters
+        ----------
+        f: Callable
+            実行するgrpc request
+        request: Any
+            fに渡す全ての引数
+
+        Returns
+        -------
+        Any
+            f(*request)の実行結果
+
+        Raises
+        ------
+        QMPCServerError
+            MPCサーバへの接続が確立できないなどサーバのエラーが起きた場合
+        QMPCJobError
+            計算中に何らかのエラーが発生していた場合
+        """
         for ch in self.__client_channels:
             # channelの接続チェック
             is_channel_ready = False
@@ -143,7 +202,25 @@ class QMPCRequest(QMPCRequestInterface):
     @staticmethod
     def __futures_result(
             futures: Iterable, enable_progress_bar=True) -> List:
-        """ エラーチェックしてfutureのresultを得る """
+        """進捗ログを出しながらfutureの結果を取得する
+
+        Parameters
+        ----------
+        futures: concurrent.futures.Executor
+            非同期実行している実体
+        enable_progress_bar: bool, default=True
+            進捗ログを出すかどうか
+
+        Returns
+        -------
+        List
+            各futuresの返り値のリスト
+
+        Raises
+        ------
+        Exception
+            futures実行中の例外
+        """
         try:
             if enable_progress_bar:
                 futures = tqdm.tqdm(futures, desc='receive')
@@ -154,7 +231,25 @@ class QMPCRequest(QMPCRequestInterface):
 
     def send_share(self, df: pd.DataFrame, piece_size: int = 1_000_000) \
             -> SendShareResponse:
-        """ Shareをコンテナに送信 """
+        """ShareをMPCサーバに送信する
+
+        Parameters
+        ----------
+        df: pd.DataFrame
+            送信するデータ
+        piece_size: int, default=1_000_000
+            分割pieceの各size
+
+        Returns
+        -------
+        SendShareResponse
+            SendSharesRequestの結果
+
+        Raises
+        ------
+        RuntimeError
+           規定されていない引数を与えた場合
+        """
         if piece_size < 1000 or piece_size > 1_000_000:
             raise RuntimeError(
                 "piece_size must be in the range of 1000 to 1000000")
@@ -206,7 +301,27 @@ class QMPCRequest(QMPCRequestInterface):
                               columns: Tuple[List, List],
                               *, debug_mode: bool = False)  \
             -> ExecuteResponse:
-        """ 計算リクエストを送信 """
+        """計算リクエストをMPCサーバに送信する
+
+        MPCサーバ上でJobと呼ばれる計算リクエストを発行する．
+        `data_ids` で指定したIDはサーバ内で全てinner_joinされる．
+
+        Parameters
+        ----------
+        method_id: ComputationMethod.ValueType
+            計算の種類を管理するID
+        data_ids: List[str]
+            計算に用いるデータのID
+        columns: Tuple[List, List]
+            計算に用いるデータの列番号(1-index)
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
+
+        Returns
+        -------
+        ExecuteResponse
+            計算リクエストの結果
+        """
         req = ExecuteComputationRequest(
             method_id=method_id,
             token=self.__token,
@@ -229,12 +344,44 @@ class QMPCRequest(QMPCRequestInterface):
 
     def sum(self, data_ids: List[str], columns: List[int],
             *, debug_mode: bool = False) -> ExecuteResponse:
+        """総和計算リクエストをMPCサーバに送信する
+
+        Parameters
+        ----------
+        data_ids: List[str]
+            計算に用いるデータのID
+        columns: List[int]
+            計算に用いるデータの列番号(1-index)
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
+
+        Returns
+        -------
+        ExecuteResponse
+            計算リクエストの結果
+        """
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_SUM,
             data_ids, (columns, []), debug_mode=debug_mode)
 
     def mean(self, data_ids: List[str], columns: List[int],
              *, debug_mode: bool = False) -> ExecuteResponse:
+        """平均計算リクエストをMPCサーバに送信する
+
+        Parameters
+        ----------
+        data_ids: List[str]
+            計算に用いるデータのID
+        columns: List[int]
+            計算に用いるデータの列番号(1-index)
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
+
+        Returns
+        -------
+        ExecuteResponse
+            計算リクエストの結果
+        """
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_MEAN,
             data_ids, (columns, []), debug_mode=debug_mode)
@@ -242,6 +389,22 @@ class QMPCRequest(QMPCRequestInterface):
     def variance(self, data_ids: List[str], columns: List[int],
                  *, debug_mode: bool = False) \
             -> ExecuteResponse:
+        """分散計算リクエストをMPCサーバに送信する
+
+        Parameters
+        ----------
+        data_ids: List[str]
+            計算に用いるデータのID
+        columns: List[int]
+            計算に用いるデータの列番号(1-index)
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
+
+        Returns
+        -------
+        ExecuteResponse
+            計算リクエストの結果
+        """
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_VARIANCE,
             data_ids, (columns, []), debug_mode=debug_mode)
@@ -249,6 +412,24 @@ class QMPCRequest(QMPCRequestInterface):
     def correl(self, data_ids: List[str], inp1: List[int], inp2: List[int],
                *, debug_mode: bool = False) \
             -> ExecuteResponse:
+        """相関係数計算リクエストをMPCサーバに送信する
+
+        Parameters
+        ----------
+        data_ids: List[str]
+            計算に用いるデータのID
+        inp1: List[int]
+            相関係数の左項に該当する列番号(1-index)
+        inp2: List[int]
+            相関係数の右項に該当する列番号(1-index)
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
+
+        Returns
+        -------
+        ExecuteResponse
+            計算リクエストの結果
+        """
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_CORREL,
             data_ids, (inp1, inp2), debug_mode=debug_mode)
@@ -256,12 +437,42 @@ class QMPCRequest(QMPCRequestInterface):
     def meshcode(self, data_ids: List[str], inp1: List[int],
                  *, debug_mode: bool = False) \
             -> ExecuteResponse:
+        """meshcodeリクエストをMPCサーバに送信する
+
+        Parameters
+        ----------
+        data_ids: List[str]
+            計算に用いるデータのID
+        inp1: List[int]
+            計算に用いるデータの列番号(1-index)
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
+
+        Returns
+        -------
+        ExecuteResponse
+            計算リクエストの結果
+        """
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_MESH_CODE,
             data_ids, (inp1, []), debug_mode=debug_mode)
 
     def join(self, data_ids: List[str],
              *, debug_mode: bool = False) -> ExecuteResponse:
+        """inner_joinリクエストをMPCサーバに送信する
+
+        Parameters
+        ----------
+        data_ids: List[str]
+            計算に用いるデータのID
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
+
+        Returns
+        -------
+        ExecuteResponse
+            計算リクエストの結果
+        """
         return self.__execute_computation(
             ComputationMethod.COMPUTATION_METHOD_JOIN_TABLE,
             data_ids, ([], []), debug_mode=debug_mode)
@@ -269,7 +480,27 @@ class QMPCRequest(QMPCRequestInterface):
     @staticmethod
     def __stream_result(stream: Iterable, job_uuid: str, party: int,
                         output_path: Optional[str]) -> Dict:
-        """ エラーチェックしてstreamのresultを得る """
+        """streamから計算結果を取得して結合する
+
+        `output_path` を指定すると計算結果をファイルに書き込み，返り値にデータ本体は含まれない．
+        `output_path` がNoneの場合は計算結果はファイルには書き込まれず，返り値に全て含まれる．
+
+        Parameters
+        ----------
+        stream: Iterable
+            grpcのstreamインスタンス
+        job_uuid: str
+            jobのID
+        party: int
+            Partyの番号(1-index)
+        output_path: Optional[str]
+            出力するファイルのパス
+
+        Returns
+        -------
+        Dict
+            streamの結果を結合した辞書
+        """
         is_ok: bool = True
         res_list = []
         for res in stream:
@@ -298,7 +529,23 @@ class QMPCRequest(QMPCRequestInterface):
     def get_computation_result(self, job_uuid: str,
                                output_path: Optional[str] = None) \
             -> GetResultResponse:
-        """ コンテナから結果を取得 """
+        """計算結果をMPCサーバから取得する
+
+        `output_path` を指定すると計算結果をファイルに書き込み，返り値にデータ本体は含まれない．
+        `output_path` がNoneの場合は計算結果はファイルには書き込まれず，返り値に全て含まれる．
+
+        Parameters
+        ----------
+        job_uuid
+            jobのID
+        output_path: Optional[str]
+            出力するファイルのパス
+
+        Returns
+        -------
+        GetResultResponse
+            計算結果取得リクエストの結果
+        """
         # リクエストパラメータを設定
         req = GetComputationRequest(
             job_uuid=job_uuid,
@@ -361,6 +608,18 @@ class QMPCRequest(QMPCRequestInterface):
 
     def get_computation_status(self, job_uuid: str) \
             -> GetComputationStatusResponse:
+        """計算ステータスをMPCサーバから取得する
+
+        Parameters
+        ----------
+        job_uuid: str
+            jobのID
+
+        Returns
+        -------
+        GetComputationStatusResponse
+            計算ステータス
+        """
         # リクエストパラメータを設定
         req = GetComputationRequest(
             job_uuid=job_uuid,
@@ -381,6 +640,18 @@ class QMPCRequest(QMPCRequestInterface):
         return GetComputationStatusResponse(statuses, progresses)
 
     def get_job_error_info(self, job_uuid: str) -> GetJobErrorInfoResponse:
+        """計算のエラー情報をMPCサーバから取得する
+
+        Parameters
+        ----------
+        job_uuid: str
+            jobのID
+
+        Returns
+        -------
+        GetJobErrorInfoResponse
+            計算のエラー情報
+        """
         # リクエストパラメータを設定
         req = GetComputationRequest(
             job_uuid=job_uuid,
@@ -400,6 +671,18 @@ class QMPCRequest(QMPCRequestInterface):
         return GetJobErrorInfoResponse(job_error_info)
 
     def get_elapsed_time(self, job_uuid: str) -> GetElapsedTimeResponse:
+        """計算にかかった時間をMPCサーバから取得する
+
+        Parameters
+        ----------
+        job_uuid: str
+            jobのID
+
+        Returns
+        -------
+        GetElapsedTimeResponse
+            計算にかかった時間
+        """
         # リクエストパラメータを設定
         req = GetElapsedTimeRequest(
             job_uuid=job_uuid,
@@ -416,6 +699,17 @@ class QMPCRequest(QMPCRequestInterface):
         return GetElapsedTimeResponse(elapsed_time)
 
     def delete_share(self, data_ids: List[str]) -> None:
+        """送信したShareをMPCサーバから削除する
+
+        Parameters
+        ----------
+        data_ids: List[str]
+            削除したいShareのIDリスト
+
+        Returns
+        -------
+        None
+        """
         req = DeleteSharesRequest(dataIds=data_ids, token=self.__token)
         # 非同期にリクエスト送信
         with ThreadPoolExecutor() as executor:
@@ -425,6 +719,20 @@ class QMPCRequest(QMPCRequestInterface):
 
     def add_share_data_frame(self, base_data_id: str, add_data_id: str) \
             -> AddShareDataFrameResponse:
+        """テーブル加算リクエストをMPCサーバに送信する
+
+        Parameters
+        ----------
+        base_data_id: str
+            左項のテーブルのID
+        add_data_id: str
+            右項のテーブルのID
+
+        Returns
+        -------
+        AddShareDataFrameResponse
+            テーブル加算の結果
+        """
         req = AddShareDataFrameRequest(base_data_id=base_data_id,
                                        add_data_id=add_data_id,
                                        token=self.__token)
