@@ -14,6 +14,7 @@ namespace qmpc::Utils
 namespace mp = boost::multiprecision;
 using mp_int = boost::multiprecision::cpp_int;
 using mp_float = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<50>>;
+using SgnByte = std::pair<bool, std::string>;
 
 class FixedPoint : private boost::operators<FixedPoint>
 {
@@ -35,7 +36,15 @@ public:
         tmp *= shift;
         value = static_cast<mp_int>(tmp);
     }
-
+    FixedPoint(const SgnByte &P)
+    {
+        const auto &[sgn, abs_byte] = P;
+        import_bits(value, abs_byte.begin(), abs_byte.end(), 8);
+        if (sgn)
+        {
+            value *= -1;
+        }
+    }
     FixedPoint(const std::string &str)
     {
         mp_float v_{str};
@@ -56,6 +65,13 @@ public:
     {
         // getVal() より getShiftedVal() の方が適切かもしれない
         return value.template convert_to<T>();
+    }
+    SgnByte getSgnByte() const
+    {
+        bool sgn = value < 0;
+        std::string bytes;
+        export_bits(value, std::back_inserter(bytes), 8);
+        return std::make_pair(sgn, bytes);
     }
     std::string getStrVal() const
     {
