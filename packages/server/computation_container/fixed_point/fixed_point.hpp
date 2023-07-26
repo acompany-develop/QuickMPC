@@ -28,8 +28,8 @@ public:
     template <
         typename T,
         std::enable_if_t<
-            std::is_arithmetic_v <std::remove_reference_t<T>>, std::nullptr_t
-        > = nullptr>
+            std::is_arithmetic_v <std::remove_reference_t<T>>,
+            std::nullptr_t> = nullptr>
     FixedPoint(const T &v)
     {
         mp_float tmp = static_cast<mp_float>(v);
@@ -157,10 +157,10 @@ inline auto abs(const FixedPoint &x)
         return x;
     }
 }
-template<typename FP>
+template <typename FP>
 std::string to_string(const FP &fp)
 {
-    static_assert(std::is_same_v<FP,FixedPoint>, "for FP");
+    static_assert(std::is_same_v<FP, FixedPoint>, "for FP");
     return fp.getStrVal();
 }
 }  // namespace qmpc::Utils
