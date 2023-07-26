@@ -27,8 +27,8 @@ public:
     FixedPoint(FixedPoint &&v) : value(std::move(v.value)) {}
     template <
         typename T,
-        std::enable_if_t<
-            std::is_arithmetic_v<std::remove_reference_t<T>>, std::nullptr_t> = nullptr>
+        std::enable_if_t<std::is_arithmetic_v<std::remove_reference_t<T>>, std::nullptr_t> =
+            nullptr>
     FixedPoint(const T &v)
     {
         mp_float tmp = static_cast<mp_float>(v);
@@ -99,7 +99,7 @@ public:
     FixedPoint &operator*=(const FixedPoint &obj)
     {
         value *= obj.value;
-        value /= shift;  //整数で保持するため余分なshiftを除算する
+        value /= shift;  // 整数で保持するため余分なshiftを除算する
         return *this;
     }
     FixedPoint &operator/=(const FixedPoint &obj)
