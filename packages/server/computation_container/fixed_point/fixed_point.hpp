@@ -155,8 +155,10 @@ inline auto abs(const FixedPoint &x)
         return x;
     }
 }
-std::string to_string(const FixedPoint &fp)
+template<typename FP>
+std::string to_string(const FP &fp)
 {
+    static_assert(std::is_same_v<FP,FixedPoint>, "for FP");
     return fp.getStrVal();
 }
 }  // namespace qmpc::Utils
