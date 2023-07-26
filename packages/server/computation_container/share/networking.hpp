@@ -94,21 +94,25 @@ void open(const T &share)
     }
 }
 
+using CtoCShare = computationtocomputation::Shares_Share;
+
 template <typename SV>
-SV stosv(const std::string &str_value)
+SV toSV(const CtoCShare &share_value)
 {
     if constexpr (std::is_same_v<SV, bool>)
     {
-        assert(str_value == "0" || str_value == "1");
-        return str_value == "1";
+        assert(share_value.has_flag());
+        return share_value.flag();
     }
     else if constexpr (std::is_integral_v<SV>)
     {
-        return std::stoll(str_value);
+        assert(share_value.has_num());
+        return share_value.num();
     }
-    else  // TODO: constructable or convertible
+    else
     {
-        return SV(str_value);
+        assert(share_value.has_byte());
+        return SV(share_value.byte());
     }
 }
 
@@ -129,8 +133,8 @@ auto recons(const Share<SV> &share)
         }
         else
         {
-            std::string s = server->getShare(pt_id, share.getId());
-            ret += stosv<SV>(s);
+            CtoCShare s = server->getShare(pt_id, share.getId());
+            ret += toSV<SV>(s);
         }
     }
     return ret;
@@ -162,10 +166,10 @@ auto recons(const std::vector<Share<SV>> &share)
         }
         else
         {
-            std::vector<std::string> values = server->getShares(pt_id, ids_list);
+            std::vector<CtoCShare> values = server->getShares(pt_id, ids_list);
             for (unsigned int i = 0; i < length; i++)
             {
-                ret[i] += stosv<SV>(values[i]);
+                ret[i] += toSV<SV>(values[i]);
             }
         }
     }

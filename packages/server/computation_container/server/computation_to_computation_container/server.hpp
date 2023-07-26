@@ -23,6 +23,8 @@
 #include "unistd.h"
 namespace qmpc::ComputationToComputation
 {
+using CtoCShare = computationtocomputation::Shares_Share;
+
 class Server final : public computationtocomputation::ComputationToComputation::Service
 {
     std::map<int, std::shared_ptr<Client>> ccClients;
@@ -39,8 +41,8 @@ public:
         google::protobuf::Empty *response
     ) override;
     // 受け取ったシェアをgetするメソッド
-    std::string getShare(int party_id, qmpc::Share::AddressId share_id);
-    std::vector<std::string> getShares(
+    CtoCShare getShare(int party_id, qmpc::Share::AddressId share_id);
+    std::vector<CtoCShare> getShares(
         int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
     );
     Server(Server &&) noexcept = delete;
@@ -70,7 +72,7 @@ private:
     using address_type = std::tuple<int, int, unsigned int, int>;
     // 受け取ったシェアを保存する変数
     // party_id, share_idをキーとして保存
-    std::map<address_type, std::vector<std::string>> shares_vec;
+    std::map<address_type, std::vector<CtoCShare>> shares_vec;
 };
 
 }  // namespace qmpc::ComputationToComputation
