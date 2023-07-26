@@ -51,17 +51,14 @@ public:
         return *this;
     }
     template <typename T = mp_int>
-    T getShiftedVal() const
+    T getVal() const
     {
+        // getVal() より getShiftedVal() の方が適切かもしれない
         return value.template convert_to<T>();
     }
     std::string getStrVal() const
     {
-        D ret{this->getVal<D>()};
-        if (boost::math::isinf(ret))
-        {
-            ret = static_cast<D>(maxInt);
-        }
+        mp_float ret = static_cast<mp_float>(value);
         ret /= shift;
         return ret.str(20, std::ios_base::fixed);
     }
@@ -147,9 +144,9 @@ public:
         return os;
     }
 };
-inline auto abs(const FixedPoint<> &x)
+inline auto abs(const FixedPoint &x)
 {
-    if (x < FixedPoint<>("0.0"))
+    if (x < FixedPoint("0.0"))
     {
         return -x;
     }
@@ -158,8 +155,7 @@ inline auto abs(const FixedPoint<> &x)
         return x;
     }
 }
-template <typename T>
-std::string to_string(const FixedPoint<T> &fp)
+std::string to_string(const FixedPoint &fp)
 {
     return fp.getStrVal();
 }
