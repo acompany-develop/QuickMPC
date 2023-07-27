@@ -35,15 +35,6 @@ public:
         tmp *= shift;
         value = static_cast<mp_int>(tmp);
     }
-    FixedPoint(const SgnByte &P)
-    {
-        const auto &[sgn, abs_byte] = P;
-        import_bits(value, abs_byte.begin(), abs_byte.end(), 8);
-        if (sgn)
-        {
-            value *= -1;
-        }
-    }
     FixedPoint(const std::string &str)
     {
         mp_float v_{str};
