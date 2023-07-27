@@ -145,7 +145,7 @@ auto recons(const std::vector<Share<SV>> &share)
         }
         else
         {
-            std::vector<SV> values = server->getShares(pt_id, ids_list);
+            std::vector<SV> values = server->getShares<SV>(pt_id, ids_list);
             for (unsigned int i = 0; i < length; i++)
             {
                 ret[i] += values[i];
