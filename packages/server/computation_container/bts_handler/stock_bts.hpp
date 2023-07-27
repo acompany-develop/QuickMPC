@@ -53,10 +53,6 @@ public:
         return ret;
     }
 };
-
-template <typename T>
 using StockTriple = StockBTS<BTSJobType::Triple>;
-
-template <typename T>
 using StockRandBit = StockBTS<BTSJobType::RandBit>;
 }  // namespace qmpc::BtsHandler
