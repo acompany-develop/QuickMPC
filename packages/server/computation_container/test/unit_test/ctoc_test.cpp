@@ -48,7 +48,7 @@ TEST(CtoC_Test, EXCHANGESHARE)
     a->set_job_id(share_id[0].getJobId());
     a->set_party_id(conf->party_id);
     computationtocomputation::Shares_Share *multiple_shares = share.add_share_list();
-    multiple_shares->set_byte(value);
+    multiple_shares->set_num(value);
 
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")
@@ -81,7 +81,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     for (unsigned int i = 0; i < length; i++)
     {
         computationtocomputation::Shares_Share *multiple_shares = shares.add_share_list();
-        multiple_shares->set_byte(values[i]);
+        multiple_shares->set_num(values[i]);
     }
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")
