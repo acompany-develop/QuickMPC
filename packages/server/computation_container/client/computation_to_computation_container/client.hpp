@@ -73,7 +73,10 @@ private:
             }
             else
             {
-                multiple_shares->set_byte(to_string(values[i]));
+                computationtocomputation::BigIntByte* fp = multiple_shares->mutable_fp();
+                auto [sgn, byte] = values[i].getSgnByte();
+                fp->set_sgn(sgn);
+                fp->set_byte(byte);
             }
         }
         share_vec.push_back(s);
