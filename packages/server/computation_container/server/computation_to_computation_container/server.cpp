@@ -6,6 +6,7 @@
 
 namespace qmpc::ComputationToComputation
 {
+
 Server::Server() noexcept
 {
     Config *conf = Config::getInstance();
@@ -20,20 +21,6 @@ Server::Server() noexcept
     }
 }
 
-static std::string share_to_str(const computationtocomputation::Shares_Share &share)
-{
-    using cs = computationtocomputation::Shares_Share;
-    switch (share.value_case())
-    {
-        case (cs::ValueCase::kFlag):
-            return std::to_string(share.flag());
-        case (cs::ValueCase::kNum):
-            return std::to_string(share.num());
-        case (cs::ValueCase::kByte):
-        case (cs::ValueCase::VALUE_NOT_SET):
-            return share.byte();
-    }
-}
 // 複数シェアをexchangeする場合
 grpc::Status Server::ExchangeShares(
     grpc::ServerContext *context,
@@ -44,7 +31,7 @@ grpc::Status Server::ExchangeShares(
     computationtocomputation::Shares multiple_shares;
     bool first = true;
     int party_id, share_id, job_id, thread_id;
-    std::vector<std::string> share_str_vec;
+    std::vector<CtoCShare> share_vec;
 
     while (stream->Read(&multiple_shares))
     {
@@ -63,9 +50,7 @@ grpc::Status Server::ExchangeShares(
         for (int i = 0; i < multiple_shares.share_list_size(); i++)
         {
             auto share = multiple_shares.share_list(i);
-
-            auto share_str = share_to_str(share);
-            share_str_vec.emplace_back(share_str);
+            share_vec.emplace_back(share);
         }
         first = false;
     }
@@ -73,68 +58,11 @@ grpc::Status Server::ExchangeShares(
     std::lock_guard<std::mutex> lock(mtx);  // mutex発動
     if (!first)
     {
-        shares_vec[std::make_tuple(party_id, share_id, job_id, thread_id)] = share_str_vec;
+        shares_vec[std::make_tuple(party_id, share_id, job_id, thread_id)] = share_vec;
     }
 
     cond.notify_all();  // 通知
     return grpc::Status::OK;
-}
-
-// 単一シェアget用
-std::string Server::getShare(int party_id, qmpc::Share::AddressId share_id)
-{
-    Config *conf = Config::getInstance();
-    std::unique_lock<std::mutex> lock(mtx);  // mutex発動
-    auto key = std::make_tuple(
-        party_id, share_id.getShareId(), share_id.getJobId(), share_id.getThreadId()
-    );
-    if (!cond.wait_for(
-            lock,
-            std::chrono::seconds(conf->getshare_time_limit),
-            [&] { return shares_vec.count(key) == 1; }
-        ))  // 待機
-    {
-        qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
-    }
-    auto share = shares_vec[key];
-    shares_vec.erase(key);
-    return share[0];
-}
-
-// 複数シェアget用
-std::vector<std::string> Server::getShares(
-    int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
-)
-{
-    const std::size_t length = share_ids.size();
-    if (length == 0)
-    {
-        return std::vector<std::string>{};
-    }
-
-    Config *conf = Config::getInstance();
-    // std::cout << "party share job thread"
-    //           << " " << party_id << " " << share_ids[0].getShareId() << " "
-    //           << share_ids[0].getJobId() << " " << share_ids[0].getThreadId() << std::endl;
-    std::vector<std::string> str_values;
-    str_values.reserve(length);
-    auto key = std::make_tuple(
-        party_id, share_ids[0].getShareId(), share_ids[0].getJobId(), share_ids[0].getThreadId()
-    );
-    std::unique_lock<std::mutex> lock(mtx);  // mutex発動
-
-    if (!cond.wait_for(
-            lock,
-            std::chrono::seconds(conf->getshare_time_limit * length),
-            [&] { return shares_vec.count(key) == 1; }
-        ))  // 待機
-    {
-        qmpc::Log::throw_with_trace(std::runtime_error("getShares is timeout"));
-    }
-    auto local_str_shares = shares_vec[key];
-    shares_vec.erase(key);
-    assert(local_str_shares.size() == length);
-    return local_str_shares;
 }
 
 void Server::runServer(std::string endpoint)

@@ -35,7 +35,6 @@ public:
         tmp *= shift;
         value = static_cast<mp_int>(tmp);
     }
-
     FixedPoint(const std::string &str)
     {
         mp_float v_{str};

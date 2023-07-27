@@ -11,6 +11,7 @@
 
 #include "config_parse/config_parse.hpp"
 #include "external/proto/computation_to_computation_container/computation_to_computation.grpc.pb.h"
+#include "fixed_point/fixed_point.hpp"
 #include "gtest/gtest.h"
 #include "logging/logger.hpp"
 #include "server/computation_to_computation_container/server.hpp"
@@ -63,7 +64,7 @@ TEST(CtoC_Test, EXCHANGESHARE)
     EXPECT_TRUE(status.ok());
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    auto data = server->getShare(conf->party_id, share_id[0]);
+    std::string data = server->getShare<std::string>(conf->party_id, share_id[0]);
     EXPECT_EQ(value, data);
 }
 TEST(CtoC_Test, EXCHANGESHARES)
@@ -96,7 +97,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     EXPECT_TRUE(status.ok());
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    auto datas = server->getShares(conf->party_id, share_ids);
+    std::vector<std::string> datas = server->getShares<std::string>(conf->party_id, share_ids);
     for (unsigned int i = 0; i < length; i++)
     {
         EXPECT_EQ(values[i], datas[i]);
@@ -109,7 +110,7 @@ TEST(CtoC_Test, GetShareThrowExceptionTest)
     qmpc::Share::AddressId share_id;
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    EXPECT_ANY_THROW(server->getShare(conf->party_id, share_id));
+    EXPECT_ANY_THROW(server->getShare<std::string>(conf->party_id, share_id));
 }
 
 TEST(CtoC_Test, GetSharesThrowExceptionTest)
@@ -119,7 +120,7 @@ TEST(CtoC_Test, GetSharesThrowExceptionTest)
     std::vector<qmpc::Share::AddressId> share_ids(length);
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    EXPECT_ANY_THROW(server->getShares(conf->party_id, share_ids));
+    EXPECT_ANY_THROW(server->getShares<std::string>(conf->party_id, share_ids));
 }
 int main(int argc, char **argv)
 {

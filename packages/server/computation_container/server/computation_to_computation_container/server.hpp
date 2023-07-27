@@ -23,6 +23,8 @@
 #include "unistd.h"
 namespace qmpc::ComputationToComputation
 {
+using CtoCShare = computationtocomputation::Shares_Share;
+
 class Server final : public computationtocomputation::ComputationToComputation::Service
 {
     std::map<int, std::shared_ptr<Client>> ccClients;
@@ -39,10 +41,62 @@ public:
         google::protobuf::Empty *response
     ) override;
     // 受け取ったシェアをgetするメソッド
-    std::string getShare(int party_id, qmpc::Share::AddressId share_id);
-    std::vector<std::string> getShares(
-        int party_id, const std::vector<qmpc::Share::AddressId> &share_ids
-    );
+    template <typename SV>
+    SV getShare(int party_id, qmpc::Share::AddressId share_id)
+    {
+        Config *conf = Config::getInstance();
+        std::unique_lock<std::mutex> lock(mtx);  // mutex発動
+        auto key = std::make_tuple(
+            party_id, share_id.getShareId(), share_id.getJobId(), share_id.getThreadId()
+        );
+        if (!cond.wait_for(
+                lock,
+                std::chrono::seconds(conf->getshare_time_limit),
+                [&] { return shares_vec.count(key) == 1; }
+            ))  // 待機
+        {
+            qmpc::Log::throw_with_trace(std::runtime_error("getShare is timeout"));
+        }
+        auto share = shares_vec[key][0];
+        shares_vec.erase(key);
+        return toSV<SV>(share);
+    }
+    template <typename SV>
+    std::vector<SV> getShares(int party_id, const std::vector<qmpc::Share::AddressId> &share_ids)
+    {
+        const std::size_t length = share_ids.size();
+        if (length == 0)
+        {
+            return std::vector<SV>{};
+        }
+
+        Config *conf = Config::getInstance();
+        // std::cout << "party share job thread"
+        //           << " " << party_id << " " << share_ids[0].getShareId() << " "
+        //           << share_ids[0].getJobId() << " " << share_ids[0].getThreadId() << std::endl;
+        auto key = std::make_tuple(
+            party_id, share_ids[0].getShareId(), share_ids[0].getJobId(), share_ids[0].getThreadId()
+        );
+        std::unique_lock<std::mutex> lock(mtx);  // mutex発動
+
+        if (!cond.wait_for(
+                lock,
+                std::chrono::seconds(conf->getshare_time_limit * length),
+                [&] { return shares_vec.count(key) == 1; }
+            ))  // 待機
+        {
+            qmpc::Log::throw_with_trace(std::runtime_error("getShares is timeout"));
+        }
+        auto local_str_shares = shares_vec[key];
+        shares_vec.erase(key);
+        assert(local_str_shares.size() == length);
+        std::vector<SV> ret(length);
+        for (size_t i = 0; i < length; i++)
+        {
+            ret[i] = toSV<SV>(local_str_shares[i]);
+        }
+        return ret;
+    }
     Server(Server &&) noexcept = delete;
     Server(const Server &) noexcept = delete;
     Server &operator=(Server &&) noexcept = delete;
@@ -70,7 +124,27 @@ private:
     using address_type = std::tuple<int, int, unsigned int, int>;
     // 受け取ったシェアを保存する変数
     // party_id, share_idをキーとして保存
-    std::map<address_type, std::vector<std::string>> shares_vec;
+    std::map<address_type, std::vector<CtoCShare>> shares_vec;
+
+    template <typename SV>
+    SV toSV(const CtoCShare &share_value)
+    {
+        if constexpr (std::is_same_v<SV, bool>)
+        {
+            assert(share_value.has_flag());
+            return share_value.flag();
+        }
+        else if constexpr (std::is_integral_v<SV>)
+        {
+            assert(share_value.has_num());
+            return share_value.num();
+        }
+        else
+        {
+            assert(share_value.has_byte());
+            return SV(share_value.byte());
+        }
+    }
 };
 
 }  // namespace qmpc::ComputationToComputation
