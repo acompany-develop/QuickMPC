@@ -42,13 +42,13 @@ TEST(CtoC_Test, EXCHANGESHARE)
     std::vector<qmpc::Share::AddressId> share_id(1);
     computationtocomputation::Shares share;
     std::cout << "exchangeshare id " << share_id[0] << std::endl;
-    std::string value = "10";
+    int value = 10;
     auto a = share.mutable_address_id();
     a->set_share_id(share_id[0].getShareId());
     a->set_job_id(share_id[0].getJobId());
     a->set_party_id(conf->party_id);
     computationtocomputation::Shares_Share *multiple_shares = share.add_share_list();
-    multiple_shares->set_byte(value);
+    multiple_shares->set_num(value);
 
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")
@@ -64,7 +64,7 @@ TEST(CtoC_Test, EXCHANGESHARE)
     EXPECT_TRUE(status.ok());
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    std::string data = server->getShare<std::string>(conf->party_id, share_id[0]);
+    int data = server->getShare<int>(conf->party_id, share_id[0]);
     EXPECT_EQ(value, data);
 }
 TEST(CtoC_Test, EXCHANGESHARES)
@@ -72,7 +72,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     Config *conf = Config::getInstance();
     unsigned int length = 2;
     std::vector<qmpc::Share::AddressId> share_ids(length);
-    std::vector<std::string> values = {"10", "11"};
+    std::vector<int> values = {10, 11};
     computationtocomputation::Shares shares;
     auto a = shares.mutable_address_id();
     a->set_share_id(share_ids[0].getShareId());
@@ -81,7 +81,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     for (unsigned int i = 0; i < length; i++)
     {
         computationtocomputation::Shares_Share *multiple_shares = shares.add_share_list();
-        multiple_shares->set_byte(values[i]);
+        multiple_shares->set_num(values[i]);
     }
     auto stub_ = createStub<computationtocomputation::ComputationToComputation>(
         Url::Parse("http://localhost:50120")
@@ -97,7 +97,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     EXPECT_TRUE(status.ok());
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    std::vector<std::string> datas = server->getShares<std::string>(conf->party_id, share_ids);
+    std::vector<int> datas = server->getShares<int>(conf->party_id, share_ids);
     for (unsigned int i = 0; i < length; i++)
     {
         EXPECT_EQ(values[i], datas[i]);
@@ -110,7 +110,7 @@ TEST(CtoC_Test, GetShareThrowExceptionTest)
     qmpc::Share::AddressId share_id;
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    EXPECT_ANY_THROW(server->getShare<std::string>(conf->party_id, share_id));
+    EXPECT_ANY_THROW(server->getShare<int>(conf->party_id, share_id));
 }
 
 TEST(CtoC_Test, GetSharesThrowExceptionTest)
@@ -120,7 +120,7 @@ TEST(CtoC_Test, GetSharesThrowExceptionTest)
     std::vector<qmpc::Share::AddressId> share_ids(length);
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    EXPECT_ANY_THROW(server->getShares<std::string>(conf->party_id, share_ids));
+    EXPECT_ANY_THROW(server->getShares<int>(conf->party_id, share_ids));
 }
 int main(int argc, char **argv)
 {

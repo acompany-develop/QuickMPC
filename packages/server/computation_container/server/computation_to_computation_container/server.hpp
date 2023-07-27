@@ -141,8 +141,11 @@ private:
         }
         else
         {
-            assert(share_value.has_byte());
-            return SV(share_value.byte());
+            assert(share_value.has_fp());
+            auto fp = share_value.fp();
+            bool sgn = fp.sgn();
+            std::string byte = fp.byte();
+            return SV(std::make_pair(sgn, byte));
         }
     }
 };
