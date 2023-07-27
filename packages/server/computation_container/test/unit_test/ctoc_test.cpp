@@ -97,7 +97,7 @@ TEST(CtoC_Test, EXCHANGESHARES)
     EXPECT_TRUE(status.ok());
 
     auto server = qmpc::ComputationToComputation::Server::getServer();
-    std::string datas = server->getShares<std::string>(conf->party_id, share_ids);
+    std::vector<std::string> datas = server->getShares<std::string>(conf->party_id, share_ids);
     for (unsigned int i = 0; i < length; i++)
     {
         EXPECT_EQ(values[i], datas[i]);
