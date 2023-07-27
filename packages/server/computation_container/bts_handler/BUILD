@@ -15,5 +15,8 @@ cc_library(
     hdrs = [
         "job.hpp",
     ],
+    deps = [
+        "//fixed_point:fixed_point"
+    ]
     visibility = ["//visibility:public"],
 )
