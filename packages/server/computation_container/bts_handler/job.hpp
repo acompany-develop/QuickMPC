@@ -39,7 +39,7 @@ struct Triple
     }
 
 private:
-    FixedPoint toFP(const etb::BigIntByte& a)
+    static FixedPoint toFP(const etb::BigIntByte& a)
     {
         bool sgn = a.sgn();
         std::string abs_byte = a.byte();
