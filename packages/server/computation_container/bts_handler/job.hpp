@@ -4,14 +4,15 @@
 #include <string>
 #include <vector>
 
+#include "fixed_point/fixed_point.hpp"
+
 namespace qmpc::BtsHandler::BTSJobType
 {
 namespace etb = enginetobts;
-
 template <typename T>
 struct Triple
 {
-    using result_type = std::tuple<T, T, T>;
+    using result_type = std::tuple<FixedPoint, FixedPoint, FixedPoint>;
     using response_type = etb::GetTriplesResponse;
     static inline std::string op_name = "GetTriples";
 
@@ -33,9 +34,17 @@ struct Triple
         for (size_t i = 0; i < length; i++)
         {
             auto triple = response.triples(i);
-            ret[i] = std::make_tuple(T(triple.a()), T(triple.b()), T(triple.c()));
+            ret[i] = std::make_tuple(toFP(triple.a()), toFP(triple.b()), toFP(triple.c()));
         }
         return ret;
+    }
+
+private:
+    FixedPoint toFP(const etb::BigIntByte& a)
+    {
+        bool sgn = a.sgn();
+        std::string abs_byte = a.byte();
+        return FixedPoint(std::make_pair(sgn, abs_byte));
     }
 };
 

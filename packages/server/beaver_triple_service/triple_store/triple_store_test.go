@@ -6,6 +6,7 @@ import (
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 	"testing"
 )
 
@@ -29,40 +30,75 @@ func getClaims() (*jwt_types.Claim, error) {
 	return nil,fmt.Errorf("BTS TOKEN is not valified")
 }
 
-func generateTriples(amount uint32) map[uint32]([]*ts.Triple) {
+func convertToBigIntByte(a int64)(pb.BigIntByte, error){
+	sgn := bool(a < 0)
+	buf := new(bytes.Buffer)
+	err := binary.Write(buf, binary.BigEndian, a)
+	if err != nil {
+        return nil, err
+    }
+    byteSlice := buf.Bytes()
+	return pb.BigIntByte{
+		Sgn : sgn,
+		byteSlice : byte,
+	}, nil
+}
+
+func convertToTriple(a,b,c int64)(pb.Triple, error){
+	a_, err := convertToBigIntByte(a)
+	if err != nil{
+		return nil, err
+	}
+	b_, err := convertToBigIntByte(b)
+	if err != nil{
+		return nil, err
+	}
+	c_, err := convertToBigIntByte(c)
+	if err != nil{
+		return nil, err
+	}
+	return pb.Triple{
+		A : a_,
+		B : b_,
+		C : c_,
+	}, nil
+}
+
+func generateTriples(amount uint32) map[uint32]([]*ts.Triple, error) {
 	ret := make(map[uint32]([]*ts.Triple))
 	for i := uint32(0); i < amount; i++ {
-		t := ts.Triple{
-			A: 1,
-			B: 1,
-			C: 3,
+		t, err := convertToTriple(1, 1, 3)
+		if err != nil{
+			return nil, err
 		}
 		ret[1] = append(ret[1], &t)
 
-		t = ts.Triple{
-			A: 2,
-			B: 2,
-			C: 6,
+		t, err = convertToTriple(2, 2, 6)
+		if err != nil{
+			return nil, err
 		}
 		ret[2] = append(ret[2], &t)
 
-		t = ts.Triple{
-			A: 3,
-			B: 3,
-			C: 9,
+		t, err = convertToTriple(3, 3, 9)
+		if err != nil{
+			return nil, err
 		}
 		ret[3] = append(ret[3], &t)
 	}
 
-	return ret
+	return ret, nil
 }
 
-func getTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32) []*ts.Triple {
+func getTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32) ([]*ts.Triple, error){
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
 	if len(Db.Triples[jobId]) == 0 {
-		Db.Triples[jobId] = generateTriples(amount)
+		newTriples, err := generateTriples(amount)
+		if err != nil{
+			return nil, err
+		}
+		Db.Triples[jobId] = newTriples
 	}
 
 	triples, ok := Db.Triples[jobId][partyId]
@@ -73,7 +109,7 @@ func getTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32) []*ts
 	if len(triples) == 0 {
 		t.Fatal("すでに取得済みのリソースがリクエストされた")
 	}
-	return triples
+	return triples, nil
 }
 
 func getTriplesForParallel(t *testing.T, partyId uint32, amount uint32, jobNum uint32) {
