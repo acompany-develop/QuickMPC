@@ -59,7 +59,7 @@ public:
         }
         auto share = shares_vec[key][0];
         shares_vec.erase(key);
-        return toSV(share);
+        return toSV<SV>(share);
     }
     template <typename SV>
     std::vector<SV> getShares(int party_id, const std::vector<qmpc::Share::AddressId> &share_ids)
@@ -67,15 +67,13 @@ public:
         const std::size_t length = share_ids.size();
         if (length == 0)
         {
-            return std::vector<CtoCShare>{};
+            return std::vector<SV>{};
         }
 
         Config *conf = Config::getInstance();
         // std::cout << "party share job thread"
         //           << " " << party_id << " " << share_ids[0].getShareId() << " "
         //           << share_ids[0].getJobId() << " " << share_ids[0].getThreadId() << std::endl;
-        std::vector<CtoCShare> str_values;
-        str_values.reserve(length);
         auto key = std::make_tuple(
             party_id, share_ids[0].getShareId(), share_ids[0].getJobId(), share_ids[0].getThreadId()
         );
@@ -95,7 +93,7 @@ public:
         std::vector<SV> ret(length);
         for (size_t i = 0; i < length; i++)
         {
-            ret[i] = toSV(local_str_shares[i]);
+            ret[i] = toSV<SV>(local_str_shares[i]);
         }
         return ret;
     }
