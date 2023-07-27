@@ -17,6 +17,6 @@ cc_library(
     ],
     deps = [
         "//fixed_point:fixed_point"
-    ]
+    ],
     visibility = ["//visibility:public"],
 )
