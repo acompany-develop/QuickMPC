@@ -76,7 +76,7 @@ public:
     Share &operator*=(const Share &obj)
     {
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get();
+        auto t = qmpc::BtsHandler::StockTriple::getInstance()->get();
         Share a(std::get<0>(t[0])), b(std::get<1>(t[0])), c(std::get<2>(t[0]));
 
         // [d] = [x] - [a], [e] = [y] - [b] を計算する
@@ -243,7 +243,7 @@ public:
             );
         }
         // Beaver Triplet a, b, c のシェア [a], [b], [c] を得る
-        auto t = qmpc::BtsHandler::StockTriple<SV>::getInstance()->get(n);
+        auto t = qmpc::BtsHandler::StockTriple::getInstance()->get(n);
 
         std::vector<Share> a, b, c;
         a.reserve(n);
@@ -327,14 +327,14 @@ auto _isZero(const T &x)
 template <typename SV>
 Share<SV> getRandBitShare()
 {
-    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get();
+    auto bit = qmpc::BtsHandler::StockRandBit::getInstance()->get();
     return Share<SV>(bit[0]);
 }
 
 template <typename SV>
 std::vector<Share<SV>> getRandBitShare(std::size_t amount)
 {
-    auto bit = qmpc::BtsHandler::StockRandBit<SV>::getInstance()->get(amount);
+    auto bit = qmpc::BtsHandler::StockRandBit::getInstance()->get(amount);
 
     std::vector<Share<SV>> ret(amount);
     for (size_t i = 0; i < amount; i++)

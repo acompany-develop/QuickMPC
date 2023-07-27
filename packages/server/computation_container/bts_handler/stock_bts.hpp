@@ -55,8 +55,8 @@ public:
 };
 
 template <typename T>
-using StockTriple = StockBTS<BTSJobType::Triple<T>>;
+using StockTriple = StockBTS<BTSJobType::Triple>;
 
 template <typename T>
-using StockRandBit = StockBTS<BTSJobType::RandBit<T>>;
+using StockRandBit = StockBTS<BTSJobType::RandBit>;
 }  // namespace qmpc::BtsHandler

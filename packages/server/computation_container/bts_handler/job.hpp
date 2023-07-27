@@ -9,7 +9,6 @@
 namespace qmpc::BtsHandler::BTSJobType
 {
 namespace etb = enginetobts;
-template <typename T>
 struct Triple
 {
     using result_type = std::tuple<FixedPoint, FixedPoint, FixedPoint>;
@@ -48,10 +47,9 @@ private:
     }
 };
 
-template <typename T>
 struct RandBit
 {
-    using result_type = T;
+    using result_type = std::int64_t;
     using response_type = etb::GetRandBitsResponse;
     static inline std::string op_name = "GetRandBits";
 
