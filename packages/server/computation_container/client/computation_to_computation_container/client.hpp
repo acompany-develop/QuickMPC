@@ -73,7 +73,7 @@ private:
             }
             else
             {
-                computationtocomputation::BigIntByte* fp = multiple_shares->mutable_fp();
+                computationtocomputation::BigIntByte *fp = multiple_shares->mutable_fp();
                 auto [sgn, byte] = values[i].getSgnByte();
                 fp->set_sgn(sgn);
                 fp->set_byte(byte);
