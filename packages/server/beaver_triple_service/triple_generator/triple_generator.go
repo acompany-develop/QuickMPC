@@ -61,7 +61,7 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32) (map[uint32]([]*ts.
 
 	for i := uint32(0); i < 2*amount; i+=2 {
 		var a big.Int = ab[i]
-		var b big.Int = ab[i]
+		var b big.Int = ab[i+1]
 		var c big.Int
 		c.Mul(&a, &b)
 
