@@ -6,26 +6,43 @@ from functools import update_wrapper
 
 
 class Dim1:
+    """1次元配列であることを示すクラス"""
     ...
 
 
 class Dim2:
+    """2次元配列であることを示すクラス"""
     ...
 
 
 class Dim3:
+    """3次元配列であることを示すクラス"""
     ...
 
 
 class DictList:
+    """1次元辞書型配列であることを示すクラス"""
     ...
 
 
 class DictList2:
+    """2次元辞書型配列であることを示すクラス"""
     ...
 
 
-def d(lst):
+def d(lst) -> int:
+    """次元数を取得する
+
+    Parameters
+    ----------
+    lst: any
+        次元数を取得する変数
+
+    Returns
+    -------
+    int
+        次元数
+    """
     if not isinstance(lst, list):
         return 0
     if not lst:
@@ -34,6 +51,18 @@ def d(lst):
 
 
 def find_element_type(lst) -> type:
+    """配列の要素の型を取得する
+
+    Parameters
+    ----------
+    lst: any
+        要素の型を取得する変数
+
+    Returns
+    -------
+    type
+        要素の型
+    """
     if not isinstance(lst, list):
         return lst.__class__
     if not lst:
@@ -42,6 +71,18 @@ def find_element_type(lst) -> type:
 
 
 def _get_dim_class(lst: list):
+    """次元数を加味したクラス分類を取得する
+
+    Parameters
+    ----------
+    lst: any
+        クラス分類を取得する変数
+
+    Returns
+    -------
+    Any
+        クラス分類
+    """
     dim: int = d(lst)
     if dim == 1:
         if len(lst) and isinstance(lst[0], dict):
@@ -57,6 +98,20 @@ def _get_dim_class(lst: list):
 
 
 def _convert_list_type(registry, type):
+    """次元数を加味したクラス分類を取得する
+
+    Parameters
+    ----------
+    registry: dict
+        登録されている型集合
+    type: any
+        分類するクラス
+
+    Returns
+    -------
+    Any
+        クラス分類
+    """
     if type.__class__ is not list:
         return type
     for Dim in (Dim1, Dim2, Dim3, DictList):
@@ -66,6 +121,18 @@ def _convert_list_type(registry, type):
 
 
 def methoddispatch(is_static_method: bool = False):
+    """overloadするための関数
+
+    Parameters
+    ----------
+    is_static_method: bool
+        staticmethodかどうか
+
+    Returns
+    -------
+    Callable
+        dispatch関数
+    """
     def _dimdispatch(func):
         registry: dict = {}
         default_function = func
