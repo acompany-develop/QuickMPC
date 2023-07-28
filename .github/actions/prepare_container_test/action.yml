@@ -6,10 +6,12 @@ runs:
       with:
         python-version: 3.7
 
-    - name: Install pipenv
+    - name: Install dependencies
       shell: bash
-      run: pip install pipenv
-      working-directory: ./scripts
+      run: |
+        pip install -U pip
+        pip install pytest
+        pip install ./packages/client/libclient-py
 
     - name: Set up Docker buildx
       id: buildx

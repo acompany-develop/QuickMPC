@@ -246,10 +246,7 @@ jobs:
       - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
-        run: |
-          pipenv sync
-          pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG
+        run: pytest ./tests/test_up.py -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_restart:
@@ -284,10 +281,7 @@ jobs:
       - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
-        run: |
-          pipenv sync
-          pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_restart_request.py::test_success_${{ matrix.test_name }}_with_restart -s -v -log-cli-level=DEBUG
+        run: pytest ./tests/test_restart_request.py::test_success_${{ matrix.test_name }}_with_restart -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container_down:
@@ -321,10 +315,7 @@ jobs:
       - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
-        run: |
-          pipenv sync
-          pipenv install --skip-lock ../../packages/client/libclient-py
-          pipenv run pytest ./tests/test_down_request.py::test_failed_${{ matrix.test_name }}_with_down -s -v -log-cli-level=DEBUG
+        run: pipenv run pytest ./tests/test_down_request.py::test_failed_${{ matrix.test_name }}_with_down -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container:
