@@ -53,7 +53,7 @@ protected:
         initialize(data_id);
         data_ids.emplace_back(data_id);
 
-        //テストで使用するデータをDBに保存する
+        // テストで使用するデータをDBに保存する
         const int piece_id = 0;
         auto [schema, table] = test_tables[table_itr];
         auto json_schema = qmpc::ComputationToDb::convertSchemaVectorToJsonVector(schema);
