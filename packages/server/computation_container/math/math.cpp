@@ -3,7 +3,11 @@
 #include "logging/logger.hpp"
 namespace qmpc::Math
 {
-Share sum(const std::vector<Share> &v) { return std::accumulate(v.begin(), v.end(), Share(0)); }
+Share sum(const std::vector<Share> &v)
+{
+    Share e(FixedPoint(0));
+    return std::accumulate(v.begin(), v.end(), e);
+}
 Share smean(const std::vector<Share> &v)
 {
     Share ret = sum(v);
@@ -17,6 +21,7 @@ Share variance(const std::vector<Share> &v)
 {
     Share avg = smean(v);
     std::vector<Share> var;
+    var.reserve(v.size());
     for (const auto &a : v)
     {
         var.emplace_back(a - avg);
@@ -70,6 +75,7 @@ Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
     Share ret = sum(tmpVec);
     ret /= stdeX;
     ret /= stdeY;
+    ret /= FixedPoint(n);
     return ret;
 }
 
