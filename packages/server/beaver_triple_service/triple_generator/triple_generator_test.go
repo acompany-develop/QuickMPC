@@ -86,8 +86,8 @@ func convertToBigInt(b *pb.BigIntByte) (big.Int) {
 	var ret big.Int
 	bytes := b.AbsByte
 	ret.SetBytes(bytes)
-	if b.sgn{
-		ret *= -1
+	if b.Sgn{
+		ret.Neg(ret)
 	}
 	return ret
 }
@@ -97,11 +97,13 @@ func testValidityOfTriples(t *testing.T) {
 		for i := 0; i < len(PartyToTriples[1]); i++ {
 			aShareSum, bShareSum, cShareSum := big.NewInt(0), big.NewInt(0), big.NewInt(0)
 			for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
-				aShareSum += convertToBigInt(PartyToTriples[partyId][i].A)
-				bShareSum += convertToBigInt(PartyToTriples[partyId][i].B)
-				cShareSum += convertToBigInt(PartyToTriples[partyId][i].C)
+				aShareSum += convertToBigInt(&PartyToTriples[partyId][i].A)
+				bShareSum += convertToBigInt(&PartyToTriples[partyId][i].B)
+				cShareSum += convertToBigInt(&PartyToTriples[partyId][i].C)
 			}
-			if aShareSum*bShareSum != cShareSum {
+			ab := big.NewInt(0)
+			ab.Mul(aShareSum, bShareSum)
+			if ab.Cmp(cShareSum) != 0 {
 				t.Fatal("a*b != c")
 			}
 		}
