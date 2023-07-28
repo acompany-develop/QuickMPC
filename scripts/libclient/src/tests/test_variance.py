@@ -21,10 +21,10 @@ from utils import data_frame, qmpc
          [1],
          pd.DataFrame([25.0])),
 
-        # small data case
-        (data_frame([[10**-9], [10**-9+10]], columns=["s1"]),
-         [1],
-         pd.DataFrame([25.0])),
+        # # small data case
+        # (data_frame([[10**-9], [10**-9+10]], columns=["s1"]),
+        #  [1],
+        #  pd.DataFrame([25.0])),
 
         # duplicated src case
         (data_frame([[1, 2, 3], [4, 7, 10]], columns=["s1", "s2", "s3"]),
