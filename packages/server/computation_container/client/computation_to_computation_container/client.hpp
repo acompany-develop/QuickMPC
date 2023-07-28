@@ -76,7 +76,7 @@ private:
                 computationtocomputation::BigIntByte *fp = multiple_shares->mutable_fp();
                 auto [sgn, byte] = values[i].getSgnByte();
                 fp->set_sgn(sgn);
-                fp->set_byte(byte);
+                fp->set_abs_byte(byte);
             }
         }
         share_vec.push_back(s);
