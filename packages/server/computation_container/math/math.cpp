@@ -84,22 +84,12 @@ Share correl(std::vector<Share> &x, std::vector<Share> &y)
     FixedPoint stdeX = stdev(x);
     FixedPoint stdeY = stdev(y);
 
-    // 0徐算エラー
-    // TODO:一時的に値を入れているので要修正
-    if (stdeX <= FixedPoint(0.001) and stdeX >= FixedPoint(-0.001))
+    // 0除算
+    if (stdeX == FixedPoint(0) || stdeY == FixedPoint(0))
     {
-        stdeX = FixedPoint("0.001");
+        qmpc::Log::throw_with_trace(std::runtime_error("Div0"));
     }
 
-    if (stdeY <= FixedPoint(0.001) and stdeY >= FixedPoint(-0.001))
-    {
-        stdeY = FixedPoint("0.001");
-    }
-
-    // if (stdeX.getVal() == 0 or stdeY.getVal() == 0)
-    // {
-    //     throw std::runtime_error("0 divede error");
-    // }
     int n = sizex;
     std::vector<Share> tmpX;
     tmpX.reserve(n);
