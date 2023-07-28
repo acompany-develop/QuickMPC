@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 
 
 class ShareDataFrameStatus(Enum):
+    """Jobの計算Status
+    """
     OK = 1
     EXECUTE = 2
     ERROR = 3
@@ -49,16 +51,16 @@ def _wait_execute_decorator(func: Callable) -> Callable:
 class ShareDataFrame:
     """テーブルデータを管理するクラス
 
-    Attributes
-    ----------
-    __id: str
+    Args
+    ----
+    _ShareDataFrame__id: str
         データのID
-    __qmpc_request: quickmpc.request.QMPCClientInterface
+    _ShareDataFrame__qmpc_request: quickmpc.request.QMPCClientInterface
         QuickMPCとの通信を担うClient
-    __is_result: bool
+    _ShareDataFrame__is_result: bool
         send由来のDataFrame(False)なのかexecute由来のDataFrameなのか(True)
-    __status: ShareDataFrameStatus
-        現在の状態
+    _ShareDataFrame__status: ShareDataFrameStatus
+        現在のデータの状態
     """
 
     __id: str
@@ -67,6 +69,27 @@ class ShareDataFrame:
     __status: ShareDataFrameStatus = ShareDataFrameStatus.OK
 
     def _wait_execute(self, progress: bool) -> None:
+        """計算が終了するまで待機する
+
+        管理しているIDがjob_uuid(execute由来のID)である場合，計算が終了するまで待機する．
+        send_shareしたdata_idを管理している場合は待機する必要がないためすぐにreturnする．
+
+        待機は計算終了まで永遠に行われ，1秒おきにMPCサーバに現在Statusの確認リクエストが送信される．
+
+        Parameters
+        ----------
+        progress: bool
+            計算Statusをログに出力するかどうか
+
+        Returns
+        ----------
+        None
+
+        Raises
+        ------
+        QMPCJobError
+            計算中に何らかのエラーが発生している時
+        """
         if self.__status == ShareDataFrameStatus.ERROR:
             raise QMPCJobError("ShareDataFrame's status is `ERROR`")
         if self.__status == ShareDataFrameStatus.EXECUTE:
@@ -92,14 +115,14 @@ class ShareDataFrame:
                 time.sleep(1)
 
     def __add__(self, other: "ShareDataFrame") -> "ShareDataFrame":
-        """テーブルを加算する．
+        """テーブルデータを加算する．
 
-        qmpc.send_toで送ったデータでかつ，行数，列数が一致している場合のみ正常に動作する．
+        :any:`quickmpc.send_to` で送ったデータでかつ，行数，列数が一致している場合のみ正常に動作する．
 
         Parameters
         ----------
         other: ShareDataFrame
-            結合したいDataFrame
+            加算したいDataFrame
 
         Returns
         ----------
@@ -114,12 +137,14 @@ class ShareDataFrame:
             -> "ShareDataFrame":
         """テーブルデータを結合する．
 
-        inner_joinのみ．
+        内部ではinner_joinを行う．
 
         Parameters
         ----------
         other: ShareDataFrame
             結合したいDataFrame
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
 
         Returns
         ----------
@@ -133,12 +158,14 @@ class ShareDataFrame:
             -> "ShareDataFrame":
         """テーブルデータを結合する．
 
-        inner_joinのみ．
+        内部ではinner_joinを行う．
 
         Parameters
         ----------
         others: List[ShareDataFrame]
             結合したいDataFrameのリスト
+        debug_mode: bool, default=False
+            違法な高速結合による高速化をするかどうか
 
         Returns
         ----------
@@ -151,27 +178,89 @@ class ShareDataFrame:
                               True, ShareDataFrameStatus.EXECUTE)
 
     def sum(self, columns: list) -> "ShareDataFrame":
+        """列の総和を取得する
+
+        Parameters
+        ----------
+        columns: list
+            計算に用いる列番号(1-index)
+
+        Returns
+        ----------
+        Result
+            結果のDataFrame
+        """
         res = self.__qmpc_request.sum([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
     def mean(self, columns: list) -> "ShareDataFrame":
+        """列の平均を取得する
+
+        Parameters
+        ----------
+        columns: list
+            計算に用いる列番号(1-index)
+
+        Returns
+        ----------
+        Result
+            結果のDataFrame
+        """
         res = self.__qmpc_request.mean([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
     def variance(self, columns: list) -> "ShareDataFrame":
+        """列の分散を取得する
+
+        Parameters
+        ----------
+        columns: list
+            計算に用いる列番号(1-index)
+
+        Returns
+        ----------
+        Result
+            結果のDataFrame
+        """
         res = self.__qmpc_request.variance([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
     def correl(self, columns1: list, columns2: list) -> "ShareDataFrame":
+        """列同士の分散を取得する
+
+        Parameters
+        ----------
+        columns1: list
+            計算に用いる左項の列番号(1-index)
+        columns2: list
+            計算に用いる右項の列番号(1-index)
+
+        Returns
+        ----------
+        Result
+            結果のDataFrame
+        """
         res = self.__qmpc_request.correl([self.__id], columns1, columns2)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
     def meshcode(self, columns: list) \
             -> "ShareDataFrame":
+        """列のmeshcodeを取得する
+
+        Parameters
+        ----------
+        columns: list
+            計算に用いる列番号(1-index)
+
+        Returns
+        ----------
+        Result
+            結果のDataFrame
+        """
         res = self.__qmpc_request.meshcode([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
@@ -189,6 +278,12 @@ class ShareDataFrame:
 
         Returns
         ----------
+        None
+
+        Raises
+        ------
+        RuntimeError
+            送信したデータをそのまま保存しようとした場合
         """
         # 計算結果でないなら保存されないようにする
         if not self.__is_result:
@@ -208,6 +303,11 @@ class ShareDataFrame:
         ----------
         pd.DataFrame
             計算結果
+
+        Raises
+        ------
+        RuntimeError
+        送信したデータをそのまま取得しようとした場合
         """
         # 計算結果でないなら取得できないようにする
         if not self.__is_result:
@@ -246,6 +346,11 @@ class ShareDataFrame:
         ----------
         float
             計算時間
+
+        Raises
+        ------
+        RuntimeError
+            計算していないデータを指定した場合
         """
         # 計算していない場合は計算時間が存在しない
         if not self.__is_result:
