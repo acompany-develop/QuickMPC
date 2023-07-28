@@ -33,7 +33,10 @@ struct Triple
         for (size_t i = 0; i < length; i++)
         {
             auto triple = response.triples(i);
-            ret[i] = std::make_tuple(toFP(triple.a()), toFP(triple.b()), toFP(triple.c()));
+            FixedPoint a = toFP(triple.a());
+            FixedPoint b = toFP(triple.b());
+            FixedPoint c = toFP(triple.c()) / FixedPoint::getShift();
+            ret[i] = std::make_tuple(a, b, c);
         }
         return ret;
     }
