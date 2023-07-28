@@ -5,7 +5,7 @@ namespace qmpc::Math
 {
 Share sum(const std::vector<Share> &v)
 {
-    Share ret;
+    Share ret{};
     for (const auto &a : v)
     {
         ret += a;
@@ -14,11 +14,7 @@ Share sum(const std::vector<Share> &v)
 }
 Share smean(const std::vector<Share> &v)
 {
-    Share ret{};
-    for (const auto &a : v)
-    {
-        ret += a;
-    }
+    Share ret = sum(v);
     int size = std::size(v);
     ret /= FixedPoint(size);
 
@@ -27,35 +23,22 @@ Share smean(const std::vector<Share> &v)
 
 Share variance(const std::vector<Share> &v)
 {
-    Share avg;
-
-    avg = smean(v);
+    Share avg = smean(v);
     std::vector<Share> var;
-    for (auto &a : v)
+    for (const auto &a : v)
     {
         var.emplace_back(a - avg);
     }
     auto varVec = var * var;
-    Share ret{};
-    for (auto &a : varVec)
-    {
-        ret += a;
-    }
-    // FPのresolutionの制約により、FPだと1000より大きい数で割れないためdoubleで割っている
-    // double var_d = var.getDoubleVal();
-    int size = std::size(v);
-    ret /= FixedPoint(size);
-
-    return ret;
+    return smean(varVec);
 }
 
 FixedPoint stdev(const std::vector<Share> &v)
 {
-    Share var;
-    var = variance(v);
+    Share var = variance(v);
+    FixedPoint var_val = open_and_recons(var);
 
-    FixedPoint stdev = open_and_recons(var);
-    auto value = boost::multiprecision::cpp_dec_float_100(stdev.getStrVal());
+    auto value = var_val.getDoubleVal<boost::multiprecision::cpp_dec_float_100>();
     if (value < 0)
     {
         value = 0;
@@ -66,15 +49,12 @@ FixedPoint stdev(const std::vector<Share> &v)
 }
 Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
 {
-    int sizex = (int)x.size();
-    int sizey = (int)y.size();
+    size_t n = x.size();
 
-    if (sizex != sizey)
+    if (n != y.size())
     {
         qmpc::Log::throw_with_trace(std::runtime_error("input Size is not Equal"));
     }
-    Share aveX = smean(x);
-    Share aveY = smean(y);
 
     FixedPoint stdeX = stdev(x);
     FixedPoint stdeY = stdev(y);
@@ -85,25 +65,19 @@ Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
         qmpc::Log::throw_with_trace(std::runtime_error("Div0"));
     }
 
-    int n = sizex;
-    std::vector<Share> tmpX;
-    tmpX.reserve(n);
-    std::vector<Share> tmpY;
-    tmpY.reserve(n);
-    for (int i = 0; i < n; ++i)
+    Share aveX = smean(x);
+    Share aveY = smean(y);
+    std::vector<Share> tmpX(n);
+    std::vector<Share> tmpY(n);
+    for (size_t i = 0; i < n; ++i)
     {
-        tmpX.emplace_back(x[i] - aveX);
-        tmpY.emplace_back(y[i] - aveY);
+        tmpX[i] = x[i] - aveX;
+        tmpY[i] = y[i] - aveY;
     }
     auto tmpVec = tmpX * tmpY;
-    Share ret{};
-    for (auto &r : tmpVec)
-    {
-        ret += r;
-    }
+    Share ret = sum(tmpVec);
     ret /= stdeX;
     ret /= stdeY;
-    ret /= FixedPoint(n);
     return ret;
 }
 
