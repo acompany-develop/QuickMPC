@@ -64,7 +64,7 @@ func convertToTriple(a,b,c int64)(pb.Triple, error){
 	}, nil
 }
 
-func generateTriples(amount uint32) map[uint32]([]*ts.Triple, error) {
+func generateTriples(amount uint32) (map[uint32]([]*ts.Triple), error) {
 	ret := make(map[uint32]([]*ts.Triple))
 	for i := uint32(0); i < amount; i++ {
 		t, err := convertToTriple(1, 1, 3)
