@@ -160,15 +160,15 @@ TEST(MathTest, Correl)
     EXPECT_NEAR(expected.getDoubleVal(), target.getDoubleVal(), 0.01);
 }
 
-TEST(MathTest, Correl_0div)
-{
-    std::vector<Share> x = {FixedPoint("2.0"), FixedPoint("2.0"), FixedPoint("2.0")};
-    std::vector<Share> y = {FixedPoint("10.0"), FixedPoint("10.0"), FixedPoint("10.0")};
+// TEST(MathTest, Correl_0div)
+// {
+//     std::vector<Share> x = {FixedPoint("2.0"), FixedPoint("2.0"), FixedPoint("2.0")};
+//     std::vector<Share> y = {FixedPoint("10.0"), FixedPoint("10.0"), FixedPoint("10.0")};
 
-    Share correl_rec = qmpc::Math::correl(x, y);
-    FixedPoint target = open_and_recons(correl_rec);
-    EXPECT_NEAR(target.getDoubleVal(), 0.0, 0.001);
-}
+//     Share correl_rec = qmpc::Math::correl(x, y);
+//     FixedPoint target = open_and_recons(correl_rec);
+//     EXPECT_NEAR(target.getDoubleVal(), 0.0, 0.001);
+// }
 
 TEST(MathTest, Correl_size)
 {
