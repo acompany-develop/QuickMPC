@@ -3,6 +3,8 @@ package triplestore_test
 import (
 	"os"
 	"fmt"
+	"bytes"
+	"encoding/binary"
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
@@ -30,7 +32,7 @@ func getClaims() (*jwt_types.Claim, error) {
 	return nil,fmt.Errorf("BTS TOKEN is not valified")
 }
 
-func convertToBigIntByte(a int64)(pb.BigIntByte, error){
+func convertToBigIntByte(a int64)(*pb.BigIntByte, error){
 	sgn := bool(a < 0)
 	buf := new(bytes.Buffer)
 	err := binary.Write(buf, binary.BigEndian, a)
@@ -38,13 +40,13 @@ func convertToBigIntByte(a int64)(pb.BigIntByte, error){
         return nil, err
     }
     byteSlice := buf.Bytes()
-	return pb.BigIntByte{
+	return &pb.BigIntByte{
 		Sgn : sgn,
-		byteSlice : byte,
+		AbsByte : byteSlice,
 	}, nil
 }
 
-func convertToTriple(a,b,c int64)(pb.Triple, error){
+func convertToTriple(a,b,c int64)(*pb.Triple, error){
 	a_, err := convertToBigIntByte(a)
 	if err != nil{
 		return nil, err
@@ -57,7 +59,7 @@ func convertToTriple(a,b,c int64)(pb.Triple, error){
 	if err != nil{
 		return nil, err
 	}
-	return pb.Triple{
+	return &pb.Triple{
 		A : a_,
 		B : b_,
 		C : c_,
@@ -71,19 +73,19 @@ func generateTriples(amount uint32) (map[uint32]([]*ts.Triple), error) {
 		if err != nil{
 			return nil, err
 		}
-		ret[1] = append(ret[1], &t)
+		ret[1] = append(ret[1], t)
 
 		t, err = convertToTriple(2, 2, 6)
 		if err != nil{
 			return nil, err
 		}
-		ret[2] = append(ret[2], &t)
+		ret[2] = append(ret[2], t)
 
 		t, err = convertToTriple(3, 3, 9)
 		if err != nil{
 			return nil, err
 		}
-		ret[3] = append(ret[3], &t)
+		ret[3] = append(ret[3], t)
 	}
 
 	return ret, nil
