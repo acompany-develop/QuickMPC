@@ -3,15 +3,7 @@
 #include "logging/logger.hpp"
 namespace qmpc::Math
 {
-Share sum(const std::vector<Share> &v)
-{
-    Share ret{};
-    for (const auto &a : v)
-    {
-        ret += a;
-    }
-    return ret;
-}
+Share sum(const std::vector<Share> &v) { return std::accumulate(v.begin(), v.end(), Share(0)); }
 Share smean(const std::vector<Share> &v)
 {
     Share ret = sum(v);
