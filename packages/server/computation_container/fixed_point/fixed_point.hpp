@@ -88,10 +88,18 @@ public:
         export_bits(value, std::back_inserter(bytes), 8);
         return std::make_pair(sgn, bytes);
     }
-    double getDoubleVal() const
+    template <typename T = double>
+    T getDoubleVal() const
     {
-        mp_float ret = static_cast<mp_float>(value);
-        return static_cast<double>(ret / shift);
+        mp_float ret = static_cast<mp_float>(value) / shift;
+        if constexpr (std::is_same_v<T, mp_float>)
+        {
+            return ret;
+        }
+        else
+        {
+            return static_cast<T>(ret);
+        }
     }
     constexpr static auto getShift() noexcept { return shift; }
 
