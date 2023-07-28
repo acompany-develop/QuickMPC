@@ -21,11 +21,9 @@ Share variance(const std::vector<Share> &v)
 {
     Share avg = smean(v);
     std::vector<Share> var;
-    var.reserve(v.size());
-    for (const auto &a : v)
-    {
-        var.emplace_back(a - avg);
-    }
+    std::transform(
+        v.begin(), v.end(), std::back_inserter(var), [&avg](const Share &s) { return s - avg; }
+    );
     auto varVec = var * var;
     return smean(varVec);
 }
