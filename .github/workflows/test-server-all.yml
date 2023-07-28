@@ -315,7 +315,7 @@ jobs:
       - uses: ./.github/actions/prepare_container_test
 
       - name: Run container test
-        run: pipenv run pytest ./tests/test_down_request.py::test_failed_${{ matrix.test_name }}_with_down -s -v -log-cli-level=DEBUG
+        run: pytest ./tests/test_down_request.py::test_failed_${{ matrix.test_name }}_with_down -s -v -log-cli-level=DEBUG
         working-directory: ./scripts/container_test
 
   medium_test_container:
