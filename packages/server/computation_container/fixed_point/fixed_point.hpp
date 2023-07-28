@@ -152,7 +152,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const FixedPoint &fp)
     {
         os << std::fixed;
-        os << std::setprecision(10);
+        os << std::setprecision(8);
         os << fp.value.template convert_to<mp_float>() / shift;
         os << std::resetiosflags(std::ios_base::floatfield);
         return os;
