@@ -965,7 +965,7 @@ TEST(ShareTest, FPMulLarge)
     a = a * b;
     auto rec = open_and_recons(a);
 
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+    EXPECT_EQ(rec[0], n_parties * n_parties);
 }
 
 TEST(ShareTest, FPMulExtraLarge)
@@ -977,5 +977,5 @@ TEST(ShareTest, FPMulExtraLarge)
     a = a * b;
     auto rec = open_and_recons(a);
 
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+    EXPECT_EQ(rec[0], n_parties * n_parties);
 }
