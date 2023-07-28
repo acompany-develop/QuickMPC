@@ -23,20 +23,44 @@ class RandomInterface(ABC):
 
 @dataclass(frozen=True)
 class ChaCha20(RandomInterface):
+    """ChaCha20による乱数生成器
+
+    args
+    ----
+    mx: int
+        乱数最大値
+    mn: int
+        乱数最小値
+    """
 
     # 128bit符号付き整数最大，最小値
     mx: ClassVar[int] = (1 << 128)-1
     mn: ClassVar[int] = -(1 << 128)
 
     @methoddispatch()
-    def get(self, a, b):
+    def get(self, *args, **kw):
+        """乱数を生成する
+
+        overloadして使用される．
+        """
         raise ArgumentError(
             "乱数の閾値はどちらもintもしくはdecimalでなければなりません．"
             f"a is {type(a)}, b is {type(b)}")
 
     @get.register(int)
     def __get_int(self, a: int, b: int) -> int:
-        # TRNGで [a,b) の乱数生成
+        """TRNGで整数の乱数を生成する
+
+        Parameters
+        ----------
+        a, b: int
+            [a, b)の範囲で生成する
+
+        Returns
+        -------
+        int
+            整数乱数
+        """
         self.__exception_check(a, b)
         interval_byte = self.__get_byte_size(b-a)
         byte_val: bytes = random(interval_byte)
@@ -45,19 +69,51 @@ class ChaCha20(RandomInterface):
 
     @get.register(Decimal)
     def __get_decimal(self, a: Decimal, b: Decimal) -> Decimal:
+        """TRNGで実数の乱数を生成する
+
+        Parameters
+        ----------
+        a, b: Decimal
+            [a, b)の範囲で生成する
+
+        Returns
+        -------
+        Decimal
+            整数乱数
+        """
         # 256bit整数を取り出して[a,b]に正規化する
         self.__exception_check(a, b)
         val: int = self.get(self.mn, self.mx)
         return Decimal(val-self.mn)/(self.mx-self.mn)*(b-a)+a
 
     @methoddispatch()
-    def get_list(self, a, b, size: int):
+    def get_list(self, *args, **kw):
+        """乱数配列を生成する
+
+        overloadして使用される．
+        """
         raise ArgumentError(
             "乱数の閾値はどちらもintもしくはdecimalでなければなりません．"
             f"a is {type(a)}, b is {type(b)}")
 
     @get_list.register(int)
     def __get_list_int(self, a: int, b: int, size: int) -> List[int]:
+        """CSPRNGで整数の乱数配列を生成する
+
+        seedをTRNGで生成して配列サイズ分の乱数はCSPRNGで生成する．
+
+        Parameters
+        ----------
+        a, b: int
+            [a, b)の範囲で生成する
+        size: int
+            配列サイズ
+
+        Returns
+        -------
+        List[int]
+            整数乱数の配列
+        """
         # TRNGの32byteをseedとしてCSPRNGでsize分生成
         byte_size: int = self.__get_byte_size(b-a)
         self.__exception_check(a, b)
@@ -70,6 +126,20 @@ class ChaCha20(RandomInterface):
     @get_list.register(Decimal)
     def __get_list_decimal(self, a: Decimal, b: Decimal, size: int) \
             -> List[Decimal]:
+        """CSPRNGで実数の乱数配列を生成する
+
+        Parameters
+        ----------
+        a, b: Decimal
+            [a, b)の範囲で生成する
+        size: int
+            配列サイズ
+
+        Returns
+        -------
+        List[Decimal]
+            実数乱数の配列
+        """
         # 128bit整数を取り出して[a,b]に正規化する
         self.__exception_check(a, b)
         valList: List[int] = self.get_list(self.mn, self.mx, size)
@@ -77,13 +147,46 @@ class ChaCha20(RandomInterface):
                 for val in valList]
 
     def __get_byte_size(self, x: int) -> int:
-        # 整数の byte サイズを取得
+        """整数のbyteサイズを取得する
+
+        Parameters
+        ----------
+        x: int
+            整数
+
+        Returns
+        -------
+        int
+            入力整数のbyteサイズ
+        """
         return max(math.ceil(math.log2(x))//8 + 1, 32)
 
     def __get_32byte(self) -> bytes:
+        """32bit乱数を/dev/randomから取得する
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+        bytes
+            乱数byte列
+        """
         return random()
 
     def __exception_check(self, a, b) -> None:
+        """乱数生成関数のvalidation checkをする
+
+        Parameters
+        ----------
+        a, b: any
+            生成したい乱数の範囲[a,b)
+
+
+        Returns
+        -------
+        None
+        """
         if a >= b:
             raise ArgumentError(
                 "乱数の下限は上限より小さい必要があります．"
