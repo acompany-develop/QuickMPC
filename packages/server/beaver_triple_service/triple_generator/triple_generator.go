@@ -39,7 +39,7 @@ func sharize(data big.Int, bitLength uint32, party_num uint32) ([]big.Int, error
 func toBytes(share big.Int) (pb.BigIntByte, error) {
 	ret := pb.BigIntByte{
 		Sgn : share.Sign() == -1,
-		Byte : share.Bytes(),
+		AbsByte : share.Bytes(),
 	}
 	return ret, nil
 }

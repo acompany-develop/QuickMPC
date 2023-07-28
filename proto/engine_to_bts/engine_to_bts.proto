@@ -17,7 +17,7 @@ message GetRequest{
 
 message BigIntByte{
     bool sgn = 1;
-    bytes byte = 2;
+    bytes abs_byte = 2;
 }
 
 message Triple{
