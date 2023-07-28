@@ -60,7 +60,7 @@ FixedPoint stdev(std::vector<Share> &v)
     var = variance(v);
 
     FixedPoint stdev = open_and_recons(var);
-    auto value = boost::multiprecision::cpp_dec_float_100(stdev.getStrVal());
+    auto value = stdev.getDoubleVal<qmpc::Utils::mp_float>();
     if (value < 0)
     {
         value = 0;
