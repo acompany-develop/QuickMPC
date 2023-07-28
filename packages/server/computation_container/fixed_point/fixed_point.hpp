@@ -71,7 +71,7 @@ public:
         mp_float ret = static_cast<mp_float>(value);
         ret /= shift;
         std::string s = ret.str(0, std::ios_base::fixed);
-        while (s.size() and s.back() == "0")
+        while (s.size() and s.back() == '0')
         {
             s.pop_back();
         }
