@@ -14,13 +14,8 @@ Share sum(const std::vector<Share> &v)
 }
 Share smean(const std::vector<Share> &v)
 {
-    // Share avg(FixedPoint(0.0));
-    // for (int i = 0; i < size; i++)
-    // {
-    //     avg = avg + v[i];
-    // }
     Share ret{};
-    for (auto a : v)
+    for (const auto &a : v)
     {
         ret += a;
     }
@@ -30,7 +25,7 @@ Share smean(const std::vector<Share> &v)
     return ret;
 }
 
-Share variance(std::vector<Share> &v)
+Share variance(const std::vector<Share> &v)
 {
     Share avg;
 
@@ -54,7 +49,7 @@ Share variance(std::vector<Share> &v)
     return ret;
 }
 
-FixedPoint stdev(std::vector<Share> &v)
+FixedPoint stdev(const std::vector<Share> &v)
 {
     Share var;
     var = variance(v);
@@ -69,7 +64,7 @@ FixedPoint stdev(std::vector<Share> &v)
     FixedPoint ret{r};
     return ret;
 }
-Share correl(std::vector<Share> &x, std::vector<Share> &y)
+Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
 {
     int sizex = (int)x.size();
     int sizey = (int)y.size();
