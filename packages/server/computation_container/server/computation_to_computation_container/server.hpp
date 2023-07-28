@@ -144,7 +144,7 @@ private:
             assert(share_value.has_fp());
             auto fp = share_value.fp();
             bool sgn = fp.sgn();
-            std::string byte = fp.byte();
+            std::string byte = fp.abs_byte();
             return SV(std::make_pair(sgn, byte));
         }
     }
