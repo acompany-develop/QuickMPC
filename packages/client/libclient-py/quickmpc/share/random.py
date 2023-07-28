@@ -43,9 +43,7 @@ class ChaCha20(RandomInterface):
 
         overloadして使用される．
         """
-        raise ArgumentError(
-            "乱数の閾値はどちらもintもしくはdecimalでなければなりません．"
-            f"a is {type(a)}, b is {type(b)}")
+        raise ArgumentError("乱数の閾値はintもしくはdecimalでなければなりません．")
 
     @get.register(int)
     def __get_int(self, a: int, b: int) -> int:
@@ -92,9 +90,7 @@ class ChaCha20(RandomInterface):
 
         overloadして使用される．
         """
-        raise ArgumentError(
-            "乱数の閾値はどちらもintもしくはdecimalでなければなりません．"
-            f"a is {type(a)}, b is {type(b)}")
+        raise ArgumentError("乱数の閾値はintもしくはdecimalでなければなりません．")
 
     @get_list.register(int)
     def __get_list_int(self, a: int, b: int, size: int) -> List[int]:

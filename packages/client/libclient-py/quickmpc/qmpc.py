@@ -89,7 +89,7 @@ class QMPC:
         --------
         quickmpc.pandas.read_csv
             quickmpc形式に則る専用のcsv読み取り関数
-        """
+        """  # noqa #501
         res = self.__qmpc_request.send_share(df, piece_size=1_000_000)
         return qpd.ShareDataFrame(res.data_id, self.__qmpc_request)
 

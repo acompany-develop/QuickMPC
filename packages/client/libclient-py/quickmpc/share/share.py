@@ -62,7 +62,7 @@ class Share:
 
         Parameters
         ----------
-        val: int 
+        val: int
             変換する値
 
         Returns

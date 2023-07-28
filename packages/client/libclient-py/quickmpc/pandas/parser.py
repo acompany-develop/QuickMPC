@@ -178,7 +178,7 @@ def to_int(val: str, encoding='utf-8') -> int:
 
     Returns
     -------
-    int 
+    int
         変換された実数
 
     Examples
@@ -226,7 +226,7 @@ def find_type(col_schema: str,
     ----------
     col_schema: str,
         スキーマの名前
-    col_data: List[str], 
+    col_data: List[str],
         列の全てのデータ
     is_matching_column: bool)
         その列がID列かどうか
