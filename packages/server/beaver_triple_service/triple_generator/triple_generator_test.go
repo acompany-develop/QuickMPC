@@ -82,7 +82,7 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 	})
 }
 
-func convertToBigInt(b &pb.BigIntByte), big.Int {
+func convertToBigInt(b &pb.BigIntByte) (big.Int) {
 	var ret big.Int
 	bytes := b.Byte
 	ret.SetBytes(bytes)
