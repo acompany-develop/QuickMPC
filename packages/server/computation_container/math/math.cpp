@@ -84,10 +84,10 @@ Share correl(std::vector<Share> &x, std::vector<Share> &y)
     FixedPoint stdeX = stdev(x);
     FixedPoint stdeY = stdev(y);
 
-    // 0徐算エラー
     if (stdeX == FixedPoint(0) || stdeY == FixedPoint(0))
     {
-        throw std::runtime_error("correl Div0 error");
+        QMPC_LOG_INFO("correl returns 0 when stdev is 0");
+        return Share(FixedPoint(0));
     }
 
     int n = sizex;
