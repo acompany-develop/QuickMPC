@@ -14,7 +14,8 @@ from quickmpc.utils import (DictList, DictList2, Dim1,
                             Dim2, Dim3, methoddispatch)
 
 logger = get_logger()
-# 50 > 19*2+8, the right-hand side is the number of digits the square of the input value has in FixedPoint.
+# 50 > 19*2+8, the right-hand side is the number of digits
+#   the square of the maximum input and/or Triple value has in FixedPoint.
 getcontext().prec = 50
 
 
