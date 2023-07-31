@@ -68,31 +68,4 @@ Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
 
     return covariance(x, y) / (stdeX * stdeY);
 }
-
-Share exp(const Share &x)
-{
-    // Nはマクローリン展開時の項数
-    // 1+x+x^2 ...  x^N-1
-    constexpr int N = 100;
-    auto *conf = Config::getInstance();
-    Share ret;
-    if (conf->sp_id == conf->party_id)
-    {
-        ret += 1;
-    }
-    std::vector<Share> px(N);
-    std::vector<FixedPoint> k(N);
-    px[0] = ret;
-    k[0] = 1;
-    for (int i = 1; i < N; ++i)
-    {
-        k[i] = k[i - 1] * i;
-        px[i] = px[i - 1] * x;
-    }
-    for (int i = 1; i < N; ++i)
-    {
-        px[i] /= k[i];
-    }
-    return std::accumulate(px.begin(), px.end(), Share{0});
-}
 }  // namespace qmpc::Math

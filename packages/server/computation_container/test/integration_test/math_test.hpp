@@ -225,30 +225,6 @@ TEST(MathTest, Correl_large)
     QMPC_LOG_INFO(correl_rec.getStrVal());
 }
 
-TEST(MathTest, ExpTest)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-
-    // x = n_parties;
-    Share x{1};
-    auto start = std::chrono::system_clock::now();
-
-    auto exp_n = qmpc::Math::exp(x);
-    double expect = std::exp(n_parties);
-    auto exp_n_rec = open_and_recons(exp_n);
-    auto end = std::chrono::system_clock::now();
-    auto dur = end - start;
-
-    // 計算に要した時間をミリ秒（1/1000秒）に変換して表示
-    auto msec = std::chrono::duration_cast<std::chrono::milliseconds>(dur).count();
-
-    QMPC_LOG_INFO("share exp time is {}", msec);
-    QMPC_LOG_INFO("share exp_n is {}", exp_n_rec);
-    QMPC_LOG_INFO("expect exp_n is {}", expect);
-
-    EXPECT_NEAR(expect, exp_n_rec.getDoubleVal(), 0.001);
-}
 TEST(MathTest, correlVecExceptionTest)
 {
     constexpr int N = 28000;
