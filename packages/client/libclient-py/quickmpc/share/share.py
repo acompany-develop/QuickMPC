@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, getcontext
 from typing import (Any, Callable, ClassVar, List,
                     Optional, Sequence, Tuple, Union)
 
@@ -14,7 +14,7 @@ from quickmpc.utils import (DictList, DictList2, Dim1,
                             Dim2, Dim3, methoddispatch)
 
 logger = get_logger()
-
+getcontext().prec = 500
 
 @dataclass(frozen=True)
 class Share:
