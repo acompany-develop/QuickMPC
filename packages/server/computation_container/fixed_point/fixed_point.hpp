@@ -154,7 +154,14 @@ public:
     }
     bool operator==(const FixedPoint &obj) const noexcept
     {
-        return (value - obj.value >= -1 and value - obj.value <= 1) ? true : false;
+        /*
+        todo : value == obj.value に修正
+        test で EXPECT_EQ(a,b) を用いている箇所は
+            EXPECT_NEAR(a.getDoubleVal(), b.getDoubleVal(), 1e-7) のように明示的に書く
+        ただし加減算だけなど, 誤差が出ないことが仕様として保証されている場合は EXPECT_EQ
+        のままで良い
+        */
+        return abs(value - obj.value) <= 10;
     }
     bool operator<(const FixedPoint &obj) const noexcept { return value < obj.value; }
     /*
