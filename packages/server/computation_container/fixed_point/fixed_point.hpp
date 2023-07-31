@@ -152,7 +152,10 @@ public:
         value -= shift;  // shift分ずれるので1*shift
         return *this;
     }
-    bool operator==(const FixedPoint &obj) const noexcept { return abs(value - obj.value) <= 100; }
+    bool operator==(const FixedPoint &obj) const noexcept
+    {
+        return (value - obj.value >= -1 and value - obj.value <= 1) ? true : false;
+    }
     bool operator<(const FixedPoint &obj) const noexcept { return value < obj.value; }
     /*
     標準入出力に入力するとShiftで割った結果が出力される。
