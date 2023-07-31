@@ -19,11 +19,12 @@ from utils import data_frame, qmpc
          [1], [2],
          pd.DataFrame([[1.0]])),
 
-        # # small data case
-        # (data_frame([[10**-9, 10**-9+5], [10**-9+10, 10**-9+10]],
-        #             columns=["s1", "s2"]),
-        #  [1], [2],
-        #  pd.DataFrame([[1.0]])),
+        # todo : reconsider the arguments
+        # small data case
+        (data_frame([[10**-8, 10**-8+5], [10**-8+10, 10**-8+10]],
+                    columns=["s1", "s2"]),
+         [1], [2],
+         pd.DataFrame([[1.0]])),
 
         # duplicated src case
         (data_frame([[1, 2, 3], [4, 7, 10], [2, 9, 3]],
