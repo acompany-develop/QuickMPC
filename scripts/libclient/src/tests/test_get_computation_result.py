@@ -38,9 +38,9 @@ def test_to_data_frame(method: str, args: dict, expected: pd.DataFrame,
         # 1次元結果の取得
         ("sum", ([1, 2],),
          pd.DataFrame([4.0, 6.0])),
-        # # 2次元結果の取得
-        # ("correl", ([1, 2], [1, 2]),
-        #  pd.DataFrame([[1.0, 1.0], [1.0, 1.0]])),
+        # 2次元結果の取得
+        ("correl", ([1, 2], [1, 2]),
+         pd.DataFrame([[1.0, 1.0], [1.0, 1.0]])),
         # テーブルデータの取得
         ("join", ([],),
          pd.DataFrame([[2.0], [4.0]], columns=["s2"])),
