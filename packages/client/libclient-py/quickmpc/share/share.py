@@ -16,6 +16,7 @@ from quickmpc.utils import (DictList, DictList2, Dim1,
 logger = get_logger()
 getcontext().prec = 50
 
+
 @dataclass(frozen=True)
 class Share:
     __share_random_range: ClassVar[Tuple[Decimal, Decimal]] =\
