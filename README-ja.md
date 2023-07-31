@@ -23,9 +23,9 @@ QuickMPCはPEC（Privacy-Enhancing Computation）のひとつであるSMPC（Sec
 
 ## 開発時の注意
 ### 推奨スペック
-
-- メモリ `16GB` 以上
-- ストレージ `20GB` 以上
+- CPU `4コア` 以上
+- メモリ `64GB` 以上
+- ストレージ `64GB` 以上
 
 ## QuickMPC全体のテスト方法
 1. ディレクトリを移動する

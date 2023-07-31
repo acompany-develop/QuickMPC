@@ -24,8 +24,9 @@ This will enable businesses and engineers worldwide to use Python client librari
 ## Development Requirements
 ### Recommended
 
-- memory: `16 GB`
-- storage: `20 GB`
+- CPU: `4 Core`
+- memory: `646 GB`
+- storage: `64 GB`
 
 ## Run all test suite
 1. Change your current directory into `scripts/`
