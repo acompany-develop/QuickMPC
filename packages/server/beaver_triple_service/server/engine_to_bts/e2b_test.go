@@ -133,16 +133,28 @@ func testGetTriplesByJobId(t *testing.T, client pb.EngineToBtsClient, amount uin
 	})
 }
 
+func convertToBigInt(b *pb.BigIntByte) (*big.Int) {
+	var ret *big.Int = big.NewInt(0)
+	bytes := b.AbsByte
+	ret.SetBytes(bytes)
+	if b.Sgn{
+		ret.Neg(ret)
+	}
+	return ret
+}
+
 func testValidityOfTriples(t *testing.T) {
 	for _, triples := range DbTripleTest.Triples {
 		for i := 0; i < len(triples[1]); i++ {
-			aShareSum, bShareSum, cShareSum := int64(0), int64(0), int64(0)
+			aShareSum, bShareSum, cShareSum := big.NewInt(0), big.NewInt(0), big.NewInt(0)
 			for partyId := uint32(1); partyId <= uint32(len(triples)); partyId++ {
-				aShareSum += triples[partyId][i].A
-				bShareSum += triples[partyId][i].B
-				cShareSum += triples[partyId][i].C
+				aShareSum.Add(aShareSum, convertToBigInt(PartyToTriples[partyId][i].A))
+				bShareSum.Add(bShareSum, convertToBigInt(PartyToTriples[partyId][i].B))
+				cShareSum.Add(cShareSum, convertToBigInt(PartyToTriples[partyId][i].C))
 			}
-			if aShareSum*bShareSum != cShareSum {
+			ab := big.NewInt(0)
+			ab.Mul(aShareSum, bShareSum)
+			if ab.Cmp(cShareSum) != 0 {
 				t.Fatal("a*b != c")
 			}
 		}
