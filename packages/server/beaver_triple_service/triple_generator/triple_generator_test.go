@@ -67,7 +67,6 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 			if err != nil {
 				t.Fatal(err)
 			}
-			tmp := convertToBigInt(triples[0].A)
 
 			TS.Mux.Lock()
 
@@ -94,7 +93,7 @@ func convertToBigInt(b *pb.BigIntByte) (*big.Int) {
 }
 
 func testValidityOfTriples(t *testing.T) {
-	for idx, PartyToTriples := range TS.Stock {
+	for _, PartyToTriples := range TS.Stock {
 		for i := 0; i < len(PartyToTriples[1]); i++ {
 			aShareSum, bShareSum, cShareSum := big.NewInt(0), big.NewInt(0), big.NewInt(0)
 			for partyId := uint32(1); partyId <= uint32(len(PartyToTriples)); partyId++ {
