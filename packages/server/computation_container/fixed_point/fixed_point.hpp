@@ -13,7 +13,7 @@ namespace qmpc::Utils
 {
 namespace mp = boost::multiprecision;
 using mp_int = boost::multiprecision::cpp_int;
-using mp_float = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<1000>>;
+using mp_float = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<100>>;
 using SgnByte = std::pair<bool, std::string>;
 
 class FixedPoint : private boost::operators<FixedPoint>
