@@ -3,6 +3,7 @@ package e2bserver
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"os"
 	"sync"
 	"testing"
@@ -148,9 +149,9 @@ func testValidityOfTriples(t *testing.T) {
 		for i := 0; i < len(triples[1]); i++ {
 			aShareSum, bShareSum, cShareSum := big.NewInt(0), big.NewInt(0), big.NewInt(0)
 			for partyId := uint32(1); partyId <= uint32(len(triples)); partyId++ {
-				aShareSum.Add(aShareSum, convertToBigInt(PartyToTriples[partyId][i].A))
-				bShareSum.Add(bShareSum, convertToBigInt(PartyToTriples[partyId][i].B))
-				cShareSum.Add(cShareSum, convertToBigInt(PartyToTriples[partyId][i].C))
+				aShareSum.Add(aShareSum, convertToBigInt(triples[partyId][i].A))
+				bShareSum.Add(bShareSum, convertToBigInt(triples[partyId][i].B))
+				cShareSum.Add(cShareSum, convertToBigInt(triples[partyId][i].C))
 			}
 			ab := big.NewInt(0)
 			ab.Mul(aShareSum, bShareSum)
