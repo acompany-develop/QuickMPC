@@ -201,11 +201,11 @@ TEST(FixedPointTest, Equation)
 TEST(FixedPointTest, getVal)
 {
     FixedPoint a("1.45");  // operand
-    EXPECT_EQ(a.getStrVal(), "1.45000000000000000000");
+    EXPECT_EQ(a.getStrVal(), "1.45");
     EXPECT_EQ(a.getDoubleVal(), 1.45);
 
     FixedPoint b("-1.45");  // operand
-    EXPECT_EQ(b.getStrVal(), "-1.45000000000000000000");
+    EXPECT_EQ(b.getStrVal(), "-1.45");
     EXPECT_EQ(b.getDoubleVal(), -1.45);
 }
 
