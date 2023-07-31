@@ -14,7 +14,7 @@ from quickmpc.utils import (DictList, DictList2, Dim1,
                             Dim2, Dim3, methoddispatch)
 
 logger = get_logger()
-getcontext().prec = 500
+getcontext().prec = 100
 
 @dataclass(frozen=True)
 class Share:
