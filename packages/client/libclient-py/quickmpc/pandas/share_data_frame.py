@@ -234,7 +234,8 @@ class ShareDataFrame:
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def correl(self, columns1: List[int], columns2: List[int]) -> "ShareDataFrame":
+    def correl(self, columns1: List[int], columns2: List[int]) \
+            -> "ShareDataFrame":
         """指定した列同士の相関係数を取得する
 
         結果として得られる行列の `i` 行 `j` 列目には
