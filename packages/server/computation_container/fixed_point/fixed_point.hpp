@@ -11,7 +11,7 @@
 
 namespace qmpc::Utils
 {
-using mp_int = boost::multiprecision::checked_int256_t;
+using mp_int = boost::multiprecision::cpp_int;
 using mp_float = boost::multiprecision::cpp_dec_float_100;
 using SgnByte = std::pair<bool, std::string>;
 
