@@ -13,7 +13,7 @@
 namespace qmpc::Utils
 {
 using mp_int = boost::multiprecision::cpp_int;
-using mp_float = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<100>>;
+using mp_float = cpp_dec_float_50;  // 50 > 19*2 + 8
 using pbBigIntByte = pb_commontypes::BigIntByte;
 
 class FixedPoint : private boost::operators<FixedPoint>
