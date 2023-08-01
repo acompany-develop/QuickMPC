@@ -298,7 +298,7 @@ class QMPCRequest(QMPCRequestInterface):
 
     def __execute_computation(self, method_id: ComputationMethod.ValueType,
                               data_ids: List[str],
-                              columns: Tuple[List, List],
+                              columns: Tuple[List[int], List[int]],
                               *, debug_mode: bool = False)  \
             -> ExecuteResponse:
         """計算リクエストをMPCサーバに送信する
@@ -312,7 +312,7 @@ class QMPCRequest(QMPCRequestInterface):
             計算の種類を管理するID
         data_ids: List[str]
             計算に用いるデータのID
-        columns: Tuple[List, List]
+        columns: Tuple[List[int], List[int]]
             計算に用いるデータの列番号(1-index)
         debug_mode: bool, default=False
             違法な高速結合による高速化をするかどうか

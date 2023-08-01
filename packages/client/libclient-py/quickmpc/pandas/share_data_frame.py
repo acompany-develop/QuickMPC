@@ -177,12 +177,12 @@ class ShareDataFrame:
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def sum(self, columns: list) -> "ShareDataFrame":
+    def sum(self, columns: List[int]) -> "ShareDataFrame":
         """列の総和を取得する
 
         Parameters
         ----------
-        columns: list
+        columns: List[int]
             計算に用いる列番号(1-index)
 
         Returns
@@ -194,7 +194,7 @@ class ShareDataFrame:
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def mean(self, columns: list) -> "ShareDataFrame":
+    def mean(self, columns: List[int]) -> "ShareDataFrame":
         """指定した列の平均を取得する
 
         結果として得られる行列の `i` 行目には
@@ -202,7 +202,7 @@ class ShareDataFrame:
 
         Parameters
         ----------
-        columns: list
+        columns: List[int]
             計算に用いる列番号(1-index)
 
         Returns
@@ -214,7 +214,7 @@ class ShareDataFrame:
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def variance(self, columns: list) -> "ShareDataFrame":
+    def variance(self, columns: List[int]) -> "ShareDataFrame":
         """指定した列の分散を取得する
 
         結果として得られる行列の `i` 行目には
@@ -222,7 +222,7 @@ class ShareDataFrame:
 
         Parameters
         ----------
-        columns: list
+        columns: List[int]
             計算に用いる列番号(1-index)
 
         Returns
@@ -234,7 +234,7 @@ class ShareDataFrame:
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def correl(self, columns1: list, columns2: list) -> "ShareDataFrame":
+    def correl(self, columns1: List[int], columns2: List[int]) -> "ShareDataFrame":
         """指定した列同士の相関係数を取得する
 
         結果として得られる行列の `i` 行 `j` 列目には
@@ -242,9 +242,9 @@ class ShareDataFrame:
 
         Parameters
         ----------
-        columns1: list
+        columns1: List[int]
             計算に用いる左項の列番号(1-index)
-        columns2: list
+        columns2: List[int]
             計算に用いる右項の列番号(1-index)
 
         Returns
@@ -256,7 +256,7 @@ class ShareDataFrame:
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def meshcode(self, columns: list) -> "ShareDataFrame":
+    def meshcode(self, columns: List[int]) -> "ShareDataFrame":
         """指定した列のmeshcodeを取得する
 
         結果として得られる行列の `i` 行目には
@@ -264,7 +264,7 @@ class ShareDataFrame:
 
         Parameters
         ----------
-        columns: list
+        columns: List[int]
             計算に用いる列番号(1-index)
 
         Returns
@@ -355,7 +355,7 @@ class ShareDataFrame:
 
         Returns
         ----------
-        float
+        List[float]
             計算時間
 
         Raises
