@@ -8,13 +8,12 @@
 #include <iomanip>
 #include <iostream>
 #include <type_traits>
-#include "external/proto/common_types/common_types.grpc.pb.h"
 
 namespace qmpc::Utils
 {
-using mp_int = boost::multiprecision::cpp_int;
-using mp_float = cpp_dec_float_50;  // 50 > 19*2 + 8
-using pbBigIntByte = pb_commontypes::BigIntByte;
+using mp_int = boost::multiprecision::checked_int256_t;
+using mp_float = boost::multiprecision::cpp_dec_float_100;
+using SgnByte = std::pair<bool, std::string>;
 
 class FixedPoint : private boost::operators<FixedPoint>
 {
@@ -41,11 +40,11 @@ public:
         mp_float v_{str};
         value = static_cast<mp_int>(v_ * shift);
     }
-    FixedPoint(const pbBigIntByte &P)
+    FixedPoint(const SgnByte &P)
     {
-        std::string abs_byte = P.abs_byte();
+        const auto &[sgn, abs_byte] = P;
         import_bits(value, abs_byte.begin(), abs_byte.end(), 8);
-        if (P.is_minus())
+        if (sgn)
         {
             value *= -1;
         }
@@ -86,15 +85,12 @@ public:
         }
         return ret;
     }
-    pbBigIntByte getBigIntByte() const
+    SgnByte getSgnByte() const
     {
-        bool is_minus = value < 0;
+        bool sgn = value < 0;
         std::string bytes;
         export_bits(value, std::back_inserter(bytes), 8);
-        pbBigIntByte ret;
-        ret.set_is_minus(is_minus);
-        ret.set_abs_byte(byte);
-        return ret;
+        return std::make_pair(sgn, bytes);
     }
     template <typename T = double>
     T getDoubleVal() const
