@@ -319,7 +319,7 @@ class ShareDataFrame:
         Raises
         ------
         RuntimeError
-        送信したデータをそのまま取得しようとした場合
+            送信したデータをそのまま取得しようとした場合
         """
         # 計算結果でないなら取得できないようにする
         if not self.__is_result:

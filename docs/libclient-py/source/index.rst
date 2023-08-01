@@ -8,7 +8,7 @@ quickmpc-libclient-py's documentation
 
 .. _QuickMPC: https://github.com/acompany-develop/QuickMPC
 
-quickmpc-libclient-py はMPCを行う `QuickMPC`_ を簡単に操作するためのPythonライブラリです．
+quickmpc-libclient-py はMPC(Multi Party Computation)を行う `QuickMPC`_ を簡単に操作するためのPythonライブラリです．
 pandas likeなinterfaceでMPCについて知らないユーザでも簡単に秘匿計算を行うことができます．
 
 .. toctree::
