@@ -86,7 +86,7 @@ Share correl(std::vector<Share> &x, std::vector<Share> &y)
 
     if (stdeX == FixedPoint(0) || stdeY == FixedPoint(0))
     {
-        QMPC_LOG_INFO("correl returns 0 when stdev is 0");
+        QMPC_LOG_ERROR("correl returns 0 when stdev is 0");
         return Share(FixedPoint(0));
     }
 
