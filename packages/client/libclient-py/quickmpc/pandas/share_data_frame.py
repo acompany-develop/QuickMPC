@@ -126,8 +126,8 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
-            加算して得られたDataFrameのResult
+        ShareDataFrame
+            加算して得られた :class:`ShareDataFrame`
         """
         res = self.__qmpc_request.add_share_data_frame(self.__id, other.__id)
         return ShareDataFrame(res.data_id, self.__qmpc_request)
@@ -148,8 +148,8 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
-            結合したDataFrameのResult
+        result: ShareDataFrame
+            結合して得られた :class:`ShareDataFrame`
         """
         return self.join([other], debug_mode=debug_mode)
 
@@ -169,8 +169,8 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
-            結合したDataFrameのResult
+        ShareDataFrame
+            結合して得られた :class:`ShareDataFrame`
         """
         res = self.__qmpc_request.join([self.__id] + [o.__id for o in others],
                                        debug_mode=debug_mode)
@@ -187,7 +187,7 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
+        ShareDataFrame
             結果のDataFrame
         """
         res = self.__qmpc_request.sum([self.__id], columns)
@@ -195,7 +195,10 @@ class ShareDataFrame:
                               True, ShareDataFrameStatus.EXECUTE)
 
     def mean(self, columns: list) -> "ShareDataFrame":
-        """列の平均を取得する
+        """指定した列の平均を取得する
+
+        結果として得られる行列の `i` 行目には
+        入力テーブルの `columns[i]` 列目の平均が入る．
 
         Parameters
         ----------
@@ -204,15 +207,18 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
-            結果のDataFrame
+        ShareDataFrame
+            `len(columns)` 行 1列行列の :class:`ShareDataFrame`
         """
         res = self.__qmpc_request.mean([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
     def variance(self, columns: list) -> "ShareDataFrame":
-        """列の分散を取得する
+        """指定した列の分散を取得する
+
+        結果として得られる行列の `i` 行目には
+        入力テーブルの `columns[i]` 列目の分散が入る．
 
         Parameters
         ----------
@@ -221,15 +227,18 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
-            結果のDataFrame
+        ShareDataFrame
+            `len(columns)` 行 1列行列の :class:`ShareDataFrame`
         """
         res = self.__qmpc_request.variance([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
     def correl(self, columns1: list, columns2: list) -> "ShareDataFrame":
-        """列同士の分散を取得する
+        """指定した列同士の相関係数を取得する
+
+        結果として得られる行列の `i` 行 `j` 列目には
+        入力テーブルの `columns1[i]` 列目と `columns1[j]` 列目の相関係数が入る．
 
         Parameters
         ----------
@@ -240,16 +249,18 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
-            結果のDataFrame
+        ShareDataFrame
+            `len(columns1)` 行 `len(columns2)` 列行列の :class:`ShareDataFrame`
         """
         res = self.__qmpc_request.correl([self.__id], columns1, columns2)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
                               True, ShareDataFrameStatus.EXECUTE)
 
-    def meshcode(self, columns: list) \
-            -> "ShareDataFrame":
-        """列のmeshcodeを取得する
+    def meshcode(self, columns: list) -> "ShareDataFrame":
+        """指定した列のmeshcodeを取得する
+
+        結果として得られる行列の `i` 行目には
+        入力テーブルの `columns[i]` 列目のmeshcodeが入る．
 
         Parameters
         ----------
@@ -258,8 +269,8 @@ class ShareDataFrame:
 
         Returns
         ----------
-        Result
-            結果のDataFrame
+        ShareDataFrame
+            `len(columns)` 行 1列行列の :class:`ShareDataFrame`
         """
         res = self.__qmpc_request.meshcode([self.__id], columns)
         return ShareDataFrame(res.job_uuid, self.__qmpc_request,
