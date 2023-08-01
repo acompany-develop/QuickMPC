@@ -25,7 +25,7 @@ This will enable businesses and engineers worldwide to use Python client librari
 ### Recommended
 
 - CPU: `4 Core`
-- memory: `646 GB`
+- memory: `64 GB`
 - storage: `64 GB`
 
 ## Run all test suite
