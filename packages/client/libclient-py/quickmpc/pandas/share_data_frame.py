@@ -239,7 +239,7 @@ class ShareDataFrame:
         """指定した列同士の相関係数を取得する
 
         結果として得られる行列の `i` 行 `j` 列目には
-        入力テーブルの `columns1[i]` 列目と `columns1[j]` 列目の相関係数が入る．
+        入力テーブルの `columns1[i]` 列目と `columns2[j]` 列目の相関係数が入る．
 
         Parameters
         ----------
