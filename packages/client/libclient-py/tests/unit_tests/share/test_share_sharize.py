@@ -1,12 +1,12 @@
 import math
-from decimal import Decimal
+from decimal import Decimal, getcontext
 from typing import List
 
 import numpy as np
 import pytest
 
 from quickmpc.exception import ArgumentError
-from quickmpc.share.share import Share
+from quickmpc.share.share import decimal_prec, Share
 
 
 def sharize_params(secrets=[1], party_size=3):
@@ -154,3 +154,23 @@ class TestQMPC:
         """ 異常値を与えてエラーが出るかTest """
         with pytest.raises(expected_exception):
             Share.sharize(*args)
+
+    @pytest.mark.parametrize(
+        ("args", "prec"),
+        [
+            (sharize_params(secrets=1), 28),
+            (sharize_params(secrets=1), 280),
+            (sharize_params(secrets=[1]), 28),
+            (sharize_params(secrets=[1]), 280),
+            (sharize_params(secrets=[[1]]), 28),
+            (sharize_params(secrets=[[1]]), 280),
+        ]
+    )
+    def test_sharize_decimal_prec_error(self, args, prec):
+        """ 異なるprecが指定されているときにエラーが出るかTest """
+        getcontext().prec = prec
+        with pytest.raises(RuntimeError):
+            Share.sharize(*args)
+
+        # Global値をいじっているので元の値に戻しておく
+        getcontext().prec = decimal_prec

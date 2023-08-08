@@ -1,11 +1,11 @@
 import math
-from decimal import Decimal
+from decimal import Decimal, getcontext
 
 import numpy as np
 import pytest
 
 from quickmpc.exception import ArgumentError
-from quickmpc.share.share import Share
+from quickmpc.share.share import decimal_prec, Share
 
 
 class TestQMPC:
@@ -174,3 +174,23 @@ class TestQMPC:
             secrets_2: list = Share.recons(conved)
             secrets_2 = Share.convert_type(secrets_2)
             assert (np.allclose(secrets, secrets_2))
+
+    @pytest.mark.parametrize(
+        ("secrets", "prec"),
+        [
+            (1, 28),
+            (1, 280),
+            ([1], 28),
+            ([1], 280),
+            ([[1]], 28),
+            ([[1]], 280),
+        ]
+    )
+    def test_recons_decimal_prec_error(self, secrets, prec):
+        """ 異なるprecが指定されているときにエラーが出るかTest """
+        getcontext().prec = prec
+        with pytest.raises(RuntimeError):
+            Share.recons(secrets)
+
+        # Global値をいじっているので元の値に戻しておく
+        getcontext().prec = decimal_prec

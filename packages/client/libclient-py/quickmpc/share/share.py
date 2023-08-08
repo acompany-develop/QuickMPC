@@ -1,5 +1,7 @@
+import inspect
 from dataclasses import dataclass
-from decimal import (Decimal, getcontext)
+from decimal import Decimal, getcontext
+from functools import wraps
 from typing import (Any, Callable, ClassVar, List,
                     Optional, Sequence, Tuple, Union)
 
@@ -14,9 +16,33 @@ from quickmpc.utils import (DictList, DictList2, Dim1,
                             Dim2, Dim3, methoddispatch)
 
 logger = get_logger()
-getcontext().prec = 100
+
+decimal_prec = 100
+getcontext().prec = decimal_prec
 
 
+def _verify_decimal_prec(f):
+    """メソッドにprecのverifyを適用させるデコレータ"""
+    @wraps(f)
+    def _wrapper(*args, **kw):
+        if getcontext().prec != decimal_prec:
+            raise RuntimeError(
+                f"Decimal context prec is must be {decimal_prec}.")
+        return f(*args, **kw)
+    return _wrapper
+
+
+def _verify_decimal_prec_all(cls):
+    """クラスの全てのメソッドにprecのverifyを適用させるデコレータ"""
+    for name, fn in inspect.getmembers(cls):
+        if name.startswith('__'):
+            continue
+        if callable(getattr(cls, name)):
+            setattr(cls, name, _verify_decimal_prec(fn))
+    return cls
+
+
+@_verify_decimal_prec_all
 @dataclass(frozen=True)
 class Share:
     __share_random_range: ClassVar[Tuple[Decimal, Decimal]] =\
