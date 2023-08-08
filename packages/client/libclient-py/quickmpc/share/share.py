@@ -1,4 +1,5 @@
 import inspect
+import threading
 from dataclasses import dataclass
 from decimal import Decimal, getcontext
 from functools import wraps
@@ -21,10 +22,28 @@ decimal_prec = 100
 getcontext().prec = decimal_prec
 
 
+# getcontext().precがthreadごとに初期化されてしまうため，
+# theread毎に初期化し返せるようできるようにフラグを管理する
+local_dict = threading.local()
+decimal_prec = 100
+
+
+def set_decimal_prec():
+    try:
+        local_dict.is_initialized
+    except Exception:
+        getcontext().prec = decimal_prec
+        local_dict.is_initialized = True
+
+
+set_decimal_prec()
+
+
 def _verify_decimal_prec(f):
     """メソッドにprecのverifyを適用させるデコレータ"""
     @wraps(f)
     def _wrapper(*args, **kw):
+        set_decimal_prec()
         if getcontext().prec != decimal_prec:
             raise RuntimeError(
                 f"Decimal context prec is must be {decimal_prec}.")
