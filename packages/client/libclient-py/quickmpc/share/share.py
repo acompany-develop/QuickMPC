@@ -18,22 +18,19 @@ from quickmpc.utils import (DictList, DictList2, Dim1,
 
 logger = get_logger()
 
-decimal_prec = 100
-getcontext().prec = decimal_prec
-
 
 # getcontext().precがthreadごとに初期化されてしまうため，
 # theread毎に初期化し返せるようできるようにフラグを管理する
-local_dict = threading.local()
-decimal_prec = 100
+__local_dict = threading.local()
+__decimal_prec = 100
 
 
 def set_decimal_prec():
     try:
-        local_dict.is_initialized
+        __local_dict.is_initialized
     except Exception:
-        getcontext().prec = decimal_prec
-        local_dict.is_initialized = True
+        getcontext().prec = __decimal_prec
+        __local_dict.is_initialized = True
 
 
 set_decimal_prec()
@@ -44,9 +41,9 @@ def _verify_decimal_prec(f):
     @wraps(f)
     def _wrapper(*args, **kw):
         set_decimal_prec()
-        if getcontext().prec != decimal_prec:
+        if getcontext().prec != __decimal_prec:
             raise RuntimeError(
-                f"Decimal context prec is must be {decimal_prec}.")
+                f"Decimal context prec is must be {__decimal_prec}.")
         return f(*args, **kw)
     return _wrapper
 
