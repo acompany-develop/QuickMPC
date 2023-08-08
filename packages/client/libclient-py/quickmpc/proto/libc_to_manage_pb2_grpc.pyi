@@ -6,14 +6,24 @@ import abc
 import collections.abc
 import google.protobuf.empty_pb2
 import grpc
+import grpc.aio
 import libc_to_manage_pb2
+import typing
+
+_T = typing.TypeVar('_T')
+
+class _MaybeAsyncIterator(collections.abc.AsyncIterator[_T], collections.abc.Iterator[_T], metaclass=abc.ABCMeta):
+    ...
+
+class _ServicerContext(grpc.ServicerContext, grpc.aio.ServicerContext):  # type: ignore
+    ...
 
 class LibcToManageStub:
     """*
     LibcToManage service
     """
 
-    def __init__(self, channel: grpc.Channel) -> None: ...
+    def __init__(self, channel: typing.Union[grpc.Channel, grpc.aio.Channel]) -> None: ...
     SendShares: grpc.UnaryUnaryMultiCallable[
         libc_to_manage_pb2.SendSharesRequest,
         google.protobuf.empty_pb2.Empty,
@@ -51,6 +61,48 @@ class LibcToManageStub:
         libc_to_manage_pb2.AddShareDataFrameResponse,
     ]
 
+class LibcToManageAsyncStub:
+    """*
+    LibcToManage service
+    """
+
+    SendShares: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.SendSharesRequest,
+        google.protobuf.empty_pb2.Empty,
+    ]
+    DeleteShares: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.DeleteSharesRequest,
+        google.protobuf.empty_pb2.Empty,
+    ]
+    GetSchema: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.GetSchemaRequest,
+        libc_to_manage_pb2.GetSchemaResponse,
+    ]
+    ExecuteComputation: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.ExecuteComputationRequest,
+        libc_to_manage_pb2.ExecuteComputationResponse,
+    ]
+    GetComputationResult: grpc.aio.UnaryStreamMultiCallable[
+        libc_to_manage_pb2.GetComputationRequest,
+        libc_to_manage_pb2.GetComputationResultResponse,
+    ]
+    GetComputationStatus: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.GetComputationRequest,
+        libc_to_manage_pb2.GetComputationStatusResponse,
+    ]
+    GetJobErrorInfo: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.GetComputationRequest,
+        libc_to_manage_pb2.GetJobErrorInfoResponse,
+    ]
+    GetElapsedTime: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.GetElapsedTimeRequest,
+        libc_to_manage_pb2.GetElapsedTimeResponse,
+    ]
+    AddShareDataFrame: grpc.aio.UnaryUnaryMultiCallable[
+        libc_to_manage_pb2.AddShareDataFrameRequest,
+        libc_to_manage_pb2.AddShareDataFrameResponse,
+    ]
+
 class LibcToManageServicer(metaclass=abc.ABCMeta):
     """*
     LibcToManage service
@@ -60,55 +112,55 @@ class LibcToManageServicer(metaclass=abc.ABCMeta):
     def SendShares(
         self,
         request: libc_to_manage_pb2.SendSharesRequest,
-        context: grpc.ServicerContext,
-    ) -> google.protobuf.empty_pb2.Empty: ...
+        context: _ServicerContext,
+    ) -> typing.Union[google.protobuf.empty_pb2.Empty, collections.abc.Awaitable[google.protobuf.empty_pb2.Empty]]: ...
     @abc.abstractmethod
     def DeleteShares(
         self,
         request: libc_to_manage_pb2.DeleteSharesRequest,
-        context: grpc.ServicerContext,
-    ) -> google.protobuf.empty_pb2.Empty: ...
+        context: _ServicerContext,
+    ) -> typing.Union[google.protobuf.empty_pb2.Empty, collections.abc.Awaitable[google.protobuf.empty_pb2.Empty]]: ...
     @abc.abstractmethod
     def GetSchema(
         self,
         request: libc_to_manage_pb2.GetSchemaRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.GetSchemaResponse: ...
+        context: _ServicerContext,
+    ) -> typing.Union[libc_to_manage_pb2.GetSchemaResponse, collections.abc.Awaitable[libc_to_manage_pb2.GetSchemaResponse]]: ...
     @abc.abstractmethod
     def ExecuteComputation(
         self,
         request: libc_to_manage_pb2.ExecuteComputationRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.ExecuteComputationResponse: ...
+        context: _ServicerContext,
+    ) -> typing.Union[libc_to_manage_pb2.ExecuteComputationResponse, collections.abc.Awaitable[libc_to_manage_pb2.ExecuteComputationResponse]]: ...
     @abc.abstractmethod
     def GetComputationResult(
         self,
         request: libc_to_manage_pb2.GetComputationRequest,
-        context: grpc.ServicerContext,
-    ) -> collections.abc.Iterator[libc_to_manage_pb2.GetComputationResultResponse]: ...
+        context: _ServicerContext,
+    ) -> typing.Union[collections.abc.Iterator[libc_to_manage_pb2.GetComputationResultResponse], collections.abc.AsyncIterator[libc_to_manage_pb2.GetComputationResultResponse]]: ...
     @abc.abstractmethod
     def GetComputationStatus(
         self,
         request: libc_to_manage_pb2.GetComputationRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.GetComputationStatusResponse: ...
+        context: _ServicerContext,
+    ) -> typing.Union[libc_to_manage_pb2.GetComputationStatusResponse, collections.abc.Awaitable[libc_to_manage_pb2.GetComputationStatusResponse]]: ...
     @abc.abstractmethod
     def GetJobErrorInfo(
         self,
         request: libc_to_manage_pb2.GetComputationRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.GetJobErrorInfoResponse: ...
+        context: _ServicerContext,
+    ) -> typing.Union[libc_to_manage_pb2.GetJobErrorInfoResponse, collections.abc.Awaitable[libc_to_manage_pb2.GetJobErrorInfoResponse]]: ...
     @abc.abstractmethod
     def GetElapsedTime(
         self,
         request: libc_to_manage_pb2.GetElapsedTimeRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.GetElapsedTimeResponse: ...
+        context: _ServicerContext,
+    ) -> typing.Union[libc_to_manage_pb2.GetElapsedTimeResponse, collections.abc.Awaitable[libc_to_manage_pb2.GetElapsedTimeResponse]]: ...
     @abc.abstractmethod
     def AddShareDataFrame(
         self,
         request: libc_to_manage_pb2.AddShareDataFrameRequest,
-        context: grpc.ServicerContext,
-    ) -> libc_to_manage_pb2.AddShareDataFrameResponse: ...
+        context: _ServicerContext,
+    ) -> typing.Union[libc_to_manage_pb2.AddShareDataFrameResponse, collections.abc.Awaitable[libc_to_manage_pb2.AddShareDataFrameResponse]]: ...
 
-def add_LibcToManageServicer_to_server(servicer: LibcToManageServicer, server: grpc.Server) -> None: ...
+def add_LibcToManageServicer_to_server(servicer: LibcToManageServicer, server: typing.Union[grpc.Server, grpc.aio.Server]) -> None: ...

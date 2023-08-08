@@ -7,7 +7,8 @@ RUN apt-get update && \
 
 RUN pip install -U pip && \
     pip install \
-    autopep8 \
+    pycodestyle==2.10.0 \
+    autopep8==2.0.2 \
     mypy-protobuf \
     grpcio-tools
 
