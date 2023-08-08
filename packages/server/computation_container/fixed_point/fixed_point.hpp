@@ -8,12 +8,13 @@
 #include <iomanip>
 #include <iostream>
 #include <type_traits>
+#include "external/proto/common_types/common_types.pb.h"
 
 namespace qmpc::Utils
 {
 using mp_int = boost::multiprecision::cpp_int;
 using mp_float = boost::multiprecision::cpp_dec_float_100;
-using SgnByte = std::pair<bool, std::string>;
+using BIB = pb_common_types::BigIntByte;
 
 class FixedPoint : private boost::operators<FixedPoint>
 {
@@ -40,11 +41,11 @@ public:
         mp_float v_{str};
         value = static_cast<mp_int>(v_ * shift);
     }
-    FixedPoint(const SgnByte &P)
+    FixedPoint(const BIB &a)
     {
-        const auto &[sgn, abs_byte] = P;
+        std::string abs_byte = a.abs_byte();
         import_bits(value, abs_byte.begin(), abs_byte.end(), 8);
-        if (sgn)
+        if (a.sgn())
         {
             value *= -1;
         }
@@ -85,12 +86,14 @@ public:
         }
         return ret;
     }
-    SgnByte getSgnByte() const
+    BIB getBigIntByte() const
     {
-        bool sgn = value < 0;
-        std::string bytes;
-        export_bits(value, std::back_inserter(bytes), 8);
-        return std::make_pair(sgn, bytes);
+        BIB ret;
+        ret.set_sgn(value < 0);
+        std::string abs_byte;
+        export_bits(value, std::back_inserter(abs_byte), 8);
+        ret.set_abs_byte(abs_byte);
+        return ret;
     }
     template <typename T = double>
     T getDoubleVal() const

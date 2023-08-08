@@ -73,10 +73,9 @@ private:
             }
             else
             {
+                auto val = values[i].getBigIntByte();
                 pb_common_types::BigIntByte *fp = multiple_shares->mutable_fp();
-                auto [sgn, byte] = values[i].getSgnByte();
-                fp->set_sgn(sgn);
-                fp->set_abs_byte(byte);
+                fp = &val;
             }
         }
         share_vec.push_back(s);

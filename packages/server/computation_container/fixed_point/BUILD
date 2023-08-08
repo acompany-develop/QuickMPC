@@ -14,5 +14,8 @@ cc_library(
     hdrs = [
         "fixed_point.hpp",
     ],
+    deps = [
+        "@proto//common_types:common_types_cc_proto",
+    ],
     visibility = ["//visibility:public"]
 )

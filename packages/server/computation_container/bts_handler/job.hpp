@@ -33,20 +33,12 @@ struct Triple
         for (size_t i = 0; i < length; i++)
         {
             auto triple = response.triples(i);
-            FixedPoint a = toFP(triple.a());
-            FixedPoint b = toFP(triple.b());
-            FixedPoint c = toFP(triple.c()) / FixedPoint::getShift();
+            FixedPoint a = FixedPoint(triple.a());
+            FixedPoint b = FixedPoint(triple.b());
+            FixedPoint c = FixedPoint(triple.c()) / FixedPoint::getShift();
             ret[i] = std::make_tuple(a, b, c);
         }
         return ret;
-    }
-
-private:
-    static FixedPoint toFP(const pb_common_types::BigIntByte& a)
-    {
-        bool sgn = a.sgn();
-        std::string abs_byte = a.abs_byte();
-        return FixedPoint(std::make_pair(sgn, abs_byte));
     }
 };
 
