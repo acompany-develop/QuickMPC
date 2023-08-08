@@ -8,6 +8,7 @@ import (
 	logger "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/log"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
@@ -21,7 +22,7 @@ func init() {
 }
 
 func sharize(data big.Int, bitLength uint32, party_num uint32) ([]big.Int, error) {
-	shares, err := utils.GetRandBigInts(bitLength, party_num - 1)
+	shares, err := utils.GetRandBigInts(bitLength, party_num-1)
 	if err != nil {
 		errText := "乱数取得に失敗"
 		logger.Error(errText)
@@ -36,10 +37,10 @@ func sharize(data big.Int, bitLength uint32, party_num uint32) ([]big.Int, error
 	return shares, nil
 }
 
-func toBytes(share big.Int) (pb.BigIntByte, error) {
-	ret := pb.BigIntByte{
-		Sgn : share.Sign() == -1,
-		AbsByte : share.Bytes(),
+func toBytes(share big.Int) (pb_types.BigIntByte, error) {
+	ret := pb_types.BigIntByte{
+		Sgn:     share.Sign() == -1,
+		AbsByte: share.Bytes(),
 	}
 	return ret, nil
 }
@@ -59,7 +60,7 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32) (map[uint32]([]*ts.
 		return nil, errors.New(errText)
 	}
 
-	for i := uint32(0); i < 2*amount; i+=2 {
+	for i := uint32(0); i < 2*amount; i += 2 {
 		var a big.Int = ab[i]
 		var b big.Int = ab[i+1]
 		var c big.Int
@@ -81,15 +82,15 @@ func GenerateTriples(claims *jwt_types.Claim, amount uint32) (map[uint32]([]*ts.
 		// partyIdは1-index
 		for partyId := uint32(1); partyId <= party_num; partyId++ {
 			a_, err := toBytes(aShares[partyId-1])
-			if err != nil{
+			if err != nil {
 				return nil, err
 			}
 			b_, err := toBytes(bShares[partyId-1])
-			if err != nil{
+			if err != nil {
 				return nil, err
 			}
 			c_, err := toBytes(cShares[partyId-1])
-			if err != nil{
+			if err != nil {
 				return nil, err
 			}
 			t := ts.Triple{
@@ -108,7 +109,7 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
-	if partyId == 0 || partyId > uint32(len(claims.PartyInfo)){
+	if partyId == 0 || partyId > uint32(len(claims.PartyInfo)) {
 		errText := "out range partyId"
 		logger.Error(errText)
 		return nil, errors.New(errText)
@@ -124,14 +125,14 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 	pre_id, ok := Db.PreID[jobId][partyId]
 
 	// request が初めての場合
-	if !ok{
+	if !ok {
 		Db.PreID[jobId][partyId] = requestId
 		Db.PreAmount[jobId][partyId] = amount
 	}
 
 	// 前回の request と異なる場合
 	// requestId が -1 の場合は必ず前回と異なるとみなす（test用）
-	if ok && (pre_id != requestId || requestId == -1){
+	if ok && (pre_id != requestId || requestId == -1) {
 		pre_amount := Db.PreAmount[jobId][partyId]
 		Db.Triples[jobId][partyId] = Db.Triples[jobId][partyId][pre_amount:]
 		Db.PreID[jobId][partyId] = requestId
@@ -139,7 +140,7 @@ func GetTriples(claims *jwt_types.Claim, jobId uint32, partyId uint32, amount ui
 	}
 
 	// 今回返す Triples がまだ生成されてない場合
-	if len(Db.Triples[jobId][partyId]) == 0{
+	if len(Db.Triples[jobId][partyId]) == 0 {
 		newTriples, err := GenerateTriples(claims, amount)
 		if err != nil {
 			return nil, err

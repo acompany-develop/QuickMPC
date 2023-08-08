@@ -1,15 +1,17 @@
 package triplestore_test
 
 import (
-	"os"
-	"fmt"
 	"bytes"
 	"encoding/binary"
-	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
-	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
-	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
+	"fmt"
+	"os"
 	"testing"
+
+	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
+	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
+	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 )
 
 var Db *ts.SafeTripleStore
@@ -21,48 +23,48 @@ func init() {
 func getClaims() (*jwt_types.Claim, error) {
 	token, ok := os.LookupEnv("BTS_TOKEN")
 	if ok {
-		claims,err := utils.AuthJWT(token)
+		claims, err := utils.AuthJWT(token)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
 
-		return claims,nil
+		return claims, nil
 	}
 
-	return nil,fmt.Errorf("BTS TOKEN is not valified")
+	return nil, fmt.Errorf("BTS TOKEN is not valified")
 }
 
-func convertToBigIntByte(a int64)(*pb.BigIntByte, error){
+func convertToBigIntByte(a int64) (*pb_types.BigIntByte, error) {
 	sgn := bool(a < 0)
 	buf := new(bytes.Buffer)
 	err := binary.Write(buf, binary.BigEndian, a)
 	if err != nil {
-        return nil, err
-    }
-    byteSlice := buf.Bytes()
-	return &pb.BigIntByte{
-		Sgn : sgn,
-		AbsByte : byteSlice,
+		return nil, err
+	}
+	byteSlice := buf.Bytes()
+	return &pb_types.BigIntByte{
+		Sgn:     sgn,
+		AbsByte: byteSlice,
 	}, nil
 }
 
-func convertToTriple(a,b,c int64)(*pb.Triple, error){
+func convertToTriple(a, b, c int64) (*pb.Triple, error) {
 	a_, err := convertToBigIntByte(a)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	b_, err := convertToBigIntByte(b)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	c_, err := convertToBigIntByte(c)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 	return &pb.Triple{
-		A : a_,
-		B : b_,
-		C : c_,
+		A: a_,
+		B: b_,
+		C: c_,
 	}, nil
 }
 
@@ -70,19 +72,19 @@ func generateTriples(amount uint32) (map[uint32]([]*ts.Triple), error) {
 	ret := make(map[uint32]([]*ts.Triple))
 	for i := uint32(0); i < amount; i++ {
 		t, err := convertToTriple(1, 1, 3)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 		ret[1] = append(ret[1], t)
 
 		t, err = convertToTriple(2, 2, 6)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 		ret[2] = append(ret[2], t)
 
 		t, err = convertToTriple(3, 3, 9)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 		ret[3] = append(ret[3], t)
@@ -91,13 +93,13 @@ func generateTriples(amount uint32) (map[uint32]([]*ts.Triple), error) {
 	return ret, nil
 }
 
-func getTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32) ([]*ts.Triple, error){
+func getTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32) ([]*ts.Triple, error) {
 	Db.Mux.Lock()
 	defer Db.Mux.Unlock()
 
 	if len(Db.Triples[jobId]) == 0 {
 		newTriples, err := generateTriples(amount)
-		if err != nil{
+		if err != nil {
 			return nil, err
 		}
 		Db.Triples[jobId] = newTriples

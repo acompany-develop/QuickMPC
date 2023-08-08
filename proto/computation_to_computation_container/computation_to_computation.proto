@@ -4,6 +4,7 @@ package computationtocomputation;
 
 // 引数無しにする際に使用
 import "google/protobuf/empty.proto";
+import "common_types/common_types.proto";
 
 /**
  * ComputationToComputation service
@@ -24,11 +25,6 @@ message Address{
     int32 party_id = 4; // the id of party(0, 1, 2)
 }
 
-message BigIntByte{
-    bool sgn = 1;
-    bytes abs_byte = 2;
-}
-
 /**
  * the message of shares
 */
@@ -36,7 +32,7 @@ message Shares {
     message Share{
         oneof value{
             int64 num = 1;
-            BigIntByte fp = 2;
+            pb_common_types.BigIntByte fp = 2;
             bool flag = 3;
         }
     }

@@ -6,7 +6,8 @@ load("@com_github_grpc_grpc//bazel:cc_grpc_library.bzl", "cc_grpc_library")
 proto_library(
     name = "engine_to_bts_proto",
     srcs = ["engine_to_bts.proto"],
-    deps = ["@com_google_protobuf//:empty_proto"]
+    deps = ["@com_google_protobuf//:empty_proto",
+            "@proto//common_types:common_types"],
 )
 
 cc_proto_library(

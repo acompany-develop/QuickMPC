@@ -1,45 +1,46 @@
 package triplegenerator_test
 
 import (
-	"os"
 	"fmt"
-	"testing"
-	"sync"
 	"math/big"
+	"os"
+	"sync"
+	"testing"
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
-	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 	tg "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_generator"
 	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
-	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
+	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 )
 
-type TriplesStock struct{
+type TriplesStock struct {
 	Stock map[uint32](map[uint32]([]*ts.Triple))
-	Mux     sync.Mutex
+	Mux   sync.Mutex
 }
+
 var TS TriplesStock
 
 func all_init() {
 	TS.Stock = make(map[uint32](map[uint32]([]*ts.Triple)))
 	tg.Db = &ts.SafeTripleStore{
-		Triples: make(map[uint32](map[uint32]([]*ts.Triple))),
-		PreID: make(map[uint32](map[uint32](int64))),
+		Triples:   make(map[uint32](map[uint32]([]*ts.Triple))),
+		PreID:     make(map[uint32](map[uint32](int64))),
 		PreAmount: make(map[uint32](map[uint32](uint32))),
 	}
 }
 
-func getClaims() (*jwt_types.Claim, error){
+func getClaims() (*jwt_types.Claim, error) {
 	token, ok := os.LookupEnv("BTS_TOKEN")
 	if ok {
-		claims,err := utils.AuthJWT(token)
+		claims, err := utils.AuthJWT(token)
 		if err != nil {
-			return nil,err
+			return nil, err
 		}
-		return claims,nil
+		return claims, nil
 	}
 
-	return nil,fmt.Errorf("BTS TOKEN is not valified")
+	return nil, fmt.Errorf("BTS TOKEN is not valified")
 }
 
 // 固定された (jobId, partyId) に対し requestTimes 回の（長さ amount の） Triples を作成
@@ -54,7 +55,7 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 	TS.Mux.Lock()
 
 	_, ok := TS.Stock[jobId]
-	if !ok{
+	if !ok {
 		TS.Stock[jobId] = make(map[uint32]([]*ts.Triple))
 	}
 
@@ -82,11 +83,11 @@ func multiGetTriples(t *testing.T, jobId uint32, partyId uint32, amount uint32, 
 	})
 }
 
-func convertToBigInt(b *pb.BigIntByte) (*big.Int) {
+func convertToBigInt(b *pb_types.BigIntByte) *big.Int {
 	var ret *big.Int = big.NewInt(0)
 	bytes := b.AbsByte
 	ret.SetBytes(bytes)
-	if b.Sgn{
+	if b.Sgn {
 		ret.Neg(ret)
 	}
 	return ret
@@ -124,37 +125,37 @@ func testParallelGetTriples(t *testing.T, jobNum uint32, amount uint32, requestT
 		for loopPartyId := uint32(1); loopPartyId <= uint32(len(claims.PartyInfo)); loopPartyId++ {
 			jobId := loopJobId
 			partyId := loopPartyId
-			t.Run("TestTripleGenerator", func(t *testing.T){
+			t.Run("TestTripleGenerator", func(t *testing.T) {
 				t.Parallel()
 				multiGetTriples(t, jobId, partyId, amount, requestTime)
 			})
 		}
 	}
 
-	t.Cleanup(func(){
+	t.Cleanup(func() {
 		testValidityOfTriples(t)
 	})
 }
 
 // --- 以下呼ばれる関数群 ---
-func TestParallelGetTriples_1_1_1(t *testing.T){
+func TestParallelGetTriples_1_1_1(t *testing.T) {
 	testParallelGetTriples(t, 1, 1, 1)
 }
-func TestParallelGetTriples_10_10_10(t *testing.T){
+func TestParallelGetTriples_10_10_10(t *testing.T) {
 	testParallelGetTriples(t, 10, 10, 10)
 }
-func TestParallelGetTriples_10000_5_5(t *testing.T){
+func TestParallelGetTriples_10000_5_5(t *testing.T) {
 	testParallelGetTriples(t, 10000, 5, 5)
 }
-func TestParallelGetTriples_5_10000_5(t *testing.T){
+func TestParallelGetTriples_5_10000_5(t *testing.T) {
 	testParallelGetTriples(t, 5, 10000, 5)
 }
-func TestParallelGetTriples_5_5_10000(t *testing.T){
+func TestParallelGetTriples_5_5_10000(t *testing.T) {
 	testParallelGetTriples(t, 5, 5, 10000)
 }
 
 // 同じ request ID は同じ Triple
-func TestSameRequestId(t *testing.T){
+func TestSameRequestId(t *testing.T) {
 	t.Helper()
 
 	all_init()
@@ -185,7 +186,7 @@ func TestSameRequestId(t *testing.T){
 }
 
 // 異なる request ID は異なる Triple
-func TestDifferentRequestId(t *testing.T){
+func TestDifferentRequestId(t *testing.T) {
 	t.Helper()
 
 	all_init()
@@ -216,7 +217,7 @@ func TestDifferentRequestId(t *testing.T){
 }
 
 // 範囲外の PartyId が来た時にエラーを吐くか
-func TestOutRangePartyId(t *testing.T){
+func TestOutRangePartyId(t *testing.T) {
 	expected_text := "out range partyId"
 	claims, err := getClaims()
 	if err != nil {
@@ -224,12 +225,12 @@ func TestOutRangePartyId(t *testing.T){
 	}
 
 	partyId := uint32(0)
-	if _, err := tg.GetTriples(claims, 1, partyId, 1, -1); err.Error() != expected_text{
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, -1); err.Error() != expected_text {
 		t.Fatal("does not output 'out range partyId'")
 	}
 
-	partyId = uint32(len(claims.PartyInfo))  + uint32(1)
-	if _, err := tg.GetTriples(claims, 1, partyId, 1, -1); err.Error() != expected_text{
+	partyId = uint32(len(claims.PartyInfo)) + uint32(1)
+	if _, err := tg.GetTriples(claims, 1, partyId, 1, -1); err.Error() != expected_text {
 		t.Fatal("does not output 'out range partyId'")
 	}
 }

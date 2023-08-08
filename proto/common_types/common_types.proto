@@ -63,3 +63,9 @@ message Schema {
     string name = 1;
     ShareValueTypeEnum type = 2;
 }
+
+message BigIntByte{
+    bool sgn = 1;
+    bytes abs_byte = 2;
+}
+
