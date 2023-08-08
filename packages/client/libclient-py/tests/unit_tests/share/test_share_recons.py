@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from quickmpc.exception import ArgumentError
-from quickmpc.share.share import decimal_prec, Share
+from quickmpc.share.share import _decimal_prec, Share
 
 
 class TestQMPC:
@@ -193,4 +193,4 @@ class TestQMPC:
             Share.recons(secrets)
 
         # Global値をいじっているので元の値に戻しておく
-        getcontext().prec = decimal_prec
+        getcontext().prec = _decimal_prec

@@ -21,16 +21,16 @@ logger = get_logger()
 
 # getcontext().precがthreadごとに初期化されてしまうため，
 # theread毎に初期化し返せるようできるようにフラグを管理する
-__local_dict = threading.local()
-__decimal_prec = 100
+_local_dict = threading.local()
+_decimal_prec = 100
 
 
 def set_decimal_prec():
     try:
-        __local_dict.is_initialized
+        _local_dict.is_initialized
     except Exception:
-        getcontext().prec = __decimal_prec
-        __local_dict.is_initialized = True
+        getcontext().prec = _decimal_prec
+        _local_dict.is_initialized = True
 
 
 set_decimal_prec()
@@ -41,9 +41,9 @@ def _verify_decimal_prec(f):
     @wraps(f)
     def _wrapper(*args, **kw):
         set_decimal_prec()
-        if getcontext().prec != __decimal_prec:
+        if getcontext().prec != _decimal_prec:
             raise RuntimeError(
-                f"Decimal context prec is must be {__decimal_prec}.")
+                f"Decimal context prec is must be {_decimal_prec}.")
         return f(*args, **kw)
     return _wrapper
 

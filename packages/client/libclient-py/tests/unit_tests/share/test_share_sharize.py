@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from quickmpc.exception import ArgumentError
-from quickmpc.share.share import decimal_prec, Share
+from quickmpc.share.share import _decimal_prec, Share
 
 
 def sharize_params(secrets=[1], party_size=3):
@@ -173,4 +173,4 @@ class TestQMPC:
             Share.sharize(*args)
 
         # Global値をいじっているので元の値に戻しておく
-        getcontext().prec = decimal_prec
+        getcontext().prec = _decimal_prec
