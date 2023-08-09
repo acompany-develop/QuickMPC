@@ -22,6 +22,7 @@ logger = get_logger()
 # getcontext().precがthreadごとに初期化されてしまうため，
 # theread毎に初期化し返せるようできるようにフラグを管理する
 _local_dict = threading.local()
+# Triple cのshareが23byteで約10^{54}なので, 余裕を持って収まるように100にしておく
 _decimal_prec = 100
 
 
