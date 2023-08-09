@@ -1,5 +1,8 @@
+import inspect
+import threading
 from dataclasses import dataclass
-from decimal import Decimal
+from decimal import Decimal, getcontext
+from functools import wraps
 from typing import (Any, Callable, ClassVar, List,
                     Optional, Sequence, Tuple, Union)
 
@@ -16,6 +19,47 @@ from quickmpc.utils import (DictList, DictList2, Dim1,
 logger = get_logger()
 
 
+# getcontext().precがthreadごとに初期化されてしまうため，
+# theread毎に初期化し返せるようできるようにフラグを管理する
+_local_dict = threading.local()
+# Triple cのshareが23byteで約10^{54}なので, 余裕を持って収まるように100にしておく
+_decimal_prec = 100
+
+
+def set_decimal_prec():
+    try:
+        _local_dict.is_initialized
+    except Exception:
+        getcontext().prec = _decimal_prec
+        _local_dict.is_initialized = True
+
+
+set_decimal_prec()
+
+
+def _verify_decimal_prec(f):
+    """メソッドにprecのverifyを適用させるデコレータ"""
+    @wraps(f)
+    def _wrapper(*args, **kw):
+        set_decimal_prec()
+        if getcontext().prec != _decimal_prec:
+            raise RuntimeError(
+                f"Decimal context prec is must be {_decimal_prec}.")
+        return f(*args, **kw)
+    return _wrapper
+
+
+def _verify_decimal_prec_all(cls):
+    """クラスの全てのメソッドにprecのverifyを適用させるデコレータ"""
+    for name, fn in inspect.getmembers(cls):
+        if name.startswith('__'):
+            continue
+        if callable(getattr(cls, name)):
+            setattr(cls, name, _verify_decimal_prec(fn))
+    return cls
+
+
+@_verify_decimal_prec_all
 @dataclass(frozen=True)
 class Share:
     __share_random_range: ClassVar[Tuple[Decimal, Decimal]] =\

@@ -3,14 +3,16 @@ package e2bserver
 import (
 	"context"
 	"fmt"
+	"math/big"
 	"os"
 	"sync"
 	"testing"
 
 	jwt_types "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/jwt"
-	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	rbs "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/rand_bit_store"
+	ts "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/triple_store"
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
+	pb_types "github.com/acompany-develop/QuickMPC/proto/common_types"
 	pb "github.com/acompany-develop/QuickMPC/proto/engine_to_bts"
 
 	"google.golang.org/grpc/metadata"
@@ -133,16 +135,28 @@ func testGetTriplesByJobId(t *testing.T, client pb.EngineToBtsClient, amount uin
 	})
 }
 
+func convertToBigInt(b *pb_types.BigIntByte) *big.Int {
+	var ret *big.Int = big.NewInt(0)
+	bytes := b.AbsByte
+	ret.SetBytes(bytes)
+	if b.Sgn {
+		ret.Neg(ret)
+	}
+	return ret
+}
+
 func testValidityOfTriples(t *testing.T) {
 	for _, triples := range DbTripleTest.Triples {
 		for i := 0; i < len(triples[1]); i++ {
-			aShareSum, bShareSum, cShareSum := int64(0), int64(0), int64(0)
+			aShareSum, bShareSum, cShareSum := big.NewInt(0), big.NewInt(0), big.NewInt(0)
 			for partyId := uint32(1); partyId <= uint32(len(triples)); partyId++ {
-				aShareSum += triples[partyId][i].A
-				bShareSum += triples[partyId][i].B
-				cShareSum += triples[partyId][i].C
+				aShareSum.Add(aShareSum, convertToBigInt(triples[partyId][i].A))
+				bShareSum.Add(bShareSum, convertToBigInt(triples[partyId][i].B))
+				cShareSum.Add(cShareSum, convertToBigInt(triples[partyId][i].C))
 			}
-			if aShareSum*bShareSum != cShareSum {
+			ab := big.NewInt(0)
+			ab.Mul(aShareSum, bShareSum)
+			if ab.Cmp(cShareSum) != 0 {
 				t.Fatal("a*b != c")
 			}
 		}
@@ -263,8 +277,10 @@ func TestGetRandBits_1_10000(t *testing.T) { testGetRandBits(t, 1, 10000) }
 
 func TestGetRandBits_100_1(t *testing.T)   { testGetRandBits(t, 100, 1) }
 func TestGetRandBits_100_100(t *testing.T) { testGetRandBits(t, 100, 100) }
+
 // func TestGetRandBits_100_10000(t *testing.T) { testGetRandBits(t, 100, 10000) }
 
 func TestGetRandBits_10000_1(t *testing.T)   { testGetRandBits(t, 10000, 1) }
 func TestGetRandBits_10000_100(t *testing.T) { testGetRandBits(t, 10000, 100) }
+
 // func TestGetRandBits_10000_10000(t *testing.T) { testGetRandBits(t, 10000, 10000) }

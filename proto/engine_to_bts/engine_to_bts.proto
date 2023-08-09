@@ -4,6 +4,8 @@ package enginetobts;
 
 option go_package = "github.com/acompany-develop/QuickMPC/proto/engine_to_bts";
 
+import "common_types/common_types.proto";
+
 service EngineToBts {
     rpc GetTriples(GetRequest) returns (GetTriplesResponse) {}
     rpc GetRandBits(GetRequest) returns (GetRandBitsResponse) {}
@@ -16,9 +18,9 @@ message GetRequest{
 }
 
 message Triple{
-    int64 a = 2;
-    int64 b = 3;
-    int64 c = 4;
+    pb_common_types.BigIntByte a = 2;
+    pb_common_types.BigIntByte b = 3;
+    pb_common_types.BigIntByte c = 4;
 }
 
 message GetTriplesResponse{

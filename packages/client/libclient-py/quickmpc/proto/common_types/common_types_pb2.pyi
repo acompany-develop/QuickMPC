@@ -220,3 +220,21 @@ class Schema(google.protobuf.message.Message):
     def ClearField(self, field_name: typing_extensions.Literal["name", b"name", "type", b"type"]) -> None: ...
 
 global___Schema = Schema
+
+@typing_extensions.final
+class BigIntByte(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SGN_FIELD_NUMBER: builtins.int
+    ABS_BYTE_FIELD_NUMBER: builtins.int
+    sgn: builtins.bool
+    abs_byte: builtins.bytes
+    def __init__(
+        self,
+        *,
+        sgn: builtins.bool = ...,
+        abs_byte: builtins.bytes = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing_extensions.Literal["abs_byte", b"abs_byte", "sgn", b"sgn"]) -> None: ...
+
+global___BigIntByte = BigIntByte

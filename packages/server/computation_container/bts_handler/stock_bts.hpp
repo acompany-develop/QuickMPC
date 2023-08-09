@@ -11,7 +11,8 @@ namespace qmpc::BtsHandler
 template <typename BTSJob>
 class StockBTS
 {
-    const std::size_t request_num = 100000;
+    // Todo : stream にする
+    const std::size_t request_num = 10000;
 
     using Result = typename BTSJob::result_type;
     thread_local static inline std::queue<Result> stock;
@@ -53,10 +54,6 @@ public:
         return ret;
     }
 };
-
-template <typename T>
-using StockTriple = StockBTS<BTSJobType::Triple<T>>;
-
-template <typename T>
-using StockRandBit = StockBTS<BTSJobType::RandBit<T>>;
+using StockTriple = StockBTS<BTSJobType::Triple>;
+using StockRandBit = StockBTS<BTSJobType::RandBit>;
 }  // namespace qmpc::BtsHandler

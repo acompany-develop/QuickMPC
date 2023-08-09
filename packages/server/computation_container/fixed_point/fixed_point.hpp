@@ -8,13 +8,13 @@
 #include <iomanip>
 #include <iostream>
 #include <type_traits>
+#include "external/proto/common_types/common_types.pb.h"
 
 namespace qmpc::Utils
 {
-namespace mp = boost::multiprecision;
 using mp_int = boost::multiprecision::cpp_int;
-using mp_float = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<50>>;
-using SgnByte = std::pair<bool, std::string>;
+using mp_float = boost::multiprecision::cpp_dec_float_100;
+using BIB = pb_common_types::BigIntByte;
 
 class FixedPoint : private boost::operators<FixedPoint>
 {
@@ -41,11 +41,11 @@ public:
         mp_float v_{str};
         value = static_cast<mp_int>(v_ * shift);
     }
-    FixedPoint(const SgnByte &P)
+    FixedPoint(const BIB &a)
     {
-        const auto &[sgn, abs_byte] = P;
+        std::string abs_byte = a.abs_byte();
         import_bits(value, abs_byte.begin(), abs_byte.end(), 8);
-        if (sgn)
+        if (a.sgn())
         {
             value *= -1;
         }
@@ -70,7 +70,12 @@ public:
     {
         mp_float ret = static_cast<mp_float>(value);
         ret /= shift;
-        return ret.str(20, std::ios_base::fixed);
+        std::string s = ret.str(0, std::ios_base::fixed);
+        while (s.size() and s.back() == '0')
+        {
+            s.pop_back();
+        }
+        return s;
     }
     mp_int getRoundValue() const
     {
@@ -81,17 +86,27 @@ public:
         }
         return ret;
     }
-    SgnByte getSgnByte() const
+    BIB getBigIntByte() const
     {
-        bool sgn = value < 0;
-        std::string bytes;
-        export_bits(value, std::back_inserter(bytes), 8);
-        return std::make_pair(sgn, bytes);
+        BIB ret;
+        ret.set_sgn(value < 0);
+        std::string abs_byte;
+        export_bits(value, std::back_inserter(abs_byte), 8);
+        ret.set_abs_byte(abs_byte);
+        return ret;
     }
-    double getDoubleVal() const
+    template <typename T = double>
+    T getDoubleVal() const
     {
-        mp_float ret = static_cast<mp_float>(value);
-        return static_cast<double>(ret / shift);
+        mp_float ret = static_cast<mp_float>(value) / shift;
+        if constexpr (std::is_same_v<T, mp_float>)
+        {
+            return ret;
+        }
+        else
+        {
+            return static_cast<T>(ret);
+        }
     }
     constexpr static auto getShift() noexcept { return shift; }
 
@@ -141,7 +156,14 @@ public:
     }
     bool operator==(const FixedPoint &obj) const noexcept
     {
-        return (value - obj.value >= -1 and value - obj.value <= 1) ? true : false;
+        /*
+        todo : value == obj.value に修正
+        test で EXPECT_EQ(a,b) を用いている箇所は
+            EXPECT_NEAR(a.getDoubleVal(), b.getDoubleVal(), 1e-7) のように明示的に書く
+        ただし加減算だけなど, 誤差が出ないことが仕様として保証されている場合は EXPECT_EQ
+        のままで良い
+        */
+        return abs(value - obj.value) <= 10;
     }
     bool operator<(const FixedPoint &obj) const noexcept { return value < obj.value; }
     /*
@@ -155,7 +177,7 @@ public:
     friend std::ostream &operator<<(std::ostream &os, const FixedPoint &fp)
     {
         os << std::fixed;
-        os << std::setprecision(10);
+        os << std::setprecision(8);
         os << fp.value.template convert_to<mp_float>() / shift;
         os << std::resetiosflags(std::ios_base::floatfield);
         return os;

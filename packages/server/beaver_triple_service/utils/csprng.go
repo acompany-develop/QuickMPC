@@ -9,6 +9,28 @@ import (
 	"math/big"
 )
 
+// [0, 2^{bitLength}) の乱数を amount 個生成
+func GetRandBigInts(bitLength uint32, amount uint32) ([]big.Int, error) {
+	var byteLength uint32 = (bitLength + 8 - 1) / 8
+
+	bSlice := make([]byte, byteLength * amount)
+	_, err := rand.Read(bSlice)
+	if err != nil {
+		return nil, err
+	}
+
+	randSlice := make([]big.Int, amount)
+
+	for i := uint32(0); i < amount; i++ {
+		var n big.Int
+		buf := bSlice[i*byteLength : (i+1)*byteLength]
+		n.SetBytes(buf)
+		randSlice[i] = n
+	}
+
+	return randSlice, nil
+}
+
 func mod(x, y int64) int64 {
 	bx, by := big.NewInt(x), big.NewInt(y)
 	return new(big.Int).Mod(bx, by).Int64()

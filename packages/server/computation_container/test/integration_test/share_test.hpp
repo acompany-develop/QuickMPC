@@ -941,17 +941,6 @@ TEST(ShareTest, subIntShare)
     auto a_rec = open_and_recons(a);
     EXPECT_EQ(a_rec, n_parties * 3 - n_parties * 4);
 }
-TEST(ShareTest, mulIntShare)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    qmpc::Share::Share<int> a(3);
-    qmpc::Share::Share<int> b(4);
-    a = a * b;
-    std::cout << a.getVal() << std::endl;
-    auto a_rec = open_and_recons(a);
-    EXPECT_EQ(a_rec, (n_parties * 3) * (n_parties * 4));
-}
 TEST(ShareTest, boolLarge)
 {
     std::vector<qmpc::Share::Share<bool>> a(50000, true);
@@ -967,16 +956,6 @@ TEST(ShareTest, FPLarge)
     std::vector<qmpc::Share::Share<FixedPoint>> a(50000, FixedPoint("1"));
     auto target = open_and_recons(a);
 }
-TEST(ShareTest, IntMulLarge)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    std::vector<qmpc::Share::Share<int>> a(20000, 1);
-    std::vector<qmpc::Share::Share<int>> b(20000, 1);
-    a = a * b;
-    auto rec = open_and_recons(a);
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
-}
 TEST(ShareTest, FPMulLarge)
 {
     Config *conf = Config::getInstance();
@@ -986,43 +965,8 @@ TEST(ShareTest, FPMulLarge)
     a = a * b;
     auto rec = open_and_recons(a);
 
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+    EXPECT_EQ(rec[0], n_parties * n_parties);
 }
-
-TEST(ShareTest, IntMulExtraLarge)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    std::vector<qmpc::Share::Share<int>> a(100000, 1);
-    std::vector<qmpc::Share::Share<int>> b(100000, 1);
-    a = a * b;
-    auto rec = open_and_recons(a);
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
-}
-
-// 現状乱数範囲(セキュリティ)の都合上64bit浮動小数の積は使用できない
-/*
-TEST(ShareTest, doubleMulExtraLarge)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    std::vector<qmpc::Share::Share<double>> a(100000, 1.0);
-    std::vector<qmpc::Share::Share<double>> b(100000, 1.0);
-    a = a * b;
-    auto rec = open_and_recons(a);
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
-}
-TEST(ShareTest, floatMulExtraLarge)
-{
-    Config *conf = Config::getInstance();
-    int n_parties = conf->n_parties;
-    std::vector<qmpc::Share::Share<float>> a(100000, 1);
-    std::vector<qmpc::Share::Share<float>> b(100000, 1);
-    a = a * b;
-    auto rec = open_and_recons(a);
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
-}
-*/
 
 TEST(ShareTest, FPMulExtraLarge)
 {
@@ -1033,5 +977,5 @@ TEST(ShareTest, FPMulExtraLarge)
     a = a * b;
     auto rec = open_and_recons(a);
 
-    EXPECT_EQ(rec[0], (n_parties * 1) * (n_parties * 1));
+    EXPECT_EQ(rec[0], n_parties * n_parties);
 }

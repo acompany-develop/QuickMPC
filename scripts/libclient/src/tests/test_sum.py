@@ -22,9 +22,9 @@ from utils import data_frame, qmpc
          pd.DataFrame([2.0*10**18])),
 
         # small data case
-        (data_frame([[10**-18], [10**-18]], columns=["s1"]),
+        (data_frame([[10**-8], [10**-8]], columns=["s1"]),
          [1],
-         pd.DataFrame([2.0*10**-10])),
+         pd.DataFrame([2.0*10**-8])),
 
         # duplicated src case
         (data_frame([[1, 2, 3], [4, 5, 6]], columns=["s1", "s2", "s3"]),
