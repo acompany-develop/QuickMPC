@@ -1,11 +1,14 @@
 package utils_test
 
 import (
+	"errors"
+	"math/big"
 	"testing"
 
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 )
 
+// 90bit で指定した時に [0,96)bit が 100000 個で全て作られているか
 func TestGetRandBigInts(t *testing.T) {
 	t.Helper()
 	rands, err := utils.GetRandBigInts(90, 100000)
@@ -21,12 +24,12 @@ func TestGetRandBigInts(t *testing.T) {
 			err := errors.New("negative rand")
 			t.Fatal(err)
 		}
-		x.Or(x, rand)
+		x.Or(x, &rand)
 	}
 
 	expected := big.NewInt(1)
 	expected.Lsh(expected, 96)
-	expected.Sub(expected, 1)
+	expected.Sub(expected, big.NewInt(1))
 
 	if x.Cmp(expected) != 0 {
 		err := errors.New("missing bit")
@@ -34,9 +37,10 @@ func TestGetRandBigInts(t *testing.T) {
 	}
 }
 
+// 8bit 整数 [0,256) が 100000 個で全て作られているか
 func TestSpanningGetRandBigInts(t *testing.T) {
 	t.Helper()
-	rand, err := utils.GetRandBigInts(8, 100000)
+	rands, err := utils.GetRandBigInts(8, 100000)
 	if err != nil{
 		t.Fatal(err)
 	}
@@ -55,7 +59,7 @@ func TestSpanningGetRandBigInts(t *testing.T) {
 		setUint64[x] = struct{}{}
 	}
 
-	if len(setUint64) != 128 {
+	if len(setUint64) != 256 {
 		err := errors.New("not Spanning")
 		t.Fatal(err)
 	}
