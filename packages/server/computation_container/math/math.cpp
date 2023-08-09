@@ -8,7 +8,11 @@ Share sum(const std::vector<Share> &v)
     Share e(FixedPoint(0));
     return std::accumulate(v.begin(), v.end(), e);
 }
-Share smean(const std::vector<Share> &v) { return sum(v) / FixedPoint(std::size(v)); }
+Share smean(const std::vector<Share> &v)
+{
+    assert(std::size(v));
+    return sum(v) / FixedPoint(std::size(v));
+}
 
 std::vector<Share> deviation(std::vector<Share> v)
 {
@@ -63,7 +67,8 @@ Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
     // 0除算
     if (stdeX == FixedPoint(0) || stdeY == FixedPoint(0))
     {
-        qmpc::Log::throw_with_trace(std::runtime_error("correl Div0 error"));
+        QMPC_LOG_ERROR("correl returns 0 when stdev is 0");
+        return Share(FixedPoint(0));
     }
 
     return covariance(x, y) / (stdeX * stdeY);
