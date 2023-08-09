@@ -6,7 +6,7 @@ import (
 	utils "github.com/acompany-develop/QuickMPC/packages/server/beaver_triple_service/utils"
 )
 
-func TestGetRandBigInts(t *testing.T){
+func TestGetRandBigInts(t *testing.T) {
 	t.Helper()
 	rands, err := utils.GetRandBigInts(90, 100000)
 	if err != nil{
@@ -28,9 +28,35 @@ func TestGetRandBigInts(t *testing.T){
 	expected.Lsh(expected, 96)
 	expected.Sub(expected, 1)
 
-	diff := x.Cmp(expected)
-	if diff != 0 {
+	if x.Cmp(expected) != 0 {
 		err := errors.New("missing bit")
+		t.Fatal(err)
+	}
+}
+
+func TestSpanningGetRandBigInts(t *testing.T) {
+	t.Helper()
+	rand, err := utils.GetRandBigInts(8, 100000)
+	if err != nil{
+		t.Fatal(err)
+	}
+
+	setUint64 := make(map[uint64]struct{})
+	for _, rand := range rands {
+		if !rand.IsUint64() {
+			err := errors.New("not Uint64")
+			t.Fatal(err)
+		}
+		x := rand.Uint64()
+		if x >= 256 {
+			err := errors.New("over 1 byte")
+			t.Fatal(err)
+		}
+		setUint64[x] = struct{}{}
+	}
+
+	if len(setUint64) != 128 {
+		err := errors.New("not Spanning")
 		t.Fatal(err)
 	}
 }
