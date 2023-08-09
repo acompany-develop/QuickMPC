@@ -55,8 +55,7 @@ Share covariance(const std::vector<Share> &x, const std::vector<Share> &y)
 
 Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
 {
-    size_t n = x.size();
-    if (n != y.size())
+    if (x.size() != y.size())
     {
         qmpc::Log::throw_with_trace(std::runtime_error("input Size is not Equal"));
     }
