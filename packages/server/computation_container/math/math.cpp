@@ -8,6 +8,7 @@ Share sum(const std::vector<Share> &v)
     Share e(FixedPoint(0));
     return std::accumulate(v.begin(), v.end(), e);
 }
+
 Share smean(const std::vector<Share> &v)
 {
     assert(std::size(v));
@@ -55,7 +56,6 @@ Share covariance(const std::vector<Share> &x, const std::vector<Share> &y)
 Share correl(const std::vector<Share> &x, const std::vector<Share> &y)
 {
     size_t n = x.size();
-
     if (n != y.size())
     {
         qmpc::Log::throw_with_trace(std::runtime_error("input Size is not Equal"));
