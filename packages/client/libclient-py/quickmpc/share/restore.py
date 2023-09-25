@@ -11,7 +11,21 @@ from quickmpc.share.share import Share
 from quickmpc.utils import if_present
 
 
-def get_meta(job_uuid: str, path: str):
+def get_meta(job_uuid: str, path: str) -> int:
+    """結果データからmeta情報を取り出す
+
+    Parameters
+    ----------
+    job_uuid: str
+        計算結果のID
+    path: str
+        計算結果を保存したpath
+
+    Returns
+    -------
+    int
+        metaデータ
+    """
     file_name = glob.glob(f"{path}/dim?-{job_uuid}-*")[0]
     with open(file_name, 'r') as f:
         reader = csv.reader(f)
@@ -21,6 +35,20 @@ def get_meta(job_uuid: str, path: str):
 
 
 def get_result(job_uuid: str, path: str, party: int):
+    """結果データからmeta情報を取り出す
+
+    Parameters
+    ----------
+    job_uuid: str
+        計算結果のID
+    path: str
+        計算結果を保存したpath
+
+    Yields
+    ------
+    List[str]
+        テーブルデータの行
+    """
     for file_name in natsorted(glob.glob(f"{path}-{job_uuid}-{party}-*")):
         with open(file_name, 'r') as f:
             reader = csv.reader(f)
@@ -32,6 +60,22 @@ def get_result(job_uuid: str, path: str, party: int):
 
 
 def restore(job_uuid: str, path: str, party_size: int) -> Any:
+    """ファイルに保存された結果データを復元する
+
+    Parameters
+    ----------
+    job_uuid: str
+        計算結果のID
+    path: str
+        計算結果を保存したpath
+    party_size: int
+        MPCのパーティ数
+
+    Returns
+    -------
+    Any
+        復元した計算結果
+    """
     column_number = get_meta(job_uuid, path)
 
     schema: Any = [None]*column_number

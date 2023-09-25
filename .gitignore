@@ -30,3 +30,6 @@ __pycache__
 !**/db/**/.gitkeep
 
 scripts/.env
+
+docs/**/_build/**
+docs/**/_generated/**

@@ -17,11 +17,22 @@ class QMPC:
 
     Attributes
     ----------
-    arg: Union[List[str], QMPCRequestInterface]]
-        parties: List[str]
-            serverのIP
-        qmpc_request: QMPCRequestMock
-            qmpc serverに対してrequestを送るinterface
+    __qmpc_request: QMPCRequestInterface
+        qmpc serverに対してrequestを送るinterface
+
+    Examples
+    --------
+    .. code-block:: python3
+
+        # 直接IPを指定する場合
+        qmpc = QMPC([
+            "http://localhost:50001",
+            "http://localhost:50002",
+            "http://localhost:50003"
+        ])
+        # mockなどでrequestクラスを指定する場合
+        request = QMPCRequest([~~~])
+        qmpc = QMPC(request)
     """
 
     arg: InitVar[Union[List[str], QMPCRequestInterface]]
@@ -43,27 +54,47 @@ class QMPC:
         object.__setattr__(self, "_QMPC__qmpc_request", qmpc_request)
 
     def send_to(self, df: pd.DataFrame) -> qpd.ShareDataFrame:
-        """QuickMPCサーバにデータを送信する．
+        """QuickMPCサーバにデータを送信する
 
-        `quickmpc.pandas.read_csv()`により読み込んだデータをQuickMPCサーバに送信する．
-        `quickmpc.pandas.read_csv()`では``__qmpc_sort_index__``と呼ばれるデータの順序を保持した列がcolumnsに追加されており，send_shareではこの列があることを要求している．
-        `quickmpc.pandas.read_csv()`を経由せずにsend_shareする場合は，あらかじめデータ順序を求めて``__qmpc_sort_index__``列を追加しておく必要がある．
+        :doc:`quickmpc.pandas.read_csv` により読み込んだデータをQuickMPCサーバに送信する．
+        :doc:`quickmpc.pandas.read_csv` では ``__qmpc_sort_index__`` と呼ばれるデータの順序を保持した列がcolumnsに追加されており，
+        このメソッドではこの列があることを要求している．
+        :doc:`quickmpc.pandas.read_csv` を経由せずにQuickMPCサーバにデータを送信する場合は，
+        あらかじめデータ順序を求めて ``__qmpc_sort_index__`` 列を追加しておく必要がある．
 
         Parameters
         ----------
-        df: df.DataFrame
+        df: pandas.DataFrame
             送信するデータ
 
         Returns
         ----------
         quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
-        """
+
+        Examples
+        --------
+        .. code-block:: python3
+
+            # quickmpc.pandas.read_csv で読み込んだデータを送信する
+            df = qpd.read_csv("filepath")
+            qmpc.send_to(df)
+
+            # 自分で定義したデータを送信する
+            qmpc.send_to(df)
+            df = pd.DataFrame([[1,2,0], [3,4,1]],
+                              columns=["a", "b", "__qmpc_sort_index__"])),
+
+        See Also
+        --------
+        quickmpc.pandas.read_csv
+            quickmpc形式に則る専用のcsv読み取り関数
+        """  # noqa #501
         res = self.__qmpc_request.send_share(df, piece_size=1_000_000)
         return qpd.ShareDataFrame(res.data_id, self.__qmpc_request)
 
     def load_from(self, id_str: str) -> qpd.ShareDataFrame:
-        """既に送信してあるデータを参照する．
+        """QuickMPCサーバに送信してあるデータを参照する
 
         Parameters
         ----------
@@ -71,9 +102,19 @@ class QMPC:
             既に送信してあるデータのIDか計算で発行したID
 
         Returns
-        ----------
+        -------
         quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
+
+        Raises
+        ------
+        RuntimeError
+            形式が異なるIDを指定した場合
+
+        See Also
+        --------
+        quickmpc.pandas.ShareDataFrame.get_id
+            参照するIDを取得するためのメソッド
         """
         # data_id (256bit hash)
         if re.fullmatch(r'[a-z0-9]{64}', id_str):
@@ -88,7 +129,7 @@ class QMPC:
     # TODO: job_uuidとparty_sizeは指定しなくても良いようにしたい
     def restore(self, job_uuid: str, filepath: str, party_size: int) \
             -> qpd.ShareDataFrame:
-        """既に送信してあるデータを参照する．
+        """ファイルに保存したMPC結果を復元して取得する．
 
         Parameters
         ----------
@@ -96,11 +137,33 @@ class QMPC:
             データのID
         filepath: str
             dataが保存してあるディレクトリ
+        party_size: int
+            MPCのパーティ数
 
         Returns
-        ----------
+        -------
         quickmpc.pandas.ShareDataFrame
             QuickMPC形式のDataframe
+
+        Examples
+        --------
+        .. code-block:: python3
+
+            # 計算結果をファイルに保存する
+            filepath: str # 保存するディレクトリ
+            sdf: qpd.ShareDataFrame # 計算結果
+            sdf.to_csv(filepath) # 結果を保存
+
+            # 計算結果をファイルから復元する
+            job_uuid = sdf.get_id()
+            sdf = qmpc.restore(job_uuid, filepath, 3)
+
+        See Also
+        --------
+        quickmpc.pandas.ShareDataFrame.get_id
+            参照するIDを取得するためのメソッド
+        quickmpc.pandas.ShareDataFrame.to_csv
+            計算結果をファイルに保存するメソッド．restoreはこのメソッドで保存したファイル群に対して適用できる．
         """
         # TODO: get_computation_resultと同じ処理なのでうまくまとめる
         res = restore(job_uuid, filepath, party_size)

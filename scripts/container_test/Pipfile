@@ -4,8 +4,6 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pytest = "*"
-quickmpc = {path = "./../../packages/client/libclient-py"}
 
 [dev-packages]
 
