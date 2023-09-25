@@ -1,6 +1,6 @@
 import pandas as pd
 
-from quickmpc.pandas.parser import to_float
+from quickmpc.pandas.parser import to_float_for_matching
 
 
 def read_csv(*args, index_col: str, **kwargs) -> pd.DataFrame:
@@ -23,7 +23,7 @@ def read_csv(*args, index_col: str, **kwargs) -> pd.DataFrame:
     """
     df = pd.read_csv(*args, **kwargs)
     # ID列を数値化
-    df[index_col] = df[index_col].map(lambda x: to_float(x))
+    df[index_col] = df[index_col].map(lambda x: to_float_for_matching(x))
     # send_share時にID列でsortできる様にID列を座標圧縮した列を追加する
     df["__qmpc_sort_index__"] = df.index
     df = df.sort_values(by=index_col)
