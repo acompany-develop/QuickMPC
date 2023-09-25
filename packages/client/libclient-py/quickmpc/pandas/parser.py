@@ -1,4 +1,3 @@
-import csv
 from dataclasses import dataclass
 from hashlib import sha512
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union

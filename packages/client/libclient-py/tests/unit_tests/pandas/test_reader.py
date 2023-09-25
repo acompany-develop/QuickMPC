@@ -24,18 +24,23 @@ def to_string_io(data: List[List]) -> io.StringIO:
                       columns=["id", "c", "__qmpc_sort_index__"])),
         # 1列目以外をID列に指定した場合
         ([["id", "c"], ["a", 1], ["b", 2]], "c",
-         pd.DataFrame([["a", 81786090.20335388, 1], ["b", 67839041.07183933, 0]],
+         pd.DataFrame([["a", 81786090.20335388, 1],
+                       ["b", 67839041.07183933, 0]],
                       columns=["id", "c", "__qmpc_sort_index__"])),
         # ID列が巨大な整数
         ([["id"], [1000000000000000000000000]], "id",
-         pd.DataFrame([[250298887.90448284, 0]], columns=["id", "__qmpc_sort_index__"])),
+         pd.DataFrame([[250298887.90448284, 0]],
+                      columns=["id", "__qmpc_sort_index__"])),
         ([["id"], [-1000000000000000000000000]], "id",
-         pd.DataFrame([[146263071.2934265, 0]], columns=["id", "__qmpc_sort_index__"])),
+         pd.DataFrame([[146263071.2934265, 0]],
+                      columns=["id", "__qmpc_sort_index__"])),
         # ID列が巨大な実数
         ([["id"], [1000000000000000000000000.1111111111111111]], "id",
-         pd.DataFrame([[108235191.58269978, 0]], columns=["id", "__qmpc_sort_index__"])),
+         pd.DataFrame([[108235191.58269978, 0]],
+                      columns=["id", "__qmpc_sort_index__"])),
         ([["id"], [-1000000000000000000000000.1111111111111111]], "id",
-         pd.DataFrame([[264110776.18418598, 0]], columns=["id", "__qmpc_sort_index__"])),
+         pd.DataFrame([[264110776.18418598, 0]],
+                      columns=["id", "__qmpc_sort_index__"])),
     ]
 )
 def test_read_csv(data, index_col, expected,
