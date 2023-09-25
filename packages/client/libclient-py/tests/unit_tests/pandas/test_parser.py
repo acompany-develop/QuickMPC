@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 import pytest
 
-from quickmpc.pandas.parser import parse, parse_csv, to_float_for_matching
+from quickmpc.pandas.parser import parse, to_float_for_matching
 from quickmpc.proto.common_types.common_types_pb2 import (Schema,
                                                           ShareValueTypeEnum)
 
@@ -21,96 +21,21 @@ def schema_int(name: str):
                   .SHARE_VALUE_TYPE_UTF_8_INTEGER_REPRESENTATION)
 
 
-# 元データ
-normal_data: List[List[str]] = [s.split(",") for s in [
-    "id,attr1,attr2,attr3,attr4,attr5,attr6",
-    "hoge,0,0.77,0.63,0.35,0.39,0.35",
-    "huga,0,0.37,0.36,0.43,0.41,0.39",
-    "piyo,1,0.34,0.34,0.44,0.50,0.32",
-    "moge,1,0.47,0.43,0.34,0.29,0.34",
-    "moga,0,0.67,0.41,0.25,0.49,0.25",
-]]
-data3: List[List[str]] = [s.split(",") for s in [
-    "id,id:id",
-    "hoge,hoge",
-    "huga,huga",
-    "moge,moge",
-    "moga,moga",
-]]
-
-# 正しくparseされたデータ
-d1_schema_str: List[str] = ['id', 'attr1', 'attr2',
-                            'attr3', 'attr4', 'attr5', 'attr6']
-d1_schema: List[Schema] = [schema_fp(name) for name in d1_schema_str]
-d1_secrets: List[List[float]] = [
-    [230379555.4797964, 0, 0.77, 0.63, 0.35, 0.39, 0.35],
-    [10723675.973257065, 0, 0.37, 0.36, 0.43, 0.41, 0.39],
-    [117576607.23670769, 1, 0.34, 0.34, 0.44, 0.5, 0.32],
-    [211114761.8482437, 1, 0.47, 0.43, 0.34, 0.29, 0.34],
-    [13292676.303739548, 0, 0.67, 0.41, 0.25, 0.49, 0.25]
-]
-
-d2_schema_str: List[str] = ['id#0', 'attr1#0', 'attr1#1',
-                            'attr2#0', 'attr2#1', 'attr2#2',
-                            'attr3#0', 'attr3#1', 'attr3#2', 'attr3#3']
-d2_schema: List[Schema] = [schema_fp(name) for name in d2_schema_str]
-d2_secrets: List[List[float]] = [
-    [230379555.4797964, 1, 0, 1, 0, 0, 1, 0, 0, 0],
-    [10723675.973257065, 1, 0, 0, 1, 0, 0, 1, 0, 0],
-    [211114761.8482437, 0, 1, 0, 0, 1, 0, 0, 1, 0],
-    [13292676.303739548, 1, 0, 1, 0, 0, 0, 0, 0, 1]
-]
-
-d3_schema: List[Schema] = [schema_int('id'), schema_fp('id:id')]
-d3_secrets: List[List[float]] = [
-    [1752131429, 230379555.4797964],
-    [1752524641, 10723675.973257065],
-    [1836017509, 211114761.8482437],
-    [1836017505, 13292676.303739548]
-]
-
-
-def test_parse():
-    """ 正しくパースできるかTest """
-    secrets, schema = parse(normal_data, matching_column=1)
-    assert (np.allclose(secrets, d1_secrets))
-    assert (schema == d1_schema)
-
-
-def test_parse_str():
-    secrets, schema = parse(data3)
-    assert (np.allclose(secrets, d3_secrets))
-    assert (schema == d3_schema)
-
-
-def test_parse_errorhandring():
-    """ 異常値を与えてエラーが出るかTest """
-    with pytest.raises(Exception):
-        # 行が足りずシェアがない
-        parse([["id", "a", "b", "c"]])
-    with pytest.raises(Exception):
-        # schemaに同じものが含まれる
-        parse([["id", "a", "a"],
-               ["id1", "1", "2"],
-               ["id2", "3", "4"]])
-    with pytest.raises(Exception):
-        # 正方行列でない
-        parse([["id", "a", "b"],
-               ["id1", "1", "2"],
-               ["id2", "3", "4", "5"]])
-        parse([["id", "a", "b"],
-               ["id1", "1", "2"],
-               ["id2"]])
-
-
 @pytest.mark.parametrize(
-    ("csv_file", "expected_secrets", "expected_schema"),
+    ("data", "expected_secrets", "expected_schema"),
     [
-        # 動作確認
-        ("normal.csv", d1_secrets, d1_schema),
+        # 通常case
+        ([["id", "a", "b"], ["1.0", "0", "0.77"], ["2.0", "0", "0.37"]],
+            [[1.0, 0, 0.77], [2.0, 0, 0.37]],
+            [schema_fp(name) for name in ["id", "a", "b"]]),
+        # tag付き
+        ([["id", "id:id"], ["str", "2.0"]],
+            [[7566450, 2.0]],
+         [schema_int('id'), schema_fp('id:id')]),
 
-        # エッジケース
-        ("edge_data.csv",
+        # edge case
+        ([["id", "zero", "int_max", "int_min", "float_min_plus", "float_max_minus", "string_max"],
+          ["0", "0", "10000000000", "-10000000000", "0.00000000001", "-0.00000000001", "漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢漢"]],
          [[0.0, 0.0, 10000000000.0, -10000000000.0, 1e-11, -1e-11,
            int("81294350169683468997949680580862592771577912922072"
                "36632400050104509615137476244113137539228236962890"
@@ -140,7 +65,9 @@ def test_parse_errorhandring():
           schema_fp('float_max_minus'), schema_int('string_max'), ]),
 
         # 文字列
-        ("string_data.csv",
+        ([["id", "alphabet", "hiragana", "katakana", "chinese_characters", "large_number", "emoji"],
+            ["0", "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "ぁあぃいぅうぇえぉおかがきぎくぐけげこごさざしじすずせぜそぞただちぢっつづてでとどなにぬねのはばぱひびぴふぶぷへべぺほぼぽまみむめもゃやゅゆょよらりるれろゎわゐゑをんゔゕゖ",
+             "ァアィイゥウェエォオカガキギクグケゲコゴサザシジスズセゼソゾタダチヂッツヅテデトドナニヌネノハバパヒビピフブプヘベペホボポマミムメモャヤュユョヨラリルレロヮワヰヱヲンヴヵヶヷヸヹヺ", "春眠不覚暁処処聞啼鳥夜来風雨声花落知多少", "１２３４５６７８９０", "😀😁😂🤣😃😄😅😆😉😊😋😎😍😘😗😙😚☺🙂🤗🤩🤔🤨😐😑😶🙄😏😣😥😮🤐😯😪😫😴😌😛😜😝🤤😒😓😔😕🙃🤑😲☹🙁😖😞😟😤😢😭😦😧😨😩🤯😬😰😱😳🤪😵😡😠🤬😷🤒🤕🤢🤮🤧😇🤠🤡🤥🤫🤭🧐🤓"]],
          [[0.0,
            int("64376492020959182960102910068921920137578270955447"
                "00994229324997296606723909755334743502970718979797"
@@ -197,14 +124,11 @@ def test_parse_errorhandring():
              schema_int('katakana'), schema_int('chinese_characters'),
              schema_fp('large_number'),  # TODO: 文字列として解釈してほしい
              schema_int('emoji'),
-         ]),
+        ]),
     ]
 )
-def test_parse_csv(csv_file, expected_secrets, expected_schema):
-    """ csvを正しくパースできるかTest """
-    secrets, schema = parse_csv(
-        f"{os.path.dirname(__file__)}/test_files/{csv_file}",
-        matching_column=1)
+def test_parse(data, expected_secrets, expected_schema):
+    secrets, schema = parse(data)
     for row, row_expected in zip(secrets, expected_secrets):
         for x, y in zip(row, row_expected):
             if type(x) == int:
@@ -215,28 +139,32 @@ def test_parse_csv(csv_file, expected_secrets, expected_schema):
 
 
 @pytest.mark.parametrize(
-    ("csv_file", "expected_exception"),
+    ("data", "expected_exception"),
     [
-        # ファイルが存在しない
-        ("hoge", Exception),
-
-        # 列数が異なる
-        ("diff_col.csv", Exception),
-
-        # テーブルが空
-        ("empty.csv", Exception),
-
-        # 空のデータが存在する
-        ("none.csv", Exception),
-
-        # csv形式じゃない
-        ("not_csv.csv", Exception),
+        # 行が足りずシェアがない
+        ([["id", "a", "b", "c"]], RuntimeError),
+        # schemaに同じものが含まれる
+        ([["id", "a", "a"],
+          ["id1", "1", "2"],
+          ["id2", "3", "4"]], RuntimeError),
+        # 正方行列でない
+        ([["id", "a", "b"],
+          ["id1", "1", "2"],
+          ["id2", "3", "4", "5"]], RuntimeError),
+        ([["id", "a", "b"],
+          ["id1", "1", "2"],
+          ["id2"]], RuntimeError),
+        # tableが空
+        ([["id"]], RuntimeError),
+        # csv形式でない
+        ({"name": "I am json"}, KeyError),
     ]
+
 )
-def test_parse_csv_errorhandring(csv_file, expected_exception):
+def test_parse_errorhandring(data, expected_exception):
     """ 異常値を与えてエラーが出るかTest """
     with pytest.raises(expected_exception):
-        parse_csv(f"{os.path.dirname(__file__)}/test_files/{csv_file}")
+        parse(data)
 
 
 @pytest.mark.parametrize(
