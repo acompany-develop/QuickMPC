@@ -5,7 +5,7 @@ from typing import List
 import numpy as np
 import pytest
 
-from quickmpc.pandas.parser import parse, parse_csv
+from quickmpc.pandas.parser import parse, parse_csv, to_float_for_matching
 from quickmpc.proto.common_types.common_types_pb2 import (Schema,
                                                           ShareValueTypeEnum)
 
@@ -237,3 +237,25 @@ def test_parse_csv_errorhandring(csv_file, expected_exception):
     """ 異常値を与えてエラーが出るかTest """
     with pytest.raises(expected_exception):
         parse_csv(f"{os.path.dirname(__file__)}/test_files/{csv_file}")
+
+
+@pytest.mark.parametrize(
+    ("val", "expected"),
+    [
+        # 文字列
+        ("id1", 125382372.3739109),
+        ("hogehuga@gmail.com", 86705962.83638954),
+        ("very_very_very_very_very_very_very_very_very_long_string", 190655731.5899248),
+        ("日本語の文字列デスヨ", 40972936.22852039),
+        ("❗️✨🤟😁👍感謝❗️🙌✨感謝❗️🙌✨❗️🍖😋🍴✨", 62936327.66452408),
+        ("", 217595411.34348965),
+        # 数値
+        (0, 52152834.036356926),
+        (1, 81786090.20335388),
+        (1000000000000000000000, 35709723.87166405),
+        (1.1, 199269155.31771374),
+        (1000000000000000000000.11111111111111111111, 19815069.039226532),
+    ]
+)
+def test_to_float_for_maching(val, expected):
+    assert math.isclose(to_float_for_matching(val), expected)

@@ -66,6 +66,18 @@ def format_check(secrets: List[List[ShareValueType]],
     return True
 
 
+def to_float_for_matching(val: Union[str, int]) -> float:
+    # k,m are constants used in the comparison operation
+    # Due to the limitation of comparison operation,
+    # k bits are taken out and divided by 2^m.
+    k: int = 48
+    m: int = 20
+    hs: str = sha512(str(val).encode()).hexdigest()
+    val_int: int = int(hs[:(k >> 2)], 16)
+    val_float: float = val_int / pow(2, m)
+    return val_float
+
+
 def to_float(val: str) -> float:
     """ If val is a float, convert as is; if it is a string, hash it. """
     try:
