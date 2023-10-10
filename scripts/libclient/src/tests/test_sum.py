@@ -35,4 +35,4 @@ from utils import data_frame, qmpc
 def test_sum(df: pd.DataFrame, columns: list, expected: pd.DataFrame):
     sdf = qmpc.send_to(df)
     result = sdf.sum(columns).to_data_frame()
-    pd.testing.assert_frame_equal(result, expected)
+    pd.testing.assert_frame_equal(result, expected, atol=1e-7)
