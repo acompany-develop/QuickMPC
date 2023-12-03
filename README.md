@@ -15,7 +15,6 @@ This will enable businesses and engineers worldwide to use Python client librari
 You can easily describe a process using SMPC as follows:
 ![1700421061804-xdFLKwdtGe](https://github.com/acompany-develop/QuickMPC/assets/33140349/e3c8c99c-0101-4a1a-82c3-475bcc543736)
 
-
 ## Dependent Tools/Commands
 - `make`
 - `docker`
