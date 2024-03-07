@@ -11,6 +11,7 @@ env:
   DOCKER_BUILDKIT: 1
   COMPOSE_DOCKER_CLI_BUILD: 1
   COMPOSE_FILES_OPT: "-f ./docker-compose.medium.yml -f ./docker-compose.core.yml -f ./docker-compose.benchmark.yml -f ./docker-compose.small.yml -f ./docker-compose.datadog.yml -f ./docker-compose.dev.yml"
+  SEGMENT_DOWNLOAD_TIMEOUT_MINS: 5
 
 jobs:
   lint:
