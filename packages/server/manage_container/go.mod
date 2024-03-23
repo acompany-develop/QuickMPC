@@ -10,7 +10,7 @@ replace (
 )
 
 require (
-	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-00010101000000-000000000000
+	github.com/acompany-develop/QuickMPC/proto/common_types v0.0.0-20231203214653-87608b4d6aa5
 	github.com/acompany-develop/QuickMPC/proto/libc_to_manage_container v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/manage_to_computation_container v0.0.0-00010101000000-000000000000
 	github.com/acompany-develop/QuickMPC/proto/manage_to_manage_container v0.0.0-00010101000000-000000000000
