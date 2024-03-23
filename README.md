@@ -27,8 +27,9 @@ You can easily describe a process using SMPC as follows:
 ## Development Requirements
 ### Recommended
 
-- memory: `16 GB`
-- storage: `20 GB`
+- CPU: `4 Core`
+- memory: `64 GB`
+- storage: `64 GB`
 
 ## Run all test suite
 1. Change your current directory into `scripts/`
