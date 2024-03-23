@@ -9,7 +9,7 @@ require (
 	golang.org/x/sys v0.15.0 // NOTE: CVE-2022-29526の回避
 	golang.org/x/text v0.14.0 // NOTE: CVE-2020-14040, CVE-2021-38561, CVE-2022-32149の回避
 	google.golang.org/grpc v1.56.3
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.2.8 // NOTE: CVE-2022-3064の回避
 )
 
