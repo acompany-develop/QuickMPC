@@ -30,6 +30,6 @@ require (
 	golang.org/x/sys v0.5.0 // indirect; NOTE: CVE-2022-29526の回避
 	golang.org/x/text v0.7.0 // indirect; NOTE: CVE-2020-14040, CVE-2021-38561, CVE-2022-32149の回避
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/protobuf v1.33.0
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 )
